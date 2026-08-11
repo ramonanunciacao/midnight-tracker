@@ -318,14 +318,17 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .upload-slot input[type=file]{ display:none; }
 .upload-slot img.us-thumb{ width:36px; height:36px; border-radius:4px; object-fit:cover; }
 
-/* collapsible history */
-.hist-toggle{
-  display:block; margin-top:10px; font-size:11px; color: var(--gold-dim); cursor:pointer; text-align:center;
-  padding:6px; border-top:1px solid var(--hairline);
+/* collapsible list — toggle always sits at the top, next to the title, and reveals the full list as one block */
+.hist-toggle{ margin-top:8px; }
+.hist-toggle summary{
+  list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; text-transform:uppercase; letter-spacing:.04em; color: var(--gold-dim); font-weight:700;
+  padding:4px 0 10px;
 }
-.hist-toggle:hover{ color: var(--gold); }
-.hist-toggle summary{ list-style:none; cursor:pointer; }
 .hist-toggle summary::-webkit-details-marker{ display:none; }
+.hist-toggle summary::before{ content:'▸'; display:inline-block; font-size:9px; transition: transform .15s; }
+.hist-toggle[open] summary::before{ transform: rotate(90deg); }
+.hist-toggle summary:hover{ color: var(--gold); }
 
 /* currency icon */
 .curr-icon{ font-size:18px; width:24px; text-align:center; }
@@ -1101,12 +1104,8 @@ function renderDetail(c){
   const el = document.getElementById('tab-detail');
   el.style.setProperty('--class-color', color);
 
-  const histPreview = reversedHistory.slice(0,1);
-  const histRest = reversedHistory.slice(1);
   const rowsHtml = h => `<tr><td>${h.date}</td><td>${h.ilvl}</td><td>${h.ioscore}</td></tr>`;
 
-  const currPreview = c.currencies.slice(0,1);
-  const currRest = c.currencies.slice(1);
   const currRow = cur => `
     <div class="bis-row" data-id="${cur.id}">
       <span class="curr-icon">${cur.icon || '🪙'}</span>
@@ -1120,8 +1119,6 @@ function renderDetail(c){
       <span>${d}</span>
       <input type="checkbox" data-key="${d}" ${c.dungeons[d]?'checked':''}>
     </div>`;
-  const dungeonPreview = DUNGEON_POOL.slice(0,1);
-  const dungeonRest = DUNGEON_POOL.slice(1);
 
   el.innerHTML = `
     <button class="detail-back" id="detailBack">← Voltar ao Dashboard</button>
@@ -1147,14 +1144,12 @@ function renderDetail(c){
     <div class="detail-grid">
       <div class="dpanel" id="section-dungeons">
         <h3>Dungeons da Season (${dCount}/${dTotal})</h3>
-        <div class="dungeon-full-list" id="detailDungeonList">
-          ${dungeonPreview.map(dungeonRow).join('')}
-        </div>
-        ${dungeonRest.length ? `
-          <details class="hist-toggle">
-            <summary>Ver todas as dungeons (+${dungeonRest.length})</summary>
-            <div class="dungeon-full-list" style="margin-top:8px;">${dungeonRest.map(dungeonRow).join('')}</div>
-          </details>` : ''}
+        <details class="hist-toggle" open>
+          <summary>Ver todas as dungeons (${dTotal})</summary>
+          <div class="dungeon-full-list" id="detailDungeonList">
+            ${DUNGEON_POOL.map(dungeonRow).join('')}
+          </div>
+        </details>
       </div>
       <div class="dpanel" id="section-itemlevel">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
@@ -1166,19 +1161,15 @@ function renderDetail(c){
           </div>
         </div>
         <div id="detailChart"></div>
-        <table class="ilvl-table">
-          <thead><tr><th>Data</th><th>Item Level</th><th>IOScore</th></tr></thead>
-          <tbody>
-            ${histPreview.length ? histPreview.map(rowsHtml).join('') : `<tr><td colspan="3" class="empty-note">Sem registros nesse período — atualize o Item Level no card do personagem.</td></tr>`}
-          </tbody>
-        </table>
-        ${histRest.length ? `
-          <details class="hist-toggle">
-            <summary>Ver histórico completo (+${histRest.length})</summary>
-            <table class="ilvl-table" style="margin-top:8px;">
-              <tbody>${histRest.map(rowsHtml).join('')}</tbody>
-            </table>
-          </details>` : ''}
+        <details class="hist-toggle" open style="margin-top:12px;">
+          <summary>Ver histórico completo${reversedHistory.length ? ` (${reversedHistory.length})` : ''}</summary>
+          <table class="ilvl-table">
+            <thead><tr><th>Data</th><th>Item Level</th><th>IOScore</th></tr></thead>
+            <tbody>
+              ${reversedHistory.length ? reversedHistory.map(rowsHtml).join('') : `<tr><td colspan="3" class="empty-note">Sem registros nesse período — atualize o Item Level no card do personagem.</td></tr>`}
+            </tbody>
+          </table>
+        </details>
       </div>
     </div>
 
@@ -1189,14 +1180,12 @@ function renderDetail(c){
         <input type="number" class="isource" id="currAmount" placeholder="Quantidade">
         <button id="currAddBtn">Adicionar</button>
       </div>
-      <div class="bis-list" id="currencyList">
-        ${currPreview.length ? currPreview.map(currRow).join('') : `<div class="empty-note">Nenhuma currency cadastrada ainda. Adicione as que você quer acompanhar (Valorstones, Crests, Gold, etc).</div>`}
-      </div>
-      ${currRest.length ? `
-        <details class="hist-toggle">
-          <summary>Ver todas as currencies (+${currRest.length})</summary>
-          <div class="bis-list" id="currencyListRest" style="margin-top:8px;">${currRest.map(currRow).join('')}</div>
-        </details>` : ''}
+      <details class="hist-toggle" open>
+        <summary>Ver todas as currencies${c.currencies.length ? ` (${c.currencies.length})` : ''}</summary>
+        <div class="bis-list" id="currencyList">
+          ${c.currencies.length ? c.currencies.map(currRow).join('') : `<div class="empty-note">Nenhuma currency cadastrada ainda. Adicione as que você quer acompanhar (Valorstones, Crests, Gold, etc).</div>`}
+        </div>
+      </details>
     </div>
 
     <div class="dpanel" id="section-bis">
@@ -1255,7 +1244,7 @@ function renderDetail(c){
     await saveChar(c);
     renderDetail(c);
   });
-  el.querySelectorAll('#currencyList .bis-row, #currencyListRest .bis-row').forEach(row => {
+  el.querySelectorAll('#currencyList .bis-row').forEach(row => {
     const id = row.dataset.id;
     const amountInput = row.querySelector('.camount-input');
     if(amountInput){
