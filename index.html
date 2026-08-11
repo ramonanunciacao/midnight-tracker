@@ -8,7 +8,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Metamorphous&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cinzel+Decorative:wght@700;900&family=Inter:wght@400;500;600;700&display=swap');
 
 :root{
   --bg: #0b0e0a;
@@ -36,10 +36,10 @@ header.top{
   border-bottom: 1px solid var(--hairline); padding-bottom: 20px; margin-bottom: 24px;
 }
 .title-block .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px; font-weight:600; }
-.title-block h1{ font-family: 'Metamorphous', serif; font-weight: 400; font-size: clamp(26px, 4vw, 40px); color: var(--gold); text-shadow: 0 0 20px rgba(159,232,60,0.45), 0 0 40px rgba(159,232,60,0.2); letter-spacing: .01em; }
-.title-block{ display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit; cursor:pointer; transition: opacity .15s; }
+.title-block h1{ font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: clamp(24px, 4vw, 38px); color: var(--gold); text-shadow: 0 0 20px rgba(159,232,60,0.5), 0 0 44px rgba(159,232,60,0.25); letter-spacing: .01em; }
+.title-block{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; cursor:pointer; transition: opacity .15s; }
 .title-block:hover{ opacity:.85; }
-.app-logo{ height:56px; width:auto; display:block; filter: drop-shadow(0 0 10px rgba(159,232,60,0.4)); flex-shrink:0; }
+.app-logo{ height:64px; width:auto; display:block; filter: drop-shadow(0 0 12px rgba(159,232,60,0.45)); flex-shrink:0; }
 .reset-btn{
   background: linear-gradient(180deg, #1e1e26, #14141a); border: 1px solid var(--gold-dim); color: var(--gold);
   font-weight: 600; font-size: 13px; padding: 11px 18px; border-radius: 4px; cursor: pointer;
@@ -306,16 +306,18 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .upload-step{ margin-bottom:16px; }
 .upload-slot{
   display:flex; align-items:center; gap:12px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
-  border-radius:6px; padding:12px; margin-bottom:10px;
+  border-radius:6px; padding:12px; margin-bottom:10px; cursor:pointer; transition: border-color .15s;
 }
+.upload-slot:hover{ border-color: var(--gold-dim); }
+.upload-slot.filled{ border-color: var(--ok); }
 .upload-slot .us-info{ flex:1; }
 .upload-slot .us-title{ font-size:12px; font-weight:700; color:var(--text); }
 .upload-slot .us-sub{ font-size:10px; color:var(--text-dim); margin-top:2px; }
-.upload-slot label.us-btn{
+.upload-slot .us-btn{
   background: var(--bg-panel); border:1px dashed var(--hairline); color:var(--gold-dim); font-size:10px;
-  text-transform:uppercase; font-weight:700; padding:7px 10px; border-radius:4px; cursor:pointer; white-space:nowrap;
+  text-transform:uppercase; font-weight:700; padding:7px 10px; border-radius:4px; white-space:nowrap; pointer-events:none;
 }
-.upload-slot label.us-btn.filled{ border-style:solid; border-color: var(--ok); color: var(--ok); }
+.upload-slot .us-btn.filled{ border-style:solid; border-color: var(--ok); color: var(--ok); }
 .upload-slot input[type=file]{ display:none; }
 .upload-slot img.us-thumb{ width:36px; height:36px; border-radius:4px; object-fit:cover; }
 
@@ -343,8 +345,8 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
   border-radius:8px; padding:36px 32px; text-align:center;
 }
 .login-box .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; font-weight:600; }
-.login-box h1{ font-family: 'Metamorphous', serif; font-weight: 400; font-size: 28px; color: var(--gold); margin-bottom: 20px; text-shadow: 0 0 20px rgba(159,232,60,0.45), 0 0 40px rgba(159,232,60,0.2); }
-.login-logo{ width: 240px; max-width: 85%; display:block; margin: 0 auto 18px; filter: drop-shadow(0 0 22px rgba(159,232,60,0.35)); }
+.login-box h1{ font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 26px; color: var(--gold); margin-bottom: 20px; text-shadow: 0 0 20px rgba(159,232,60,0.5), 0 0 44px rgba(159,232,60,0.25); }
+.login-logo{ width: 200px; max-width: 70%; display:block; margin: 0 auto 18px; filter: drop-shadow(0 0 26px rgba(159,232,60,0.4)); }
 .login-box{ box-shadow: 0 0 60px -20px rgba(159,232,60,0.15); }
 .login-google-btn{
   width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
@@ -374,7 +376,7 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 
 <div id="loginScreen">
   <div class="login-box">
-    <img class="login-logo" src="assets/midnight-logo.png" alt="World of Warcraft: Midnight — Curse of Ula'tek">
+    <img class="login-logo" src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight — Curse of Ula'tek">
     <div class="eyebrow">Midnight · Season 2</div>
     <h1>Season Tracker</h1>
 
@@ -398,7 +400,7 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 <div class="wrap" id="mainApp" style="display:none;">
   <header class="top">
     <a class="title-block" href="#" id="homeLink" aria-label="Ir para o início">
-      <img class="app-logo" src="assets/midnight-logo.png" alt="Midnight — Curse of Ula'tek">
+      <img class="app-logo" src="assets/midnight-logo-cutout.png" alt="Midnight — Curse of Ula'tek">
       <div>
         <div class="eyebrow">Midnight · Season 2</div>
         <h1>Season Tracker</h1>
@@ -533,38 +535,42 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
     </div>
 
     <div class="upload-step">
-      <div class="upload-slot">
+      <label class="upload-slot" id="uuSlot-character" for="uuFile-character">
         <div class="us-info">
           <div class="us-title">1. Character</div>
           <div class="us-sub">Print do painel do personagem (item level, itens, nome)</div>
         </div>
         <img class="us-thumb" id="uuThumb-character" style="display:none;">
-        <label class="us-btn" id="uuLabel-character">Upar<input type="file" accept="image/*" data-slot="character"></label>
-      </div>
-      <div class="upload-slot">
+        <span class="us-btn" id="uuLabel-character">Upar</span>
+        <input type="file" id="uuFile-character" accept="image/*" data-slot="character">
+      </label>
+      <label class="upload-slot" id="uuSlot-savedInstances" for="uuFile-savedInstances">
         <div class="us-info">
           <div class="us-title">2. SavedInstances</div>
           <div class="us-sub">Dungeons, world boss e eventos feitos na semana (leitura automática ainda não disponível — fica como referência até definirmos o formato do addon nessa season)</div>
         </div>
         <img class="us-thumb" id="uuThumb-savedInstances" style="display:none;">
-        <label class="us-btn" id="uuLabel-savedInstances">Upar<input type="file" accept="image/*" data-slot="savedInstances"></label>
-      </div>
-      <div class="upload-slot">
+        <span class="us-btn" id="uuLabel-savedInstances">Upar</span>
+        <input type="file" id="uuFile-savedInstances" accept="image/*" data-slot="savedInstances">
+      </label>
+      <label class="upload-slot" id="uuSlot-vault" for="uuFile-vault">
         <div class="us-info">
           <div class="us-title">3. Great Vault</div>
           <div class="us-sub">O que foi conquistado no vault dessa semana</div>
         </div>
         <img class="us-thumb" id="uuThumb-vault" style="display:none;">
-        <label class="us-btn" id="uuLabel-vault">Upar<input type="file" accept="image/*" data-slot="vault"></label>
-      </div>
-      <div class="upload-slot">
+        <span class="us-btn" id="uuLabel-vault">Upar</span>
+        <input type="file" id="uuFile-vault" accept="image/*" data-slot="vault">
+      </label>
+      <label class="upload-slot" id="uuSlot-currency" for="uuFile-currency">
         <div class="us-info">
           <div class="us-title">4. Currency</div>
           <div class="us-sub">Currencies atuais do personagem</div>
         </div>
         <img class="us-thumb" id="uuThumb-currency" style="display:none;">
-        <label class="us-btn" id="uuLabel-currency">Upar<input type="file" accept="image/*" data-slot="currency"></label>
-      </div>
+        <span class="us-btn" id="uuLabel-currency">Upar</span>
+        <input type="file" id="uuFile-currency" accept="image/*" data-slot="currency">
+      </label>
     </div>
 
     <div class="mural-sub" style="margin-bottom:0;">Os prints ficam salvos como referência visual nesse personagem — a leitura automática dos números ainda não existe, você confere e atualiza os campos manualmente.</div>
@@ -978,12 +984,11 @@ function openUploadUpdateModal(){
   newClsSel.innerHTML = Object.keys(CLASS_HEX).map(cl => `<option value="${cl}">${cl}</option>`).join('');
   document.getElementById('uuNewCharName').value = '';
   ['character','savedInstances','vault','currency'].forEach(slot => {
-    const thumb = document.getElementById('uuThumb-'+slot);
-    const label = document.getElementById('uuLabel-'+slot);
-    thumb.style.display = 'none';
-    label.classList.remove('filled');
-    label.innerHTML = `Upar<input type="file" accept="image/*" data-slot="${slot}">`;
-    label.querySelector('input').addEventListener('change', handleUuFileChange);
+    document.getElementById('uuThumb-'+slot).style.display = 'none';
+    document.getElementById('uuLabel-'+slot).classList.remove('filled');
+    document.getElementById('uuLabel-'+slot).textContent = 'Upar';
+    document.getElementById('uuSlot-'+slot).classList.remove('filled');
+    document.getElementById('uuFile-'+slot).value = '';
   });
   document.getElementById('uploadUpdateModal').style.display = 'flex';
 }
@@ -994,15 +999,17 @@ function handleUuFileChange(e){
   const reader = new FileReader();
   reader.onload = () => {
     uuTempFiles[slot] = reader.result;
-    const thumb = document.getElementById('uuThumb-'+slot);
-    const label = document.getElementById('uuLabel-'+slot);
-    thumb.src = reader.result;
-    thumb.style.display = 'block';
-    label.classList.add('filled');
-    label.childNodes[0].textContent = 'Trocar';
+    document.getElementById('uuThumb-'+slot).src = reader.result;
+    document.getElementById('uuThumb-'+slot).style.display = 'block';
+    document.getElementById('uuLabel-'+slot).classList.add('filled');
+    document.getElementById('uuLabel-'+slot).textContent = 'Trocar';
+    document.getElementById('uuSlot-'+slot).classList.add('filled');
   };
   reader.readAsDataURL(file);
 }
+['character','savedInstances','vault','currency'].forEach(slot => {
+  document.getElementById('uuFile-'+slot).addEventListener('change', handleUuFileChange);
+});
 document.getElementById('uploadUpdateBtn').addEventListener('click', openUploadUpdateModal);
 document.getElementById('uuCharSelect').addEventListener('change', (e) => {
   document.getElementById('uuNewCharFields').style.display = e.target.value === '__new__' ? 'block' : 'none';
