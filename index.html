@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midnight — Season Tracker</title>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg: #0b0b0e;
+  --bg-panel: #131318;
+  --bg-panel-raised: #1a1a21;
+  --hairline: #2a2a33;
+  --gold: #c8aa6e;
+  --gold-dim: #8a7550;
+  --text: #e8e6df;
+  --text-dim: #9a978f;
+  --danger: #c0392b;
+  --ok: #4a9b5e;
+  --dk: #c41f3b; --dh: #a330c9; --druid: #ff7d0a; --evoker: #33937f; --hunter: #aad372;
+  --mage: #3fc7eb; --monk: #00ff96; --paladin: #f48cba; --priest: #d9d9d9;
+  --rogue: #fff468; --shaman: #0070dd; --warlock: #8788ee; --warrior: #c69b6d;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background: radial-gradient(ellipse at top, #16141c 0%, var(--bg) 55%), var(--bg);
+  color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 32px 20px 80px;
+}
+.wrap{ max-width: 1100px; margin: 0 auto; }
+header.top{
+  display:flex; align-items:flex-end; justify-content:space-between; flex-wrap: wrap; gap: 16px;
+  border-bottom: 1px solid var(--hairline); padding-bottom: 20px; margin-bottom: 24px;
+}
+.title-block .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px; font-weight:600; }
+.title-block h1{ font-family: 'Cinzel', serif; font-weight: 900; font-size: clamp(28px, 4vw, 42px); color: var(--gold); text-shadow: 0 0 24px rgba(200,170,110,0.25); }
+.reset-btn{
+  background: linear-gradient(180deg, #1e1e26, #14141a); border: 1px solid var(--gold-dim); color: var(--gold);
+  font-weight: 600; font-size: 13px; padding: 11px 18px; border-radius: 4px; cursor: pointer;
+  letter-spacing: .04em; text-transform: uppercase; transition: all .15s;
+}
+.reset-btn:hover{ background: var(--gold); color: #16141c; border-color: var(--gold); }
+nav.tabs{ display:flex; gap: 4px; margin-bottom: 28px; border-bottom: 1px solid var(--hairline); }
+nav.tabs button{
+  background:none; border:none; color: var(--text-dim); font-weight: 600; font-size: 13px;
+  text-transform: uppercase; letter-spacing: .06em; padding: 12px 6px; margin-right: 24px; cursor:pointer;
+  border-bottom: 2px solid transparent; transition: all .15s;
+}
+nav.tabs button.active{ color: var(--gold); border-bottom-color: var(--gold); }
+nav.tabs button:hover{ color: var(--text); }
+section.tab{ display:none; }
+section.tab.active{ display:block; animation: fadeIn .25s ease; }
+@keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+#characters-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 18px; margin-bottom: 20px; }
+.char-card{
+  background: var(--bg-panel); border: 1px solid var(--hairline); border-top: 3px solid var(--class-color, var(--gold));
+  border-radius: 6px; padding: 18px; position: relative; transition: box-shadow .2s; cursor: pointer;
+}
+.char-card:hover{ box-shadow: 0 0 28px -6px var(--class-color, var(--gold)); }
+.char-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.char-name{ font-family:'Cinzel',serif; font-weight:700; font-size:18px; color: var(--text); }
+.char-class{ font-size: 11px; text-transform:uppercase; letter-spacing:.05em; color: var(--class-color, var(--gold)); font-weight:700; margin-top:2px;}
+.char-remove{ background:none; border:none; color: var(--text-dim); cursor:pointer; font-size:16px; opacity:.5; position:relative; z-index:5; }
+.char-remove:hover{ opacity:1; color: var(--danger); }
+.open-hint{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; opacity:0; transition:opacity .15s;}
+.char-card:hover .open-hint{ opacity:.7; }
+
+.stat-row{ display:flex; gap:10px; margin-bottom:12px; }
+.stat-box{ flex:1; background: var(--bg-panel-raised); border-radius:4px; padding:8px 10px; }
+.stat-box label{ display:block; font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); margin-bottom:3px;}
+.stat-box input{ background:none; border:none; color: var(--text); font-weight:700; font-size:16px; width:100%; outline:none; position:relative; z-index:5;}
+
+.progress-list{ display:flex; flex-direction:column; gap:8px; margin-bottom: 14px; }
+.progress-item{ position:relative; }
+.progress-item .plabel{ display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-bottom:3px; }
+.progress-item .plabel .pcount{ color: var(--text); font-weight:600; }
+.pbar-track{ height:6px; background: var(--danger); border-radius:3px; overflow:hidden; }
+.pbar-fill{ height:100%; background: var(--ok); transition: width .25s; }
+
+.wb-row{ display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:14px; }
+.wb-row button.wb-toggle{
+  border:1px solid var(--hairline); background: var(--bg-panel-raised); color: var(--text-dim);
+  border-radius:3px; padding:4px 10px; cursor:pointer; font-size:11px; font-weight:600; position:relative; z-index:5;
+}
+.wb-row button.wb-toggle.done{ background: var(--ok); border-color: var(--ok); color:#fff; }
+
+.vault-box{ background: var(--bg-panel-raised); border-radius:4px; padding:10px 12px; }
+.vault-box .vtitle{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); font-weight:700; margin-bottom:8px;}
+.vault-slots{ display:flex; gap:6px; margin-bottom:8px; }
+.vault-slot{ flex:1; height:8px; border-radius:3px; background: var(--danger); }
+.vault-slot.filled{ background: var(--ok); }
+.vault-labels{ display:flex; justify-content:space-between; font-size:9px; color:var(--text-dim); margin-bottom:8px;}
+.vault-key{ display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim); }
+.vault-key input{ width:50px; background: var(--bg-panel); border:1px solid var(--hairline); color:var(--text); border-radius:3px; padding:3px 6px; font-size:12px; text-align:center; position:relative; z-index:5;}
+.vault-proof-upload{ margin-top:10px; }
+.vault-proof-upload label.vp-btn{
+  display:block; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--gold-dim);
+  cursor:pointer; border:1px dashed var(--hairline); padding:7px 10px; border-radius:4px; text-align:center; position:relative; z-index:5;
+}
+.vault-proof-upload label.vp-btn:hover{ border-color: var(--gold-dim); color: var(--gold); }
+.vault-proof-upload input[type=file]{ display:none; }
+.vault-proof{ margin-top:10px; display:flex; align-items:center; gap:8px; }
+.vault-proof-thumb{ width:44px; height:44px; object-fit:cover; border-radius:4px; border:1px solid var(--hairline); cursor:pointer; position:relative; z-index:5; }
+.vault-proof-remove{ background:none; border:none; color:var(--text-dim); font-size:11px; cursor:pointer; position:relative; z-index:5; }
+.vault-proof-remove:hover{ color: var(--danger); }
+
+.events-list{ display:flex; flex-direction:column; gap:4px; margin-top:6px; }
+.events-list label{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); cursor:pointer; position:relative; z-index:5;}
+.events-list input[type=checkbox]{ accent-color: var(--class-color, var(--gold)); }
+.events-list label.done{ color: var(--ok); }
+details.progress-detail summary{ list-style:none; cursor:pointer; }
+details.progress-detail summary::-webkit-details-marker{ display:none; }
+
+.add-char-card{
+  background: var(--bg-panel); border: 1px dashed var(--hairline); border-radius:6px;
+  display:flex; align-items:center; justify-content:center; min-height: 140px;
+  color: var(--text-dim); cursor:pointer; font-weight:600; font-size:13px; transition: all .15s;
+}
+.add-char-card:hover{ border-color: var(--gold-dim); color: var(--gold); }
+
+/* dungeon hover balloon */
+.dtip{
+  position: fixed; z-index: 200; background: #1a1a21; border: 1px solid var(--gold-dim);
+  border-radius: 6px; padding: 12px; min-width: 200px; box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  display:none; pointer-events: none;
+}
+.dtip .dtip-title{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); font-weight:700; margin-bottom:8px;}
+.dtip .drow{ display:flex; align-items:center; gap:7px; font-size:12px; padding:2px 0; }
+.dtip .dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.dtip .dot.on{ background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+.dtip .dot.off{ background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+.dtip .dname.on{ color:#8fd39f; }
+.dtip .dname.off{ color:#e08a80; }
+
+/* chart panel */
+.chart-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:6px; padding:20px; margin-top: 10px; }
+.chart-panel .chead{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
+.chart-panel h2{ font-family:'Cinzel',serif; font-size:15px; color:var(--gold); text-transform:uppercase; letter-spacing:.04em;}
+.filter-group{ display:flex; gap:6px; }
+.filter-group button{
+  background:var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text-dim);
+  padding:5px 12px; border-radius:3px; font-size:11px; cursor:pointer; font-weight:600; text-transform:uppercase;
+}
+.filter-group button.active{ background: var(--gold); color:#16141c; border-color: var(--gold); }
+.chart-metric-toggle{ display:flex; gap:6px; margin-bottom:14px; }
+.chart-metric-toggle button{
+  background:var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text-dim);
+  padding:5px 12px; border-radius:3px; font-size:11px; cursor:pointer; font-weight:600;
+}
+.chart-metric-toggle button.active{ border-color: var(--gold); color: var(--gold); }
+
+/* modal */
+.modal-overlay{ position:fixed; inset:0; background: rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; z-index: 100; }
+.modal{ background: var(--bg-panel); border:1px solid var(--gold-dim); border-radius:8px; padding:24px; width: 320px; }
+.modal h3{ font-family:'Cinzel',serif; color:var(--gold); margin-bottom:16px; font-size:16px; }
+.modal label{ display:block; font-size:11px; text-transform:uppercase; color:var(--text-dim); margin-bottom:5px; margin-top:12px;}
+.modal input, .modal select{
+  width:100%; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text);
+  border-radius:4px; padding:8px 10px; font-size:14px; font-family:'Inter',sans-serif;
+}
+.modal-actions{ display:flex; gap:10px; margin-top:20px; }
+.modal-actions button{ flex:1; padding:9px; border-radius:4px; border:1px solid var(--hairline); cursor:pointer; font-weight:600; font-size:12px; text-transform:uppercase; }
+.modal-actions .confirm{ background: var(--gold); border-color: var(--gold); color:#16141c; }
+.modal-actions .cancel{ background:none; color: var(--text-dim); }
+
+/* todo */
+.todo-panel, .mural-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:6px; padding:22px; }
+.todo-add{ display:flex; gap:8px; margin-bottom:18px; }
+.todo-add input{ flex:1; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:4px; padding:10px 12px; font-size:14px; }
+.todo-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 18px; border-radius:4px; cursor:pointer; }
+.todo-item{ display:flex; align-items:center; gap:10px; padding:10px 4px; border-bottom:1px solid var(--hairline); }
+.todo-item input[type=checkbox]{ accent-color: var(--gold); width:16px; height:16px; }
+.todo-item span{ flex:1; font-size:14px; }
+.todo-item.done span{ color: var(--text-dim); text-decoration: line-through; }
+.todo-item .del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; }
+.todo-item .del:hover{ opacity:1; color:var(--danger); }
+.tips-box{ margin-top:24px; padding-top:18px; border-top:1px solid var(--hairline); }
+.tips-box h3{ font-family:'Cinzel',serif; color:var(--gold-dim); font-size:13px; text-transform:uppercase; margin-bottom:10px; letter-spacing:.05em;}
+.tip-add{ display:flex; gap:8px; margin-bottom:12px; }
+.tip-add input{ flex:1; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:4px; padding:8px 10px; font-size:13px; }
+.tip-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 14px; border-radius:4px; cursor:pointer; font-size:12px; }
+.tip-row{ display:flex; align-items:center; gap:8px; padding:6px 0; }
+.tip-row .tip-text{ flex:1; font-size:13px; color: var(--text-dim); padding-left:14px; position:relative; }
+.tip-row .tip-text::before{ content:'—'; position:absolute; left:0; color: var(--gold-dim); }
+.tip-row .tip-move{ background:none; border:1px solid var(--hairline); color:var(--text-dim); width:22px; height:22px; border-radius:3px; cursor:pointer; font-size:11px; line-height:1; display:flex; align-items:center; justify-content:center; }
+.tip-row .tip-move:hover{ color: var(--gold); border-color: var(--gold-dim); }
+.tip-row .tip-move:disabled{ opacity:.25; cursor:default; }
+.tip-row .tip-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; }
+.tip-row .tip-del:hover{ opacity:1; color:var(--danger); }
+
+/* mural */
+.mural-panel h2{ font-family:'Cinzel',serif; color:var(--gold); font-size:15px; margin-bottom:12px; text-transform:uppercase; letter-spacing:.04em;}
+.mural-sub{ font-size:12px; color:var(--text-dim); margin-bottom:16px; }
+.mural-note{ width:100%; min-height:100px; background: var(--bg-panel-raised); border:1px solid var(--hairline); color: var(--text); border-radius:6px; padding:14px; font-family:'Inter',sans-serif; font-size:13px; line-height:1.6; resize: vertical; outline:none; margin-bottom:26px;}
+.mural-upload{
+  display:flex; gap:12px; align-items:center; flex-wrap:wrap; background: var(--bg-panel-raised);
+  border: 1px dashed var(--hairline); border-radius:6px; padding:16px; margin-bottom:20px;
+}
+.mural-upload select{ background: var(--bg-panel); border:1px solid var(--hairline); color:var(--text); border-radius:4px; padding:8px 10px; font-size:13px; }
+.mural-upload label.upload-btn{
+  background: var(--gold); color:#16141c; font-weight:700; font-size:12px; padding:9px 16px;
+  border-radius:4px; cursor:pointer; text-transform:uppercase;
+}
+.mural-upload input[type=file]{ display:none; }
+.mural-filters{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+.mural-filters select, .mural-filters .filter-group{ font-size:12px; }
+.mural-filters label{ font-size:11px; text-transform:uppercase; color:var(--text-dim); margin-right:6px; letter-spacing:.04em;}
+.mural-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
+.mural-card{ position:relative; border-radius:6px; overflow:hidden; border:1px solid var(--hairline); background: var(--bg-panel-raised); }
+.mural-card img{ width:100%; display:block; aspect-ratio: 4/3; object-fit:cover; }
+.mural-tag{
+  position:absolute; top:8px; left:8px; background: rgba(11,11,14,.85); border:1px solid var(--class-color, var(--gold));
+  color: var(--class-color, var(--gold)); font-size:10px; font-weight:700; padding:3px 8px; border-radius:3px;
+  text-transform:uppercase; letter-spacing:.03em;
+}
+.mural-card .mdate{ font-size:10px; color:var(--text-dim); padding:8px 10px; }
+.mural-card .mdel{
+  position:absolute; top:8px; right:8px; background: rgba(11,11,14,.85); border:1px solid var(--hairline);
+  color:var(--text-dim); width:22px; height:22px; border-radius:3px; cursor:pointer; font-size:12px;
+}
+.mural-card .mdel:hover{ color:var(--danger); border-color: var(--danger); }
+.mural-empty{ color: var(--text-dim); font-size:13px; padding: 20px 0; }
+
+/* detail page */
+#tab-detail{ }
+.detail-back{ background:none; border:1px solid var(--hairline); color:var(--text-dim); padding:8px 14px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:600; margin-bottom:20px; text-transform:uppercase; letter-spacing:.04em;}
+.detail-back:hover{ color:var(--gold); border-color:var(--gold-dim); }
+.detail-header{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px; border-bottom:1px solid var(--hairline); padding-bottom:18px; flex-wrap:wrap; gap:14px;}
+.detail-header h2{ font-family:'Cinzel',serif; font-size:30px; color: var(--class-color, var(--gold)); }
+.detail-header .dclass{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-top:4px;}
+.detail-stats{ display:flex; gap:22px; }
+.detail-stats .dstat{ text-align:right; }
+.detail-stats .dstat .val{ font-size:22px; font-weight:700; color:var(--text); }
+.detail-stats .dstat .lbl{ font-size:10px; text-transform:uppercase; color:var(--text-dim); letter-spacing:.05em;}
+.detail-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px; }
+@media(max-width: 760px){ .detail-grid{ grid-template-columns: 1fr; } }
+.dpanel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:6px; padding:20px; }
+.dpanel h3{ font-family:'Cinzel',serif; font-size:14px; color: var(--gold); text-transform:uppercase; letter-spacing:.04em; margin-bottom:14px;}
+.dungeon-full-list{ display:flex; flex-direction:column; gap:6px; }
+.dungeon-full-list .drow{ display:flex; align-items:center; gap:10px; font-size:13px; padding:6px 8px; border-radius:4px; background: var(--bg-panel-raised); }
+.dungeon-full-list .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.dungeon-full-list .dot.on{ background: var(--ok); } .dungeon-full-list .dot.off{ background: var(--danger); }
+.dungeon-full-list .drow input[type=checkbox]{ margin-left:auto; accent-color: var(--class-color, var(--gold)); }
+.ilvl-table{ width:100%; border-collapse:collapse; font-size:12px; margin-top:12px; }
+.ilvl-table th{ text-align:left; color:var(--text-dim); text-transform:uppercase; font-size:10px; letter-spacing:.04em; padding:6px 4px; border-bottom:1px solid var(--hairline);}
+.ilvl-table td{ padding:6px 4px; border-bottom:1px solid var(--hairline); color:var(--text); }
+.bis-add{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+.bis-add input{ background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:4px; padding:8px 10px; font-size:12px; }
+.bis-add input.iname{ flex:1.2; min-width:120px; }
+.bis-add input.isource{ flex:1; min-width:120px; }
+.bis-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 14px; border-radius:4px; cursor:pointer; font-size:12px; }
+.bis-list{ display:flex; flex-direction:column; gap:6px; }
+.bis-row{ display:flex; align-items:center; gap:10px; background: var(--bg-panel-raised); padding:9px 10px; border-radius:4px; }
+.bis-row.collected{ opacity:.55; }
+.bis-row .bname{ font-weight:600; font-size:13px; flex:1; }
+.bis-row .bname.collected{ text-decoration:line-through; }
+.bis-row .bsource{ font-size:11px; color:var(--text-dim); flex:1; }
+.bis-row input[type=checkbox]{ accent-color: var(--class-color, var(--gold)); }
+.bis-row .bdel{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; }
+.bis-row .bdel:hover{ opacity:1; color:var(--danger); }
+.empty-note{ color:var(--text-dim); font-size:12px; }
+
+.todo-avatars{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+.avatar{
+  width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background: var(--bg-panel-raised); border:2px solid var(--class-color, var(--hairline)); color: var(--class-color, var(--text-dim));
+  font-size:11px; font-weight:700; cursor:pointer; text-transform:uppercase; transition: all .15s;
+}
+.avatar:hover{ opacity:.85; }
+.avatar.active{ background: var(--class-color, var(--gold)); color:#16141c; }
+.todo-add select{ background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:4px; padding:0 10px; font-size:13px; }
+.todo-owner{ font-size:10px; text-transform:uppercase; font-weight:700; letter-spacing:.03em; padding:2px 8px; border:1px solid currentColor; border-radius:3px; }
+
+.loading{ text-align:center; padding:60px 0; color:var(--text-dim); font-size:13px; }
+
+/* eventos card */
+.dash-top-row{ display:flex; justify-content:flex-end; margin-bottom:18px; }
+.events-card{
+  background: var(--bg-panel); border:1px solid var(--hairline); border-radius:6px; padding:16px 18px;
+  min-width: 260px; max-width: 360px;
+}
+.events-card .vtitle{ font-family:'Cinzel',serif; font-size:13px; color:var(--gold); text-transform:uppercase; letter-spacing:.04em; }
+.events-cols{ display:flex; gap:18px; }
+.events-col{ flex:1; }
+.events-col-title{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); font-weight:700; margin-bottom:8px; }
+.events-placeholder{ font-size:11px; color:var(--text-dim); font-style:italic; }
+
+/* quick nav in detail page */
+.detail-quicknav{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+.detail-quicknav button{
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text-dim);
+  padding:7px 14px; border-radius:20px; font-size:11px; font-weight:600; cursor:pointer; text-transform:uppercase; letter-spacing:.03em;
+  transition: all .15s;
+}
+.detail-quicknav button:hover{ border-color: var(--class-color, var(--gold)); color: var(--class-color, var(--gold)); }
+
+/* bulk upload modal */
+.upload-modal{ width: 440px; max-width: 92vw; max-height: 88vh; overflow-y:auto; }
+.upload-step{ margin-bottom:16px; }
+.upload-slot{
+  display:flex; align-items:center; gap:12px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
+  border-radius:6px; padding:12px; margin-bottom:10px;
+}
+.upload-slot .us-info{ flex:1; }
+.upload-slot .us-title{ font-size:12px; font-weight:700; color:var(--text); }
+.upload-slot .us-sub{ font-size:10px; color:var(--text-dim); margin-top:2px; }
+.upload-slot label.us-btn{
+  background: var(--bg-panel); border:1px dashed var(--hairline); color:var(--gold-dim); font-size:10px;
+  text-transform:uppercase; font-weight:700; padding:7px 10px; border-radius:4px; cursor:pointer; white-space:nowrap;
+}
+.upload-slot label.us-btn.filled{ border-style:solid; border-color: var(--ok); color: var(--ok); }
+.upload-slot input[type=file]{ display:none; }
+.upload-slot img.us-thumb{ width:36px; height:36px; border-radius:4px; object-fit:cover; }
+
+/* collapsible history */
+.hist-toggle{
+  display:block; margin-top:10px; font-size:11px; color: var(--gold-dim); cursor:pointer; text-align:center;
+  padding:6px; border-top:1px solid var(--hairline);
+}
+.hist-toggle:hover{ color: var(--gold); }
+.hist-toggle summary{ list-style:none; cursor:pointer; }
+.hist-toggle summary::-webkit-details-marker{ display:none; }
+
+/* currency icon */
+.curr-icon{ font-size:18px; width:24px; text-align:center; }
+
+/* login screen */
+#loginScreen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.login-box{
+  width:380px; max-width:100%; background: var(--bg-panel); border:1px solid var(--hairline);
+  border-radius:8px; padding:36px 32px; text-align:center;
+}
+.login-box .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; font-weight:600; }
+.login-box h1{ font-family: 'Cinzel', serif; font-weight: 900; font-size: 30px; color: var(--gold); margin-bottom: 28px; }
+.login-google-btn{
+  width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
+  background:#fff; color:#1f1f1f; border:none; border-radius:5px; padding:11px; font-size:14px; font-weight:600;
+  cursor:pointer; margin-bottom:20px; transition: opacity .15s;
+}
+.login-google-btn:hover{ opacity:.9; }
+.login-divider{ display:flex; align-items:center; gap:10px; color:var(--text-dim); font-size:11px; text-transform:uppercase; margin-bottom:18px; }
+.login-divider::before, .login-divider::after{ content:''; flex:1; height:1px; background: var(--hairline); }
+.login-box input{
+  width:100%; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text);
+  border-radius:4px; padding:11px 12px; font-size:14px; margin-bottom:12px; font-family:'Inter',sans-serif;
+}
+.login-submit-btn{
+  width:100%; background: var(--gold); border:none; color:#16141c; font-weight:700; padding:11px; border-radius:5px;
+  cursor:pointer; font-size:14px; margin-top:4px; margin-bottom:14px;
+}
+.login-toggle{ font-size:12px; color: var(--text-dim); }
+.login-toggle a{ color: var(--gold-dim); cursor:pointer; text-decoration:underline; }
+.login-error{ font-size:12px; color: var(--danger); margin-bottom:12px; min-height:16px; }
+.logout-btn{ background:none; border:1px solid var(--hairline); color:var(--text-dim); font-size:11px; padding:8px 12px; border-radius:4px; cursor:pointer; }
+.logout-btn:hover{ color: var(--danger); border-color: var(--danger); }
+.user-badge{ font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:8px; }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="eyebrow">Midnight · Season 2</div>
+    <h1>Season Tracker</h1>
+
+    <button class="login-google-btn" id="googleSignInBtn">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.08-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.97 10.72c-.18-.54-.28-1.11-.28-1.72s.1-1.18.28-1.72V4.95H.96C.35 6.17 0 7.55 0 9s.35 2.83.96 4.05l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+      Continuar com Google
+    </button>
+
+    <div class="login-divider">ou</div>
+
+    <div class="login-error" id="loginError"></div>
+    <input type="email" id="loginEmail" placeholder="E-mail">
+    <input type="password" id="loginPassword" placeholder="Senha">
+    <button class="login-submit-btn" id="loginSubmitBtn">Entrar</button>
+    <div class="login-toggle" id="loginToggleText">
+      Ainda não tem conta? <a id="loginToggleLink">Criar conta</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="mainApp" style="display:none;">
+  <header class="top">
+    <div class="title-block">
+      <div class="eyebrow">Midnight · Season 2</div>
+      <h1>Season Tracker</h1>
+    </div>
+    <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="reset-btn" id="uploadUpdateBtn">📤 Upload de Atualização</button>
+        <button class="reset-btn" id="demoDetailBtn" style="opacity:.85;">Exemplo de Detalhe</button>
+        <button class="reset-btn" id="resetWeekBtn">Reset Semanal</button>
+      </div>
+      <div class="user-badge">
+        <span id="userEmailLabel"></span>
+        <button class="logout-btn" id="logoutBtn">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="dashboard" class="active">Dashboard</button>
+    <button data-tab="todo">To-Do</button>
+    <button data-tab="mural">Mural</button>
+  </nav>
+
+  <section class="tab active" id="tab-dashboard">
+    <div class="dash-top-row">
+      <div class="events-card">
+        <div class="vtitle" style="margin-bottom:12px;">Eventos</div>
+        <div class="events-cols">
+          <div class="events-col">
+            <div class="events-col-title">Diários</div>
+            <div class="events-placeholder">Nenhum evento cadastrado ainda</div>
+          </div>
+          <div class="events-col">
+            <div class="events-col-title">Semanais</div>
+            <div class="events-placeholder">Nenhum evento cadastrado ainda</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="characters-grid"><div class="loading">Carregando...</div></div>
+    <div class="chart-panel">
+      <div class="chead">
+        <h2>Evolução</h2>
+        <div class="filter-group" id="rangeFilter">
+          <button data-range="7">7d</button>
+          <button data-range="30" class="active">30d</button>
+          <button data-range="90">90d</button>
+        </div>
+      </div>
+      <div class="chart-metric-toggle" id="metricToggle">
+        <button data-metric="ilvl" class="active">Item Level</button>
+        <button data-metric="ioscore">IOScore</button>
+      </div>
+      <div id="evoChart"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-todo">
+    <div class="todo-panel">
+      <div class="todo-avatars" id="todoAvatars"></div>
+      <div class="todo-add">
+        <select id="todoCharSelect"></select>
+        <input type="text" id="todoInput" placeholder="Adicionar novo objetivo...">
+        <button id="todoAddBtn">Adicionar</button>
+      </div>
+      <div id="todoList"></div>
+      <div class="tips-box">
+        <h3>Dicas</h3>
+        <div class="tip-add">
+          <input type="text" id="tipInput" placeholder="Adicionar nova dica...">
+          <button id="tipAddBtn">Adicionar</button>
+        </div>
+        <div id="tipsList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-mural">
+    <div class="mural-panel">
+      <h2>Mural</h2>
+      <div class="mural-sub">Espaço pra recado, elogio ou lembrete — pra quando precisar lembrar quem você é.</div>
+      <textarea class="mural-note" id="muralText" placeholder="Escreva aqui..."></textarea>
+
+      <div class="mural-upload">
+        <select id="uploadCharSelect"></select>
+        <label class="upload-btn">Enviar print<input type="file" id="uploadInput" accept="image/*"></label>
+        <span class="mural-sub" style="margin:0;">Marque o personagem antes de enviar o print do elogio.</span>
+      </div>
+
+      <div class="mural-filters">
+        <div><label>Personagem</label><select id="filterCharSelect"></select></div>
+        <div class="filter-group" id="sortFilter">
+          <button data-sort="newest" class="active">Mais novos</button>
+          <button data-sort="oldest">Mais antigos</button>
+        </div>
+      </div>
+
+      <div class="mural-grid" id="muralGrid"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-detail"></section>
+</div>
+
+<div class="modal-overlay" id="addCharModal" style="display:none;">
+  <div class="modal">
+    <h3>Novo Personagem</h3>
+    <label>Nome</label>
+    <input type="text" id="newCharName" placeholder="Ex: Rawthedk">
+    <label>Classe</label>
+    <select id="newCharClass"></select>
+    <div class="modal-actions">
+      <button class="cancel" id="cancelAddChar">Cancelar</button>
+      <button class="confirm" id="confirmAddChar">Criar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="uploadUpdateModal" style="display:none;">
+  <div class="modal upload-modal">
+    <h3>Upload de Atualização</h3>
+
+    <div class="upload-step">
+      <label>Personagem</label>
+      <select id="uuCharSelect"></select>
+      <div id="uuNewCharFields" style="display:none;">
+        <label>Nome do novo personagem</label>
+        <input type="text" id="uuNewCharName" placeholder="Ex: Rawthedk">
+        <label>Classe</label>
+        <select id="uuNewCharClass"></select>
+      </div>
+    </div>
+
+    <div class="upload-step">
+      <div class="upload-slot">
+        <div class="us-info">
+          <div class="us-title">1. Character</div>
+          <div class="us-sub">Print do painel do personagem (item level, itens, nome)</div>
+        </div>
+        <img class="us-thumb" id="uuThumb-character" style="display:none;">
+        <label class="us-btn" id="uuLabel-character">Upar<input type="file" accept="image/*" data-slot="character"></label>
+      </div>
+      <div class="upload-slot">
+        <div class="us-info">
+          <div class="us-title">2. SavedInstances</div>
+          <div class="us-sub">Dungeons, world boss e eventos feitos na semana (leitura automática ainda não disponível — fica como referência até definirmos o formato do addon nessa season)</div>
+        </div>
+        <img class="us-thumb" id="uuThumb-savedInstances" style="display:none;">
+        <label class="us-btn" id="uuLabel-savedInstances">Upar<input type="file" accept="image/*" data-slot="savedInstances"></label>
+      </div>
+      <div class="upload-slot">
+        <div class="us-info">
+          <div class="us-title">3. Great Vault</div>
+          <div class="us-sub">O que foi conquistado no vault dessa semana</div>
+        </div>
+        <img class="us-thumb" id="uuThumb-vault" style="display:none;">
+        <label class="us-btn" id="uuLabel-vault">Upar<input type="file" accept="image/*" data-slot="vault"></label>
+      </div>
+      <div class="upload-slot">
+        <div class="us-info">
+          <div class="us-title">4. Currency</div>
+          <div class="us-sub">Currencies atuais do personagem</div>
+        </div>
+        <img class="us-thumb" id="uuThumb-currency" style="display:none;">
+        <label class="us-btn" id="uuLabel-currency">Upar<input type="file" accept="image/*" data-slot="currency"></label>
+      </div>
+    </div>
+
+    <div class="mural-sub" style="margin-bottom:0;">Os prints ficam salvos como referência visual nesse personagem — a leitura automática dos números ainda não existe, você confere e atualiza os campos manualmente.</div>
+
+    <div class="modal-actions">
+      <button class="cancel" id="uuCancel">Cancelar</button>
+      <button class="confirm" id="uuSave">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="dtip" id="dungeonTip"></div>
+
+<div class="modal-overlay" id="imgLightbox" style="display:none;">
+  <img id="lightboxImg" style="max-width:90vw; max-height:90vh; border-radius:8px; border:1px solid var(--gold-dim);">
+</div>
+
+<div class="modal-overlay" id="confirmModal" style="display:none;">
+  <div class="modal">
+    <h3 id="confirmTitle">Confirmar ação</h3>
+    <div class="mural-sub" id="confirmMessage" style="margin-bottom:0;"></div>
+    <div class="modal-actions">
+      <button class="cancel" id="confirmCancelBtn">Cancelar</button>
+      <button class="confirm" id="confirmOkBtn" style="background:var(--danger); border-color:var(--danger); color:#fff;">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ FIREBASE SETUP ============
+   1. Crie um projeto em https://console.firebase.google.com
+   2. Ative Authentication > Sign-in method > Google e E-mail/senha
+   3. Crie um banco Firestore (modo produção) em Build > Firestore Database
+   4. Em Configurações do projeto > Geral, copie o "firebaseConfig" e cole abaixo
+   5. Em Authentication > Settings > Authorized domains, adicione o domínio do seu GitHub Pages
+   ========================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyDiJoTjZEtMIKIbtMYa8UVjU_4rkEMNmzk",
+  authDomain: "midnight-tracker-42314.firebaseapp.com",
+  projectId: "midnight-tracker-42314",
+  storageBucket: "midnight-tracker-42314.firebasestorage.app",
+  messagingSenderId: "960217516346",
+  appId: "1:960217516346:web:90d89429a109adee72a803"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+let currentUser = null;
+const memoryFallback = {};
+
+async function storageGet(key){
+  if(currentUser){
+    try{
+      const snap = await db.collection('users').doc(currentUser.uid).collection('data').doc(key).get();
+      if(!snap.exists) return null;
+      return { key, value: snap.data().value };
+    }catch(e){ console.error('storageGet error:', e); }
+  }
+  return (key in memoryFallback) ? { key, value: memoryFallback[key] } : null;
+}
+async function storageSet(key, value){
+  if(currentUser){
+    try{
+      await db.collection('users').doc(currentUser.uid).collection('data').doc(key).set({ value });
+      return { key, value };
+    }catch(e){ console.error('storageSet error:', e); }
+  }
+  memoryFallback[key] = value;
+  return { key, value };
+}
+
+/* ---------------- Auth UI ---------------- */
+let loginMode = 'login'; // 'login' | 'signup'
+function authErrorMessage(err){
+  const map = {
+    'auth/invalid-email': 'E-mail inválido.',
+    'auth/user-not-found': 'Não existe conta com esse e-mail.',
+    'auth/wrong-password': 'Senha incorreta.',
+    'auth/email-already-in-use': 'Já existe uma conta com esse e-mail.',
+    'auth/weak-password': 'A senha precisa ter pelo menos 6 caracteres.',
+    'auth/invalid-credential': 'E-mail ou senha incorretos.',
+    'auth/popup-closed-by-user': 'Login com Google cancelado.'
+  };
+  return map[err.code] || 'Não foi possível entrar. Tente de novo.';
+}
+document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+  document.getElementById('loginError').textContent = '';
+  try{ await auth.signInWithPopup(googleProvider); }
+  catch(err){ document.getElementById('loginError').textContent = authErrorMessage(err); }
+});
+document.getElementById('loginSubmitBtn').addEventListener('click', async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if(!email || !pass){ errEl.textContent = 'Preencha e-mail e senha.'; return; }
+  try{
+    if(loginMode === 'signup'){ await auth.createUserWithEmailAndPassword(email, pass); }
+    else{ await auth.signInWithEmailAndPassword(email, pass); }
+  }catch(err){ errEl.textContent = authErrorMessage(err); }
+});
+function toggleLoginMode(){
+  loginMode = loginMode === 'login' ? 'signup' : 'login';
+  document.getElementById('loginSubmitBtn').textContent = loginMode === 'signup' ? 'Criar conta' : 'Entrar';
+  document.getElementById('loginToggleText').innerHTML = loginMode === 'signup'
+    ? `Já tem conta? <a id="loginToggleLink">Entrar</a>`
+    : `Ainda não tem conta? <a id="loginToggleLink">Criar conta</a>`;
+  document.getElementById('loginToggleLink').addEventListener('click', toggleLoginMode);
+}
+document.getElementById('loginToggleLink').addEventListener('click', toggleLoginMode);
+document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
+
+auth.onAuthStateChanged((user) => {
+  currentUser = user;
+  if(user){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('userEmailLabel').textContent = user.email || user.displayName || '';
+    loadAll();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('mainApp').style.display = 'none';
+  }
+});
+
+const CLASS_HEX = {
+  "Death Knight": "#c41f3b", "Demon Hunter": "#a330c9", "Druid": "#ff7d0a",
+  "Evoker": "#33937f", "Hunter": "#aad372", "Mage": "#3fc7eb",
+  "Monk": "#00ff96", "Paladin": "#f48cba", "Priest": "#d9d9d9",
+  "Rogue": "#fff468", "Shaman": "#0070dd", "Warlock": "#8788ee", "Warrior": "#c69b6d"
+};
+const DUNGEON_POOL = ["Murder Row","Den of Noralakk","Altar of Fangs","Ruby Life Pools","Temple of Sethraliss","The Blinding Vale","Voidscar Arena","King's Rest"];
+const EVENT_POOL = ["Evento 1","Evento 2","Evento 3","Evento 4"];
+const DEFAULT_TODOS = [
+  {id:"t1", text:"Pegar quests semanais", done:false, charId:null},
+  {id:"t2", text:"Eventos ao redor do mundo", done:false, charId:null},
+  {id:"t3", text:"World Boss", done:false, charId:null},
+  {id:"t4", text:"M0", done:false, charId:null},
+  {id:"t5", text:"Nemesis(?) Delve Boss", done:false, charId:null}
+];
+const DEFAULT_TIPS = [
+  {id:"tip1", text:"Só faz delve se o item level ficar lixo depois disso aí tudo, senão não faz"},
+  {id:"tip2", text:"Guardar todos os crests champion dessa semana"},
+  {id:"tip3", text:"Adventurer e Veteran pode torar essa semana (obsoleto na próxima semana)"}
+];
+const DEFAULT_CHARS = [
+  {id:"c1", name:"Rawthedk", class:"Death Knight"},
+  {id:"c2", name:"Bludnymph", class:"Warrior"}
+];
+
+let state = { characters: [], todos: [], tips: [], mural: "", range: 30, metric: "ilvl", muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", todoFilterChar: "all" };
+let chart = null, detailChartInstance = null, currentDetailChar = null, detailRange = 30;
+
+function uid(){ return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+async function loadAll(){
+  let roster;
+  try{ roster = await storageGet('roster'); }catch(e){ roster = null; }
+  if(!roster){
+    state.characters = DEFAULT_CHARS.map(c => makeCharObj(c.id, c.name, c.class));
+    await storageSet('roster', JSON.stringify(state.characters.map(c=>c.id)));
+    for(const c of state.characters){ await storageSet('char:'+c.id, JSON.stringify(c)); }
+  } else {
+    const ids = JSON.parse(roster.value);
+    state.characters = [];
+    for(const id of ids){
+      try{ const r = await storageGet('char:'+id); if(r) state.characters.push(normalizeChar(JSON.parse(r.value))); }catch(e){}
+    }
+  }
+
+  let todos;
+  try{ todos = await storageGet('todos'); }catch(e){ todos = null; }
+  if(!todos){ state.todos = DEFAULT_TODOS; await storageSet('todos', JSON.stringify(state.todos)); }
+  else { state.todos = JSON.parse(todos.value); }
+
+  let tips;
+  try{ tips = await storageGet('tips'); }catch(e){ tips = null; }
+  if(!tips){ state.tips = DEFAULT_TIPS; await storageSet('tips', JSON.stringify(state.tips)); }
+  else { state.tips = JSON.parse(tips.value); }
+
+  let mural;
+  try{ mural = await storageGet('mural'); }catch(e){ mural = null; }
+  state.mural = mural ? mural.value : "";
+
+  let muralIdx;
+  try{ muralIdx = await storageGet('muralIndex'); }catch(e){ muralIdx = null; }
+  state.muralIndex = muralIdx ? JSON.parse(muralIdx.value) : [];
+  state.muralPosts = [];
+  for(const id of state.muralIndex){
+    try{ const r = await storageGet('muralPost:'+id); if(r) state.muralPosts.push(JSON.parse(r.value)); }catch(e){}
+  }
+
+  renderCharacters();
+  renderTodoAvatars();
+  renderTodos();
+  renderTips();
+  renderMural();
+  renderMuralFilters();
+  renderMuralGrid();
+  renderChart();
+}
+
+function normalizeChar(c){
+  if(!c.bis) c.bis = [];
+  if(!c.history) c.history = [];
+  if(typeof c.currency !== 'number') c.currency = 0;
+  if(c.vaultProof === undefined) c.vaultProof = null;
+  if(!c.currencies) c.currencies = [];
+  if(!c.proofs) c.proofs = { character: null, savedInstances: null, currency: null };
+  return c;
+}
+
+function makeCharObj(id, name, cls){
+  return {
+    id, name, class: cls, ilvl: 0, ioscore: 0,
+    dungeons: Object.fromEntries(DUNGEON_POOL.map(d=>[d,false])),
+    events: Object.fromEntries(EVENT_POOL.map(e=>[e,false])),
+    worldboss: false, highestKey: 0, currency: 0, vaultProof: null, currencies: [], history: [], bis: [],
+    proofs: { character: null, savedInstances: null, currency: null }
+  };
+}
+
+async function saveChar(c){ await storageSet('char:'+c.id, JSON.stringify(c)); }
+async function saveRoster(){ await storageSet('roster', JSON.stringify(state.characters.map(c=>c.id))); }
+function countDone(obj){ return Object.values(obj).filter(Boolean).length; }
+
+/* ---------------- Dashboard cards ---------------- */
+function renderCharacters(){
+  const grid = document.getElementById('characters-grid');
+  grid.innerHTML = '';
+  for(const c of state.characters){
+    const color = CLASS_HEX[c.class] || '#c8aa6e';
+    const dCount = countDone(c.dungeons), dTotal = DUNGEON_POOL.length;
+    const eCount = countDone(c.events), eTotal = EVENT_POOL.length;
+    const vaultFilled = [dCount>=2, dCount>=4, dCount>=8];
+
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.style.setProperty('--class-color', color);
+    card.innerHTML = `
+      <div class="char-head">
+        <div>
+          <div class="char-name">${c.name}</div>
+          <div class="char-class">${c.class}</div>
+        </div>
+        <div style="text-align:right;">
+          <button class="char-remove" title="Remover">✕</button>
+          <div class="open-hint">Ver detalhes →</div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><label>Item Level</label><input type="number" class="ilvl-input" value="${c.ilvl}"></div>
+        <div class="stat-box"><label>IOScore</label><input type="number" class="io-input" value="${c.ioscore}"></div>
+        <div class="stat-box"><label>Currency</label><input type="number" class="currency-input" value="${c.currency}"></div>
+      </div>
+      <div class="progress-list">
+        <div class="progress-item" data-hover="dungeon">
+          <div class="plabel"><span>Dungeons</span><span class="pcount">${dCount}/${dTotal}</span></div>
+          <div class="pbar-track"><div class="pbar-fill" style="width:${dTotal? (dCount/dTotal*100):0}%"></div></div>
+        </div>
+        <details class="progress-detail">
+          <summary class="progress-item">
+            <div class="plabel"><span>Eventos</span><span class="pcount">${eCount}/${eTotal}</span></div>
+            <div class="pbar-track"><div class="pbar-fill" style="width:${eTotal? (eCount/eTotal*100):0}%"></div></div>
+          </summary>
+          <div class="events-list">
+            ${EVENT_POOL.map(e => `<label class="${c.events[e]?'done':''}"><input type="checkbox" data-type="event" data-key="${e}" ${c.events[e]?'checked':''}> ${e}</label>`).join('')}
+          </div>
+        </details>
+      </div>
+      <div class="wb-row">
+        <span>World Boss</span>
+        <button class="wb-toggle ${c.worldboss?'done':''}" data-type="wb">${c.worldboss? 'Feito' : 'Pendente'}</button>
+      </div>
+      <div class="vault-box">
+        <div class="vtitle">Great Vault</div>
+        <div class="vault-slots">${vaultFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
+        <div class="vault-labels"><span>2/8</span><span>4/8</span><span>8/8</span></div>
+        <div class="vault-key"><span>Chave mais alta:</span><input type="number" class="key-input" value="${c.highestKey}"></div>
+      </div>
+    `;
+
+    // click card -> open detail (ignore clicks on interactive elements)
+    card.addEventListener('click', (e) => {
+      if(e.target.closest('input, button, .events-list, details')) return;
+      openDetail(c.id);
+    });
+
+    // dungeon hover balloon
+    const dHover = card.querySelector('[data-hover="dungeon"]');
+    dHover.addEventListener('mouseenter', (e) => showDungeonTip(c, e));
+    dHover.addEventListener('mousemove', (e) => positionTip(e));
+    dHover.addEventListener('mouseleave', hideDungeonTip);
+
+    card.querySelector('.char-remove').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if(!(await customConfirm(`Isso vai apagar ${c.name} e todo o progresso salvo dele.`, 'Remover personagem?'))) return;
+      state.characters = state.characters.filter(x => x.id !== c.id);
+      await saveRoster();
+      renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos();
+    });
+    card.querySelector('.ilvl-input').addEventListener('click', e => e.stopPropagation());
+    card.querySelector('.io-input').addEventListener('click', e => e.stopPropagation());
+    card.querySelector('.currency-input').addEventListener('click', e => e.stopPropagation());
+    card.querySelector('.key-input').addEventListener('click', e => e.stopPropagation());
+    card.querySelector('.ilvl-input').addEventListener('change', async (e) => { c.ilvl = Number(e.target.value)||0; pushHistory(c); await saveChar(c); renderChart(); });
+    card.querySelector('.io-input').addEventListener('change', async (e) => { c.ioscore = Number(e.target.value)||0; pushHistory(c); await saveChar(c); renderChart(); });
+    card.querySelector('.currency-input').addEventListener('change', async (e) => { c.currency = Number(e.target.value)||0; await saveChar(c); });
+    card.querySelector('.key-input').addEventListener('change', async (e) => { c.highestKey = Number(e.target.value)||0; await saveChar(c); });
+
+    card.querySelectorAll('input[data-type="event"]').forEach(cb => {
+      cb.addEventListener('click', e => e.stopPropagation());
+      cb.addEventListener('change', async (e) => { c.events[e.target.dataset.key] = e.target.checked; await saveChar(c); renderCharacters(); });
+    });
+    card.querySelector('.wb-toggle').addEventListener('click', async (e) => { e.stopPropagation(); c.worldboss = !c.worldboss; await saveChar(c); renderCharacters(); });
+
+    grid.appendChild(card);
+  }
+
+  const addCard = document.createElement('div');
+  addCard.className = 'add-char-card';
+  addCard.innerText = '+ Adicionar Personagem';
+  addCard.addEventListener('click', openAddCharModal);
+  grid.appendChild(addCard);
+}
+
+function pushHistory(c){
+  const today = todayStr();
+  const existing = c.history.find(h => h.date === today);
+  if(existing){ existing.ilvl = c.ilvl; existing.ioscore = c.ioscore; }
+  else{ c.history.push({date: today, ilvl: c.ilvl, ioscore: c.ioscore}); }
+}
+
+/* dungeon tooltip balloon */
+function showDungeonTip(c, evt){
+  const tip = document.getElementById('dungeonTip');
+  tip.innerHTML = `<div class="dtip-title">${c.name} — Dungeons</div>` +
+    DUNGEON_POOL.map(d => {
+      const on = !!c.dungeons[d];
+      return `<div class="drow"><span class="dot ${on?'on':'off'}"></span><span class="dname ${on?'on':'off'}">${d}</span></div>`;
+    }).join('');
+  tip.style.display = 'block';
+  positionTip(evt);
+}
+function positionTip(evt){
+  const tip = document.getElementById('dungeonTip');
+  let x = evt.clientX + 16, y = evt.clientY + 12;
+  const rect = tip.getBoundingClientRect();
+  if(x + rect.width > window.innerWidth - 10) x = evt.clientX - rect.width - 16;
+  if(y + rect.height > window.innerHeight - 10) y = evt.clientY - rect.height - 12;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+function hideDungeonTip(){ document.getElementById('dungeonTip').style.display = 'none'; }
+
+function openLightbox(src){
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('imgLightbox').style.display = 'flex';
+}
+document.getElementById('imgLightbox').addEventListener('click', () => {
+  document.getElementById('imgLightbox').style.display = 'none';
+});
+
+let _confirmResolve = null;
+function customConfirm(message, title){
+  return new Promise((resolve) => {
+    document.getElementById('confirmTitle').textContent = title || 'Confirmar ação';
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmModal').style.display = 'flex';
+    _confirmResolve = resolve;
+  });
+}
+document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+  document.getElementById('confirmModal').style.display = 'none';
+  if(_confirmResolve) _confirmResolve(false);
+});
+document.getElementById('confirmOkBtn').addEventListener('click', () => {
+  document.getElementById('confirmModal').style.display = 'none';
+  if(_confirmResolve) _confirmResolve(true);
+});
+
+function openAddCharModal(){
+  const sel = document.getElementById('newCharClass');
+  sel.innerHTML = Object.keys(CLASS_HEX).map(cl => `<option value="${cl}">${cl}</option>`).join('');
+  document.getElementById('newCharName').value = '';
+  document.getElementById('addCharModal').style.display = 'flex';
+}
+document.getElementById('cancelAddChar').addEventListener('click', () => { document.getElementById('addCharModal').style.display = 'none'; });
+document.getElementById('confirmAddChar').addEventListener('click', async () => {
+  const name = document.getElementById('newCharName').value.trim();
+  const cls = document.getElementById('newCharClass').value;
+  if(!name) return;
+  const c = makeCharObj(uid(), name, cls);
+  state.characters.push(c);
+  await saveChar(c); await saveRoster();
+  document.getElementById('addCharModal').style.display = 'none';
+  renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos();
+});
+
+let uuTempFiles = {};
+
+function openUploadUpdateModal(){
+  uuTempFiles = {};
+  const sel = document.getElementById('uuCharSelect');
+  sel.innerHTML = state.characters.map(c => `<option value="${c.id}">${c.name}</option>`).join('') +
+    `<option value="__new__">+ Adicionar novo personagem</option>`;
+  document.getElementById('uuNewCharFields').style.display = sel.value === '__new__' ? 'block' : 'none';
+  const newClsSel = document.getElementById('uuNewCharClass');
+  newClsSel.innerHTML = Object.keys(CLASS_HEX).map(cl => `<option value="${cl}">${cl}</option>`).join('');
+  document.getElementById('uuNewCharName').value = '';
+  ['character','savedInstances','vault','currency'].forEach(slot => {
+    const thumb = document.getElementById('uuThumb-'+slot);
+    const label = document.getElementById('uuLabel-'+slot);
+    thumb.style.display = 'none';
+    label.classList.remove('filled');
+    label.innerHTML = `Upar<input type="file" accept="image/*" data-slot="${slot}">`;
+    label.querySelector('input').addEventListener('change', handleUuFileChange);
+  });
+  document.getElementById('uploadUpdateModal').style.display = 'flex';
+}
+function handleUuFileChange(e){
+  const slot = e.target.dataset.slot;
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    uuTempFiles[slot] = reader.result;
+    const thumb = document.getElementById('uuThumb-'+slot);
+    const label = document.getElementById('uuLabel-'+slot);
+    thumb.src = reader.result;
+    thumb.style.display = 'block';
+    label.classList.add('filled');
+    label.childNodes[0].textContent = 'Trocar';
+  };
+  reader.readAsDataURL(file);
+}
+document.getElementById('uploadUpdateBtn').addEventListener('click', openUploadUpdateModal);
+document.getElementById('uuCharSelect').addEventListener('change', (e) => {
+  document.getElementById('uuNewCharFields').style.display = e.target.value === '__new__' ? 'block' : 'none';
+});
+document.getElementById('uuCancel').addEventListener('click', () => { document.getElementById('uploadUpdateModal').style.display = 'none'; });
+document.getElementById('uuSave').addEventListener('click', async () => {
+  const sel = document.getElementById('uuCharSelect');
+  let target;
+  if(sel.value === '__new__'){
+    const name = document.getElementById('uuNewCharName').value.trim();
+    if(!name){ alert('Dá um nome pro personagem novo antes de salvar.'); return; }
+    const cls = document.getElementById('uuNewCharClass').value;
+    target = makeCharObj(uid(), name, cls);
+    state.characters.push(target);
+    await saveRoster();
+  } else {
+    target = state.characters.find(c => c.id === sel.value);
+    if(!target) return;
+  }
+  if(uuTempFiles.character) target.proofs.character = uuTempFiles.character;
+  if(uuTempFiles.savedInstances) target.proofs.savedInstances = uuTempFiles.savedInstances;
+  if(uuTempFiles.vault) target.vaultProof = uuTempFiles.vault;
+  if(uuTempFiles.currency) target.proofs.currency = uuTempFiles.currency;
+  await saveChar(target);
+  document.getElementById('uploadUpdateModal').style.display = 'none';
+  renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos();
+});
+
+document.getElementById('demoDetailBtn').addEventListener('click', openDetailDemo);
+document.getElementById('resetWeekBtn').addEventListener('click', async () => {
+  const ok = await customConfirm('Isso vai zerar Dungeons, Eventos e World Boss de todos os personagens. Essa ação não pode ser desfeita.', 'Resetar progresso semanal?');
+  if(!ok) return;
+  for(const c of state.characters){
+    DUNGEON_POOL.forEach(d => c.dungeons[d] = false);
+    EVENT_POOL.forEach(e => c.events[e] = false);
+    c.worldboss = false;
+    await saveChar(c);
+  }
+  renderCharacters();
+});
+
+/* ---------------- Detail page ---------------- */
+function showDetailTab(){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+  document.getElementById('tab-detail').classList.add('active');
+}
+
+function openDetail(charId){
+  const c = state.characters.find(x => x.id === charId);
+  if(!c) return;
+  showDetailTab();
+  try{ renderDetail(c); }
+  catch(err){ console.error('Erro ao abrir detalhe do personagem:', err); alert('Ocorreu um erro ao abrir essa página. Abra o console do navegador (F12) e me mande a mensagem de erro que aparecer, pra eu corrigir.'); }
+}
+
+function buildMockChar(){
+  const dungeons = {}; DUNGEON_POOL.forEach((d,i)=> dungeons[d] = i % 2 === 0);
+  const events = {}; EVENT_POOL.forEach((e,i)=> events[e] = i < 2);
+  const history = [];
+  let ilvl = 298, io = 1180;
+  for(let i=20;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    if(i % 3 === 0){ ilvl += 2; io += 35; }
+    history.push({date: d.toISOString().slice(0,10), ilvl, ioscore: io});
+  }
+  return {
+    id:'demo', name:'Rawthedk', class:'Death Knight', ilvl, ioscore: io, currency: 4250, highestKey: 9,
+    dungeons, events, worldboss:true, history,
+    currencies: [
+      {id:'cu1', name:'Valorstones', amount: 620, icon:'🔶'},
+      {id:'cu2', name:'Weathered Crest', amount: 12, icon:'🟤'},
+      {id:'cu3', name:'Carved Crest', amount: 8, icon:'🔵'},
+      {id:'cu4', name:'Runed Crest', amount: 3, icon:'🟣'},
+      {id:'cu5', name:'Gilded Crest', amount: 1, icon:'🟡'},
+      {id:'cu6', name:'Gold', amount: 15400, icon:'🪙'}
+    ],
+    bis: [
+      {id:'b1', name:'Anel da Fúria Gelada', source:'Altar of Fangs (M+)', collected:true},
+      {id:'b2', name:'Elmo do Cavaleiro Sombrio', source:'Raid — Chefe 3', collected:false},
+      {id:'b3', name:"Machado Rúnico de King's Rest", source:"King's Rest (M+)", collected:false}
+    ]
+  };
+}
+function openDetailDemo(){
+  showDetailTab();
+  try{ renderDetail(buildMockChar()); }
+  catch(err){ console.error('Erro no exemplo de detalhe:', err); alert('Erro ao gerar o exemplo. Abra o console (F12) e me mande a mensagem.'); }
+}
+
+function renderDetail(c){
+  currentDetailChar = c;
+  const color = CLASS_HEX[c.class] || '#c8aa6e';
+  const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date));
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - detailRange);
+  const filteredHistory = sortedHistory.filter(h => new Date(h.date) >= cutoff);
+  const reversedHistory = filteredHistory.slice().reverse();
+  const dCount = countDone(c.dungeons), dTotal = DUNGEON_POOL.length;
+  const el = document.getElementById('tab-detail');
+  el.style.setProperty('--class-color', color);
+
+  const histPreview = reversedHistory.slice(0,1);
+  const histRest = reversedHistory.slice(1);
+  const rowsHtml = h => `<tr><td>${h.date}</td><td>${h.ilvl}</td><td>${h.ioscore}</td></tr>`;
+
+  const currPreview = c.currencies.slice(0,1);
+  const currRest = c.currencies.slice(1);
+  const currRow = cur => `
+    <div class="bis-row" data-id="${cur.id}">
+      <span class="curr-icon">${cur.icon || '🪙'}</span>
+      <span class="bname">${cur.name}</span>
+      <input type="number" class="camount-input" value="${cur.amount}" style="width:90px; background:var(--bg-panel); border:1px solid var(--hairline); color:var(--text); border-radius:4px; padding:4px 8px;">
+      <button class="cdel">✕</button>
+    </div>`;
+  const dungeonRow = d => `
+    <div class="drow">
+      <span class="dot ${c.dungeons[d]?'on':'off'}"></span>
+      <span>${d}</span>
+      <input type="checkbox" data-key="${d}" ${c.dungeons[d]?'checked':''}>
+    </div>`;
+  const dungeonPreview = DUNGEON_POOL.slice(0,1);
+  const dungeonRest = DUNGEON_POOL.slice(1);
+
+  el.innerHTML = `
+    <button class="detail-back" id="detailBack">← Voltar ao Dashboard</button>
+    <div class="detail-header" style="--class-color:${color}">
+      <div>
+        <h2 style="color:${color}">${c.name}</h2>
+        <div class="dclass">${c.class}</div>
+      </div>
+      <div class="detail-stats">
+        <div class="dstat"><div class="val">${c.ilvl}</div><div class="lbl">Item Level</div></div>
+        <div class="dstat"><div class="val">${c.ioscore}</div><div class="lbl">IOScore</div></div>
+        <div class="dstat"><div class="val">${c.highestKey}</div><div class="lbl">Chave mais alta</div></div>
+      </div>
+    </div>
+
+    <div class="detail-quicknav">
+      <button data-jump="section-dungeons">Dungeons</button>
+      <button data-jump="section-itemlevel">Item Level</button>
+      <button data-jump="section-currency">Currency</button>
+      <button data-jump="section-bis">BIS Gear</button>
+    </div>
+
+    <div class="detail-grid">
+      <div class="dpanel" id="section-dungeons">
+        <h3>Dungeons da Season (${dCount}/${dTotal})</h3>
+        <div class="dungeon-full-list" id="detailDungeonList">
+          ${dungeonPreview.map(dungeonRow).join('')}
+        </div>
+        ${dungeonRest.length ? `
+          <details class="hist-toggle">
+            <summary>Ver todas as dungeons (+${dungeonRest.length})</summary>
+            <div class="dungeon-full-list" style="margin-top:8px;">${dungeonRest.map(dungeonRow).join('')}</div>
+          </details>` : ''}
+      </div>
+      <div class="dpanel" id="section-itemlevel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+          <h3 style="margin:0;">Evolução de Item Level</h3>
+          <div class="filter-group" id="detailRangeFilter">
+            <button data-range="7" class="${detailRange===7?'active':''}">Dia</button>
+            <button data-range="30" class="${detailRange===30?'active':''}">Semana</button>
+            <button data-range="90" class="${detailRange===90?'active':''}">Mês</button>
+          </div>
+        </div>
+        <div id="detailChart"></div>
+        <table class="ilvl-table">
+          <thead><tr><th>Data</th><th>Item Level</th><th>IOScore</th></tr></thead>
+          <tbody>
+            ${histPreview.length ? histPreview.map(rowsHtml).join('') : `<tr><td colspan="3" class="empty-note">Sem registros nesse período — atualize o Item Level no card do personagem.</td></tr>`}
+          </tbody>
+        </table>
+        ${histRest.length ? `
+          <details class="hist-toggle">
+            <summary>Ver histórico completo (+${histRest.length})</summary>
+            <table class="ilvl-table" style="margin-top:8px;">
+              <tbody>${histRest.map(rowsHtml).join('')}</tbody>
+            </table>
+          </details>` : ''}
+      </div>
+    </div>
+
+    <div class="dpanel" id="section-currency">
+      <h3>Currency</h3>
+      <div class="bis-add">
+        <input type="text" class="iname" id="currName" placeholder="Nome (ex: Valorstones)">
+        <input type="number" class="isource" id="currAmount" placeholder="Quantidade">
+        <button id="currAddBtn">Adicionar</button>
+      </div>
+      <div class="bis-list" id="currencyList">
+        ${currPreview.length ? currPreview.map(currRow).join('') : `<div class="empty-note">Nenhuma currency cadastrada ainda. Adicione as que você quer acompanhar (Valorstones, Crests, Gold, etc).</div>`}
+      </div>
+      ${currRest.length ? `
+        <details class="hist-toggle">
+          <summary>Ver todas as currencies (+${currRest.length})</summary>
+          <div class="bis-list" id="currencyListRest" style="margin-top:8px;">${currRest.map(currRow).join('')}</div>
+        </details>` : ''}
+    </div>
+
+    <div class="dpanel" id="section-bis">
+      <h3>BIS Gear</h3>
+      <div class="bis-add">
+        <input type="text" class="iname" id="bisName" placeholder="Nome do item">
+        <input type="text" class="isource" id="bisSource" placeholder="Dungeon/Raid de onde dropa">
+        <button id="bisAddBtn">Adicionar</button>
+      </div>
+      <div class="bis-list" id="bisList">
+        ${c.bis.length ? c.bis.map(b => `
+          <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
+            <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
+            <span class="bname ${b.collected?'collected':''}">${b.name}</span>
+            <span class="bsource">${b.source}</span>
+            <button class="bdel">✕</button>
+          </div>`).join('') : `<div class="empty-note">Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.</div>`}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detailBack').addEventListener('click', () => {
+    document.getElementById('tab-detail').classList.remove('active');
+    document.getElementById('tab-dashboard').classList.add('active');
+    document.querySelector('nav.tabs button[data-tab="dashboard"]').classList.add('active');
+    renderCharacters();
+  });
+
+  el.querySelectorAll('.detail-quicknav button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.jump);
+      if(target) target.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+  });
+
+  document.getElementById('detailRangeFilter').addEventListener('click', (e) => {
+    if(e.target.tagName !== 'BUTTON') return;
+    detailRange = Number(e.target.dataset.range);
+    renderDetail(currentDetailChar);
+  });
+
+  el.querySelectorAll('#section-dungeons input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', async (e) => {
+      c.dungeons[e.target.dataset.key] = e.target.checked;
+      await saveChar(c);
+      renderDetail(c);
+      renderChart();
+    });
+  });
+
+  document.getElementById('currAddBtn').addEventListener('click', async () => {
+    const name = document.getElementById('currName').value.trim();
+    const amount = Number(document.getElementById('currAmount').value) || 0;
+    if(!name) return;
+    c.currencies.push({id: uid(), name, amount, icon: '🪙'});
+    await saveChar(c);
+    renderDetail(c);
+  });
+  el.querySelectorAll('#currencyList .bis-row, #currencyListRest .bis-row').forEach(row => {
+    const id = row.dataset.id;
+    const amountInput = row.querySelector('.camount-input');
+    if(amountInput){
+      amountInput.addEventListener('change', async (e) => {
+        const item = c.currencies.find(cur => cur.id === id);
+        item.amount = Number(e.target.value) || 0;
+        await saveChar(c);
+      });
+    }
+    const delBtn = row.querySelector('.cdel');
+    if(delBtn){
+      delBtn.addEventListener('click', async () => {
+        c.currencies = c.currencies.filter(cur => cur.id !== id);
+        await saveChar(c);
+        renderDetail(c);
+      });
+    }
+  });
+
+  document.getElementById('bisAddBtn').addEventListener('click', async () => {
+    const name = document.getElementById('bisName').value.trim();
+    const source = document.getElementById('bisSource').value.trim();
+    if(!name) return;
+    c.bis.push({id: uid(), name, source: source || '—', collected:false});
+    await saveChar(c);
+    renderDetail(c);
+  });
+  el.querySelectorAll('#bisList .bis-row').forEach(row => {
+    const id = row.dataset.id;
+    row.querySelector('.bis-check').addEventListener('change', async (e) => {
+      const item = c.bis.find(b => b.id === id);
+      item.collected = e.target.checked;
+      await saveChar(c);
+      renderDetail(c);
+    });
+    row.querySelector('.bdel').addEventListener('click', async () => {
+      c.bis = c.bis.filter(b => b.id !== id);
+      await saveChar(c);
+      renderDetail(c);
+    });
+  });
+
+  document.getElementById('detailChart').innerHTML = buildLineChartSVG(
+    [{ label:'Item Level', color, data: filteredHistory.map(h=>({x:h.date,y:h.ilvl})) }], 560, 190
+  );
+}
+
+/* ---------------- To-Do ---------------- */
+function renderTodoAvatars(){
+  const wrap = document.getElementById('todoAvatars');
+  const sel = document.getElementById('todoCharSelect');
+  let html = `<div class="avatar ${state.todoFilterChar==='all'?'active':''}" data-char="all" style="--class-color:var(--gold)" title="Todos">TDS</div>`;
+  html += state.characters.map(c => {
+    const color = CLASS_HEX[c.class] || '#c8aa6e';
+    return `<div class="avatar ${state.todoFilterChar===c.id?'active':''}" data-char="${c.id}" style="--class-color:${color}" title="${c.name}">${c.name.slice(0,2).toUpperCase()}</div>`;
+  }).join('');
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.avatar').forEach(av => {
+    av.addEventListener('click', () => { state.todoFilterChar = av.dataset.char; renderTodoAvatars(); renderTodos(); });
+  });
+  sel.innerHTML = `<option value="">Todos (compartilhado)</option>` + state.characters.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+function renderTodos(){
+  const list = document.getElementById('todoList');
+  list.innerHTML = '';
+  const visible = state.todos.filter(t => state.todoFilterChar === 'all' || !t.charId || t.charId === state.todoFilterChar);
+  for(const t of visible){
+    const owner = state.characters.find(c => c.id === t.charId);
+    const ownerColor = owner ? (CLASS_HEX[owner.class] || '#c8aa6e') : null;
+    const row = document.createElement('div');
+    row.className = 'todo-item' + (t.done ? ' done' : '');
+    row.innerHTML = `<input type="checkbox" ${t.done?'checked':''}><span>${t.text}</span>${owner ? `<span class="todo-owner" style="color:${ownerColor}">${owner.name}</span>` : ''}<button class="del">✕</button>`;
+    row.querySelector('input').addEventListener('change', async (e) => { t.done = e.target.checked; await storageSet('todos', JSON.stringify(state.todos)); renderTodos(); });
+    row.querySelector('.del').addEventListener('click', async () => { state.todos = state.todos.filter(x => x.id !== t.id); await storageSet('todos', JSON.stringify(state.todos)); renderTodos(); });
+    list.appendChild(row);
+  }
+}
+function renderTips(){
+  const list = document.getElementById('tipsList');
+  list.innerHTML = '';
+  state.tips.forEach((tip, idx) => {
+    const row = document.createElement('div');
+    row.className = 'tip-row';
+    row.innerHTML = `
+      <button class="tip-move" data-dir="up" ${idx===0?'disabled':''} title="Mover pra cima">↑</button>
+      <button class="tip-move" data-dir="down" ${idx===state.tips.length-1?'disabled':''} title="Mover pra baixo">↓</button>
+      <span class="tip-text">${tip.text}</span>
+      <button class="tip-del" title="Remover">✕</button>
+    `;
+    row.querySelectorAll('.tip-move').forEach(btn => {
+      btn.addEventListener('click', () => moveTip(idx, btn.dataset.dir));
+    });
+    row.querySelector('.tip-del').addEventListener('click', () => removeTip(idx));
+    list.appendChild(row);
+  });
+}
+document.getElementById('tipAddBtn').addEventListener('click', addTip);
+document.getElementById('tipInput').addEventListener('keydown', (e) => { if(e.key==='Enter') addTip(); });
+async function addTip(){
+  const input = document.getElementById('tipInput');
+  const text = input.value.trim();
+  if(!text) return;
+  state.tips.push({id: uid(), text});
+  await storageSet('tips', JSON.stringify(state.tips));
+  input.value = ''; renderTips();
+}
+async function removeTip(idx){
+  state.tips.splice(idx, 1);
+  await storageSet('tips', JSON.stringify(state.tips));
+  renderTips();
+}
+async function moveTip(idx, dir){
+  const swapWith = dir === 'up' ? idx - 1 : idx + 1;
+  if(swapWith < 0 || swapWith >= state.tips.length) return;
+  [state.tips[idx], state.tips[swapWith]] = [state.tips[swapWith], state.tips[idx]];
+  await storageSet('tips', JSON.stringify(state.tips));
+  renderTips();
+}
+document.getElementById('todoAddBtn').addEventListener('click', addTodo);
+document.getElementById('todoInput').addEventListener('keydown', (e) => { if(e.key==='Enter') addTodo(); });
+async function addTodo(){
+  const input = document.getElementById('todoInput');
+  const sel = document.getElementById('todoCharSelect');
+  const text = input.value.trim();
+  if(!text) return;
+  state.todos.push({id: uid(), text, done:false, charId: sel.value || null});
+  await storageSet('todos', JSON.stringify(state.todos));
+  input.value = ''; renderTodos();
+}
+
+/* ---------------- Mural ---------------- */
+function renderMural(){ document.getElementById('muralText').value = state.mural; }
+let muralTimer;
+document.getElementById('muralText').addEventListener('input', (e) => {
+  clearTimeout(muralTimer);
+  muralTimer = setTimeout(async () => { state.mural = e.target.value; await storageSet('mural', state.mural); }, 500);
+});
+
+function renderMuralFilters(){
+  const uploadSel = document.getElementById('uploadCharSelect');
+  const filterSel = document.getElementById('filterCharSelect');
+  uploadSel.innerHTML = state.characters.map(c => `<option value="${c.id}">${c.name}</option>`).join('') || `<option value="">Nenhum personagem</option>`;
+  filterSel.innerHTML = `<option value="all">Todos</option>` + state.characters.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  filterSel.value = state.muralFilterChar;
+}
+document.getElementById('filterCharSelect').addEventListener('change', (e) => { state.muralFilterChar = e.target.value; renderMuralGrid(); });
+document.getElementById('sortFilter').addEventListener('click', (e) => {
+  if(e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('#sortFilter button').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  state.muralSort = e.target.dataset.sort;
+  renderMuralGrid();
+});
+
+document.getElementById('uploadInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const charId = document.getElementById('uploadCharSelect').value;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const post = { id: uid(), charId, dataUrl: reader.result, ts: Date.now() };
+    try{
+      await storageSet('muralPost:'+post.id, JSON.stringify(post));
+      state.muralIndex.push(post.id);
+      await storageSet('muralIndex', JSON.stringify(state.muralIndex));
+      state.muralPosts.push(post);
+      renderMuralGrid();
+    }catch(err){
+      alert('Não foi possível salvar essa imagem (pode ser muito grande). Tente um print menor.');
+    }
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+});
+
+function renderMuralGrid(){
+  const grid = document.getElementById('muralGrid');
+  let posts = [...state.muralPosts];
+  if(state.muralFilterChar !== 'all') posts = posts.filter(p => p.charId === state.muralFilterChar);
+  posts.sort((a,b) => state.muralSort === 'newest' ? b.ts - a.ts : a.ts - b.ts);
+
+  if(!posts.length){ grid.innerHTML = `<div class="mural-empty">Nenhum print ainda. Envie um elogio acima!</div>`; return; }
+
+  grid.innerHTML = posts.map(p => {
+    const c = state.characters.find(x => x.id === p.charId);
+    const color = c ? (CLASS_HEX[c.class] || '#c8aa6e') : '#c8aa6e';
+    const name = c ? c.name : 'Desconhecido';
+    const date = new Date(p.ts).toLocaleDateString('pt-BR');
+    return `<div class="mural-card" style="--class-color:${color}" data-id="${p.id}">
+      <span class="mural-tag">${name}</span>
+      <button class="mdel" title="Remover">✕</button>
+      <img src="${p.dataUrl}">
+      <div class="mdate">${date}</div>
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.mdel').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.closest('.mural-card').dataset.id;
+      state.muralIndex = state.muralIndex.filter(x => x !== id);
+      state.muralPosts = state.muralPosts.filter(x => x.id !== id);
+      await storageSet('muralIndex', JSON.stringify(state.muralIndex));
+      renderMuralGrid();
+    });
+  });
+}
+
+/* ---------------- Chart (custom SVG, no external dependency) ---------------- */
+function buildLineChartSVG(datasets, w, h){
+  const padL = 46, padR = 14, padT = 14, padB = 26;
+  const allPoints = datasets.flatMap(d => d.data);
+  if(!allPoints.length){
+    return `<div class="empty-note" style="padding:34px 0; text-align:center;">Sem dados suficientes ainda — atualize os valores pra começar a ver a evolução aqui.</div>`;
+  }
+  const xs = [...new Set(allPoints.map(p => p.x))].sort();
+  const ys = allPoints.map(p => p.y);
+  let minY = Math.min(...ys), maxY = Math.max(...ys);
+  if(minY === maxY){ minY -= 1; maxY += 1; }
+  const yPad = (maxY - minY) * 0.12;
+  minY -= yPad; maxY += yPad;
+  const innerW = w - padL - padR, innerH = h - padT - padB;
+  const xScale = i => padL + (xs.length <= 1 ? innerW/2 : (i/(xs.length-1)) * innerW);
+  const yScale = v => padT + (1 - (v - minY)/(maxY - minY)) * innerH;
+
+  let gridSvg = '';
+  const gridCount = 4;
+  for(let i=0;i<=gridCount;i++){
+    const v = minY + (maxY-minY)*i/gridCount;
+    const y = yScale(v);
+    gridSvg += `<line x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}" stroke="#2a2a33" stroke-width="1"/>`;
+    gridSvg += `<text x="${padL-8}" y="${y+3}" text-anchor="end" font-size="9" fill="#9a978f" font-family="Inter,sans-serif">${Math.round(v)}</text>`;
+  }
+  const labelStep = Math.max(1, Math.ceil(xs.length / 6));
+  let xLabelsSvg = '';
+  xs.forEach((xVal,i) => {
+    if(i % labelStep === 0 || i === xs.length-1){
+      xLabelsSvg += `<text x="${xScale(i)}" y="${h-8}" text-anchor="middle" font-size="9" fill="#9a978f" font-family="Inter,sans-serif">${xVal.slice(5)}</text>`;
+    }
+  });
+  const DRAW_MS = 900;
+  let seriesSvg = '';
+  datasets.forEach((ds, dsIdx) => {
+    const pointMap = new Map(ds.data.map(p => [p.x, p.y]));
+    let path = '';
+    const orderedPoints = [];
+    xs.forEach((xVal,i) => {
+      if(pointMap.has(xVal)){
+        const x = xScale(i), y = yScale(pointMap.get(xVal));
+        path += (path ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+        orderedPoints.push({x,y});
+      }
+    });
+    if(path){
+      seriesSvg += `<path d="${path}" pathLength="1000" fill="none" stroke="${ds.color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="chart-line-path" style="stroke-dasharray:1000; stroke-dashoffset:1000; animation: chartDrawLine ${DRAW_MS}ms ease-out forwards;"/>`;
+    }
+    const n = orderedPoints.length;
+    orderedPoints.forEach((p,i) => {
+      const delay = n > 1 ? (i/(n-1)) * DRAW_MS : 0;
+      seriesSvg += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="${ds.color}" class="chart-point" style="animation: chartFadePoint 260ms ease-out forwards; animation-delay:${delay.toFixed(0)}ms;"/>`;
+    });
+  });
+
+  let legend = '';
+  if(datasets.length > 1){
+    legend = `<div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:10px;">` +
+      datasets.map(ds => `<span style="display:flex; align-items:center; gap:5px; font-size:11px; color:#9a978f;"><span style="width:9px;height:9px;border-radius:50%;background:${ds.color};display:inline-block;"></span>${ds.label}</span>`).join('') +
+      `</div>`;
+  }
+  const styleTag = `<style>
+    @keyframes chartDrawLine { to { stroke-dashoffset: 0; } }
+    @keyframes chartFadePoint { from { opacity:0; transform: scale(0); } to { opacity:1; transform: scale(1); } }
+    .chart-point{ opacity:0; transform-origin: center; transform-box: fill-box; }
+  </style>`;
+  return `${legend}<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none" style="overflow:visible; display:block;">${styleTag}${gridSvg}${xLabelsSvg}${seriesSvg}</svg>`;
+}
+
+function renderChart(){
+  const container = document.getElementById('evoChart');
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - state.range);
+  const datasets = state.characters.map(c => {
+    const color = CLASS_HEX[c.class] || '#c8aa6e';
+    const points = c.history.filter(h => new Date(h.date) >= cutoff).sort((a,b) => a.date.localeCompare(b.date))
+      .map(h => ({x: h.date, y: state.metric === 'ilvl' ? h.ilvl : h.ioscore}));
+    return { label: c.name, color, data: points };
+  });
+  container.innerHTML = buildLineChartSVG(datasets, 900, 220);
+}
+document.getElementById('rangeFilter').addEventListener('click', (e) => {
+  if(e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('#rangeFilter button').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  state.range = Number(e.target.dataset.range);
+  renderChart();
+});
+document.getElementById('metricToggle').addEventListener('click', (e) => {
+  if(e.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('#metricToggle button').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  state.metric = e.target.dataset.metric;
+  renderChart();
+});
+
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* loadAll() is now triggered by auth.onAuthStateChanged once a user is signed in */
+</script>
+</body>
+</html>
