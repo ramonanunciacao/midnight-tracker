@@ -37,7 +37,8 @@ header.top{
 }
 .title-block .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px; font-weight:600; }
 .title-block h1{ font-family: 'Metamorphous', serif; font-weight: 400; font-size: clamp(26px, 4vw, 40px); color: var(--gold); text-shadow: 0 0 20px rgba(159,232,60,0.45), 0 0 40px rgba(159,232,60,0.2); letter-spacing: .01em; }
-.title-block{ display:flex; align-items:center; gap:14px; }
+.title-block{ display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit; cursor:pointer; transition: opacity .15s; }
+.title-block:hover{ opacity:.85; }
 .app-logo{ height:56px; width:auto; display:block; filter: drop-shadow(0 0 10px rgba(159,232,60,0.4)); flex-shrink:0; }
 .reset-btn{
   background: linear-gradient(180deg, #1e1e26, #14141a); border: 1px solid var(--gold-dim); color: var(--gold);
@@ -396,17 +397,16 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 
 <div class="wrap" id="mainApp" style="display:none;">
   <header class="top">
-    <div class="title-block">
+    <a class="title-block" href="#" id="homeLink" aria-label="Ir para o início">
       <img class="app-logo" src="assets/midnight-logo.png" alt="Midnight — Curse of Ula'tek">
       <div>
         <div class="eyebrow">Midnight · Season 2</div>
         <h1>Season Tracker</h1>
       </div>
-    </div>
+    </a>
     <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <button class="reset-btn" id="uploadUpdateBtn">📤 Upload de Atualização</button>
-        <button class="reset-btn" id="demoDetailBtn" style="opacity:.85;">Exemplo de Detalhe</button>
         <button class="reset-btn" id="resetWeekBtn">Reset Semanal</button>
       </div>
       <div class="user-badge">
@@ -1031,7 +1031,6 @@ document.getElementById('uuSave').addEventListener('click', async () => {
   renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos();
 });
 
-document.getElementById('demoDetailBtn').addEventListener('click', openDetailDemo);
 document.getElementById('resetWeekBtn').addEventListener('click', async () => {
   const ok = await customConfirm('Isso vai zerar Dungeons, Eventos e World Boss de todos os personagens. Essa ação não pode ser desfeita.', 'Resetar progresso semanal?');
   if(!ok) return;
@@ -1059,40 +1058,6 @@ function openDetail(charId){
   catch(err){ console.error('Erro ao abrir detalhe do personagem:', err); alert('Ocorreu um erro ao abrir essa página. Abra o console do navegador (F12) e me mande a mensagem de erro que aparecer, pra eu corrigir.'); }
 }
 
-function buildMockChar(){
-  const dungeons = {}; DUNGEON_POOL.forEach((d,i)=> dungeons[d] = i % 2 === 0);
-  const events = {}; EVENT_POOL.forEach((e,i)=> events[e] = i < 2);
-  const history = [];
-  let ilvl = 298, io = 1180;
-  for(let i=20;i>=0;i--){
-    const d = new Date(); d.setDate(d.getDate()-i);
-    if(i % 3 === 0){ ilvl += 2; io += 35; }
-    history.push({date: d.toISOString().slice(0,10), ilvl, ioscore: io});
-  }
-  return {
-    id:'demo', name:'Rawthedk', class:'Death Knight', ilvl, ioscore: io, currency: 4250, highestKey: 9,
-    dungeons, events, worldboss:true, history,
-    currencies: [
-      {id:'cu1', name:'Valorstones', amount: 620, icon:'🔶'},
-      {id:'cu2', name:'Weathered Crest', amount: 12, icon:'🟤'},
-      {id:'cu3', name:'Carved Crest', amount: 8, icon:'🔵'},
-      {id:'cu4', name:'Runed Crest', amount: 3, icon:'🟣'},
-      {id:'cu5', name:'Gilded Crest', amount: 1, icon:'🟡'},
-      {id:'cu6', name:'Gold', amount: 15400, icon:'🪙'}
-    ],
-    bis: [
-      {id:'b1', name:'Anel da Fúria Gelada', source:'Altar of Fangs (M+)', collected:true},
-      {id:'b2', name:'Elmo do Cavaleiro Sombrio', source:'Raid — Chefe 3', collected:false},
-      {id:'b3', name:"Machado Rúnico de King's Rest", source:"King's Rest (M+)", collected:false}
-    ]
-  };
-}
-function openDetailDemo(){
-  showDetailTab();
-  try{ renderDetail(buildMockChar()); }
-  catch(err){ console.error('Erro no exemplo de detalhe:', err); alert('Erro ao gerar o exemplo. Abra o console (F12) e me mande a mensagem.'); }
-}
-
 function renderDetail(c){
   currentDetailChar = c;
   const color = CLASS_HEX[c.class] || '#9fe83c';
@@ -1112,6 +1077,13 @@ function renderDetail(c){
       <span class="bname">${cur.name}</span>
       <input type="number" class="camount-input" value="${cur.amount}" style="width:90px; background:var(--bg-panel); border:1px solid var(--hairline); color:var(--text); border-radius:4px; padding:4px 8px;">
       <button class="cdel">✕</button>
+    </div>`;
+  const bisRowHtml = b => `
+    <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
+      <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
+      <span class="bname ${b.collected?'collected':''}">${b.name}</span>
+      <span class="bsource">${b.source}</span>
+      <button class="bdel">✕</button>
     </div>`;
   const dungeonRow = d => `
     <div class="drow">
@@ -1143,7 +1115,7 @@ function renderDetail(c){
 
     <div class="detail-grid">
       <div class="dpanel" id="section-dungeons">
-        <h3>Dungeons da Season (${dCount}/${dTotal})</h3>
+        <h3 id="dungeonCount">Dungeons da Season (${dCount}/${dTotal})</h3>
         <details class="hist-toggle" open>
           <summary>Ver todas as dungeons (${dTotal})</summary>
           <div class="dungeon-full-list" id="detailDungeonList">
@@ -1181,9 +1153,9 @@ function renderDetail(c){
         <button id="currAddBtn">Adicionar</button>
       </div>
       <details class="hist-toggle" open>
-        <summary>Ver todas as currencies${c.currencies.length ? ` (${c.currencies.length})` : ''}</summary>
+        <summary id="currencyToggleLabel">Ver todas as currencies${c.currencies.length ? ` (${c.currencies.length})` : ''}</summary>
         <div class="bis-list" id="currencyList">
-          ${c.currencies.length ? c.currencies.map(currRow).join('') : `<div class="empty-note">Nenhuma currency cadastrada ainda. Adicione as que você quer acompanhar (Valorstones, Crests, Gold, etc).</div>`}
+          ${c.currencies.length ? c.currencies.map(currRow).join('') : `<div class="empty-note" id="currencyEmpty">Nenhuma currency cadastrada ainda. Adicione as que você quer acompanhar (Valorstones, Crests, Gold, etc).</div>`}
         </div>
       </details>
     </div>
@@ -1196,23 +1168,12 @@ function renderDetail(c){
         <button id="bisAddBtn">Adicionar</button>
       </div>
       <div class="bis-list" id="bisList">
-        ${c.bis.length ? c.bis.map(b => `
-          <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
-            <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
-            <span class="bname ${b.collected?'collected':''}">${b.name}</span>
-            <span class="bsource">${b.source}</span>
-            <button class="bdel">✕</button>
-          </div>`).join('') : `<div class="empty-note">Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.</div>`}
+        ${c.bis.length ? c.bis.map(bisRowHtml).join('') : `<div class="empty-note" id="bisEmpty">Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.</div>`}
       </div>
     </div>
   `;
 
-  document.getElementById('detailBack').addEventListener('click', () => {
-    document.getElementById('tab-detail').classList.remove('active');
-    document.getElementById('tab-dashboard').classList.add('active');
-    document.querySelector('nav.tabs button[data-tab="dashboard"]').classList.add('active');
-    renderCharacters();
-  });
+  document.getElementById('detailBack').addEventListener('click', goToDashboard);
 
   el.querySelectorAll('.detail-quicknav button').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1227,64 +1188,93 @@ function renderDetail(c){
     renderDetail(currentDetailChar);
   });
 
+  // Toggling a dungeon only patches its own dot + the section count — never rebuilds the panel or the chart.
   el.querySelectorAll('#section-dungeons input[type=checkbox]').forEach(cb => {
     cb.addEventListener('change', async (e) => {
-      c.dungeons[e.target.dataset.key] = e.target.checked;
+      const key = e.target.dataset.key;
+      c.dungeons[key] = e.target.checked;
       await saveChar(c);
-      renderDetail(c);
-      renderChart();
+      const dot = e.target.closest('.drow').querySelector('.dot');
+      dot.classList.toggle('on', e.target.checked);
+      dot.classList.toggle('off', !e.target.checked);
+      document.getElementById('dungeonCount').textContent = `Dungeons da Season (${countDone(c.dungeons)}/${dTotal})`;
     });
   });
 
-  document.getElementById('currAddBtn').addEventListener('click', async () => {
-    const name = document.getElementById('currName').value.trim();
-    const amount = Number(document.getElementById('currAmount').value) || 0;
-    if(!name) return;
-    c.currencies.push({id: uid(), name, amount, icon: '🪙'});
-    await saveChar(c);
-    renderDetail(c);
-  });
-  el.querySelectorAll('#currencyList .bis-row').forEach(row => {
+  function updateCurrencyToggleLabel(){
+    document.getElementById('currencyToggleLabel').textContent = c.currencies.length
+      ? `Ver todas as currencies (${c.currencies.length})` : 'Ver todas as currencies';
+  }
+  function bindCurrencyRow(row){
     const id = row.dataset.id;
-    const amountInput = row.querySelector('.camount-input');
-    if(amountInput){
-      amountInput.addEventListener('change', async (e) => {
-        const item = c.currencies.find(cur => cur.id === id);
-        item.amount = Number(e.target.value) || 0;
-        await saveChar(c);
-      });
-    }
-    const delBtn = row.querySelector('.cdel');
-    if(delBtn){
-      delBtn.addEventListener('click', async () => {
-        c.currencies = c.currencies.filter(cur => cur.id !== id);
-        await saveChar(c);
-        renderDetail(c);
-      });
-    }
+    row.querySelector('.camount-input').addEventListener('change', async (e) => {
+      const item = c.currencies.find(cur => cur.id === id);
+      item.amount = Number(e.target.value) || 0;
+      await saveChar(c);
+    });
+    row.querySelector('.cdel').addEventListener('click', async () => {
+      c.currencies = c.currencies.filter(cur => cur.id !== id);
+      await saveChar(c);
+      row.remove();
+      updateCurrencyToggleLabel();
+      if(!c.currencies.length){
+        document.getElementById('currencyList').innerHTML = `<div class="empty-note" id="currencyEmpty">Nenhuma currency cadastrada ainda. Adicione as que você quer acompanhar (Valorstones, Crests, Gold, etc).</div>`;
+      }
+    });
+  }
+  el.querySelectorAll('#currencyList .bis-row').forEach(bindCurrencyRow);
+  document.getElementById('currAddBtn').addEventListener('click', async () => {
+    const nameInput = document.getElementById('currName');
+    const amountInput = document.getElementById('currAmount');
+    const name = nameInput.value.trim();
+    const amount = Number(amountInput.value) || 0;
+    if(!name) return;
+    const cur = {id: uid(), name, amount, icon: '🪙'};
+    c.currencies.push(cur);
+    await saveChar(c);
+    const list = document.getElementById('currencyList');
+    const empty = document.getElementById('currencyEmpty');
+    if(empty) empty.remove();
+    list.insertAdjacentHTML('beforeend', currRow(cur));
+    bindCurrencyRow(list.querySelector(`[data-id="${cur.id}"]`));
+    updateCurrencyToggleLabel();
+    nameInput.value = ''; amountInput.value = '';
   });
 
-  document.getElementById('bisAddBtn').addEventListener('click', async () => {
-    const name = document.getElementById('bisName').value.trim();
-    const source = document.getElementById('bisSource').value.trim();
-    if(!name) return;
-    c.bis.push({id: uid(), name, source: source || '—', collected:false});
-    await saveChar(c);
-    renderDetail(c);
-  });
-  el.querySelectorAll('#bisList .bis-row').forEach(row => {
+  function bindBisRow(row){
     const id = row.dataset.id;
     row.querySelector('.bis-check').addEventListener('change', async (e) => {
       const item = c.bis.find(b => b.id === id);
       item.collected = e.target.checked;
       await saveChar(c);
-      renderDetail(c);
+      row.classList.toggle('collected', item.collected);
+      row.querySelector('.bname').classList.toggle('collected', item.collected);
     });
     row.querySelector('.bdel').addEventListener('click', async () => {
       c.bis = c.bis.filter(b => b.id !== id);
       await saveChar(c);
-      renderDetail(c);
+      row.remove();
+      if(!c.bis.length){
+        document.getElementById('bisList').innerHTML = `<div class="empty-note" id="bisEmpty">Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.</div>`;
+      }
     });
+  }
+  el.querySelectorAll('#bisList .bis-row').forEach(bindBisRow);
+  document.getElementById('bisAddBtn').addEventListener('click', async () => {
+    const nameInput = document.getElementById('bisName');
+    const sourceInput = document.getElementById('bisSource');
+    const name = nameInput.value.trim();
+    const source = sourceInput.value.trim();
+    if(!name) return;
+    const b = {id: uid(), name, source: source || '—', collected:false};
+    c.bis.push(b);
+    await saveChar(c);
+    const list = document.getElementById('bisList');
+    const empty = document.getElementById('bisEmpty');
+    if(empty) empty.remove();
+    list.insertAdjacentHTML('beforeend', bisRowHtml(b));
+    bindBisRow(list.querySelector(`[data-id="${b.id}"]`));
+    nameInput.value = ''; sourceInput.value = '';
   });
 
   document.getElementById('detailChart').innerHTML = buildLineChartSVG(
@@ -1550,8 +1540,19 @@ document.getElementById('metricToggle').addEventListener('click', (e) => {
 });
 
 /* ---------------- Tabs ---------------- */
+function goToDashboard(){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+  document.querySelector('nav.tabs button[data-tab="dashboard"]').classList.add('active');
+  document.getElementById('tab-dashboard').classList.add('active');
+  renderCharacters();
+  renderChart();
+}
+document.getElementById('homeLink').addEventListener('click', (e) => { e.preventDefault(); goToDashboard(); });
+
 document.querySelectorAll('nav.tabs button').forEach(btn => {
   btn.addEventListener('click', () => {
+    if(btn.dataset.tab === 'dashboard'){ goToDashboard(); return; }
     document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
