@@ -8,17 +8,17 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Metamorphous&family=Inter:wght@400;500;600;700&display=swap');
 
 :root{
-  --bg: #0b0b0e;
-  --bg-panel: #131318;
-  --bg-panel-raised: #1a1a21;
-  --hairline: #2a2a33;
-  --gold: #c8aa6e;
-  --gold-dim: #8a7550;
+  --bg: #0b0e0a;
+  --bg-panel: #12160f;
+  --bg-panel-raised: #191f14;
+  --hairline: #2a3324;
+  --gold: #9fe83c;
+  --gold-dim: #5f8f2e;
   --text: #e8e6df;
-  --text-dim: #9a978f;
+  --text-dim: #94a186;
   --danger: #c0392b;
   --ok: #4a9b5e;
   --dk: #c41f3b; --dh: #a330c9; --druid: #ff7d0a; --evoker: #33937f; --hunter: #aad372;
@@ -27,7 +27,7 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 body{
-  background: radial-gradient(ellipse at top, #16141c 0%, var(--bg) 55%), var(--bg);
+  background: radial-gradient(ellipse at top, #16220f 0%, var(--bg) 55%), var(--bg);
   color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 32px 20px 80px;
 }
 .wrap{ max-width: 1100px; margin: 0 auto; }
@@ -36,7 +36,9 @@ header.top{
   border-bottom: 1px solid var(--hairline); padding-bottom: 20px; margin-bottom: 24px;
 }
 .title-block .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px; font-weight:600; }
-.title-block h1{ font-family: 'Cinzel', serif; font-weight: 900; font-size: clamp(28px, 4vw, 42px); color: var(--gold); text-shadow: 0 0 24px rgba(200,170,110,0.25); }
+.title-block h1{ font-family: 'Metamorphous', serif; font-weight: 400; font-size: clamp(26px, 4vw, 40px); color: var(--gold); text-shadow: 0 0 20px rgba(159,232,60,0.45), 0 0 40px rgba(159,232,60,0.2); letter-spacing: .01em; }
+.title-block{ display:flex; align-items:center; gap:14px; }
+.app-logo{ height:56px; width:auto; display:block; filter: drop-shadow(0 0 10px rgba(159,232,60,0.4)); flex-shrink:0; }
 .reset-btn{
   background: linear-gradient(180deg, #1e1e26, #14141a); border: 1px solid var(--gold-dim); color: var(--gold);
   font-weight: 600; font-size: 13px; padding: 11px 18px; border-radius: 4px; cursor: pointer;
@@ -337,7 +339,9 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
   border-radius:8px; padding:36px 32px; text-align:center;
 }
 .login-box .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; font-weight:600; }
-.login-box h1{ font-family: 'Cinzel', serif; font-weight: 900; font-size: 30px; color: var(--gold); margin-bottom: 28px; }
+.login-box h1{ font-family: 'Metamorphous', serif; font-weight: 400; font-size: 28px; color: var(--gold); margin-bottom: 20px; text-shadow: 0 0 20px rgba(159,232,60,0.45), 0 0 40px rgba(159,232,60,0.2); }
+.login-logo{ width: 240px; max-width: 85%; display:block; margin: 0 auto 18px; filter: drop-shadow(0 0 22px rgba(159,232,60,0.35)); }
+.login-box{ box-shadow: 0 0 60px -20px rgba(159,232,60,0.15); }
 .login-google-btn{
   width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
   background:#fff; color:#1f1f1f; border:none; border-radius:5px; padding:11px; font-size:14px; font-weight:600;
@@ -366,6 +370,7 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 
 <div id="loginScreen">
   <div class="login-box">
+    <img class="login-logo" src="assets/midnight-logo.png" alt="World of Warcraft: Midnight — Curse of Ula'tek">
     <div class="eyebrow">Midnight · Season 2</div>
     <h1>Season Tracker</h1>
 
@@ -389,8 +394,11 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 <div class="wrap" id="mainApp" style="display:none;">
   <header class="top">
     <div class="title-block">
-      <div class="eyebrow">Midnight · Season 2</div>
-      <h1>Season Tracker</h1>
+      <img class="app-logo" src="assets/midnight-logo.png" alt="Midnight — Curse of Ula'tek">
+      <div>
+        <div class="eyebrow">Midnight · Season 2</div>
+        <h1>Season Tracker</h1>
+      </div>
     </div>
     <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -788,7 +796,7 @@ function renderCharacters(){
   const grid = document.getElementById('characters-grid');
   grid.innerHTML = '';
   for(const c of state.characters){
-    const color = CLASS_HEX[c.class] || '#c8aa6e';
+    const color = CLASS_HEX[c.class] || '#9fe83c';
     const dCount = countDone(c.dungeons), dTotal = DUNGEON_POOL.length;
     const eCount = countDone(c.events), eTotal = EVENT_POOL.length;
     const vaultFilled = [dCount>=2, dCount>=4, dCount>=8];
@@ -1084,7 +1092,7 @@ function openDetailDemo(){
 
 function renderDetail(c){
   currentDetailChar = c;
-  const color = CLASS_HEX[c.class] || '#c8aa6e';
+  const color = CLASS_HEX[c.class] || '#9fe83c';
   const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date));
   const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - detailRange);
   const filteredHistory = sortedHistory.filter(h => new Date(h.date) >= cutoff);
@@ -1301,7 +1309,7 @@ function renderTodoAvatars(){
   const sel = document.getElementById('todoCharSelect');
   let html = `<div class="avatar ${state.todoFilterChar==='all'?'active':''}" data-char="all" style="--class-color:var(--gold)" title="Todos">TDS</div>`;
   html += state.characters.map(c => {
-    const color = CLASS_HEX[c.class] || '#c8aa6e';
+    const color = CLASS_HEX[c.class] || '#9fe83c';
     return `<div class="avatar ${state.todoFilterChar===c.id?'active':''}" data-char="${c.id}" style="--class-color:${color}" title="${c.name}">${c.name.slice(0,2).toUpperCase()}</div>`;
   }).join('');
   wrap.innerHTML = html;
@@ -1317,7 +1325,7 @@ function renderTodos(){
   const visible = state.todos.filter(t => state.todoFilterChar === 'all' || !t.charId || t.charId === state.todoFilterChar);
   for(const t of visible){
     const owner = state.characters.find(c => c.id === t.charId);
-    const ownerColor = owner ? (CLASS_HEX[owner.class] || '#c8aa6e') : null;
+    const ownerColor = owner ? (CLASS_HEX[owner.class] || '#9fe83c') : null;
     const row = document.createElement('div');
     row.className = 'todo-item' + (t.done ? ' done' : '');
     row.innerHTML = `<input type="checkbox" ${t.done?'checked':''}><span>${t.text}</span>${owner ? `<span class="todo-owner" style="color:${ownerColor}">${owner.name}</span>` : ''}<button class="del">✕</button>`;
@@ -1434,7 +1442,7 @@ function renderMuralGrid(){
 
   grid.innerHTML = posts.map(p => {
     const c = state.characters.find(x => x.id === p.charId);
-    const color = c ? (CLASS_HEX[c.class] || '#c8aa6e') : '#c8aa6e';
+    const color = c ? (CLASS_HEX[c.class] || '#9fe83c') : '#9fe83c';
     const name = c ? c.name : 'Desconhecido';
     const date = new Date(p.ts).toLocaleDateString('pt-BR');
     return `<div class="mural-card" style="--class-color:${color}" data-id="${p.id}">
@@ -1530,7 +1538,7 @@ function renderChart(){
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - state.range);
   const datasets = state.characters.map(c => {
-    const color = CLASS_HEX[c.class] || '#c8aa6e';
+    const color = CLASS_HEX[c.class] || '#9fe83c';
     const points = c.history.filter(h => new Date(h.date) >= cutoff).sort((a,b) => a.date.localeCompare(b.date))
       .map(h => ({x: h.date, y: state.metric === 'ilvl' ? h.ilvl : h.ioscore}));
     return { label: c.name, color, data: points };
