@@ -194,6 +194,19 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .modal-actions button{ flex:1; padding:9px; border-radius:4px; border:1px solid var(--hairline); cursor:pointer; font-weight:600; font-size:12px; text-transform:uppercase; }
 .modal-actions .confirm{ background: var(--gold); border-color: var(--gold); color:#16141c; }
 .modal-actions .cancel{ background:none; color: var(--text-dim); }
+.realm-search-results{
+  display:none; position:absolute; left:0; right:0; top:100%; z-index:20; margin-top:4px;
+  background: var(--bg-panel-raised); border:1px solid var(--gold-dim); border-radius:6px;
+  max-height:220px; overflow-y:auto; box-shadow: 0 10px 24px rgba(0,0,0,.5);
+}
+.realm-search-results.open{ display:block; }
+.realm-search-row{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px; cursor:pointer; font-size:13px; color:var(--text); border-bottom:1px solid var(--hairline); }
+.realm-search-row:last-child{ border-bottom:none; }
+.realm-search-row:hover{ background: var(--bg-panel); }
+.realm-search-row .realm-region-tag{ font-size:10px; text-transform:uppercase; color:var(--gold-dim); font-weight:700; flex-shrink:0; }
+.add-char-status{ font-size:12px; margin-top:10px; min-height:16px; color:var(--text-dim); }
+.add-char-status.error{ color:var(--danger); }
+.add-char-status.loading{ color:var(--gold-dim); }
 
 /* todo */
 .todo-panel, .mural-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:6px; padding:22px; }
@@ -609,12 +622,18 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
   <div class="modal">
     <h3 data-i18n="newCharTitle">Novo Personagem</h3>
     <label data-i18n="name">Nome</label>
-    <input type="text" id="newCharName" placeholder="Ex: Rawthedk">
-    <label data-i18n="class">Classe</label>
-    <select id="newCharClass"></select>
+    <input type="text" id="newCharName" placeholder="Ex: Rawthedk" autocomplete="off">
+    <label data-i18n="realmLabel">Reino</label>
+    <div style="position:relative;">
+      <input type="text" id="newCharRealm" placeholder="Ex: Twisting Nether" autocomplete="off">
+      <input type="hidden" id="newCharRealmSlug" value="">
+      <input type="hidden" id="newCharRegion" value="">
+      <div class="realm-search-results" id="realmSearchResults"></div>
+    </div>
+    <div class="add-char-status" id="addCharStatus"></div>
     <div class="modal-actions">
       <button class="cancel" id="cancelAddChar" data-i18n="cancel">Cancelar</button>
-      <button class="confirm" id="confirmAddChar" data-i18n="create">Criar</button>
+      <button class="confirm" id="confirmAddChar" data-i18n="searchAndAdd">Buscar e Adicionar</button>
     </div>
   </div>
 </div>
@@ -698,6 +717,8 @@ const I18N = {
     muralWritePlaceholder: "Escreva aqui...", muralSendNote: "Enviar Recado", muralSendPrint: "Enviar print",
     sortNewest: "Mais novos", sortOldest: "Mais antigos",
     newCharTitle: "Novo Personagem", name: "Nome", class: "Classe", cancel: "Cancelar", create: "Criar",
+    realmLabel: "Reino", searchAndAdd: "Buscar e Adicionar", charSearching: "Buscando personagem no Raider.IO...",
+    charNotFound: "Personagem não encontrado. Confira o nome e o reino.", selectRealmFirst: "Escolha um reino da lista.",
     confirmActionTitle: "Confirmar ação", confirm: "Confirmar",
     addCharacterBtn: "+ Adicionar Personagem",
     removeCharTitle: "Remover personagem?",
@@ -765,6 +786,8 @@ const I18N = {
     muralWritePlaceholder: "Write here...", muralSendNote: "Send Note", muralSendPrint: "Send Screenshot",
     sortNewest: "Newest", sortOldest: "Oldest",
     newCharTitle: "New Character", name: "Name", class: "Class", cancel: "Cancel", create: "Create",
+    realmLabel: "Realm", searchAndAdd: "Search and Add", charSearching: "Searching character on Raider.IO...",
+    charNotFound: "Character not found. Check the name and realm.", selectRealmFirst: "Pick a realm from the list.",
     confirmActionTitle: "Confirm action", confirm: "Confirm",
     addCharacterBtn: "+ Add Character",
     removeCharTitle: "Remove character?",
@@ -952,6 +975,568 @@ function classIconUrl(cls){
   const slug = CLASS_ICON_SLUG[cls];
   return slug ? `https://wow.zamimg.com/images/wow/icons/medium/classicon_${slug}.jpg` : '';
 }
+/* [name, slug, region] — sourced from Blizzard's realm index API (us/eu/kr/tw), internal/technical realm entries filtered out */
+const REALM_LIST = [
+  ["Aegwynn","aegwynn","eu"],
+  ["Aerie Peak","aerie-peak","eu"],
+  ["Agamaggan","agamaggan","eu"],
+  ["Aggra (Português)","aggra-português","eu"],
+  ["Aggramar","aggramar","eu"],
+  ["Ahn'Qiraj","ahnqiraj","eu"],
+  ["Al'Akir","alakir","eu"],
+  ["Alexstrasza","alexstrasza","eu"],
+  ["Alleria","alleria","eu"],
+  ["Alonsus","alonsus","eu"],
+  ["Aman'Thul","amanthul","eu"],
+  ["Ambossar","ambossar","eu"],
+  ["Anachronos","anachronos","eu"],
+  ["Anetheron","anetheron","eu"],
+  ["Antonidas","antonidas","eu"],
+  ["Anub'arak","anubarak","eu"],
+  ["Arak-arahm","arakarahm","eu"],
+  ["Arathi","arathi","eu"],
+  ["Arathor","arathor","eu"],
+  ["Archimonde","archimonde","eu"],
+  ["Area 52","area-52","eu"],
+  ["Argent Dawn","argent-dawn","eu"],
+  ["Arthas","arthas","eu"],
+  ["Arygos","arygos","eu"],
+  ["Ashenvale","ashenvale","eu"],
+  ["Aszune","aszune","eu"],
+  ["Auchindoun","auchindoun","eu"],
+  ["Azjol-Nerub","azjolnerub","eu"],
+  ["Azshara","azshara","eu"],
+  ["Azuregos","azuregos","eu"],
+  ["Azuremyst","azuremyst","eu"],
+  ["Baelgun","baelgun","eu"],
+  ["Balnazzar","balnazzar","eu"],
+  ["Blackhand","blackhand","eu"],
+  ["Blackmoore","blackmoore","eu"],
+  ["Blackrock","blackrock","eu"],
+  ["Blackscar","blackscar","eu"],
+  ["Bladefist","bladefist","eu"],
+  ["Blade's Edge","blades-edge","eu"],
+  ["Bloodfeather","bloodfeather","eu"],
+  ["Bloodhoof","bloodhoof","eu"],
+  ["Bloodscalp","bloodscalp","eu"],
+  ["Blutkessel","blutkessel","eu"],
+  ["Booty Bay","booty-bay","eu"],
+  ["Borean Tundra","borean-tundra","eu"],
+  ["Boulderfist","boulderfist","eu"],
+  ["Bronze Dragonflight","bronze-dragonflight","eu"],
+  ["Bronzebeard","bronzebeard","eu"],
+  ["Burning Blade","burning-blade","eu"],
+  ["Burning Legion","burning-legion","eu"],
+  ["Burning Steppes","burning-steppes","eu"],
+  ["Chamber of Aspects","chamber-of-aspects","eu"],
+  ["Chants éternels","chants-éternels","eu"],
+  ["Cho'gall","chogall","eu"],
+  ["Chromaggus","chromaggus","eu"],
+  ["Colinas Pardas","colinas-pardas","eu"],
+  ["Confrérie du Thorium","confrérie-du-thorium","eu"],
+  ["Conseil des Ombres","conseil-des-ombres","eu"],
+  ["Crushridge","crushridge","eu"],
+  ["C'Thun","cthun","eu"],
+  ["Culte de la Rive noire","culte-de-la-rive-noire","eu"],
+  ["Daggerspine","daggerspine","eu"],
+  ["Dalaran","dalaran","eu"],
+  ["Dalvengyr","dalvengyr","eu"],
+  ["Darkmoon Faire","darkmoon-faire","eu"],
+  ["Darksorrow","darksorrow","eu"],
+  ["Darkspear","darkspear","eu"],
+  ["Das Konsortium","das-konsortium","eu"],
+  ["Das Syndikat","das-syndikat","eu"],
+  ["Deathguard","deathguard","eu"],
+  ["Deathweaver","deathweaver","eu"],
+  ["Deathwing","deathwing","eu"],
+  ["Deepholm","deepholm","eu"],
+  ["Defias Brotherhood","defias-brotherhood","eu"],
+  ["Dentarg","dentarg","eu"],
+  ["Der abyssische Rat","der-abyssische-rat","eu"],
+  ["Der Mithrilorden","der-mithrilorden","eu"],
+  ["Der Rat von Dalaran","der-rat-von-dalaran","eu"],
+  ["Destromath","destromath","eu"],
+  ["Dethecus","dethecus","eu"],
+  ["Die Aldor","die-aldor","eu"],
+  ["Die Arguswacht","die-arguswacht","eu"],
+  ["Die ewige Wacht","die-ewige-wacht","eu"],
+  ["Die Nachtwache","die-nachtwache","eu"],
+  ["Die Silberne Hand","die-silberne-hand","eu"],
+  ["Die Todeskrallen","die-todeskrallen","eu"],
+  ["Doomhammer","doomhammer","eu"],
+  ["Draenor","draenor","eu"],
+  ["Dragonblight","dragonblight","eu"],
+  ["Dragonmaw","dragonmaw","eu"],
+  ["Drak'thul","drakthul","eu"],
+  ["Drek'Thar","drekthar","eu"],
+  ["Dun Modr","dun-modr","eu"],
+  ["Dun Morogh","dun-morogh","eu"],
+  ["Dunemaul","dunemaul","eu"],
+  ["Durotan","durotan","eu"],
+  ["Earthen Ring","earthen-ring","eu"],
+  ["Echsenkessel","echsenkessel","eu"],
+  ["Eitrigg","eitrigg","eu"],
+  ["Eldre'Thalas","eldrethalas","eu"],
+  ["Elune","elune","eu"],
+  ["Emerald Dream","emerald-dream","eu"],
+  ["Emeriss","emeriss","eu"],
+  ["Eonar","eonar","eu"],
+  ["Eredar","eredar","eu"],
+  ["EU Arena Pass CSBG","eu-arena-pass-csbg","eu"],
+  ["EU Arena Pass CSBG 2","eu-arena-pass-csbg-2","eu"],
+  ["Eversong","eversong","eu"],
+  ["Executus","executus","eu"],
+  ["Exodar","exodar","eu"],
+  ["Festung der Stürme","festung-der-stürme","eu"],
+  ["Fordragon","fordragon","eu"],
+  ["Forscherliga","forscherliga","eu"],
+  ["Frostmane","frostmane","eu"],
+  ["Frostmourne","frostmourne","eu"],
+  ["Frostwhisper","frostwhisper","eu"],
+  ["Frostwolf","frostwolf","eu"],
+  ["Galakrond","galakrond","eu"],
+  ["Garona","garona","eu"],
+  ["Garrosh","garrosh","eu"],
+  ["Genjuros","genjuros","eu"],
+  ["Ghostlands","ghostlands","eu"],
+  ["Gilneas","gilneas","eu"],
+  ["Goldrinn","goldrinn","eu"],
+  ["Gordunni","gordunni","eu"],
+  ["Gorgonnash","gorgonnash","eu"],
+  ["Greymane","greymane","eu"],
+  ["Grim Batol","grim-batol","eu"],
+  ["Grom","grom","eu"],
+  ["Gul'dan","guldan","eu"],
+  ["Hakkar","hakkar","eu"],
+  ["Haomarush","haomarush","eu"],
+  ["Hellfire","hellfire","eu"],
+  ["Hellscream","hellscream","eu"],
+  ["Howling Fjord","howling-fjord","eu"],
+  ["Hyjal","hyjal","eu"],
+  ["Illidan","illidan","eu"],
+  ["Jaedenar","jaedenar","eu"],
+  ["Kael'thas","kaelthas","eu"],
+  ["Karazhan","karazhan","eu"],
+  ["Kargath","kargath","eu"],
+  ["Kazzak","kazzak","eu"],
+  ["Kel'Thuzad","kelthuzad","eu"],
+  ["Khadgar","khadgar","eu"],
+  ["Khaz Modan","khaz-modan","eu"],
+  ["Khaz'goroth","khazgoroth","eu"],
+  ["Kil'jaeden","kiljaeden","eu"],
+  ["Kilrogg","kilrogg","eu"],
+  ["Kirin Tor","kirin-tor","eu"],
+  ["Kor'gall","korgall","eu"],
+  ["Krag'jin","kragjin","eu"],
+  ["Krasus","krasus","eu"],
+  ["Kul Tiras","kul-tiras","eu"],
+  ["Kult der Verdammten","kult-der-verdammten","eu"],
+  ["La Croisade écarlate","la-croisade-écarlate","eu"],
+  ["Laughing Skull","laughing-skull","eu"],
+  ["Les Clairvoyants","les-clairvoyants","eu"],
+  ["Les Sentinelles","les-sentinelles","eu"],
+  ["Lich King","lich-king","eu"],
+  ["Lightbringer","lightbringer","eu"],
+  ["Lightning's Blade","lightnings-blade","eu"],
+  ["Lordaeron","lordaeron","eu"],
+  ["Los Errantes","los-errantes","eu"],
+  ["Lothar","lothar","eu"],
+  ["Madmortem","madmortem","eu"],
+  ["Magtheridon","magtheridon","eu"],
+  ["Malfurion","malfurion","eu"],
+  ["Mal'Ganis","malganis","eu"],
+  ["Malorne","malorne","eu"],
+  ["Malygos","malygos","eu"],
+  ["Mannoroth","mannoroth","eu"],
+  ["Marécage de Zangar","marécage-de-zangar","eu"],
+  ["Mazrigos","mazrigos","eu"],
+  ["Medivh","medivh","eu"],
+  ["Minahonda","minahonda","eu"],
+  ["Moonglade","moonglade","eu"],
+  ["Mug'thol","mugthol","eu"],
+  ["Nagrand","nagrand","eu"],
+  ["Nathrezim","nathrezim","eu"],
+  ["Naxxramas","naxxramas","eu"],
+  ["Nazjatar","nazjatar","eu"],
+  ["Nefarian","nefarian","eu"],
+  ["Nemesis","nemesis","eu"],
+  ["Neptulon","neptulon","eu"],
+  ["Nera'thor","nerathor","eu"],
+  ["Ner'zhul","nerzhul","eu"],
+  ["Nethersturm","nethersturm","eu"],
+  ["Nordrassil","nordrassil","eu"],
+  ["Norgannon","norgannon","eu"],
+  ["Nozdormu","nozdormu","eu"],
+  ["Onyxia","onyxia","eu"],
+  ["Outland","outland","eu"],
+  ["Perenolde","perenolde","eu"],
+  ["Pozzo dell'Eternità","pozzo-delleternità","eu"],
+  ["Proudmoore","proudmoore","eu"],
+  ["Quel'Thalas","quelthalas","eu"],
+  ["Ragnaros","ragnaros","eu"],
+  ["Rajaxx","rajaxx","eu"],
+  ["Rashgarroth","rashgarroth","eu"],
+  ["Ravencrest","ravencrest","eu"],
+  ["Ravenholdt","ravenholdt","eu"],
+  ["Razuvious","razuvious","eu"],
+  ["Rexxar","rexxar","eu"],
+  ["Runetotem","runetotem","eu"],
+  ["Sanguino","sanguino","eu"],
+  ["Sargeras","sargeras","eu"],
+  ["Saurfang","saurfang","eu"],
+  ["Scarshield Legion","scarshield-legion","eu"],
+  ["Sen'jin","senjin","eu"],
+  ["Shadowsong","shadowsong","eu"],
+  ["Shattered Halls","shattered-halls","eu"],
+  ["Shattered Hand","shattered-hand","eu"],
+  ["Shattrath","shattrath","eu"],
+  ["Shen'dralar","shendralar","eu"],
+  ["Silvermoon","silvermoon","eu"],
+  ["Skullcrusher","skullcrusher","eu"],
+  ["Soulflayer","soulflayer","eu"],
+  ["Spinebreaker","spinebreaker","eu"],
+  ["Sporeggar","sporeggar","eu"],
+  ["Steamwheedle Cartel","steamwheedle-cartel","eu"],
+  ["Stormrage","stormrage","eu"],
+  ["Stormreaver","stormreaver","eu"],
+  ["Stormscale","stormscale","eu"],
+  ["Sunstrider","sunstrider","eu"],
+  ["Suramar","suramar","eu"],
+  ["Sylvanas","sylvanas","eu"],
+  ["Taerar","taerar","eu"],
+  ["Talnivarr","talnivarr","eu"],
+  ["Tarren Mill","tarren-mill","eu"],
+  ["Teldrassil","teldrassil","eu"],
+  ["Temple noir","temple-noir","eu"],
+  ["Terenas","terenas","eu"],
+  ["Terokkar","terokkar","eu"],
+  ["Terrordar","terrordar","eu"],
+  ["The Maelstrom","the-maelstrom","eu"],
+  ["The Sha'tar","the-shatar","eu"],
+  ["The Venture Co","the-venture-co","eu"],
+  ["Theradras","theradras","eu"],
+  ["Thermaplugg","thermaplugg","eu"],
+  ["Thrall","thrall","eu"],
+  ["Throk'Feroth","throkferoth","eu"],
+  ["Thunderhorn","thunderhorn","eu"],
+  ["Tichondrius","tichondrius","eu"],
+  ["Tirion","tirion","eu"],
+  ["Todeswache","todeswache","eu"],
+  ["Trollbane","trollbane","eu"],
+  ["Turalyon","turalyon","eu"],
+  ["Twilight's Hammer","twilights-hammer","eu"],
+  ["Twisting Nether","twisting-nether","eu"],
+  ["Tyrande","tyrande","eu"],
+  ["Uldaman","uldaman","eu"],
+  ["Ulduar","ulduar","eu"],
+  ["Uldum","uldum","eu"],
+  ["Un'Goro","ungoro","eu"],
+  ["Varimathras","varimathras","eu"],
+  ["Vashj","vashj","eu"],
+  ["Vek'lor","veklor","eu"],
+  ["Vek'nilash","veknilash","eu"],
+  ["Vol'jin","voljin","eu"],
+  ["Wildhammer","wildhammer","eu"],
+  ["Wrathbringer","wrathbringer","eu"],
+  ["Xavius","xavius","eu"],
+  ["Ysera","ysera","eu"],
+  ["Ysondre","ysondre","eu"],
+  ["Zenedar","zenedar","eu"],
+  ["Zirkel des Cenarius","zirkel-des-cenarius","eu"],
+  ["Zul'jin","zuljin","eu"],
+  ["Zuluhed","zuluhed","eu"],
+  ["Alexstrasza","alexstrasza","kr"],
+  ["Azshara","azshara","kr"],
+  ["Burning Legion","burning-legion","kr"],
+  ["Cenarius","cenarius","kr"],
+  ["Dalaran","dalaran","kr"],
+  ["Deathwing","deathwing","kr"],
+  ["Durotan","durotan","kr"],
+  ["Garona","garona","kr"],
+  ["Gul'dan","guldan","kr"],
+  ["Hellscream","hellscream","kr"],
+  ["Hyjal","hyjal","kr"],
+  ["Malfurion","malfurion","kr"],
+  ["Norgannon","norgannon","kr"],
+  ["Rexxar","rexxar","kr"],
+  ["Stormrage","stormrage","kr"],
+  ["Wildhammer","wildhammer","kr"],
+  ["Windrunner","windrunner","kr"],
+  ["Zul'jin","zuljin","kr"],
+  ["Arthas","arthas","tw"],
+  ["Arygos","arygos","tw"],
+  ["Bleeding Hollow","bleeding-hollow","tw"],
+  ["Chillwind Point","chillwind-point","tw"],
+  ["Crystalpine Stinger","crystalpine-stinger","tw"],
+  ["Demon Fall Canyon","demon-fall-canyon","tw"],
+  ["Dragonmaw","dragonmaw","tw"],
+  ["Frostmane","frostmane","tw"],
+  ["Hellscream","hellscream","tw"],
+  ["Icecrown","icecrown","tw"],
+  ["Krol Blade","krol-blade","tw"],
+  ["Light's Hope","lights-hope","tw"],
+  ["Menethil","menethil","tw"],
+  ["Nightsong","nightsong","tw"],
+  ["Old Blanchy","old-blanchy","tw"],
+  ["Order of the Cloud Serpent","order-of-the-cloud-serpent","tw"],
+  ["Quel'dorei","queldorei","tw"],
+  ["Shadowmoon","shadowmoon","tw"],
+  ["Silverwing Hold","silverwing-hold","tw"],
+  ["Skywall","skywall","tw"],
+  ["Spirestone","spirestone","tw"],
+  ["Stormscale","stormscale","tw"],
+  ["Sundown Marsh","sundown-marsh","tw"],
+  ["Whisperwind","whisperwind","tw"],
+  ["World Tree","world-tree","tw"],
+  ["Wrathbringer","wrathbringer","tw"],
+  ["Zealot Blade","zealot-blade","tw"],
+  ["Aegwynn","aegwynn","us"],
+  ["Aerie Peak","aerie-peak","us"],
+  ["Agamaggan","agamaggan","us"],
+  ["Aggramar","aggramar","us"],
+  ["Akama","akama","us"],
+  ["Alexstrasza","alexstrasza","us"],
+  ["Alleria","alleria","us"],
+  ["Altar of Storms","altar-of-storms","us"],
+  ["Alterac Mountains","alterac-mountains","us"],
+  ["Aman'Thul","amanthul","us"],
+  ["Andorhal","andorhal","us"],
+  ["Anetheron","anetheron","us"],
+  ["Antonidas","antonidas","us"],
+  ["Anub'arak","anubarak","us"],
+  ["Anvilmar","anvilmar","us"],
+  ["Arathor","arathor","us"],
+  ["Archimonde","archimonde","us"],
+  ["Area 52","area-52","us"],
+  ["Argent Dawn","argent-dawn","us"],
+  ["Arthas","arthas","us"],
+  ["Arygos","arygos","us"],
+  ["Auchindoun","auchindoun","us"],
+  ["Azgalor","azgalor","us"],
+  ["Azjol-Nerub","azjolnerub","us"],
+  ["Azralon","azralon","us"],
+  ["Azshara","azshara","us"],
+  ["Azuremyst","azuremyst","us"],
+  ["Baelgun","baelgun","us"],
+  ["Balnazzar","balnazzar","us"],
+  ["Barthilas","barthilas","us"],
+  ["Black Dragonflight","black-dragonflight","us"],
+  ["Blackhand","blackhand","us"],
+  ["Blackrock","blackrock","us"],
+  ["Blackwater Raiders","blackwater-raiders","us"],
+  ["Blackwing Lair","blackwing-lair","us"],
+  ["Bladefist","bladefist","us"],
+  ["Blade's Edge","blades-edge","us"],
+  ["Bleeding Hollow","bleeding-hollow","us"],
+  ["Blood Furnace","blood-furnace","us"],
+  ["Bloodhoof","bloodhoof","us"],
+  ["Bloodscalp","bloodscalp","us"],
+  ["Bonechewer","bonechewer","us"],
+  ["Borean Tundra","borean-tundra","us"],
+  ["Boulderfist","boulderfist","us"],
+  ["Bronzebeard","bronzebeard","us"],
+  ["Burning Blade","burning-blade","us"],
+  ["Burning Legion","burning-legion","us"],
+  ["Caelestrasz","caelestrasz","us"],
+  ["Cairne","cairne","us"],
+  ["Cenarion Circle","cenarion-circle","us"],
+  ["Cenarius","cenarius","us"],
+  ["Cho'gall","chogall","us"],
+  ["Chromaggus","chromaggus","us"],
+  ["Coilfang","coilfang","us"],
+  ["Crushridge","crushridge","us"],
+  ["Daggerspine","daggerspine","us"],
+  ["Dalaran","dalaran","us"],
+  ["Dalvengyr","dalvengyr","us"],
+  ["Dark Iron","dark-iron","us"],
+  ["Darkspear","darkspear","us"],
+  ["Darrowmere","darrowmere","us"],
+  ["Dath'Remar","dathremar","us"],
+  ["Dawnbringer","dawnbringer","us"],
+  ["Deathwing","deathwing","us"],
+  ["Demon Soul","demon-soul","us"],
+  ["Dentarg","dentarg","us"],
+  ["Destromath","destromath","us"],
+  ["Dethecus","dethecus","us"],
+  ["Detheroc","detheroc","us"],
+  ["Doomhammer","doomhammer","us"],
+  ["Draenor","draenor","us"],
+  ["Dragonblight","dragonblight","us"],
+  ["Dragonmaw","dragonmaw","us"],
+  ["Draka","draka","us"],
+  ["Drakkari","drakkari","us"],
+  ["Drak'Tharon","draktharon","us"],
+  ["Drak'thul","drakthul","us"],
+  ["Dreadmaul","dreadmaul","us"],
+  ["Drenden","drenden","us"],
+  ["Dunemaul","dunemaul","us"],
+  ["Durotan","durotan","us"],
+  ["Duskwood","duskwood","us"],
+  ["Earthen Ring","earthen-ring","us"],
+  ["Echo Isles","echo-isles","us"],
+  ["Eitrigg","eitrigg","us"],
+  ["Eldre'Thalas","eldrethalas","us"],
+  ["Elune","elune","us"],
+  ["Emerald Dream","emerald-dream","us"],
+  ["Eonar","eonar","us"],
+  ["Eredar","eredar","us"],
+  ["Executus","executus","us"],
+  ["Exodar","exodar","us"],
+  ["Farstriders","farstriders","us"],
+  ["Feathermoon","feathermoon","us"],
+  ["Fenris","fenris","us"],
+  ["Firetree","firetree","us"],
+  ["Fizzcrank","fizzcrank","us"],
+  ["Frostmane","frostmane","us"],
+  ["Frostmourne","frostmourne","us"],
+  ["Frostwolf","frostwolf","us"],
+  ["Galakrond","galakrond","us"],
+  ["Gallywix","gallywix","us"],
+  ["Garithos","garithos","us"],
+  ["Garona","garona","us"],
+  ["Garrosh","garrosh","us"],
+  ["Ghostlands","ghostlands","us"],
+  ["Gilneas","gilneas","us"],
+  ["Gnomeregan","gnomeregan","us"],
+  ["Goldrinn","goldrinn","us"],
+  ["Gorefiend","gorefiend","us"],
+  ["Gorgonnash","gorgonnash","us"],
+  ["Greymane","greymane","us"],
+  ["Grizzly Hills","grizzly-hills","us"],
+  ["Gul'dan","guldan","us"],
+  ["Gundrak","gundrak","us"],
+  ["Gurubashi","gurubashi","us"],
+  ["Hakkar","hakkar","us"],
+  ["Haomarush","haomarush","us"],
+  ["Hellscream","hellscream","us"],
+  ["Hydraxis","hydraxis","us"],
+  ["Hyjal","hyjal","us"],
+  ["Icecrown","icecrown","us"],
+  ["Illidan","illidan","us"],
+  ["Jaedenar","jaedenar","us"],
+  ["Jubei'Thos","jubeithos","us"],
+  ["Kael'thas","kaelthas","us"],
+  ["Kalecgos","kalecgos","us"],
+  ["Kargath","kargath","us"],
+  ["Kel'Thuzad","kelthuzad","us"],
+  ["Khadgar","khadgar","us"],
+  ["Khaz Modan","khaz-modan","us"],
+  ["Khaz'goroth","khazgoroth","us"],
+  ["Kil'jaeden","kiljaeden","us"],
+  ["Kilrogg","kilrogg","us"],
+  ["Kirin Tor","kirin-tor","us"],
+  ["Korgath","korgath","us"],
+  ["Korialstrasz","korialstrasz","us"],
+  ["Kul Tiras","kul-tiras","us"],
+  ["Laughing Skull","laughing-skull","us"],
+  ["Lethon","lethon","us"],
+  ["Lightbringer","lightbringer","us"],
+  ["Lightninghoof","lightninghoof","us"],
+  ["Lightning's Blade","lightnings-blade","us"],
+  ["Llane","llane","us"],
+  ["Lothar","lothar","us"],
+  ["Madoran","madoran","us"],
+  ["Maelstrom","maelstrom","us"],
+  ["Magtheridon","magtheridon","us"],
+  ["Maiev","maiev","us"],
+  ["Malfurion","malfurion","us"],
+  ["Mal'Ganis","malganis","us"],
+  ["Malorne","malorne","us"],
+  ["Malygos","malygos","us"],
+  ["Mannoroth","mannoroth","us"],
+  ["Medivh","medivh","us"],
+  ["Misha","misha","us"],
+  ["Mok'Nathal","moknathal","us"],
+  ["Moon Guard","moon-guard","us"],
+  ["Moonrunner","moonrunner","us"],
+  ["Mug'thol","mugthol","us"],
+  ["Muradin","muradin","us"],
+  ["Nagrand","nagrand","us"],
+  ["Nathrezim","nathrezim","us"],
+  ["Nazgrel","nazgrel","us"],
+  ["Nazjatar","nazjatar","us"],
+  ["Nemesis","nemesis","us"],
+  ["Ner'zhul","nerzhul","us"],
+  ["Nesingwary","nesingwary","us"],
+  ["Nordrassil","nordrassil","us"],
+  ["Norgannon","norgannon","us"],
+  ["Onyxia","onyxia","us"],
+  ["Perenolde","perenolde","us"],
+  ["Proudmoore","proudmoore","us"],
+  ["Quel'dorei","queldorei","us"],
+  ["Quel'Thalas","quelthalas","us"],
+  ["Ragnaros","ragnaros","us"],
+  ["Ravencrest","ravencrest","us"],
+  ["Ravenholdt","ravenholdt","us"],
+  ["Rexxar","rexxar","us"],
+  ["Rivendare","rivendare","us"],
+  ["Runetotem","runetotem","us"],
+  ["Sargeras","sargeras","us"],
+  ["Saurfang","saurfang","us"],
+  ["Scarlet Crusade","scarlet-crusade","us"],
+  ["Scilla","scilla","us"],
+  ["Sen'jin","senjin","us"],
+  ["Sentinels","sentinels","us"],
+  ["Shadow Council","shadow-council","us"],
+  ["Shadowmoon","shadowmoon","us"],
+  ["Shadowsong","shadowsong","us"],
+  ["Shandris","shandris","us"],
+  ["Shattered Halls","shattered-halls","us"],
+  ["Shattered Hand","shattered-hand","us"],
+  ["Shu'halo","shuhalo","us"],
+  ["Silver Hand","silver-hand","us"],
+  ["Silvermoon","silvermoon","us"],
+  ["Sisters of Elune","sisters-of-elune","us"],
+  ["Skullcrusher","skullcrusher","us"],
+  ["Skywall","skywall","us"],
+  ["Smolderthorn","smolderthorn","us"],
+  ["Spinebreaker","spinebreaker","us"],
+  ["Spirestone","spirestone","us"],
+  ["Staghelm","staghelm","us"],
+  ["Steamwheedle Cartel","steamwheedle-cartel","us"],
+  ["Stonemaul","stonemaul","us"],
+  ["Stormrage","stormrage","us"],
+  ["Stormreaver","stormreaver","us"],
+  ["Stormscale","stormscale","us"],
+  ["Suramar","suramar","us"],
+  ["Tanaris","tanaris","us"],
+  ["Terenas","terenas","us"],
+  ["Terokkar","terokkar","us"],
+  ["Thaurissan","thaurissan","us"],
+  ["The Forgotten Coast","the-forgotten-coast","us"],
+  ["The Scryers","the-scryers","us"],
+  ["The Underbog","the-underbog","us"],
+  ["The Venture Co","the-venture-co","us"],
+  ["Thorium Brotherhood","thorium-brotherhood","us"],
+  ["Thrall","thrall","us"],
+  ["Thunderhorn","thunderhorn","us"],
+  ["Thunderlord","thunderlord","us"],
+  ["Tichondrius","tichondrius","us"],
+  ["Tol Barad","tol-barad","us"],
+  ["Tortheldrin","tortheldrin","us"],
+  ["Trollbane","trollbane","us"],
+  ["Turalyon","turalyon","us"],
+  ["Twisting Nether","twisting-nether","us"],
+  ["Uldaman","uldaman","us"],
+  ["Uldum","uldum","us"],
+  ["Undermine","undermine","us"],
+  ["Ursin","ursin","us"],
+  ["Uther","uther","us"],
+  ["Vashj","vashj","us"],
+  ["Vek'nilash","veknilash","us"],
+  ["Velen","velen","us"],
+  ["Warsong","warsong","us"],
+  ["Whisperwind","whisperwind","us"],
+  ["Wildhammer","wildhammer","us"],
+  ["Windrunner","windrunner","us"],
+  ["Winterhoof","winterhoof","us"],
+  ["Wyrmrest Accord","wyrmrest-accord","us"],
+  ["Ysera","ysera","us"],
+  ["Ysondre","ysondre","us"],
+  ["Zangarmarsh","zangarmarsh","us"],
+  ["Zul'jin","zuljin","us"],
+  ["Zuluhed","zuluhed","us"]
+];
 const DUNGEON_POOL = ["Murder Row","Den of Noralakk","Altar of Fangs","Ruby Life Pools","Temple of Sethraliss","The Blinding Vale","Voidscar Arena","King's Rest"];
 const RAID_NAME = "The Venomous Abyss";
 const RAID_POOL = ["Nek'zali the Soulcoiler","The Lost Explorers","Sszorak","The Coiled Altar","Entombed Sentinels","Vashnik the Malignant","The Twin Fangs","Ula'tek"];
@@ -1274,9 +1859,9 @@ function normalizeChar(c){
   return c;
 }
 
-function makeCharObj(id, name, cls){
+function makeCharObj(id, name, cls, realm, region){
   return {
-    id, name, class: cls, ilvl: 0, ioscore: 0,
+    id, name, class: cls, ilvl: 0, ioscore: 0, realm: realm || null, region: region || null,
     dungeons: Object.fromEntries(DUNGEON_POOL.map(d=>[d,false])),
     events: [],
     raidBosses: Object.fromEntries(RAID_POOL.map(b=>[b, makeRaidBossEntry()])),
@@ -1525,21 +2110,81 @@ document.getElementById('confirmOkBtn').addEventListener('click', () => {
 });
 
 function openAddCharModal(){
-  const sel = document.getElementById('newCharClass');
-  sel.innerHTML = Object.keys(CLASS_HEX).map(cl => `<option value="${cl}">${cl}</option>`).join('');
   document.getElementById('newCharName').value = '';
+  document.getElementById('newCharRealm').value = '';
+  document.getElementById('newCharRealmSlug').value = '';
+  document.getElementById('newCharRegion').value = '';
+  const statusEl = document.getElementById('addCharStatus');
+  statusEl.textContent = ''; statusEl.className = 'add-char-status';
   document.getElementById('addCharModal').style.display = 'flex';
 }
 document.getElementById('cancelAddChar').addEventListener('click', () => { document.getElementById('addCharModal').style.display = 'none'; });
+
+function renderRealmSearchResults(query){
+  const panel = document.getElementById('realmSearchResults');
+  const q = query.trim().toLowerCase();
+  if(!q){ panel.classList.remove('open'); panel.innerHTML = ''; return; }
+  const matches = REALM_LIST.filter(([name]) => name.toLowerCase().includes(q)).slice(0, 8);
+  if(!matches.length){ panel.classList.remove('open'); panel.innerHTML = ''; return; }
+  panel.innerHTML = matches.map(([name, slug, region]) => `
+    <div class="realm-search-row" data-name="${name}" data-slug="${slug}" data-region="${region}">
+      <span>${name}</span><span class="realm-region-tag">${region}</span>
+    </div>`).join('');
+  panel.classList.add('open');
+  panel.querySelectorAll('.realm-search-row').forEach(row => {
+    row.addEventListener('click', () => {
+      document.getElementById('newCharRealm').value = row.dataset.name;
+      document.getElementById('newCharRealmSlug').value = row.dataset.slug;
+      document.getElementById('newCharRegion').value = row.dataset.region;
+      panel.classList.remove('open'); panel.innerHTML = '';
+    });
+  });
+}
+document.getElementById('newCharRealm').addEventListener('input', (e) => {
+  document.getElementById('newCharRealmSlug').value = '';
+  document.getElementById('newCharRegion').value = '';
+  renderRealmSearchResults(e.target.value);
+});
+document.getElementById('newCharRealm').addEventListener('focus', (e) => { if(e.target.value) renderRealmSearchResults(e.target.value); });
+document.getElementById('newCharRealm').addEventListener('blur', () => {
+  setTimeout(() => { document.getElementById('realmSearchResults').classList.remove('open'); }, 150);
+});
+
 document.getElementById('confirmAddChar').addEventListener('click', async () => {
   const name = document.getElementById('newCharName').value.trim();
-  const cls = document.getElementById('newCharClass').value;
+  const realmSlug = document.getElementById('newCharRealmSlug').value;
+  const region = document.getElementById('newCharRegion').value;
+  const statusEl = document.getElementById('addCharStatus');
   if(!name) return;
-  const c = makeCharObj(uid(), name, cls);
-  state.characters.push(c);
-  await saveChar(c); await saveRoster();
-  document.getElementById('addCharModal').style.display = 'none';
-  renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList();
+  if(!realmSlug || !region){
+    statusEl.textContent = t('selectRealmFirst');
+    statusEl.className = 'add-char-status error';
+    return;
+  }
+  statusEl.textContent = t('charSearching');
+  statusEl.className = 'add-char-status loading';
+  const btn = document.getElementById('confirmAddChar');
+  btn.disabled = true;
+  try{
+    const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('not found');
+    const data = await res.json();
+    const c = makeCharObj(uid(), data.name, data.class, realmSlug, region);
+    c.ilvl = Math.round((data.gear && data.gear.item_level_equipped) || 0);
+    const scoreEntry = data.mythic_plus_scores_by_season && data.mythic_plus_scores_by_season[0];
+    c.ioscore = scoreEntry ? Math.round(scoreEntry.scores.all * 10) / 10 : 0;
+    pushHistory(c);
+    state.characters.push(c);
+    await saveChar(c); await saveRoster();
+    document.getElementById('addCharModal').style.display = 'none';
+    renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList();
+  } catch(e){
+    statusEl.textContent = t('charNotFound');
+    statusEl.className = 'add-char-status error';
+  } finally {
+    btn.disabled = false;
+  }
 });
 
 document.getElementById('resetWeekBtn').addEventListener('click', async () => {
