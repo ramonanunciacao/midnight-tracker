@@ -300,14 +300,36 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .ilvl-table td{ padding:6px 4px; border-bottom:1px solid var(--hairline); color:var(--text); }
 .bis-add{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
 .bis-add input{ background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:4px; padding:8px 10px; font-size:12px; }
-.bis-add input.iname{ flex:1.2; min-width:120px; }
+.bis-add input.iname{ flex:1.4; min-width:140px; }
+.bis-add input.islot{ flex:.6; min-width:80px; }
 .bis-add input.isource{ flex:1; min-width:120px; }
 .bis-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 14px; border-radius:4px; cursor:pointer; font-size:12px; }
 .bis-list{ display:flex; flex-direction:column; gap:6px; }
+.bis-search-results{
+  display:none; position:absolute; left:0; right:0; top:100%; z-index:20; margin-top:4px;
+  background: var(--bg-panel-raised); border:1px solid var(--gold-dim); border-radius:6px;
+  max-height:280px; overflow-y:auto; box-shadow: 0 10px 24px rgba(0,0,0,.5);
+}
+.bis-search-results.open{ display:block; }
+.bis-search-head, .bis-search-row{
+  display:grid; grid-template-columns: 24px 1.7fr 1fr 1.3fr; gap:8px; align-items:center; padding:7px 10px;
+}
+.bis-search-head{
+  font-size:9px; text-transform:uppercase; letter-spacing:.04em; color:var(--gold-dim); font-weight:700;
+  border-bottom:1px solid var(--hairline); position:sticky; top:0; background:var(--bg-panel-raised);
+}
+.bis-search-row{ cursor:pointer; font-size:12px; color:var(--text); border-bottom:1px solid var(--hairline); }
+.bis-search-row:last-child{ border-bottom:none; }
+.bis-search-row:hover{ background: var(--bg-panel); }
+.bis-search-row .bsr-icon{ font-size:15px; text-align:center; }
+.bis-search-row .bsr-slot, .bis-search-row .bsr-loc{ color:var(--text-dim); font-size:11px; }
+.bis-search-empty{ padding:10px; font-size:12px; color:var(--text-dim); }
 .bis-row{ display:flex; align-items:center; gap:10px; background: var(--bg-panel-raised); padding:9px 10px; border-radius:4px; }
 .bis-row.collected{ opacity:.55; }
+.bis-row .bicon{ font-size:15px; flex-shrink:0; width:20px; text-align:center; }
 .bis-row .bname{ font-weight:600; font-size:13px; flex:1; }
 .bis-row .bname.collected{ text-decoration:line-through; }
+.bis-row .bslot{ font-size:11px; color:var(--text-dim); width:90px; flex-shrink:0; }
 .bis-row .bsource{ font-size:11px; color:var(--text-dim); flex:1; }
 .bis-row input[type=checkbox]{ accent-color: var(--class-color, var(--gold)); }
 .bis-row .bdel{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; }
@@ -648,6 +670,7 @@ const I18N = {
     dateCol: "Data",
     noRecordsPeriod: "Sem registros nesse período — atualize o Item Level no card do personagem.",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
+    itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
     difficulty: "Dificuldade",
     eventNamePlaceholder: "Nome do evento/quest que você quer trackear",
@@ -712,6 +735,7 @@ const I18N = {
     dateCol: "Date",
     noRecordsPeriod: "No records in this period — update the Item Level on the character card.",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
+    itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
     difficulty: "Difficulty",
     eventNamePlaceholder: "Name of the event/quest you want to track",
@@ -884,6 +908,225 @@ const RAID_POOL = ["Nek'zali the Soulcoiler","The Lost Explorers","Sszorak","The
 const RAID_DIFFICULTIES = ["LFR","Normal","Heroic","Mythic"];
 const WORLDBOSS_TIERS = ["World","Normal","Heroic","Mythic"];
 const SPARK_POOL = ["Spark 1","Spark 2"];
+/* Midnight Season 2 Mythic+ loot table (source: Wowhead guide, beta/PTR data — expect
+   it to drift as the season is patched; dungeon spelling normalized to DUNGEON_POOL). */
+const ITEM_LOOT_TABLE = [
+  ["Strand of Warding Fangs","Neck","Altar of Fangs"],
+  ["Pendant of Malec Fury","Neck","Murder Row"],
+  ["Graft of the Domanaar","Neck","Voidscar Arena"],
+  ["Yoke of the Charging Bear","Neck","Den of Noralakk"],
+  ["Band of the Amani Warlord","Ring","Altar of Fangs"],
+  ["Signet of Snarling Servitude","Ring","Murder Row"],
+  ["Lightwarden's Bind","Ring","The Blinding Vale"],
+  ["Sickening Signet of Atroxus","Ring","Voidscar Arena"],
+  ["Pilfered Precious Band","Ring","Den of Noralakk"],
+  ["Jade Ophidian Band","Ring","Temple of Sethraliss"],
+  ["Charged Sandstone Band","Ring","Temple of Sethraliss"],
+  ["Ritual Binder's Ring","Ring","King's Rest"],
+  ["Speakeasy Shroud","Back","Murder Row"],
+  ["Bloodthorn Burnous","Back","The Blinding Vale"],
+  ["Fireproof Drape","Back","Ruby Life Pools"],
+  ["Cloak of the Restless Tribes","Back","King's Rest"],
+  ["Worldroot Canopy","Helm (Cloth)","The Blinding Vale"],
+  ["Overseer's Diadem","Helm (Cloth)","Voidscar Arena"],
+  ["Headdress of the First Empire","Helm (Cloth)","King's Rest"],
+  ["Poisoner's Pauldrons","Shoulder (Cloth)","Voidscar Arena"],
+  ["Brood Cleanser's Amice","Shoulder (Cloth)","Temple of Sethraliss"],
+  ["Mantle of Ceremonial Ascension","Shoulder (Cloth)","King's Rest"],
+  ["Primordial Robe of Rites","Chest (Cloth)","Altar of Fangs"],
+  ["Summoner's Searing Shirt","Chest (Cloth)","Murder Row"],
+  ["Hoarded Harvest Wrap","Chest (Cloth)","Den of Noralakk"],
+  ["Robes of the Reborn Serpent","Chest (Cloth)","Temple of Sethraliss"],
+  ["Nibbling Armbands","Wrist (Cloth)","Murder Row"],
+  ["Winter's Embrace Bracers","Wrist (Cloth)","Den of Noralakk"],
+  ["Bindings of the Slithering Current","Wrist (Cloth)","Temple of Sethraliss"],
+  ["Handwraps of Blasphemous Rites","Hands (Cloth)","Altar of Fangs"],
+  ["Counterfeit Clutches","Hands (Cloth)","Murder Row"],
+  ["Handwraps of Oscillating Polarity","Hands (Cloth)","Temple of Sethraliss"],
+  ["Lightblossom Cinch","Waist (Cloth)","The Blinding Vale"],
+  ["Ethereal Netherwrap","Waist (Cloth)","Voidscar Arena"],
+  ["Sky Saddle Cord","Waist (Cloth)","Ruby Life Pools"],
+  ["Ouroborial Sash","Waist (Cloth)","Temple of Sethraliss"],
+  ["Leggings of Entwined Serpents","Legs (Cloth)","Altar of Fangs"],
+  ["Forest Dream Leg-guards","Legs (Cloth)","Den of Noralakk"],
+  ["Wind Soarer's Breeches","Legs (Cloth)","Ruby Life Pools"],
+  ["Down-Lined Breeches","Legs (Cloth)","The Golden Serpent"],
+  ["Tempestuous Sandals","Feet (Cloth)","Murder Row"],
+  ["Sandswept Sandals","Feet (Cloth)","Temple of Sethraliss"],
+  ["Sandals of Wise Voodoo","Feet (Cloth)","King's Rest"],
+  ["Spare Speaker's Hood","Helm (Leather)","Altar of Fangs"],
+  ["Vileend's Guise","Helm (Leather)","Murder Row"],
+  ["Crown of Roaring Storms","Helm (Leather)","Ruby Life Pools"],
+  ["Hood of the Slithering Loa","Helm (Leather)","Temple of Sethraliss"],
+  ["Snakeskin Spaulders","Shoulder (Leather)","Altar of Fangs"],
+  ["Somber Spaulders","Shoulder (Leather)","Voidscar Arena"],
+  ["Scavenger's Spaulders","Shoulder (Leather)","Den of Noralakk"],
+  ["Hide of Pestilence","Chest (Leather)","Voidscar Arena"],
+  ["War Trial Vestments","Chest (Leather)","Den of Noralakk"],
+  ["Invader's Firestorm Chestguard","Chest (Leather)","Ruby Life Pools"],
+  ["Vest of Reverent Adoration","Chest (Leather)","King's Rest"],
+  ["Fury-etched Armlets","Wrist (Leather)","Murder Row"],
+  ["Rootwarden Wraps","Wrist (Leather)","The Blinding Vale"],
+  ["Kula's Butchering Wristwraps","Wrist (Leather)","King's Rest"],
+  ["Gauntlets of Fevered Defense","Hands (Leather)","Murder Row"],
+  ["Subjugator's Chilling Grips","Hands (Leather)","Ruby Life Pools"],
+  ["Grips of Electrified Defense","Hands (Leather)","Temple of Sethraliss"],
+  ["Desiccator's Blessed Gloves","Hands (Leather)","King's Rest"],
+  ["Rootwalker Harness","Waist (Leather)","The Blinding Vale"],
+  ["Gravitic Girdle","Waist (Leather)","Voidscar Arena"],
+  ["Whirling Dervish Sash","Waist (Leather)","Temple of Sethraliss"],
+  ["Primal Dinomancer's Belt","Waist (Leather)","King's Rest"],
+  ["Breeches of Deft Deals","Legs (Leather)","Murder Row"],
+  ["Lightspore Leggings","Legs (Leather)","The Blinding Vale"],
+  ["Leggings of the Galeforce Viper","Legs (Leather)","Temple of Sethraliss"],
+  ["Breeches of the Sacred Hall","Legs (Leather)","The Golden Serpent"],
+  ["Arctic Explorer's Legwraps","Feet (Leather)","Den of Noralakk"],
+  ["Sand-Shined Snakeskin Sandals","Feet (Leather)","Temple of Sethraliss"],
+  ["Goldfeather Boots","Feet (Leather)","King's Rest"],
+  ["Voidscarred Crown","Helm (Mail)","Voidscar Arena"],
+  ["Noralakk's Nightmare","Helm (Mail)","Den of Noralakk"],
+  ["Blazebound Lieutenant's Helm","Helm (Mail)","Ruby Life Pools"],
+  ["Sethraliss' Fanged Helm","Helm (Mail)","Temple of Sethraliss"],
+  ["Jangling Felpaulets","Shoulder (Mail)","Murder Row"],
+  ["Ironroot Collar","Shoulder (Mail)","The Blinding Vale"],
+  ["Spaulders of Prime Emperor","Shoulder (Mail)","King's Rest"],
+  ["Chestguard of Corroded Scales","Chest (Mail)","Altar of Fangs"],
+  ["Manipulator's Vest","Chest (Mail)","Voidscar Arena"],
+  ["Corrupted Hexxer's Vestments","Chest (Mail)","Temple of Sethraliss"],
+  ["Loa-Blessed Chestguard","Chest (Mail)","King's Rest"],
+  ["Hydra Scale Wristguards","Wrist (Mail)","Altar of Fangs"],
+  ["Saptorbane Guards","Wrist (Mail)","The Blinding Vale"],
+  ["Arc-Glass Bindings","Wrist (Mail)","Temple of Sethraliss"],
+  ["Pulverizing Pads","Hands (Mail)","The Blinding Vale"],
+  ["Season's Turn Gauntlets","Hands (Mail)","Den of Noralakk"],
+  ["Galerattle Gauntlets","Hands (Mail)","Ruby Life Pools"],
+  ["Sepulchral Construct's Gloves","Hands (Mail)","King's Rest"],
+  ["Behemoth Waistband","Waist (Mail)","Voidscar Arena"],
+  ["Tribal Defender's Cord","Waist (Mail)","Den of Noralakk"],
+  ["Lithiel's Linked Leggings","Legs (Mail)","Murder Row"],
+  ["Egg Tender's Leggings","Legs (Mail)","Ruby Life Pools"],
+  ["Legguards of the Awakening Brood","Legs (Mail)","Temple of Sethraliss"],
+  ["Felsoaked Soles","Feet (Mail)","Voidscar Arena"],
+  ["Forgotten Tribe Footguards","Feet (Mail)","Den of Noralakk"],
+  ["Sabatons of Coruscating Energy","Feet (Mail)","Temple of Sethraliss"],
+  ["Boots of the Headlong Conqueror","Feet (Mail)","King's Rest"],
+  ["Greathelm of Temptation","Helm (Plate)","Murder Row"],
+  ["Visor of the Predator","Helm (Plate)","Voidscar Arena"],
+  ["Helm of the Raptor King","Helm (Plate)","King's Rest"],
+  ["Cinderfury Shoulderguards","Shoulder (Plate)","Murder Row"],
+  ["C'thraxxi Binders Pauldrons","Shoulder (Plate)","Temple of Sethraliss"],
+  ["Pauldrons of the Great Unifier","Shoulder (Plate)","King's Rest"],
+  ["Aged Interwoven Scaleplate","Chest (Plate)","Altar of Fangs"],
+  ["Taproot Ribs","Chest (Plate)","The Blinding Vale"],
+  ["Sentinel Challenger's Prize","Chest (Plate)","Den of Noralakk"],
+  ["Breastplate of Soaring Terror","Chest (Plate)","Ruby Life Pools"],
+  ["Desert Guardian's Breastplate","Chest (Plate)","Temple of Sethraliss"],
+  ["Overseer's Vambraces","Wrist (Plate)","Murder Row"],
+  ["Shard-Tipped Vambraces","Wrist (Plate)","Temple of Sethraliss"],
+  ["Embalmer's Steadying Bracers","Wrist (Plate)","King's Rest"],
+  ["Thornspike Gauntlets","Hands (Plate)","The Blinding Vale"],
+  ["Despondent's Gauntlets","Hands (Plate)","Voidscar Arena"],
+  ["Bonds of the Hash'ura","Hands (Plate)","Den of Noralakk"],
+  ["Fangproof Gauntlets","Hands (Plate)","Temple of Sethraliss"],
+  ["Gauntlets of the Avian Sentinel","Hands (Plate)","King's Rest"],
+  ["Autumn's Boon Belt","Waist (Plate)","Den of Noralakk"],
+  ["Sand-Scoured Greatbelt","Waist (Plate)","Temple of Sethraliss"],
+  ["Girdle of Pestilent Purification","Waist (Plate)","King's Rest"],
+  ["Ancient General's Obsidian Pillars","Legs (Plate)","Altar of Fangs"],
+  ["Bedrock Breeches","Legs (Plate)","The Blinding Vale"],
+  ["Legplates of Charged Duality","Legs (Plate)","Temple of Sethraliss"],
+  ["Poison-Proof Stompers","Feet (Plate)","Altar of Fangs"],
+  ["Scaleguard's Stalwart Greatboots","Feet (Plate)","Ruby Life Pools"],
+  ["Auric Puddle Stompers","Feet (Plate)","King's Rest"],
+  ["Coiled Fangstone","Trinket","Altar of Fangs"],
+  ["Vile Vial of Volatile Venom","Trinket","Altar of Fangs"],
+  ["Knot of Writhing Serpents","Trinket","Altar of Fangs"],
+  ["Tattered Amani War Banner","Trinket","Altar of Fangs"],
+  ["Manaheart's Binding Flame","Trinket (Tanks)","Murder Row"],
+  ["Freightrunner's Flask","Trinket","Murder Row"],
+  ["Resonant Bellowstone","Trinket","Murder Row"],
+  ["Unstable Felheart Crystal","Trinket (Healers)","Murder Row"],
+  ["Seed of Radiant Hope","Trinket (Healers)","The Blinding Vale"],
+  ["Seed of the Devouring Wild","Trinket","The Blinding Vale"],
+  ["Lightspire Core","Trinket","The Blinding Vale"],
+  ["Sapling of the Dawnroot","Trinket","The Blinding Vale"],
+  ["Void Execution Mandate","Trinket","Voidscar Arena"],
+  ["Tumor of the Swarm","Trinket (Tanks)","Voidscar Arena"],
+  ["Mindpiercer's Sigil","Trinket","Voidscar Arena"],
+  ["Mycolic Medicine","Trinket (Healers)","Den of Noralakk"],
+  ["Permafrost Essence","Trinket (Tanks)","Den of Noralakk"],
+  ["Idol of the War Loa","Trinket","Den of Noralakk"],
+  ["Ruby Whelp Shell","Trinket","Ruby Life Pools"],
+  ["Blazebinder's Hoof","Trinket","Ruby Life Pools"],
+  ["Kyrakka's Searing Embers","Trinket (Healers)","Ruby Life Pools"],
+  ["Merektha's Fang","Trinket","Temple of Sethraliss"],
+  ["Tiny Electromental in a Jar","Trinket","Temple of Sethraliss"],
+  ["Sethraliss' Defiled Relic","Trinket","Temple of Sethraliss"],
+  ["Lustrous Golden Plumage","Trinket","King's Rest"],
+  ["Mchimba's Ritual Bandages","Trinket (Tanks)","King's Rest"],
+  ["Stormbound Emblem of Dazar","Trinket","King's Rest"],
+  ["Venom-Etched Crescent","Axe (1H)","Altar of Fangs"],
+  ["Hulking Handaxe","Axe (1H)","Atroxus"],
+  ["Sharpened Lightwood Slasher","Dagger","Altar of Fangs"],
+  ["Polished Lightwood Channeler","Dagger","Altar of Fangs"],
+  ["Bladesorrow","Dagger","Murder Row"],
+  ["Thornblade","Dagger","The Blinding Vale"],
+  ["Fang of Contagion","Dagger","Voidscar Arena"],
+  ["Skyferno Rondel","Dagger","Ruby Life Pools"],
+  ["Gilded Serpent's Tooth","Dagger","King's Rest"],
+  ["Jeweled Dagger of Subjugation","Dagger","King's Rest"],
+  ["Thorntalon Edge","Fist Weapon","The Blinding Vale"],
+  ["Grim Harvest Gloves","Fist Weapon","Den of Noralakk"],
+  ["Havoc Crusher","Mace (1H)","Ruby Life Pools"],
+  ["Galvanized Stormcrusher","Mace (1H)","Temple of Sethraliss"],
+  ["Headcracker of Supplication","Mace (1H)","King's Rest"],
+  ["Thorned Reply","Sword (1H)","The Blinding Vale"],
+  ["Taz'Rah's Cosmic Edge","Sword (1H)","Voidscar Arena"],
+  ["Swarm's Edge","Sword (1H)","Temple of Sethraliss"],
+  ["Resonating Crystal Scimitar","Sword (1H)","Temple of Sethraliss"],
+  ["Crackling Jade Kilij","Sword (1H)","King's Rest"],
+  ["Hydraspine Twinblade","Warglaive","Altar of Fangs"],
+  ["Singularity Slicer","Warglaive","Voidscar Arena"],
+  ["Nibbles' Training Rod","Axe (2H)","Murder Row"],
+  ["Backdraft Cleaver","Axe (2H)","Ruby Life Pools"],
+  ["Vile Writhefang Glaive","Polearm","Altar of Fangs"],
+  ["Pruning Lance","Polearm","The Blinding Vale"],
+  ["Charonic Crescent","Polearm","Voidscar Arena"],
+  ["Victor's Flashfrozen Blade","Polearm","Den of Noralakk"],
+  ["Twin-Strike Polearm","Polearm","Temple of Sethraliss"],
+  ["Royal Purifier's Spade","Polearm","King's Rest"],
+  ["Toxin-Coated Warstaff","Staff","Altar of Fangs"],
+  ["Branch of Pride","Staff","The Blinding Vale"],
+  ["Fallen Speaker's Staff","Staff","Den of Noralakk"],
+  ["Chillworn's Infusion","Staff","Ruby Life Pools"],
+  ["Staff of the Lightning Serpent","Staff","Temple of Sethraliss"],
+  ["Geti'ikku, Cut of Death","Sword (2H)","Dazar, The First King"],
+  ["Ancestral Amani Recurve","Bow","Altar of Fangs"],
+  ["Snakebite Recurve","Bow","Merektha"],
+  ["Amirdrassil's Reach","Crossbow","The Blinding Vale"],
+  ["Crossbow of Forgotten Majesty","Crossbow","King's Rest"],
+  ["Sinseared Repeater","Gun","Murder Row"],
+  ["Doompetal","Wand","The Blinding Vale"],
+  ["Nocuous Focal Fang","Off-Hand","Altar of Fangs"],
+  ["Luminescent Sprout","Off-Hand","The Blinding Vale"],
+  ["Perennial Frostbound Charm","Off-Hand","Den of Noralakk"],
+  ["Kokia's Burnout Rod","Off-Hand","Ruby Life Pools"],
+  ["Vessel of Last Rites","Off-Hand","King's Rest"],
+  ["Teldrassil's Sacrifice","Shield","The Blinding Vale"],
+  ["Tempest's Shelter","Shield","Den of Noralakk"],
+  ["Drake Rider's Stecktarge","Shield","Ruby Life Pools"],
+  ["Bulwark of Brimming Potential","Shield","King's Rest"],
+];
+/* We don't have real per-item icon IDs for this beta content (the source guide only
+   listed names/slots/dungeons, not item IDs) — so this shows a generic icon per
+   piece/weapon type rather than the item's actual unique art. */
+const SLOT_ICON = {
+  Neck:'📿', Ring:'💍', Back:'🧣', Helm:'🪖', Shoulder:'🎽', Chest:'👕',
+  Wrist:'🧤', Hands:'🧤', Waist:'🪢', Legs:'👖', Feet:'🥾', Trinket:'🔮',
+  Axe:'⚔️', Dagger:'⚔️', Sword:'⚔️', Mace:'⚔️', Polearm:'⚔️', 'Fist Weapon':'⚔️', Warglaive:'⚔️', Staff:'🦯',
+  Bow:'🏹', Crossbow:'🏹', Gun:'🏹', Wand:'🪄', Shield:'🛡️', 'Off-Hand':'🛡️'
+};
+function slotIcon(slot){ return SLOT_ICON[slot.split(' (')[0]] || '❔'; }
 const DEFAULT_TODOS_I18N = {
   pt: ["Pegar quests semanais", "Eventos ao redor do mundo", "World Boss", "M0", "Nemesis(?) Delve Boss"],
   en: ["Pick up weekly quests", "World events", "World Boss", "M0", "Nemesis(?) Delve Boss"]
@@ -1303,8 +1546,10 @@ function renderDetail(c){
   const bisRowHtml = b => `
     <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
       <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
-      <span class="bname ${b.collected?'collected':''}">${b.name}</span>
-      <span class="bsource">${b.source}</span>
+      <span class="bicon">${b.slot ? slotIcon(b.slot) : '❔'}</span>
+      <span class="bname ${b.collected?'collected':''}">${escapeHtml(b.name)}</span>
+      <span class="bslot">${escapeHtml(b.slot || '—')}</span>
+      <span class="bsource">${escapeHtml(b.source || '—')}</span>
       <button class="bdel">✕</button>
     </div>`;
   const dungeonRow = d => `
@@ -1440,10 +1685,12 @@ function renderDetail(c){
     <div class="dpanel" id="section-bis">
       <details class="hist-toggle" open>
         <summary><h3 style="margin:0;">${t('bisGearTitle')}</h3></summary>
-        <div class="bis-add" style="margin-top:12px;">
-          <input type="text" class="iname" id="bisName" placeholder="${t('bisNamePlaceholder')}">
+        <div class="bis-add" style="margin-top:12px; position:relative;">
+          <input type="text" class="iname" id="bisName" placeholder="${t('bisNamePlaceholder')}" autocomplete="off">
+          <input type="text" class="islot" id="bisSlot" placeholder="${t('slotCol')}">
           <input type="text" class="isource" id="bisSource" placeholder="${t('bisSourcePlaceholder')}">
           <button id="bisAddBtn">${t('add')}</button>
+          <div class="bis-search-results" id="bisSearchResults"></div>
         </div>
         <div class="bis-list" id="bisList">
           ${c.bis.length ? c.bis.map(bisRowHtml).join('') : `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`}
@@ -1526,13 +1773,50 @@ function renderDetail(c){
     });
   }
   el.querySelectorAll('#bisList .bis-row').forEach(bindBisRow);
+  function renderBisSearchResults(query){
+    const panel = document.getElementById('bisSearchResults');
+    const q = query.trim().toLowerCase();
+    if(!q){ panel.classList.remove('open'); panel.innerHTML = ''; return; }
+    const matches = ITEM_LOOT_TABLE.filter(([name]) => name.toLowerCase().includes(q)).slice(0, 8);
+    if(!matches.length){
+      panel.innerHTML = `<div class="bis-search-empty">${t('noItemMatch')}</div>`;
+      panel.classList.add('open');
+      return;
+    }
+    panel.innerHTML = `
+      <div class="bis-search-head"><span></span><span>${t('itemCol')}</span><span>${t('slotCol')}</span><span>${t('locationCol')}</span></div>
+      ${matches.map(([name, slot, loc]) => `
+        <div class="bis-search-row" data-name="${name}" data-slot="${slot}" data-loc="${loc}">
+          <span class="bsr-icon">${slotIcon(slot)}</span>
+          <span class="bsr-name">${name}</span>
+          <span class="bsr-slot">${slot.split(' (')[0]}</span>
+          <span class="bsr-loc">${loc}</span>
+        </div>`).join('')}
+    `;
+    panel.classList.add('open');
+    panel.querySelectorAll('.bis-search-row').forEach(row => {
+      row.addEventListener('click', () => {
+        document.getElementById('bisName').value = row.dataset.name;
+        document.getElementById('bisSlot').value = row.dataset.slot;
+        document.getElementById('bisSource').value = row.dataset.loc;
+        panel.classList.remove('open'); panel.innerHTML = '';
+      });
+    });
+  }
+  document.getElementById('bisName').addEventListener('input', (e) => renderBisSearchResults(e.target.value));
+  document.getElementById('bisName').addEventListener('focus', (e) => { if(e.target.value) renderBisSearchResults(e.target.value); });
+  document.getElementById('bisName').addEventListener('blur', () => {
+    setTimeout(() => { document.getElementById('bisSearchResults').classList.remove('open'); }, 150);
+  });
   document.getElementById('bisAddBtn').addEventListener('click', async () => {
     const nameInput = document.getElementById('bisName');
+    const slotInput = document.getElementById('bisSlot');
     const sourceInput = document.getElementById('bisSource');
     const name = nameInput.value.trim();
+    const slot = slotInput.value.trim();
     const source = sourceInput.value.trim();
     if(!name) return;
-    const b = {id: uid(), name, source: source || '—', collected:false};
+    const b = {id: uid(), name, slot, source: source || '—', collected:false};
     c.bis.push(b);
     await saveChar(c);
     const list = document.getElementById('bisList');
@@ -1540,7 +1824,7 @@ function renderDetail(c){
     if(empty) empty.remove();
     list.insertAdjacentHTML('beforeend', bisRowHtml(b));
     bindBisRow(list.querySelector(`[data-id="${b.id}"]`));
-    nameInput.value = ''; sourceInput.value = '';
+    nameInput.value = ''; slotInput.value = ''; sourceInput.value = '';
   });
 
   function bindEventRow(row){
