@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Midnight — Season Tracker</title>
-<script>const whTooltips = {colorLinks: true, iconizeLinks: true, renameLinks: true};</script>
+<script>const whTooltips = {colorLinks: true, iconizeLinks: false, renameLinks: false};</script>
 <script src="https://wow.zamimg.com/js/tooltips.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
@@ -306,7 +306,19 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .bis-add input.islot{ flex:.6; min-width:80px; }
 .bis-add input.isource{ flex:1; min-width:120px; }
 .bis-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 14px; border-radius:4px; cursor:pointer; font-size:12px; }
-.bis-list{ display:flex; flex-direction:column; gap:6px; }
+.bis-panel-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:18px; align-items:start; }
+.bis-col-title{ margin:0 0 10px 0; font-size:14px; color:var(--gold); }
+@media (max-width: 900px){ .bis-panel-grid{ grid-template-columns: 1fr; } }
+.bis-list{ display:flex; flex-direction:column; gap:5px; max-height:520px; overflow-y:auto; padding-right:4px; }
+.bis-col-locations{ background: var(--bg-panel-raised); border-radius:6px; padding:14px; max-height:600px; overflow-y:auto; }
+.bis-loc-group{ margin-bottom:14px; }
+.bis-loc-group:last-child{ margin-bottom:0; }
+.bis-loc-head{ font-weight:700; font-size:13px; color:var(--gold); margin-bottom:5px; }
+.bis-loc-count{ color:var(--text-dim); font-weight:400; font-size:11px; }
+.bis-loc-items{ display:flex; flex-direction:column; gap:3px; }
+.bis-loc-item{ font-size:12px; color:var(--text); padding-left:8px; display:flex; align-items:center; gap:5px; }
+.bis-loc-slot{ color:var(--text-dim); font-size:11px; }
+.bis-loc-item.collected{ opacity:.5; text-decoration:line-through; }
 .bis-search-results{
   display:none; position:absolute; left:0; right:0; top:100%; z-index:20; margin-top:4px;
   background: var(--bg-panel-raised); border:1px solid var(--gold-dim); border-radius:6px;
@@ -326,16 +338,17 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .bis-search-row .bsr-icon{ font-size:15px; text-align:center; }
 .bis-search-row .bsr-slot, .bis-search-row .bsr-loc{ color:var(--text-dim); font-size:11px; }
 .bis-search-empty{ padding:10px; font-size:12px; color:var(--text-dim); }
-.bis-row{ display:flex; align-items:center; gap:10px; background: var(--bg-panel-raised); padding:9px 10px; border-radius:4px; }
+.bis-row{ display:flex; align-items:center; gap:8px; background: var(--bg-panel-raised); padding:6px 9px; border-radius:4px; }
 .bis-row.collected{ opacity:.55; }
-.bis-row .bicon{ font-size:15px; flex-shrink:0; width:20px; text-align:center; }
-.bicon-img{ width:20px; height:20px; border-radius:3px; vertical-align:middle; }
-.bis-row .bname{ font-weight:600; font-size:13px; flex:1; }
+.bis-item-link{ display:flex; align-items:center; gap:8px; flex:1; min-width:0; text-decoration:none; color:inherit; }
+.bis-item-link .bicon{ font-size:14px; flex-shrink:0; width:18px; text-align:center; }
+.bicon-img{ width:18px; height:18px; border-radius:3px; vertical-align:middle; }
+.bis-row .bname{ font-weight:600; font-size:12px; }
 .bis-row .bname.collected{ text-decoration:line-through; }
-.bis-row .bslot{ font-size:11px; color:var(--text-dim); width:90px; flex-shrink:0; }
-.bis-row .bsource{ font-size:11px; color:var(--text-dim); flex:1; }
+.bis-row .bslot{ font-size:10px; color:var(--text-dim); width:80px; flex-shrink:0; text-align:right; }
 .bis-row input[type=checkbox]{ accent-color: var(--class-color, var(--gold)); }
 .bis-wh-link{ text-decoration:none; }
+.bis-wh-link:hover .bname{ text-decoration:underline; }
 .bis-wh-link:hover{ text-decoration:underline; }
 .bis-row .bdel{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; }
 .bis-row .bdel:hover{ opacity:1; color:var(--danger); }
@@ -539,16 +552,25 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
       <div class="todo-toprow">
         <div class="todo-avatars" id="bisAvatars"></div>
       </div>
-      <div class="bis-add" style="position:relative;">
-        <input type="hidden" id="bisWhId" value="">
-        <input type="hidden" id="bisIconUrl" value="">
-        <input type="text" class="iname" id="bisName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
-        <input type="text" class="islot" id="bisSlot" placeholder="Slot" data-i18n-placeholder="slotCol">
-        <input type="text" class="isource" id="bisSource" placeholder="Dungeon/Raid de onde dropa" data-i18n-placeholder="bisSourcePlaceholder">
-        <button id="bisAddBtn" data-i18n="add">Adicionar</button>
-        <div class="bis-search-results" id="bisSearchResults"></div>
+      <div class="bis-panel-grid">
+        <div class="bis-col-add">
+          <h3 class="bis-col-title" data-i18n="bisListTitle">BiS List</h3>
+          <div class="bis-add" style="position:relative;">
+            <input type="hidden" id="bisWhId" value="">
+            <input type="hidden" id="bisIconUrl" value="">
+            <input type="text" class="iname" id="bisName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
+            <input type="text" class="islot" id="bisSlot" placeholder="Slot" data-i18n-placeholder="slotCol">
+            <input type="text" class="isource" id="bisSource" placeholder="Dungeon/Raid de onde dropa" data-i18n-placeholder="bisSourcePlaceholder">
+            <button id="bisAddBtn" data-i18n="add">Adicionar</button>
+            <div class="bis-search-results" id="bisSearchResults"></div>
+          </div>
+          <div class="bis-list" id="bisList"></div>
+        </div>
+        <div class="bis-col-locations">
+          <h3 class="bis-col-title" data-i18n="bisMapTitle">BiS Map — Where to Farm</h3>
+          <div class="bis-locations" id="bisLocations"></div>
+        </div>
       </div>
-      <div class="bis-list" id="bisList"></div>
     </div>
   </section>
 
@@ -696,6 +718,8 @@ const I18N = {
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
+    bisNoLocation: "Sem local definido", bisItemCount: (n) => n === 1 ? "1 item" : `${n} itens`,
+    bisListTitle: "BiS List", bisMapTitle: "BiS Map — Onde Farmar",
     difficulty: "Dificuldade",
     eventNamePlaceholder: "Nome do evento/quest que você quer trackear",
     noEventsYet: "Nenhum evento cadastrado ainda. Adicione os que você quer trackear.",
@@ -761,6 +785,8 @@ const I18N = {
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
+    bisNoLocation: "No location set", bisItemCount: (n) => n === 1 ? "1 item" : `${n} items`,
+    bisListTitle: "BiS List", bisMapTitle: "BiS Map — Where to Farm",
     difficulty: "Difficulty",
     eventNamePlaceholder: "Name of the event/quest you want to track",
     noEventsYet: "No events yet. Add the ones you want to track.",
@@ -1938,22 +1964,52 @@ function renderBisAvatars(){
 }
 
 const bisRowHtml = b => {
-  const nameHtml = b.whId
-    ? `<a href="https://www.wowhead.com/item=${b.whId}" class="bis-wh-link">${escapeHtml(b.name)}</a>`
-    : escapeHtml(b.name);
   const iconHtml = b.icon
     ? `<img class="bicon-img" src="${b.icon}" alt="">`
     : (b.slot ? slotIcon(b.slot) : '❔');
+  const inner = `<span class="bicon">${iconHtml}</span><span class="bname ${b.collected?'collected':''}">${escapeHtml(b.name)}</span>`;
+  const linkTag = b.whId ? 'a' : 'span';
+  const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" class="bis-item-link bis-wh-link"` : ' class="bis-item-link"';
   return `
   <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
     <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
-    <span class="bicon">${iconHtml}</span>
-    <span class="bname ${b.collected?'collected':''}">${nameHtml}</span>
+    <${linkTag}${linkAttrs}>${inner}</${linkTag}>
     <span class="bslot">${escapeHtml(b.slot || '—')}</span>
-    <span class="bsource">${escapeHtml(b.source || '—')}</span>
     <button class="bdel">✕</button>
   </div>`;
 };
+
+function renderBisByLocation(){
+  const wrap = document.getElementById('bisLocations');
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  if(!c){ wrap.innerHTML = `<div class="empty-note">${t('todoCreateCharFirst')}</div>`; return; }
+  if(!c.bis.length){ wrap.innerHTML = `<div class="empty-note">${t('noBisYet')}</div>`; return; }
+  const groups = {};
+  c.bis.forEach(b => {
+    const loc = (b.source && b.source !== '—') ? b.source : t('bisNoLocation');
+    (groups[loc] = groups[loc] || []).push(b);
+  });
+  const locs = Object.keys(groups).sort();
+  wrap.innerHTML = locs.map(loc => {
+    const items = groups[loc];
+    return `
+      <div class="bis-loc-group">
+        <div class="bis-loc-head">${escapeHtml(loc)} <span class="bis-loc-count">(${t('bisItemCount', items.length)})</span></div>
+        <div class="bis-loc-items">
+          ${items.map(b => {
+            const slotBase = b.slot ? b.slot.split(' (')[0] : '';
+            const iconHtml = b.icon
+              ? `<img class="bicon-img" src="${b.icon}" alt="">`
+              : (b.slot ? slotIcon(b.slot) : '❔');
+            const inner = `<span class="bicon">${iconHtml}</span><span>${escapeHtml(b.name)}${slotBase ? ` <span class="bis-loc-slot">(${escapeHtml(slotBase)})</span>` : ''}</span>`;
+            const linkTag = b.whId ? 'a' : 'span';
+            const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" class="bis-item-link bis-wh-link"` : ' class="bis-item-link"';
+            return `<div class="bis-loc-item ${b.collected?'collected':''}">→ <${linkTag}${linkAttrs}>${inner}</${linkTag}></div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
 
 function bindBisRow(row){
   const id = row.dataset.id;
@@ -1965,6 +2021,7 @@ function bindBisRow(row){
     await saveChar(c);
     row.classList.toggle('collected', item.collected);
     row.querySelector('.bname').classList.toggle('collected', item.collected);
+    renderBisByLocation();
   });
   row.querySelector('.bdel').addEventListener('click', async () => {
     const c = state.characters.find(x => x.id === state.bisActiveChar);
@@ -1975,15 +2032,17 @@ function bindBisRow(row){
     if(!c.bis.length){
       document.getElementById('bisList').innerHTML = `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`;
     }
+    renderBisByLocation();
   });
 }
 
 function renderBisList(){
   const list = document.getElementById('bisList');
   const c = state.characters.find(x => x.id === state.bisActiveChar);
-  if(!c){ list.innerHTML = `<div class="empty-note">${t('todoCreateCharFirst')}</div>`; return; }
+  if(!c){ list.innerHTML = `<div class="empty-note">${t('todoCreateCharFirst')}</div>`; renderBisByLocation(); return; }
   list.innerHTML = c.bis.length ? c.bis.map(bisRowHtml).join('') : `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`;
   list.querySelectorAll('.bis-row').forEach(bindBisRow);
+  renderBisByLocation();
 }
 
 function renderBisSearchResults(query){
@@ -2045,6 +2104,7 @@ document.getElementById('bisAddBtn').addEventListener('click', async () => {
   if(empty) empty.remove();
   list.insertAdjacentHTML('beforeend', bisRowHtml(b));
   bindBisRow(list.querySelector(`[data-id="${b.id}"]`));
+  renderBisByLocation();
   nameInput.value = ''; slotInput.value = ''; sourceInput.value = ''; whIdInput.value = ''; iconInput.value = '';
 });
 
