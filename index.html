@@ -67,6 +67,11 @@ nav.tabs button{
 }
 nav.tabs button.active{ color: var(--gold); border-bottom-color: var(--gold); }
 nav.tabs button:hover{ color: var(--text); }
+.new-badge{
+  position:absolute; top:-4px; left:50%; transform:translateX(-50%); background:var(--danger); color:#fff;
+  font-size:8px; font-weight:800; padding:1px 5px; border-radius:999px; letter-spacing:.03em;
+  text-transform:uppercase; line-height:1.4; pointer-events:none; white-space:nowrap;
+}
 section.tab{ display:none; }
 section.tab.active{ display:block; animation: fadeIn .25s ease; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
@@ -330,8 +335,6 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .bis-add{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
 .bis-add input{ background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px; padding:8px 10px; font-size:12px; }
 .bis-add input.iname{ flex:1.4; min-width:140px; }
-.bis-add input.islot{ flex:.6; min-width:80px; }
-.bis-add input.isource{ flex:1; min-width:120px; }
 .bis-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 14px; border-radius:8px; cursor:pointer; font-size:12px; }
 .bis-panel-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap:18px; align-items:start; }
 .bis-col-title{ margin:0 0 10px 0; font-size:14px; color:var(--gold); }
@@ -651,7 +654,7 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
   <nav class="tabs">
     <button data-tab="dashboard" class="active" data-i18n="navDashboard">Dashboard</button>
     <button data-tab="todo" data-i18n="navTodo">To-Do</button>
-    <button data-tab="bis" data-i18n="navBis">BIS Gear</button>
+    <button data-tab="bis" style="position:relative;"><span data-i18n="navBis">BIS Gear</span><span class="new-badge">NEW</span></button>
     <button data-tab="mural" data-i18n="navMural">Mural</button>
   </nav>
 
@@ -708,8 +711,8 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
             <input type="hidden" id="bisWhId" value="">
             <input type="hidden" id="bisIconUrl" value="">
             <input type="text" class="iname" id="bisName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
-            <input type="text" class="islot" id="bisSlot" placeholder="Slot" data-i18n-placeholder="slotCol">
-            <input type="text" class="isource" id="bisSource" placeholder="Dungeon/Raid de onde dropa" data-i18n-placeholder="bisSourcePlaceholder">
+            <input type="hidden" id="bisSlot">
+            <input type="hidden" id="bisSource">
             <button id="bisAddBtn" data-i18n="add">Adicionar</button>
             <div class="bis-search-results" id="bisSearchResults"></div>
           </div>
