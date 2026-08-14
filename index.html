@@ -50,14 +50,15 @@ header.top{
   background: linear-gradient(180deg, #1e1e26, #14141a); border: 1px solid var(--gold-dim); color: var(--gold);
   font-weight: 600; font-size: 13px; padding: 11px 18px; border-radius: 8px; cursor: pointer;
   letter-spacing: .04em; text-transform: uppercase; transition: all .15s;
+  min-width:150px; text-align:center; white-space:nowrap;
 }
 .reset-btn:hover{ background: var(--gold); color: #16141c; border-color: var(--gold); }
 .lang-switch{ display:flex; gap:6px; }
-.lang-flag{ background:none; border:1px solid var(--hairline); border-radius:8px; padding:4px 8px; font-size:16px; cursor:pointer; opacity:.5; line-height:1; }
-.lang-flag-text{ font-family:'Inter',sans-serif; font-weight:700; font-size:12px; color:var(--text-dim); letter-spacing:.03em; padding:5px 8px; }
-.lang-flag-text.active{ color: var(--gold); }
-.lang-flag:hover{ opacity:.85; }
-.lang-flag.active{ opacity:1; border-color: var(--gold-dim); background: var(--bg-panel-raised); }
+.lang-flag{ background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px; padding:5px 10px; font-size:16px; cursor:pointer; opacity:.9; line-height:1; }
+.lang-flag-text{ font-family:'Inter',sans-serif; font-weight:700; font-size:12px; color:var(--text-dim); letter-spacing:.03em; padding:6px 10px; }
+.lang-flag-text.active{ color: #16141c; }
+.lang-flag:hover{ opacity:1; border-color: var(--gold-dim); }
+.lang-flag.active{ opacity:1; border-color: var(--gold); background: var(--gold); box-shadow: 0 0 12px -2px rgba(242,181,61,.6); }
 nav.tabs{ display:flex; gap: 4px; margin-bottom: 28px; border-bottom: 1px solid var(--hairline); }
 nav.tabs button{
   background:none; border:none; color: var(--text-dim); font-weight: 600; font-size: 13px;
@@ -93,9 +94,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .cqs-row b{ color:var(--text); font-size:14px; font-weight:700; }
 .cqs-row .cqs-lbl{ font-size:9px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); }
 .refresh-dashboard-btn{
-  display:inline-flex; align-items:center; gap:6px; background:none; border:1px solid var(--hairline);
+  display:inline-flex; align-items:center; justify-content:center; gap:6px; background:none; border:1px solid var(--hairline);
   color: var(--text-dim); font-size:11px; font-weight:600; padding:0 10px; height:32px; border-radius:8px;
-  cursor:pointer; transition: all .15s;
+  cursor:pointer; transition: all .15s; min-width:96px; white-space:nowrap;
 }
 .refresh-dashboard-btn:hover{ color: var(--gold); border-color: var(--gold-dim); }
 .refresh-dashboard-btn .rdb-icon{ display:inline-block; font-size:13px; }
@@ -114,10 +115,11 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .pbar-track{ height:6px; background: var(--danger); border-radius:3px; overflow:hidden; }
 .pbar-fill{ height:100%; background: var(--ok); transition: width .25s; }
 .add-event-btn{
-  width:100%; background: var(--bg-panel-raised); border:1px dashed var(--hairline); color: var(--gold-dim);
-  border-radius:8px; padding:7px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
-  cursor:pointer; position:relative; z-index:5;
+  width:auto; background:none; border:1px dashed var(--hairline); color: var(--text-dim);
+  border-radius:8px; padding:3px 8px; font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.03em;
+  cursor:pointer; position:relative; z-index:5; margin:2px 0 4px 0;
 }
+.add-event-btn:hover{ color: var(--gold-dim); border-color: var(--gold-dim); }
 .add-event-btn:hover{ border-color: var(--gold-dim); color: var(--gold); }
 
 .spark-toggles{ display:flex; gap:6px; }
@@ -447,11 +449,52 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .login-box .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px; font-weight:600; }
 .login-box h1{ font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 26px; color: var(--gold); margin-bottom: 6px; text-shadow: 0 0 20px rgba(242,181,61,0.5), 0 0 44px rgba(242,181,61,0.25); letter-spacing: .04em; text-transform:uppercase; }
 .brand-tagline{ font-size:11px; color:var(--text-dim); letter-spacing:.03em; margin-bottom:20px; }
-.login-logo{ width: 200px; max-width: 70%; display:block; margin: 0 auto 18px; filter: drop-shadow(0 0 26px rgba(242,181,61,0.4)); }
+.login-logo{ width: 200px; max-width: 70%; display:block; margin: 0 auto 18px; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45)); }
 .login-box{ box-shadow: 0 0 60px -20px rgba(242,181,61,0.15); }
 .app-footer{ margin-top:40px; padding-top:20px; border-top:1px solid var(--hairline); text-align:center; font-size:11px; color:var(--text-dim); letter-spacing:.03em; }
 .app-footer-brand{ color:var(--gold-dim); font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
 .app-footer-sep{ margin:0 8px; opacity:.5; }
+.app-footer-links{ margin-top:8px; }
+.app-footer-links a{ color:var(--text-dim); text-decoration:none; cursor:pointer; }
+.app-footer-links a:hover{ color:var(--gold); }
+
+/* landing page */
+#landingScreen{ max-width:1200px; margin:0 auto; padding:28px 24px 60px; }
+.landing-nav{ display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:48px; }
+.landing-brand{ display:flex; align-items:center; gap:10px; }
+.brand-mark{ width:32px; height:32px; flex-shrink:0; filter: drop-shadow(0 0 10px rgba(242,181,61,.4)); }
+.landing-wordmark{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:.06em; text-transform:uppercase; color:var(--text); }
+.landing-nav-links{ display:flex; gap:8px; }
+.landing-nav-link{ background:none; border:none; color:var(--text-dim); font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; transition: all .15s; min-width:160px; text-align:center; white-space:nowrap; }
+.landing-nav-link:hover{ color:var(--text); background:var(--bg-panel-raised); }
+.landing-nav-link.active{ color:var(--gold); background:var(--bg-panel-raised); }
+.landing-login-btn{ background:var(--gold); border:none; color:#16141c; font-weight:700; font-size:13px; padding:10px 22px; border-radius:999px; cursor:pointer; text-transform:uppercase; letter-spacing:.03em; transition: all .15s; min-width:100px; text-align:center; white-space:nowrap; }
+.landing-login-btn:hover{ box-shadow:0 0 24px -4px rgba(242,181,61,.6); transform: translateY(-1px); }
+.landing-hero{ display:flex; align-items:center; gap:40px; margin-bottom:64px; }
+.landing-hero-text{ flex:1.2; min-width:280px; }
+.landing-hero-title{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:clamp(36px,6vw,64px); line-height:1.05; color:var(--gold); text-transform:uppercase; letter-spacing:.02em; text-shadow: 0 0 30px rgba(242,181,61,.45), 0 0 60px rgba(242,181,61,.2); margin-top:4px; }
+.landing-hero-desc{ color:var(--text-dim); font-size:15px; line-height:1.6; max-width:440px; margin:18px 0 28px; }
+.landing-cta-btn{ background:var(--gold); border:none; color:#16141c; font-weight:700; font-size:15px; padding:15px 32px; border-radius:999px; cursor:pointer; letter-spacing:.02em; transition: all .15s; min-width:180px; text-align:center; white-space:nowrap; }
+.landing-cta-btn:hover{ box-shadow:0 0 36px -4px rgba(242,181,61,.65); transform: translateY(-2px); }
+.landing-hero-art{ flex:1; min-width:220px; max-width:380px; display:flex; justify-content:center; }
+.landing-hero-art img{ width:100%; max-width:340px; filter: drop-shadow(0 10px 24px rgba(0,0,0,.4)); }
+.landing-panels{ background:var(--bg-panel); border:1px solid var(--hairline); border-radius:16px; padding:36px; margin-bottom:24px; }
+.landing-panel{ display:none; }
+.landing-panel.active{ display:block; }
+.landing-panel h2{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:24px; text-transform:uppercase; letter-spacing:.03em; color:var(--text); margin-bottom:24px; }
+.landing-features{ display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; }
+.landing-feature{ display:flex; gap:14px; background:var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:12px; padding:18px; }
+.lf-icon{ font-size:26px; flex-shrink:0; }
+.landing-feature h3{ font-size:14px; color:var(--gold); margin-bottom:4px; }
+.landing-feature p{ font-size:13px; color:var(--text-dim); line-height:1.5; }
+.landing-credits{ display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+.landing-credit-item{ background:var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:10px; padding:14px 16px; font-size:13px; color:var(--text-dim); }
+.landing-credit-item b{ color:var(--gold); }
+.landing-privacy-body{ font-size:14px; color:var(--text-dim); line-height:1.7; max-width:720px; }
+.login-back-link{ display:inline-block; font-size:12px; color:var(--text-dim); text-decoration:none; margin-bottom:14px; cursor:pointer; }
+.login-back-link:hover{ color:var(--gold); }
+@media(max-width:760px){ .landing-hero{ flex-direction:column; } .landing-nav-links{ order:3; width:100%; justify-content:center; } }
+
 .login-google-btn{
   width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
   background:#fff; color:#1f1f1f; border:none; border-radius:8px; padding:11px; font-size:14px; font-weight:600;
@@ -478,8 +521,83 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 </head>
 <body>
 
-<div id="loginScreen">
+<div id="landingScreen">
+  <nav class="landing-nav">
+    <div class="landing-brand">
+      <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="ksGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffd873"/>
+            <stop offset="100%" stop-color="#e08a1e"/>
+          </linearGradient>
+        </defs>
+        <polygon points="50,3 92,28 78,97 22,97 8,28" fill="url(#ksGrad)" stroke="#1a1206" stroke-width="2"/>
+        <polygon points="50,3 92,28 8,28" fill="#ffffff" opacity="0.25"/>
+        <polyline points="8,28 92,28" stroke="#1a1206" stroke-width="1.5" opacity="0.5"/>
+        <polyline points="50,3 22,97" stroke="#1a1206" stroke-width="1.5" opacity="0.35"/>
+        <polyline points="50,3 78,97" stroke="#1a1206" stroke-width="1.5" opacity="0.35"/>
+      </svg>
+      <span class="landing-wordmark" data-i18n="brandTitle">Keystone Hub</span>
+    </div>
+    <div class="landing-nav-links">
+      <button class="landing-nav-link active" data-landing-tab="about" data-i18n="landingNavAbout">How it Works</button>
+      <button class="landing-nav-link" data-landing-tab="privacy" data-i18n="landingNavPrivacy">Data &amp; Privacy</button>
+    </div>
+    <div class="lang-switch">
+      <button class="lang-flag" data-lang="pt" title="Português">🇧🇷</button>
+      <button class="lang-flag lang-flag-text" data-lang="en" title="English">EN</button>
+    </div>
+    <button class="landing-login-btn" id="landingLoginBtn" data-i18n="landingLoginCta">Login</button>
+  </nav>
+
+  <div class="landing-hero">
+    <div class="landing-hero-text">
+      <div class="eyebrow" data-i18n="brandEyebrow">Midnight · Season 2</div>
+      <h1 class="landing-hero-title" data-i18n="brandTitle">Keystone Hub</h1>
+      <div class="header-subtitle" data-i18n="brandSubtitle">Season Command Center</div>
+      <p class="landing-hero-desc" data-i18n="landingHeroDesc">Track every character's progress in one place.</p>
+      <button class="landing-cta-btn" id="landingHeroCta" data-i18n="landingHeroCtaLabel">Get Started →</button>
+    </div>
+    <div class="landing-hero-art">
+      <img src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight — Curse of Ula'tek">
+    </div>
+  </div>
+
+  <div class="landing-panels">
+    <div class="landing-panel active" id="landing-about">
+      <h2 data-i18n="landingAboutTitle">Your whole roster, one screen</h2>
+      <div class="landing-features">
+        <div class="landing-feature"><span class="lf-icon">⚔️</span><div><h3 data-i18n="landingF1Title">Weekly Progress</h3><p data-i18n="landingF1Desc">Dungeons, Raid, World Boss and Great Vault for every character, updated automatically.</p></div></div>
+        <div class="landing-feature"><span class="lf-icon">🎯</span><div><h3 data-i18n="landingF2Title">BIS Gear</h3><p data-i18n="landingF2Desc">Best-in-slot item list with native Wowhead tooltips and real icons.</p></div></div>
+        <div class="landing-feature"><span class="lf-icon">🔄</span><div><h3 data-i18n="landingF3Title">Auto Sync</h3><p data-i18n="landingF3Desc">Item Level and Mythic+ Score come straight from Raider.IO — nothing to type in.</p></div></div>
+        <div class="landing-feature"><span class="lf-icon">🌐</span><div><h3 data-i18n="landingF4Title">PT/EN</h3><p data-i18n="landingF4Desc">Full interface in Portuguese and English.</p></div></div>
+      </div>
+    </div>
+    <div class="landing-panel" id="landing-privacy">
+      <h2 data-i18n="landingPrivacyTitle">Where your data comes from</h2>
+      <div class="landing-credits">
+        <div class="landing-credit-item"><b>Raider.IO</b> — <span data-i18n="landingCredit1">Item level, Mythic+ score and raid progression.</span></div>
+        <div class="landing-credit-item"><b>Battle.net API</b> (Blizzard Entertainment) — <span data-i18n="landingCredit2">Official character and realm data.</span></div>
+        <div class="landing-credit-item"><b>Wowhead</b> — <span data-i18n="landingCredit3">Item tooltips and icons.</span></div>
+      </div>
+      <p class="landing-privacy-body" data-i18n="landingPrivacyBody">Your data is tied only to your own Google account and is never shared, sold, or used for anything beyond powering your own dashboard. Sign-in happens through Google — we never see or store your password.</p>
+    </div>
+  </div>
+
+  <div class="login-toggle" id="landingPreviewModeRow" style="display:none;">
+    <a id="landingPreviewModeLink" data-i18n="loginPreviewMode">Visualizar sem login (modo de teste)</a>
+  </div>
+
+  <footer class="app-footer">
+    <span class="app-footer-brand" data-i18n="brandTitle">Keystone Hub</span>
+    <span class="app-footer-sep">•</span>
+    <span data-i18n="brandTagline">Season Command Center • Powered by Rawmohn</span>
+  </footer>
+</div>
+
+<div id="loginScreen" style="display:none;">
   <div class="login-box">
+    <a href="#" id="loginBackLink" class="login-back-link" data-i18n="landingBackLink">← Back</a>
     <img class="login-logo" src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight — Curse of Ula'tek">
     <div class="eyebrow" data-i18n="brandEyebrow">Midnight · Season 2</div>
     <h1 data-i18n="brandTitle">Keystone Hub</h1>
@@ -518,7 +636,6 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
     <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <button class="refresh-dashboard-btn" id="refreshDashboardBtn" title="Atualizar todos os personagens no Raider.IO"><span class="rdb-icon">↻</span> <span data-i18n="refreshDashboard">Atualizar</span></button>
-        <button class="reset-btn" id="resetWeekBtn" data-i18n="resetWeek">Reset Semanal</button>
       </div>
       <div class="user-badge">
         <span id="userEmailLabel"></span>
@@ -637,9 +754,16 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
   <section class="tab" id="tab-detail"></section>
 
   <footer class="app-footer">
-    <span class="app-footer-brand" data-i18n="brandTitle">Keystone Hub</span>
-    <span class="app-footer-sep">•</span>
-    <span data-i18n="brandTagline">Season Command Center • Powered by Rawmohn</span>
+    <div>
+      <span class="app-footer-brand" data-i18n="brandTitle">Keystone Hub</span>
+      <span class="app-footer-sep">•</span>
+      <span data-i18n="brandTagline">Season Command Center • Powered by Rawmohn</span>
+    </div>
+    <div class="app-footer-links">
+      <a id="footerAboutLink" data-i18n="landingNavAbout">How it Works</a>
+      <span class="app-footer-sep">•</span>
+      <a id="footerPrivacyLink" data-i18n="landingNavPrivacy">Data &amp; Privacy</a>
+    </div>
   </footer>
 </div>
 
@@ -688,6 +812,36 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
   </div>
 </div>
 
+<div class="modal-overlay" id="footerInfoModal" style="display:none;">
+  <div class="modal" style="width:640px; max-width:92vw;">
+    <div class="landing-nav-links" style="margin-bottom:20px;">
+      <button class="landing-nav-link footer-modal-tab active" data-footer-tab="about" data-i18n="landingNavAbout">How it Works</button>
+      <button class="landing-nav-link footer-modal-tab" data-footer-tab="privacy" data-i18n="landingNavPrivacy">Data &amp; Privacy</button>
+    </div>
+    <div class="landing-panel footer-modal-panel active" id="footer-about">
+      <h2 data-i18n="landingAboutTitle">Your whole roster, one screen</h2>
+      <div class="landing-features">
+        <div class="landing-feature"><span class="lf-icon">⚔️</span><div><h3 data-i18n="landingF1Title">Weekly Progress</h3><p data-i18n="landingF1Desc">Dungeons, Raid, World Boss and Great Vault for every character, updated automatically.</p></div></div>
+        <div class="landing-feature"><span class="lf-icon">🎯</span><div><h3 data-i18n="landingF2Title">BIS Gear Map</h3><p data-i18n="landingF2Desc">Build your want-list once and get a clear map of exactly where to farm each item — just follow it and focus on playing.</p></div></div>
+        <div class="landing-feature"><span class="lf-icon">🔄</span><div><h3 data-i18n="landingF3Title">Auto Sync</h3><p data-i18n="landingF3Desc">Item Level and Mythic+ Score come straight from Raider.IO — nothing to type in.</p></div></div>
+        <div class="landing-feature"><span class="lf-icon">🌐</span><div><h3 data-i18n="landingF4Title">PT/EN</h3><p data-i18n="landingF4Desc">Full interface in Portuguese and English.</p></div></div>
+      </div>
+    </div>
+    <div class="landing-panel footer-modal-panel" id="footer-privacy">
+      <h2 data-i18n="landingPrivacyTitle">Where your data comes from</h2>
+      <div class="landing-credits">
+        <div class="landing-credit-item"><b>Raider.IO</b> — <span data-i18n="landingCredit1">Item level, Mythic+ score and raid progression.</span></div>
+        <div class="landing-credit-item"><b>Battle.net API</b> (Blizzard Entertainment) — <span data-i18n="landingCredit2">Official character and realm data.</span></div>
+        <div class="landing-credit-item"><b>Wowhead</b> — <span data-i18n="landingCredit3">Item tooltips and icons.</span></div>
+      </div>
+      <p class="landing-privacy-body" data-i18n="landingPrivacyBody">Your data is tied only to your own Google account and is never shared, sold, or used for anything beyond powering your own dashboard. Sign-in happens through Google — we never see or store your password.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="confirm" id="footerInfoCloseBtn" data-i18n="close" style="flex:none; margin-left:auto; padding-left:24px; padding-right:24px;">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============ FIREBASE SETUP ============
    1. Crie um projeto em https://console.firebase.google.com
@@ -722,6 +876,21 @@ const I18N = {
     brandEyebrow: "Midnight · Temporada 2", brandTitle: "Keystone Hub",
     brandTagline: "Season Command Center • Powered by Rawmohn",
     brandSubtitle: "Season Command Center",
+    landingNavAbout: "Como Funciona", landingNavPrivacy: "Dados & Privacidade", landingLoginCta: "Login",
+    landingBackLink: "← Voltar",
+    landingHeroDesc: "Acompanhe o progresso de todos os seus personagens — Mythic+, Raid, Great Vault e mais — em um só lugar. Sem precisar abrir o jogo, sem planilha.",
+    landingHeroCtaLabel: "Começar →",
+    landingAboutTitle: "Seu roster inteiro, numa tela só",
+    landingF1Title: "Progresso Semanal", landingF1Desc: "Dungeons, Raid, World Boss e Great Vault de todos os personagens, atualizados automaticamente.",
+    landingF2Title: "Mapa de BIS Gear", landingF2Desc: "Monte a lista dos itens que você quer e o app te mostra exatamente onde farmar cada um — só seguir a lista e focar no jogo.",
+    landingF3Title: "Sincronização Automática", landingF3Desc: "Item Level e IO Score vêm direto do Raider.IO — sem digitar nada.",
+    landingF4Title: "PT/EN", landingF4Desc: "Interface completa em português e inglês.",
+    landingPrivacyTitle: "De onde vêm os dados",
+    landingCredit1: "Item level, Mythic+ Score e progresso de raid.",
+    landingCredit2: "Dados oficiais de personagem e reinos.",
+    landingCredit3: "Tooltips e ícones de item.",
+    landingPrivacyBody: "Seus dados ficam vinculados só à sua conta Google e nunca são compartilhados com outros usuários, vendidos ou usados pra qualquer coisa fora do próprio dashboard. O login é feito via Google — nós nunca vemos nem guardamos sua senha.",
+    aboutMenuLabel: "Sobre",
     loginGoogle: "Continuar com Google", loginOr: "ou",
     loginEmailPlaceholder: "E-mail", loginPasswordPlaceholder: "Senha", loginEnter: "Entrar",
     loginNoAccount: "Ainda não tem conta?", loginCreateAccount: "Criar conta",
@@ -735,7 +904,7 @@ const I18N = {
     authInvalidCredential: "E-mail ou senha incorretos.", authPopupClosed: "Login com Google cancelado.",
     authGenericError: "Não foi possível entrar. Tente de novo.",
     ariaGoHome: "Ir para o início",
-    resetWeek: "Reset Semanal", logout: "Sair",
+    logout: "Sair",
     navDashboard: "Dashboard", navTodo: "To-Do", navBis: "BIS Gear", navMural: "Mural",
     loading: "Carregando...", evolutionTitle: "Evolução",
     todoPlaceholder: "Adicionar novo objetivo...", add: "Adicionar",
@@ -743,7 +912,7 @@ const I18N = {
     muralTitle: "Mural", muralSub: "Espaço pra recado ou lembrete", character: "Personagem",
     muralWritePlaceholder: "Escreva aqui...", muralSendNote: "Enviar Recado", muralSendPrint: "Enviar print",
     sortNewest: "Mais novos", sortOldest: "Mais antigos",
-    newCharTitle: "Novo Personagem", name: "Nome", class: "Classe", cancel: "Cancelar", create: "Criar",
+    newCharTitle: "Novo Personagem", name: "Nome", class: "Classe", cancel: "Cancelar", create: "Criar", close: "Fechar",
     realmLabel: "Reino", searchAndAdd: "Buscar e Adicionar", charSearching: "Buscando personagem no Raider.IO...",
     charNotFound: "Personagem não encontrado. Confira o nome e o reino.", selectRealmFirst: "Escolha um reino da lista.",
     refreshFromRaiderIO: "Atualizar do Raider.IO", refreshDashboard: "Atualizar",
@@ -753,8 +922,6 @@ const I18N = {
     addCharacterBtn: "+ Adicionar Personagem",
     removeCharTitle: "Remover personagem?",
     removeCharMsg: (name) => `Isso vai apagar ${name} e todo o progresso salvo dele.`,
-    resetWeekTitle: "Resetar progresso semanal?",
-    resetWeekMsg: "Isso vai zerar Dungeons, Raid (bosses e dificuldades), World Boss e Spark de todos os personagens (progresso semanal). Item Level, IOScore, BIS, Targeted Events, To-Do e Chave mais alta não são afetados. Essa ação não pode ser desfeita.",
     detailOpenError: "Ocorreu um erro ao abrir essa página. Abra o console do navegador (F12) e me mande a mensagem de erro que aparecer, pra eu corrigir.",
     backToDashboard: "← Voltar ao Dashboard",
     highestKey: "Chave mais alta",
@@ -796,6 +963,21 @@ const I18N = {
     brandEyebrow: "Midnight · Season 2", brandTitle: "Keystone Hub",
     brandTagline: "Season Command Center • Powered by Rawmohn",
     brandSubtitle: "Season Command Center",
+    landingNavAbout: "How it Works", landingNavPrivacy: "Data & Privacy", landingLoginCta: "Login",
+    landingBackLink: "← Back",
+    landingHeroDesc: "Track every character's progress — Mythic+, Raid, Great Vault and more — in one place. No game client, no spreadsheets.",
+    landingHeroCtaLabel: "Get Started →",
+    landingAboutTitle: "Your whole roster, one screen",
+    landingF1Title: "Weekly Progress", landingF1Desc: "Dungeons, Raid, World Boss and Great Vault for every character, updated automatically.",
+    landingF2Title: "BIS Gear Map", landingF2Desc: "Build your want-list once and get a clear map of exactly where to farm each item — just follow it and focus on playing.",
+    landingF3Title: "Auto Sync", landingF3Desc: "Item Level and Mythic+ Score come straight from Raider.IO — nothing to type in.",
+    landingF4Title: "PT/EN", landingF4Desc: "Full interface in Portuguese and English.",
+    landingPrivacyTitle: "Where your data comes from",
+    landingCredit1: "Item level, Mythic+ score and raid progression.",
+    landingCredit2: "Official character and realm data.",
+    landingCredit3: "Item tooltips and icons.",
+    landingPrivacyBody: "Your data is tied only to your own Google account and is never shared with other users, sold, or used for anything beyond powering your own dashboard. Sign-in happens through Google — we never see or store your password.",
+    aboutMenuLabel: "About",
     loginGoogle: "Continue with Google", loginOr: "or",
     loginEmailPlaceholder: "Email", loginPasswordPlaceholder: "Password", loginEnter: "Log In",
     loginNoAccount: "Don't have an account yet?", loginCreateAccount: "Create account",
@@ -809,7 +991,7 @@ const I18N = {
     authInvalidCredential: "Wrong email or password.", authPopupClosed: "Google sign-in cancelled.",
     authGenericError: "Couldn't sign in. Please try again.",
     ariaGoHome: "Go to home",
-    resetWeek: "Weekly Reset", logout: "Log Out",
+    logout: "Log Out",
     navDashboard: "Dashboard", navTodo: "To-Do", navBis: "BIS Gear", navMural: "Board",
     loading: "Loading...", evolutionTitle: "Evolution",
     todoPlaceholder: "Add a new goal...", add: "Add",
@@ -817,7 +999,7 @@ const I18N = {
     muralTitle: "Board", muralSub: "Space for a note or reminder", character: "Character",
     muralWritePlaceholder: "Write here...", muralSendNote: "Send Note", muralSendPrint: "Send Screenshot",
     sortNewest: "Newest", sortOldest: "Oldest",
-    newCharTitle: "New Character", name: "Name", class: "Class", cancel: "Cancel", create: "Create",
+    newCharTitle: "New Character", name: "Name", class: "Class", cancel: "Cancel", create: "Create", close: "Close",
     realmLabel: "Realm", searchAndAdd: "Search and Add", charSearching: "Searching character on Raider.IO...",
     charNotFound: "Character not found. Check the name and realm.", selectRealmFirst: "Pick a realm from the list.",
     refreshFromRaiderIO: "Refresh from Raider.IO", refreshDashboard: "Refresh",
@@ -827,8 +1009,6 @@ const I18N = {
     addCharacterBtn: "+ Add Character",
     removeCharTitle: "Remove character?",
     removeCharMsg: (name) => `This will delete ${name} and all of their saved progress.`,
-    resetWeekTitle: "Reset weekly progress?",
-    resetWeekMsg: "This will clear Dungeons, Raid (bosses and difficulties), World Boss and Spark for every character (weekly progress). Item Level, IOScore, BIS, Targeted Events, To-Do and Highest Key are not affected. This can't be undone.",
     detailOpenError: "Something went wrong opening this page. Open the browser console (F12) and send me the error message so I can fix it.",
     backToDashboard: "← Back to Dashboard",
     highestKey: "Highest Key",
@@ -964,32 +1144,76 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
   if(auth.currentUser){ auth.signOut(); }
   else {
     currentUser = null;
-    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('landingScreen').style.display = 'block';
+    document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'none';
   }
+});
+
+/* landing page navigation */
+document.querySelectorAll('#landingScreen .landing-nav-link').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#landingScreen .landing-nav-link').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#landingScreen .landing-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('landing-' + btn.dataset.landingTab).classList.add('active');
+  });
+});
+document.querySelectorAll('.footer-modal-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.footer-modal-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.footer-modal-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('footer-' + btn.dataset.footerTab).classList.add('active');
+  });
+});
+function openFooterInfoModal(tab){
+  document.querySelectorAll('.footer-modal-tab').forEach(b => b.classList.toggle('active', b.dataset.footerTab === tab));
+  document.querySelectorAll('.footer-modal-panel').forEach(p => p.classList.toggle('active', p.id === 'footer-' + tab));
+  document.getElementById('footerInfoModal').style.display = 'flex';
+}
+document.getElementById('footerAboutLink').addEventListener('click', () => openFooterInfoModal('about'));
+document.getElementById('footerPrivacyLink').addEventListener('click', () => openFooterInfoModal('privacy'));
+document.getElementById('footerInfoCloseBtn').addEventListener('click', () => { document.getElementById('footerInfoModal').style.display = 'none'; });
+function goToLoginScreen(){
+  document.getElementById('landingScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+document.getElementById('landingLoginBtn').addEventListener('click', goToLoginScreen);
+document.getElementById('landingHeroCta').addEventListener('click', goToLoginScreen);
+document.getElementById('loginBackLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('landingScreen').style.display = 'block';
 });
 
 // Local file preview only — lets changes be reviewed without fighting Firebase's
 // authorized-domain restriction on file:// origins. Never shows on the deployed site.
 if(location.protocol === 'file:'){
   document.getElementById('previewModeRow').style.display = 'block';
-  document.getElementById('previewModeLink').addEventListener('click', () => {
+  document.getElementById('landingPreviewModeRow').style.display = 'block';
+  const enterPreviewMode = () => {
+    document.getElementById('landingScreen').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
     document.getElementById('userEmailLabel').textContent = t('previewModeLabel');
     loadAll();
-  });
+  };
+  document.getElementById('previewModeLink').addEventListener('click', enterPreviewMode);
+  document.getElementById('landingPreviewModeLink').addEventListener('click', enterPreviewMode);
 }
 
 auth.onAuthStateChanged((user) => {
   currentUser = user;
   if(user){
+    document.getElementById('landingScreen').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
     document.getElementById('userEmailLabel').textContent = user.email || user.displayName || '';
     loadAll();
   } else {
-    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('landingScreen').style.display = 'block';
+    document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'none';
   }
 });
@@ -1930,6 +2154,7 @@ function renderCharacters(){
     const color = CLASS_HEX[c.class] || '#f2b53d';
     const dCount = countDone(c.dungeons), dTotal = DUNGEON_POOL.length;
     const eCount = c.events.filter(e => e.done).length, eTotal = c.events.length;
+    const todoCount = c.todos.filter(td => td.done).length, todoTotal = c.todos.length;
     const raidCount = raidBossesDone(c), raidTotal = RAID_POOL.length;
     const wbCount = countDone(c.worldboss), wbTotal = WORLDBOSS_TIERS.length;
     const sparkCount = countDone(c.sparks), sparkTotal = SPARK_POOL.length;
@@ -1983,6 +2208,11 @@ function renderCharacters(){
           <div class="pbar-track"><div class="pbar-fill" style="width:${eTotal? (eCount/eTotal*100):0}%"></div></div>
         </div>
         ${eTotal === 0 ? `<button class="add-event-btn" data-action="add-event">+ Add Event</button>` : ''}
+        <div class="progress-item" data-hover="todo">
+          <div class="plabel"><span>To-Do</span><span class="pcount">${todoCount}/${todoTotal}</span></div>
+          <div class="pbar-track"><div class="pbar-fill" style="width:${todoTotal? (todoCount/todoTotal*100):0}%"></div></div>
+        </div>
+        ${todoTotal === 0 ? `<button class="add-event-btn" data-action="add-todo">+ Add To-Do</button>` : ''}
       </div>
       <div class="vault-box raid-diff-box" data-hover="raid">
         <details class="hist-toggle card-collapse" open>
@@ -2041,7 +2271,8 @@ function renderCharacters(){
     const hoverSources = {
       dungeon: { title: `${c.name} — Dungeons`, items: () => DUNGEON_POOL.map(d => ({name:d, done:c.dungeons[d]})) },
       worldboss: { title: `${c.name} — World Boss`, items: () => WORLDBOSS_TIERS.map(wt => ({name:wt, done:c.worldboss[wt]})) },
-      events: { title: `${c.name} — Events`, items: () => c.events.map(ev => ({name:ev.text, done:ev.done})) }
+      events: { title: `${c.name} — Events`, items: () => c.events.map(ev => ({name:ev.text, done:ev.done})) },
+      todo: { title: `${c.name} — To-Do`, items: () => c.todos.map(td => ({name:td.text, done:td.done})) }
     };
     Object.keys(hoverSources).forEach(key => {
       const el = card.querySelector(`[data-hover="${key}"]`);
@@ -2058,10 +2289,13 @@ function renderCharacters(){
       raidHoverEl.addEventListener('mouseleave', hideListTip);
     }
 
-    const addEventBtn = card.querySelector('.add-event-btn');
-    if(addEventBtn){
-      addEventBtn.addEventListener('click', (e) => { e.stopPropagation(); openDetail(c.id, 'section-events'); });
-    }
+    card.querySelectorAll('.add-event-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if(btn.dataset.action === 'add-todo') goToTodoTab(c.id);
+        else openDetail(c.id, 'section-events');
+      });
+    });
     card.querySelectorAll('.raid-diff-row').forEach(row => {
       row.addEventListener('click', (e) => { e.stopPropagation(); openDetail(c.id, 'section-raid'); });
     });
@@ -2071,6 +2305,10 @@ function renderCharacters(){
       if(!row) return;
       row.addEventListener('click', (e) => { e.stopPropagation(); openDetail(c.id, rowJumpTargets[key]); });
     });
+    const todoRow = card.querySelector('[data-hover="todo"]');
+    if(todoRow){
+      todoRow.addEventListener('click', (e) => { e.stopPropagation(); goToTodoTab(c.id); });
+    }
 
     card.querySelector('.char-remove').addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -2324,17 +2562,6 @@ async function checkAutoWeeklyReset(){
   }
   if(any) renderCharacters();
 }
-
-document.getElementById('resetWeekBtn').addEventListener('click', async () => {
-  const ok = await customConfirm(t('resetWeekMsg'), t('resetWeekTitle'));
-  if(!ok) return;
-  for(const c of state.characters){
-    clearWeeklyProgress(c);
-    c.lastWeeklyReset = (c.region ? mostRecentResetBoundary(c.region) : new Date()).toISOString();
-    await saveChar(c);
-  }
-  renderCharacters();
-});
 
 /* ---------------- Detail page ---------------- */
 function showDetailTab(){
@@ -3173,6 +3400,16 @@ function goToDashboard(){
   renderChart();
 }
 document.getElementById('homeLink').addEventListener('click', (e) => { e.preventDefault(); goToDashboard(); });
+
+function goToTodoTab(charId){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+  document.querySelector('nav.tabs button[data-tab="todo"]').classList.add('active');
+  document.getElementById('tab-todo').classList.add('active');
+  state.todoActiveChar = charId;
+  renderTodoAvatars();
+  renderTodos();
+}
 
 document.querySelectorAll('nav.tabs button').forEach(btn => {
   btn.addEventListener('click', () => {
