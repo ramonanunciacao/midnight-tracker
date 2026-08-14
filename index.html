@@ -275,7 +275,7 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .detail-col{ display:flex; flex-direction:column; gap:20px; }
 @media(max-width: 760px){ .detail-grid{ grid-template-columns: 1fr; } }
 .raid-table-wrap{ overflow-x:auto; }
-.raid-table{ width:100%; border-collapse:collapse; font-size:12px; }
+.raid-table{ width:auto; border-collapse:collapse; font-size:12px; }
 .raid-table th{ text-align:center; color:var(--text-dim); text-transform:uppercase; font-size:10px; letter-spacing:.04em; padding:8px 6px; border-bottom:1px solid var(--hairline); }
 .raid-table th:first-child{ text-align:left; }
 .raid-table td{ padding:8px 6px; border-bottom:1px solid var(--hairline); text-align:center; }
@@ -484,6 +484,7 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
   <nav class="tabs">
     <button data-tab="dashboard" class="active" data-i18n="navDashboard">Dashboard</button>
     <button data-tab="todo" data-i18n="navTodo">To-Do</button>
+    <button data-tab="bis" data-i18n="navBis">BIS Gear</button>
     <button data-tab="mural" data-i18n="navMural">Mural</button>
   </nav>
 
@@ -525,6 +526,22 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
         </div>
         <div id="tipsList"></div>
       </div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-bis">
+    <div class="todo-panel">
+      <div class="todo-toprow">
+        <div class="todo-avatars" id="bisAvatars"></div>
+      </div>
+      <div class="bis-add" style="position:relative;">
+        <input type="text" class="iname" id="bisName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
+        <input type="text" class="islot" id="bisSlot" placeholder="Slot" data-i18n-placeholder="slotCol">
+        <input type="text" class="isource" id="bisSource" placeholder="Dungeon/Raid de onde dropa" data-i18n-placeholder="bisSourcePlaceholder">
+        <button id="bisAddBtn" data-i18n="add">Adicionar</button>
+        <div class="bis-search-results" id="bisSearchResults"></div>
+      </div>
+      <div class="bis-list" id="bisList"></div>
     </div>
   </section>
 
@@ -644,7 +661,7 @@ const I18N = {
     authGenericError: "Não foi possível entrar. Tente de novo.",
     ariaGoHome: "Ir para o início",
     resetWeek: "Reset Semanal", logout: "Sair",
-    navDashboard: "Dashboard", navTodo: "To-Do", navMural: "Mural",
+    navDashboard: "Dashboard", navTodo: "To-Do", navBis: "BIS Gear", navMural: "Mural",
     loading: "Carregando...", evolutionTitle: "Evolução",
     todoPlaceholder: "Adicionar novo objetivo...", add: "Adicionar",
     tipsTitle: "Dicas", tipPlaceholder: "Adicionar nova dica...",
@@ -709,7 +726,7 @@ const I18N = {
     authGenericError: "Couldn't sign in. Please try again.",
     ariaGoHome: "Go to home",
     resetWeek: "Weekly Reset", logout: "Log Out",
-    navDashboard: "Dashboard", navTodo: "To-Do", navMural: "Board",
+    navDashboard: "Dashboard", navTodo: "To-Do", navBis: "BIS Gear", navMural: "Board",
     loading: "Loading...", evolutionTitle: "Evolution",
     todoPlaceholder: "Add a new goal...", add: "Add",
     tipsTitle: "Tips", tipPlaceholder: "Add a new tip...",
@@ -775,7 +792,7 @@ function updateLangFlagsUI(){
 }
 function refreshDynamicUI(){
   if(document.getElementById('mainApp').style.display === 'none') return;
-  renderCharacters(); renderChart(); renderTodoAvatars(); renderTodos(); renderTips();
+  renderCharacters(); renderChart(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList(); renderTips();
   renderMuralFilters(); renderMuralGrid();
   if(document.getElementById('tab-detail').classList.contains('active') && currentDetailChar){ renderDetail(currentDetailChar); }
 }
@@ -1148,7 +1165,7 @@ const DEFAULT_CHARS = [
   {id:"c2", name:"Bludnymph", class:"Warrior"}
 ];
 
-let state = { characters: [], tips: [], range: 30, metric: "ilvl", muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", todoActiveChar: null };
+let state = { characters: [], tips: [], range: 30, metric: "ilvl", muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", todoActiveChar: null, bisActiveChar: null };
 let chart = null, detailChartInstance = null, currentDetailChar = null, detailRange = 30;
 
 function uid(){ return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
@@ -1175,6 +1192,9 @@ async function loadAll(){
   if(!state.todoActiveChar || !state.characters.some(c => c.id === state.todoActiveChar)){
     state.todoActiveChar = state.characters[0] ? state.characters[0].id : null;
   }
+  if(!state.bisActiveChar || !state.characters.some(c => c.id === state.bisActiveChar)){
+    state.bisActiveChar = state.characters[0] ? state.characters[0].id : null;
+  }
 
   let tips;
   try{ tips = await storageGet('tips'); }catch(e){ tips = null; }
@@ -1192,6 +1212,8 @@ async function loadAll(){
   renderCharacters();
   renderTodoAvatars();
   renderTodos();
+  renderBisAvatars();
+  renderBisList();
   renderTips();
   renderMuralFilters();
   renderMuralGrid();
@@ -1386,7 +1408,7 @@ function renderCharacters(){
       if(!(await customConfirm(t('removeCharMsg', c.name), t('removeCharTitle')))) return;
       state.characters = state.characters.filter(x => x.id !== c.id);
       await saveRoster();
-      renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos();
+      renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList();
     });
     card.querySelector('.ilvl-input').addEventListener('click', e => e.stopPropagation());
     card.querySelector('.io-input').addEventListener('click', e => e.stopPropagation());
@@ -1484,7 +1506,7 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
   state.characters.push(c);
   await saveChar(c); await saveRoster();
   document.getElementById('addCharModal').style.display = 'none';
-  renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos();
+  renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList();
 });
 
 document.getElementById('resetWeekBtn').addEventListener('click', async () => {
@@ -1543,15 +1565,6 @@ function renderDetail(c){
 
   const rowsHtml = h => `<tr><td>${h.date}</td><td>${h.ilvl}</td><td>${h.ioscore}</td></tr>`;
 
-  const bisRowHtml = b => `
-    <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
-      <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
-      <span class="bicon">${b.slot ? slotIcon(b.slot) : '❔'}</span>
-      <span class="bname ${b.collected?'collected':''}">${escapeHtml(b.name)}</span>
-      <span class="bslot">${escapeHtml(b.slot || '—')}</span>
-      <span class="bsource">${escapeHtml(b.source || '—')}</span>
-      <button class="bdel">✕</button>
-    </div>`;
   const dungeonRow = d => `
     <div class="drow">
       <span class="dot ${c.dungeons[d]?'on':'off'}"></span>
@@ -1602,7 +1615,6 @@ function renderDetail(c){
         <button data-jump="section-worldboss">World Boss</button>
         <button data-jump="section-events">Events</button>
         <button data-jump="section-itemlevel">Item Level</button>
-        <button data-jump="section-bis">BIS Gear</button>
       </div>
     </div>
 
@@ -1616,11 +1628,18 @@ function renderDetail(c){
             </div>
           </details>
         </div>
-        <div class="dpanel" id="section-spark">
-          <h3 style="margin-bottom:12px;">${t('sparkSeasonTitle')}</h3>
-          <div class="spark-toggles">
-            ${SPARK_POOL.map((s,i) => `<button class="spark-toggle spark-toggle-lg ${c.sparks[s]?'done':''}" data-key="${s}">${i+1}</button>`).join('')}
-          </div>
+        <div class="dpanel" id="section-raid">
+          <details class="hist-toggle" open>
+            <summary><h3 id="raidCount" style="margin:0;">${RAID_NAME} (${raidCount}/${raidTotal})</h3></summary>
+            <div class="raid-table-wrap">
+              <table class="raid-table">
+                <thead><tr><th></th>${RAID_DIFFICULTIES.map(d => `<th>${d}</th>`).join('')}</tr></thead>
+                <tbody id="detailRaidTableBody">
+                  ${RAID_POOL.map(raidTableRow).join('')}
+                </tbody>
+              </table>
+            </div>
+          </details>
         </div>
       </div>
       <div class="detail-col">
@@ -1631,6 +1650,12 @@ function renderDetail(c){
               ${WORLDBOSS_TIERS.map(wbRow).join('')}
             </div>
           </details>
+        </div>
+        <div class="dpanel" id="section-spark">
+          <h3 style="margin-bottom:12px;">${t('sparkSeasonTitle')}</h3>
+          <div class="spark-toggles">
+            ${SPARK_POOL.map((s,i) => `<button class="spark-toggle spark-toggle-lg ${c.sparks[s]?'done':''}" data-key="${s}">${i+1}</button>`).join('')}
+          </div>
         </div>
         <div class="dpanel" id="section-events">
           <details class="hist-toggle" open>
@@ -1644,19 +1669,6 @@ function renderDetail(c){
             </div>
           </details>
         </div>
-      </div>
-      <div class="dpanel" id="section-raid" style="grid-column: 1 / -1;">
-        <details class="hist-toggle" open>
-          <summary><h3 id="raidCount" style="margin:0;">${RAID_NAME} (${raidCount}/${raidTotal})</h3></summary>
-          <div class="raid-table-wrap">
-            <table class="raid-table">
-              <thead><tr><th></th>${RAID_DIFFICULTIES.map(d => `<th>${d}</th>`).join('')}</tr></thead>
-              <tbody id="detailRaidTableBody">
-                ${RAID_POOL.map(raidTableRow).join('')}
-              </tbody>
-            </table>
-          </div>
-        </details>
       </div>
       <div class="dpanel" id="section-itemlevel" style="grid-column: 1 / -1;">
         <details class="hist-toggle" open>
@@ -1680,22 +1692,6 @@ function renderDetail(c){
           </details>
         </details>
       </div>
-    </div>
-
-    <div class="dpanel" id="section-bis">
-      <details class="hist-toggle" open>
-        <summary><h3 style="margin:0;">${t('bisGearTitle')}</h3></summary>
-        <div class="bis-add" style="margin-top:12px; position:relative;">
-          <input type="text" class="iname" id="bisName" placeholder="${t('bisNamePlaceholder')}" autocomplete="off">
-          <input type="text" class="islot" id="bisSlot" placeholder="${t('slotCol')}">
-          <input type="text" class="isource" id="bisSource" placeholder="${t('bisSourcePlaceholder')}">
-          <button id="bisAddBtn">${t('add')}</button>
-          <div class="bis-search-results" id="bisSearchResults"></div>
-        </div>
-        <div class="bis-list" id="bisList">
-          ${c.bis.length ? c.bis.map(bisRowHtml).join('') : `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`}
-        </div>
-      </details>
     </div>
   `;
 
@@ -1752,79 +1748,6 @@ function renderDetail(c){
       await saveChar(c);
       btn.classList.toggle('done', c.sparks[key]);
     });
-  });
-
-  function bindBisRow(row){
-    const id = row.dataset.id;
-    row.querySelector('.bis-check').addEventListener('change', async (e) => {
-      const item = c.bis.find(b => b.id === id);
-      item.collected = e.target.checked;
-      await saveChar(c);
-      row.classList.toggle('collected', item.collected);
-      row.querySelector('.bname').classList.toggle('collected', item.collected);
-    });
-    row.querySelector('.bdel').addEventListener('click', async () => {
-      c.bis = c.bis.filter(b => b.id !== id);
-      await saveChar(c);
-      row.remove();
-      if(!c.bis.length){
-        document.getElementById('bisList').innerHTML = `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`;
-      }
-    });
-  }
-  el.querySelectorAll('#bisList .bis-row').forEach(bindBisRow);
-  function renderBisSearchResults(query){
-    const panel = document.getElementById('bisSearchResults');
-    const q = query.trim().toLowerCase();
-    if(!q){ panel.classList.remove('open'); panel.innerHTML = ''; return; }
-    const matches = ITEM_LOOT_TABLE.filter(([name]) => name.toLowerCase().includes(q)).slice(0, 8);
-    if(!matches.length){
-      panel.innerHTML = `<div class="bis-search-empty">${t('noItemMatch')}</div>`;
-      panel.classList.add('open');
-      return;
-    }
-    panel.innerHTML = `
-      <div class="bis-search-head"><span></span><span>${t('itemCol')}</span><span>${t('slotCol')}</span><span>${t('locationCol')}</span></div>
-      ${matches.map(([name, slot, loc]) => `
-        <div class="bis-search-row" data-name="${name}" data-slot="${slot}" data-loc="${loc}">
-          <span class="bsr-icon">${slotIcon(slot)}</span>
-          <span class="bsr-name">${name}</span>
-          <span class="bsr-slot">${slot.split(' (')[0]}</span>
-          <span class="bsr-loc">${loc}</span>
-        </div>`).join('')}
-    `;
-    panel.classList.add('open');
-    panel.querySelectorAll('.bis-search-row').forEach(row => {
-      row.addEventListener('click', () => {
-        document.getElementById('bisName').value = row.dataset.name;
-        document.getElementById('bisSlot').value = row.dataset.slot;
-        document.getElementById('bisSource').value = row.dataset.loc;
-        panel.classList.remove('open'); panel.innerHTML = '';
-      });
-    });
-  }
-  document.getElementById('bisName').addEventListener('input', (e) => renderBisSearchResults(e.target.value));
-  document.getElementById('bisName').addEventListener('focus', (e) => { if(e.target.value) renderBisSearchResults(e.target.value); });
-  document.getElementById('bisName').addEventListener('blur', () => {
-    setTimeout(() => { document.getElementById('bisSearchResults').classList.remove('open'); }, 150);
-  });
-  document.getElementById('bisAddBtn').addEventListener('click', async () => {
-    const nameInput = document.getElementById('bisName');
-    const slotInput = document.getElementById('bisSlot');
-    const sourceInput = document.getElementById('bisSource');
-    const name = nameInput.value.trim();
-    const slot = slotInput.value.trim();
-    const source = sourceInput.value.trim();
-    if(!name) return;
-    const b = {id: uid(), name, slot, source: source || '—', collected:false};
-    c.bis.push(b);
-    await saveChar(c);
-    const list = document.getElementById('bisList');
-    const empty = document.getElementById('bisEmpty');
-    if(empty) empty.remove();
-    list.insertAdjacentHTML('beforeend', bisRowHtml(b));
-    bindBisRow(list.querySelector(`[data-id="${b.id}"]`));
-    nameInput.value = ''; slotInput.value = ''; sourceInput.value = '';
   });
 
   function bindEventRow(row){
@@ -1986,6 +1909,122 @@ document.getElementById('cloneTodoConfirm').addEventListener('click', async () =
   }
   modal.style.display = 'none';
   renderTodos();
+});
+
+/* ---------------- BIS Gear (main tab, per character) ---------------- */
+function renderBisAvatars(){
+  if(!state.bisActiveChar || !state.characters.some(c => c.id === state.bisActiveChar)){
+    state.bisActiveChar = state.characters[0] ? state.characters[0].id : null;
+  }
+  const wrap = document.getElementById('bisAvatars');
+  wrap.innerHTML = state.characters.map(c => {
+    const color = CLASS_HEX[c.class] || '#9fe83c';
+    const active = state.bisActiveChar===c.id;
+    return `<button class="char-select-btn ${active?'active':''}" data-char="${c.id}" style="--class-color:${color}">
+      <img class="class-icon" src="${classIconUrl(c.class)}" alt="${c.class}">
+      <span>${c.name}</span>
+    </button>`;
+  }).join('');
+  wrap.querySelectorAll('.char-select-btn').forEach(av => {
+    av.addEventListener('click', () => { state.bisActiveChar = av.dataset.char; renderBisAvatars(); renderBisList(); });
+  });
+}
+
+const bisRowHtml = b => `
+  <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
+    <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
+    <span class="bicon">${b.slot ? slotIcon(b.slot) : '❔'}</span>
+    <span class="bname ${b.collected?'collected':''}">${escapeHtml(b.name)}</span>
+    <span class="bslot">${escapeHtml(b.slot || '—')}</span>
+    <span class="bsource">${escapeHtml(b.source || '—')}</span>
+    <button class="bdel">✕</button>
+  </div>`;
+
+function bindBisRow(row){
+  const id = row.dataset.id;
+  row.querySelector('.bis-check').addEventListener('change', async (e) => {
+    const c = state.characters.find(x => x.id === state.bisActiveChar);
+    if(!c) return;
+    const item = c.bis.find(b => b.id === id);
+    item.collected = e.target.checked;
+    await saveChar(c);
+    row.classList.toggle('collected', item.collected);
+    row.querySelector('.bname').classList.toggle('collected', item.collected);
+  });
+  row.querySelector('.bdel').addEventListener('click', async () => {
+    const c = state.characters.find(x => x.id === state.bisActiveChar);
+    if(!c) return;
+    c.bis = c.bis.filter(b => b.id !== id);
+    await saveChar(c);
+    row.remove();
+    if(!c.bis.length){
+      document.getElementById('bisList').innerHTML = `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`;
+    }
+  });
+}
+
+function renderBisList(){
+  const list = document.getElementById('bisList');
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  if(!c){ list.innerHTML = `<div class="empty-note">${t('todoCreateCharFirst')}</div>`; return; }
+  list.innerHTML = c.bis.length ? c.bis.map(bisRowHtml).join('') : `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`;
+  list.querySelectorAll('.bis-row').forEach(bindBisRow);
+}
+
+function renderBisSearchResults(query){
+  const panel = document.getElementById('bisSearchResults');
+  const q = query.trim().toLowerCase();
+  if(!q){ panel.classList.remove('open'); panel.innerHTML = ''; return; }
+  const matches = ITEM_LOOT_TABLE.filter(([name]) => name.toLowerCase().includes(q)).slice(0, 8);
+  if(!matches.length){
+    panel.innerHTML = `<div class="bis-search-empty">${t('noItemMatch')}</div>`;
+    panel.classList.add('open');
+    return;
+  }
+  panel.innerHTML = `
+    <div class="bis-search-head"><span></span><span>${t('itemCol')}</span><span>${t('slotCol')}</span><span>${t('locationCol')}</span></div>
+    ${matches.map(([name, slot, loc]) => `
+      <div class="bis-search-row" data-name="${name}" data-slot="${slot}" data-loc="${loc}">
+        <span class="bsr-icon">${slotIcon(slot)}</span>
+        <span class="bsr-name">${name}</span>
+        <span class="bsr-slot">${slot.split(' (')[0]}</span>
+        <span class="bsr-loc">${loc}</span>
+      </div>`).join('')}
+  `;
+  panel.classList.add('open');
+  panel.querySelectorAll('.bis-search-row').forEach(row => {
+    row.addEventListener('click', () => {
+      document.getElementById('bisName').value = row.dataset.name;
+      document.getElementById('bisSlot').value = row.dataset.slot;
+      document.getElementById('bisSource').value = row.dataset.loc;
+      panel.classList.remove('open'); panel.innerHTML = '';
+    });
+  });
+}
+document.getElementById('bisName').addEventListener('input', (e) => renderBisSearchResults(e.target.value));
+document.getElementById('bisName').addEventListener('focus', (e) => { if(e.target.value) renderBisSearchResults(e.target.value); });
+document.getElementById('bisName').addEventListener('blur', () => {
+  setTimeout(() => { document.getElementById('bisSearchResults').classList.remove('open'); }, 150);
+});
+document.getElementById('bisAddBtn').addEventListener('click', async () => {
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  if(!c) return;
+  const nameInput = document.getElementById('bisName');
+  const slotInput = document.getElementById('bisSlot');
+  const sourceInput = document.getElementById('bisSource');
+  const name = nameInput.value.trim();
+  const slot = slotInput.value.trim();
+  const source = sourceInput.value.trim();
+  if(!name) return;
+  const b = {id: uid(), name, slot, source: source || '—', collected:false};
+  c.bis.push(b);
+  await saveChar(c);
+  const list = document.getElementById('bisList');
+  const empty = document.getElementById('bisEmpty');
+  if(empty) empty.remove();
+  list.insertAdjacentHTML('beforeend', bisRowHtml(b));
+  bindBisRow(list.querySelector(`[data-id="${b.id}"]`));
+  nameInput.value = ''; slotInput.value = ''; sourceInput.value = '';
 });
 
 /* ---------------- Dicas ---------------- */
