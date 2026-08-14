@@ -73,7 +73,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   border-radius: 6px; padding: 18px; position: relative; transition: box-shadow .2s; cursor: pointer;
 }
 .char-card:hover{ box-shadow: 0 0 28px -6px var(--class-color, var(--gold)); }
-.char-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.char-head{ position:relative; display:flex; margin-bottom:14px; padding-right:56px; }
+.char-head-right{ position:absolute; top:0; right:0; text-align:right; }
 .card-drag-handle{ font-size:16px; margin-top:4px; cursor:grab; }
 .class-icon{ width:34px; height:34px; border-radius:50%; border:2px solid var(--class-color, var(--gold)); object-fit:cover; flex-shrink:0; }
 .class-icon-lg{ width:54px; height:54px; }
@@ -84,10 +85,24 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .open-hint{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; opacity:0; transition:opacity .15s;}
 .char-card:hover .open-hint{ opacity:.7; }
 
-.stat-row{ display:flex; gap:10px; margin-bottom:12px; }
-.stat-box{ flex:1; background: var(--bg-panel-raised); border-radius:4px; padding:8px 10px; }
-.stat-box label{ display:block; font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); margin-bottom:3px;}
-.stat-box input{ background:none; border:none; color: var(--text); font-weight:700; font-size:16px; width:100%; outline:none; position:relative; z-index:5;}
+.char-quickstats{ display:flex; flex-direction:column; align-items:flex-end; gap:1px; margin-top:5px; }
+.cqs-row{ display:flex; align-items:baseline; gap:4px; }
+.cqs-row b{ color:var(--text); font-size:14px; font-weight:700; }
+.cqs-row .cqs-lbl{ font-size:9px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); }
+.refresh-dashboard-btn{
+  display:inline-flex; align-items:center; gap:6px; background:none; border:1px solid var(--hairline);
+  color: var(--text-dim); font-size:11px; font-weight:600; padding:0 10px; height:32px; border-radius:4px;
+  cursor:pointer; transition: all .15s;
+}
+.refresh-dashboard-btn:hover{ color: var(--gold); border-color: var(--gold-dim); }
+.refresh-dashboard-btn .rdb-icon{ display:inline-block; font-size:13px; }
+.refresh-dashboard-btn .rdb-icon.spinning{ animation: char-refresh-spin .8s linear infinite; }
+.refresh-dashboard-btn:disabled{ opacity:.6; cursor:default; }
+@keyframes char-refresh-spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+.char-meta-row{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 12px 0; }
+.char-meta-item{ font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-dim); background:var(--bg-panel-raised); padding:3px 7px; border-radius:3px; }
+.char-meta-item.faction-alliance{ color:#5eb3f0; }
+.char-meta-item.faction-horde{ color:#e0554f; }
 
 .progress-list{ display:flex; flex-direction:column; gap:8px; margin-bottom: 14px; }
 .progress-item{ position:relative; }
@@ -498,16 +513,17 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
       </div>
     </a>
     <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
-      <div class="lang-switch" id="langSwitch">
-        <button class="lang-flag" data-lang="pt" title="Português">🇧🇷</button>
-        <button class="lang-flag lang-flag-text" data-lang="en" title="English">EN</button>
-      </div>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="refresh-dashboard-btn" id="refreshDashboardBtn" title="Atualizar todos os personagens no Raider.IO"><span class="rdb-icon">↻</span> <span data-i18n="refreshDashboard">Atualizar</span></button>
         <button class="reset-btn" id="resetWeekBtn" data-i18n="resetWeek">Reset Semanal</button>
       </div>
       <div class="user-badge">
         <span id="userEmailLabel"></span>
         <button class="logout-btn" id="logoutBtn" data-i18n="logout">Sair</button>
+      </div>
+      <div class="lang-switch" id="langSwitch">
+        <button class="lang-flag" data-lang="pt" title="Português">🇧🇷</button>
+        <button class="lang-flag lang-flag-text" data-lang="en" title="English">EN</button>
       </div>
     </div>
   </header>
@@ -719,6 +735,7 @@ const I18N = {
     newCharTitle: "Novo Personagem", name: "Nome", class: "Classe", cancel: "Cancelar", create: "Criar",
     realmLabel: "Reino", searchAndAdd: "Buscar e Adicionar", charSearching: "Buscando personagem no Raider.IO...",
     charNotFound: "Personagem não encontrado. Confira o nome e o reino.", selectRealmFirst: "Escolha um reino da lista.",
+    refreshFromRaiderIO: "Atualizar do Raider.IO", refreshDashboard: "Atualizar",
     confirmActionTitle: "Confirmar ação", confirm: "Confirmar",
     addCharacterBtn: "+ Adicionar Personagem",
     removeCharTitle: "Remover personagem?",
@@ -788,6 +805,7 @@ const I18N = {
     newCharTitle: "New Character", name: "Name", class: "Class", cancel: "Cancel", create: "Create",
     realmLabel: "Realm", searchAndAdd: "Search and Add", charSearching: "Searching character on Raider.IO...",
     charNotFound: "Character not found. Check the name and realm.", selectRealmFirst: "Pick a realm from the list.",
+    refreshFromRaiderIO: "Refresh from Raider.IO", refreshDashboard: "Refresh",
     confirmActionTitle: "Confirm action", confirm: "Confirm",
     addCharacterBtn: "+ Add Character",
     removeCharTitle: "Remove character?",
@@ -1836,6 +1854,7 @@ async function loadAll(){
   renderMuralFilters();
   renderMuralGrid();
   renderChart();
+  refreshAllCharacters();
 }
 
 function makeRaidBossEntry(){ return Object.fromEntries(RAID_DIFFICULTIES.map(d=>[d,false])); }
@@ -1856,12 +1875,20 @@ function normalizeChar(c){
     c.worldboss = Object.fromEntries(WORLDBOSS_TIERS.map(t=>[t,false]));
   }
   if(!c.sparks) c.sparks = Object.fromEntries(SPARK_POOL.map(s=>[s,false]));
+  if(c.realm === undefined) c.realm = null;
+  if(c.realmName === undefined) c.realmName = null;
+  if(c.region === undefined) c.region = null;
+  if(c.race === undefined) c.race = null;
+  if(c.faction === undefined) c.faction = null;
+  if(c.spec === undefined) c.spec = null;
   return c;
 }
 
-function makeCharObj(id, name, cls, realm, region){
+function makeCharObj(id, name, cls, realm, realmName, region){
   return {
-    id, name, class: cls, ilvl: 0, ioscore: 0, realm: realm || null, region: region || null,
+    id, name, class: cls, ilvl: 0, ioscore: 0,
+    realm: realm || null, realmName: realmName || null, region: region || null,
+    race: null, faction: null, spec: null,
     dungeons: Object.fromEntries(DUNGEON_POOL.map(d=>[d,false])),
     events: [],
     raidBosses: Object.fromEntries(RAID_POOL.map(b=>[b, makeRaidBossEntry()])),
@@ -1901,18 +1928,24 @@ function renderCharacters(){
           <img class="class-icon" src="${classIconUrl(c.class)}" alt="${c.class}">
           <div>
             <div class="char-name">${c.name}</div>
-            <div class="char-class">${c.class}</div>
+            <div class="char-class">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''}</div>
           </div>
         </div>
-        <div style="text-align:right;">
+        <div class="char-head-right">
           <button class="char-remove" title="${t('remove')}">✕</button>
+          <div class="char-quickstats">
+            <div class="cqs-row"><span class="cqs-lbl">ILVL</span><b>${c.ilvl || '—'}</b></div>
+            <div class="cqs-row"><span class="cqs-lbl">IO</span><b>${c.ioscore || '—'}</b></div>
+          </div>
           <div class="open-hint">${t('viewDetails')}</div>
         </div>
       </div>
-      <div class="stat-row">
-        <div class="stat-box"><label>Item Level</label><input type="number" class="ilvl-input" value="${c.ilvl}"></div>
-        <div class="stat-box"><label>IOScore</label><input type="number" class="io-input" value="${c.ioscore}"></div>
-      </div>
+      ${(c.realmName || c.race || c.faction) ? `
+      <div class="char-meta-row">
+        ${c.realmName ? `<span class="char-meta-item">${escapeHtml(c.realmName)} (${(c.region||'').toUpperCase()})</span>` : ''}
+        ${c.race ? `<span class="char-meta-item">${escapeHtml(c.race)}</span>` : ''}
+        ${c.faction ? `<span class="char-meta-item faction-${c.faction.toLowerCase()}">${escapeHtml(c.faction)}</span>` : ''}
+      </div>` : ''}
       <div class="progress-list">
         <div class="progress-item" data-hover="dungeon">
           <div class="plabel"><span>Dungeons</span><span class="pcount">${dCount}/${dTotal}</span></div>
@@ -2028,12 +2061,25 @@ function renderCharacters(){
       await saveRoster();
       renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList();
     });
-    card.querySelector('.ilvl-input').addEventListener('click', e => e.stopPropagation());
-    card.querySelector('.io-input').addEventListener('click', e => e.stopPropagation());
     card.querySelector('.key-input').addEventListener('click', e => e.stopPropagation());
-    card.querySelector('.ilvl-input').addEventListener('change', async (e) => { c.ilvl = Number(e.target.value)||0; pushHistory(c); await saveChar(c); renderChart(); });
-    card.querySelector('.io-input').addEventListener('change', async (e) => { c.ioscore = Number(e.target.value)||0; pushHistory(c); await saveChar(c); renderChart(); });
     card.querySelector('.key-input').addEventListener('change', async (e) => { c.highestKey = Number(e.target.value)||0; await saveChar(c); });
+    const refreshBtn = card.querySelector('.char-refresh-btn');
+    if(refreshBtn){
+      refreshBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        refreshBtn.disabled = true;
+        refreshBtn.classList.add('spinning');
+        try{
+          const data = await fetchRaiderIoProfile(c.name, c.realm, c.region);
+          applyRaiderIoData(c, data);
+          await saveChar(c);
+          renderCharacters(); renderChart();
+        } catch(err){
+          refreshBtn.disabled = false;
+          refreshBtn.classList.remove('spinning');
+        }
+      });
+    }
 
     grid.appendChild(card);
   }
@@ -2050,6 +2096,39 @@ function pushHistory(c){
   const existing = c.history.find(h => h.date === today);
   if(existing){ existing.ilvl = c.ilvl; existing.ioscore = c.ioscore; }
   else{ c.history.push({date: today, ilvl: c.ilvl, ioscore: c.ioscore}); }
+}
+
+async function fetchRaiderIoProfile(name, realmSlug, region){
+  const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('character not found');
+  return res.json();
+}
+function applyRaiderIoData(c, data){
+  c.class = data.class;
+  c.race = data.race || null;
+  c.faction = data.faction || null;
+  c.spec = data.active_spec_name || null;
+  c.ilvl = Math.round((data.gear && data.gear.item_level_equipped) || 0);
+  const scoreEntry = data.mythic_plus_scores_by_season && data.mythic_plus_scores_by_season[0];
+  c.ioscore = scoreEntry ? Math.round(scoreEntry.scores.all * 10) / 10 : 0;
+  pushHistory(c);
+}
+
+async function refreshAllCharacters(){
+  const btn = document.getElementById('refreshDashboardBtn');
+  const targets = state.characters.filter(c => c.realm && c.region);
+  if(!targets.length) return;
+  if(btn){ btn.disabled = true; btn.querySelector('.rdb-icon').classList.add('spinning'); }
+  await Promise.allSettled(targets.map(async (c) => {
+    try{
+      const data = await fetchRaiderIoProfile(c.name, c.realm, c.region);
+      applyRaiderIoData(c, data);
+      await saveChar(c);
+    } catch(e){ /* skip characters that fail to resolve, keep last known data */ }
+  }));
+  renderCharacters(); renderChart();
+  if(btn){ btn.disabled = false; btn.querySelector('.rdb-icon').classList.remove('spinning'); }
 }
 
 /* dungeon tooltip balloon */
@@ -2153,6 +2232,7 @@ document.getElementById('newCharRealm').addEventListener('blur', () => {
 document.getElementById('confirmAddChar').addEventListener('click', async () => {
   const name = document.getElementById('newCharName').value.trim();
   const realmSlug = document.getElementById('newCharRealmSlug').value;
+  const realmName = document.getElementById('newCharRealm').value.trim();
   const region = document.getElementById('newCharRegion').value;
   const statusEl = document.getElementById('addCharStatus');
   if(!name) return;
@@ -2166,15 +2246,9 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
   const btn = document.getElementById('confirmAddChar');
   btn.disabled = true;
   try{
-    const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('not found');
-    const data = await res.json();
-    const c = makeCharObj(uid(), data.name, data.class, realmSlug, region);
-    c.ilvl = Math.round((data.gear && data.gear.item_level_equipped) || 0);
-    const scoreEntry = data.mythic_plus_scores_by_season && data.mythic_plus_scores_by_season[0];
-    c.ioscore = scoreEntry ? Math.round(scoreEntry.scores.all * 10) / 10 : 0;
-    pushHistory(c);
+    const data = await fetchRaiderIoProfile(name, realmSlug, region);
+    const c = makeCharObj(uid(), data.name, data.class, realmSlug, realmName, region);
+    applyRaiderIoData(c, data);
     state.characters.push(c);
     await saveChar(c); await saveRoster();
     document.getElementById('addCharModal').style.display = 'none';
@@ -2186,6 +2260,8 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
     btn.disabled = false;
   }
 });
+
+document.getElementById('refreshDashboardBtn').addEventListener('click', () => { refreshAllCharacters(); });
 
 document.getElementById('resetWeekBtn').addEventListener('click', async () => {
   const ok = await customConfirm(t('resetWeekMsg'), t('resetWeekTitle'));
