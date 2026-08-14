@@ -67,14 +67,14 @@ section.tab{ display:none; }
 section.tab.active{ display:block; animation: fadeIn .25s ease; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
 
-#characters-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 18px; margin-bottom: 20px; }
+#characters-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,300px)); gap: 18px; margin-bottom: 20px; justify-content:start; }
 .char-card{
   background: var(--bg-panel); border: 1px solid var(--hairline); border-top: 3px solid var(--class-color, var(--gold));
   border-radius: 6px; padding: 18px; position: relative; transition: box-shadow .2s; cursor: pointer;
 }
 .char-card:hover{ box-shadow: 0 0 28px -6px var(--class-color, var(--gold)); }
-.char-head{ position:relative; display:flex; margin-bottom:14px; padding-right:56px; }
-.char-head-right{ position:absolute; top:0; right:0; text-align:right; }
+.char-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1px; gap:10px; }
+.char-head-right{ text-align:right; flex-shrink:0; }
 .card-drag-handle{ font-size:16px; margin-top:4px; cursor:grab; }
 .class-icon{ width:34px; height:34px; border-radius:50%; border:2px solid var(--class-color, var(--gold)); object-fit:cover; flex-shrink:0; }
 .class-icon-lg{ width:54px; height:54px; }
@@ -82,7 +82,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .char-class{ font-size: 11px; text-transform:uppercase; letter-spacing:.05em; color: var(--class-color, var(--gold)); font-weight:700; margin-top:2px;}
 .char-remove{ background:none; border:none; color: var(--text-dim); cursor:pointer; font-size:16px; opacity:.5; position:relative; z-index:5; }
 .char-remove:hover{ opacity:1; color: var(--danger); }
-.open-hint{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; opacity:0; transition:opacity .15s;}
+.open-hint{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; opacity:0; transition:opacity .15s; margin:4px 0 10px 0; text-align:right;}
 .char-card:hover .open-hint{ opacity:.7; }
 
 .char-quickstats{ display:flex; flex-direction:column; align-items:flex-end; gap:1px; margin-top:5px; }
@@ -99,8 +99,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .refresh-dashboard-btn .rdb-icon.spinning{ animation: char-refresh-spin .8s linear infinite; }
 .refresh-dashboard-btn:disabled{ opacity:.6; cursor:default; }
 @keyframes char-refresh-spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
-.char-meta-row{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 12px 0; }
-.char-meta-item{ font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-dim); background:var(--bg-panel-raised); padding:3px 7px; border-radius:3px; }
+.char-meta-row{ display:flex; flex-wrap:wrap; gap:4px; margin:0 0 4px 0; }
+.char-meta-item{ font-size:8px; text-transform:uppercase; letter-spacing:.02em; color:var(--text-dim); background:var(--bg-panel-raised); padding:2px 5px; border-radius:3px; line-height:1.4; }
 .char-meta-item.faction-alliance{ color:#5eb3f0; }
 .char-meta-item.faction-horde{ color:#e0554f; }
 
@@ -140,8 +140,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .raid-diff-row .vault-row-label{ width:48px; }
 .raid-diff-row .pbar-track{ flex:1; }
 .raid-diff-count{ font-size:10px; color:var(--text-dim); width:26px; text-align:right; flex-shrink:0; }
-.vault-key{ display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim); }
-.vault-key input{ width:50px; background: var(--bg-panel); border:1px solid var(--hairline); color:var(--text); border-radius:3px; padding:3px 6px; font-size:12px; text-align:center; position:relative; z-index:5;}
 .events-list{ display:flex; flex-direction:column; gap:4px; margin-top:6px; }
 .events-list label{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); cursor:pointer; position:relative; z-index:5;}
 .events-list input[type=checkbox]{ accent-color: var(--class-color, var(--gold)); }
@@ -297,12 +295,8 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .detail-header{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:12px; flex-wrap:wrap; gap:14px;}
 .detail-header h2{ font-family:'Cinzel',serif; font-size:26px; color: var(--class-color, var(--gold)); }
 .detail-header .dclass{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-top:4px;}
-.detail-stats{ display:flex; gap:22px; }
-.detail-stats .dstat{ text-align:right; }
-.detail-stats .dstat .val{ font-size:22px; font-weight:700; color:var(--text); }
-.detail-stats .dstat .lbl{ font-size:10px; text-transform:uppercase; color:var(--text-dim); letter-spacing:.05em;}
-.detail-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px; align-items:start; }
-.detail-col{ display:flex; flex-direction:column; gap:20px; }
+.detail-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 440px)); gap:20px; margin-bottom:20px; align-items:start; justify-content:start; }
+.detail-col{ display:flex; flex-direction:column; gap:20px; min-width:0; }
 @media(max-width: 760px){ .detail-grid{ grid-template-columns: 1fr; } }
 .raid-table-wrap{ overflow-x:auto; }
 .raid-table{ width:auto; border-collapse:collapse; font-size:12px; }
@@ -736,6 +730,8 @@ const I18N = {
     realmLabel: "Reino", searchAndAdd: "Buscar e Adicionar", charSearching: "Buscando personagem no Raider.IO...",
     charNotFound: "Personagem não encontrado. Confira o nome e o reino.", selectRealmFirst: "Escolha um reino da lista.",
     refreshFromRaiderIO: "Atualizar do Raider.IO", refreshDashboard: "Atualizar",
+    refreshConfirmTitle: "Update character data?",
+    refreshConfirmMsg: "Updating information directly from Raider.IO. The update may take a moment — Raider.IO itself can take a while to reflect your most recent activity.",
     confirmActionTitle: "Confirmar ação", confirm: "Confirmar",
     addCharacterBtn: "+ Adicionar Personagem",
     removeCharTitle: "Remover personagem?",
@@ -806,6 +802,8 @@ const I18N = {
     realmLabel: "Realm", searchAndAdd: "Search and Add", charSearching: "Searching character on Raider.IO...",
     charNotFound: "Character not found. Check the name and realm.", selectRealmFirst: "Pick a realm from the list.",
     refreshFromRaiderIO: "Refresh from Raider.IO", refreshDashboard: "Refresh",
+    refreshConfirmTitle: "Update character data?",
+    refreshConfirmMsg: "Updating information directly from Raider.IO. The update may take a moment — Raider.IO itself can take a while to reflect your most recent activity.",
     confirmActionTitle: "Confirm action", confirm: "Confirm",
     addCharacterBtn: "+ Add Character",
     removeCharTitle: "Remove character?",
@@ -1937,7 +1935,6 @@ function renderCharacters(){
             <div class="cqs-row"><span class="cqs-lbl">ILVL</span><b>${c.ilvl || '—'}</b></div>
             <div class="cqs-row"><span class="cqs-lbl">IO</span><b>${c.ioscore || '—'}</b></div>
           </div>
-          <div class="open-hint">${t('viewDetails')}</div>
         </div>
       </div>
       ${(c.realmName || c.race || c.faction) ? `
@@ -1946,6 +1943,7 @@ function renderCharacters(){
         ${c.race ? `<span class="char-meta-item">${escapeHtml(c.race)}</span>` : ''}
         ${c.faction ? `<span class="char-meta-item faction-${c.faction.toLowerCase()}">${escapeHtml(c.faction)}</span>` : ''}
       </div>` : ''}
+      <div class="open-hint">${t('viewDetails')}</div>
       <div class="progress-list">
         <div class="progress-item" data-hover="dungeon">
           <div class="plabel"><span>Dungeons</span><span class="pcount">${dCount}/${dTotal}</span></div>
@@ -1963,7 +1961,7 @@ function renderCharacters(){
           <div class="plabel"><span>Events</span><span class="pcount">${eCount}/${eTotal}</span></div>
           <div class="pbar-track"><div class="pbar-fill" style="width:${eTotal? (eCount/eTotal*100):0}%"></div></div>
         </div>
-        <button class="add-event-btn" data-action="add-event">+ Add Event</button>
+        ${eTotal === 0 ? `<button class="add-event-btn" data-action="add-event">+ Add Event</button>` : ''}
       </div>
       <div class="vault-box raid-diff-box" data-hover="raid">
         <details class="hist-toggle card-collapse" open>
@@ -1999,7 +1997,6 @@ function renderCharacters(){
             </div>
           </div>
         </details>
-        <div class="vault-key"><span>${t('highestKey')}:</span><input type="number" class="key-input" value="${c.highestKey}"></div>
       </div>
     `;
 
@@ -2061,8 +2058,6 @@ function renderCharacters(){
       await saveRoster();
       renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList();
     });
-    card.querySelector('.key-input').addEventListener('click', e => e.stopPropagation());
-    card.querySelector('.key-input').addEventListener('change', async (e) => { c.highestKey = Number(e.target.value)||0; await saveChar(c); });
     const refreshBtn = card.querySelector('.char-refresh-btn');
     if(refreshBtn){
       refreshBtn.addEventListener('click', async (e) => {
@@ -2261,7 +2256,11 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
   }
 });
 
-document.getElementById('refreshDashboardBtn').addEventListener('click', () => { refreshAllCharacters(); });
+document.getElementById('refreshDashboardBtn').addEventListener('click', async () => {
+  const ok = await customConfirm(t('refreshConfirmMsg'), t('refreshConfirmTitle'));
+  if(!ok) return;
+  refreshAllCharacters();
+});
 
 document.getElementById('resetWeekBtn').addEventListener('click', async () => {
   const ok = await customConfirm(t('resetWeekMsg'), t('resetWeekTitle'));
@@ -2353,13 +2352,18 @@ function renderDetail(c){
           <img class="class-icon class-icon-lg" src="${classIconUrl(c.class)}" alt="${c.class}">
           <div>
             <h2 style="color:${color}">${c.name}</h2>
-            <div class="dclass">${c.class}</div>
+            <div class="dclass">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''}</div>
+            ${(c.realmName || c.race || c.faction) ? `
+            <div class="char-meta-row" style="margin:6px 0 0 0;">
+              ${c.realmName ? `<span class="char-meta-item">${escapeHtml(c.realmName)} (${(c.region||'').toUpperCase()})</span>` : ''}
+              ${c.race ? `<span class="char-meta-item">${escapeHtml(c.race)}</span>` : ''}
+              ${c.faction ? `<span class="char-meta-item faction-${c.faction.toLowerCase()}">${escapeHtml(c.faction)}</span>` : ''}
+            </div>` : ''}
           </div>
         </div>
-        <div class="detail-stats">
-          <div class="dstat"><div class="val">${c.ilvl}</div><div class="lbl">Item Level</div></div>
-          <div class="dstat"><div class="val">${c.ioscore}</div><div class="lbl">IOScore</div></div>
-          <div class="dstat"><div class="val">${c.highestKey}</div><div class="lbl">${t('highestKey')}</div></div>
+        <div class="char-quickstats" style="margin-top:0;">
+          <div class="cqs-row"><span class="cqs-lbl">ILVL</span><b>${c.ilvl || '—'}</b></div>
+          <div class="cqs-row"><span class="cqs-lbl">IO</span><b>${c.ioscore || '—'}</b></div>
         </div>
       </div>
 
