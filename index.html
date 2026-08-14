@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Midnight — Season Tracker</title>
+<script>const whTooltips = {colorLinks: true, iconizeLinks: true, renameLinks: true};</script>
+<script src="https://wow.zamimg.com/js/tooltips.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
@@ -327,11 +329,14 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .bis-row{ display:flex; align-items:center; gap:10px; background: var(--bg-panel-raised); padding:9px 10px; border-radius:4px; }
 .bis-row.collected{ opacity:.55; }
 .bis-row .bicon{ font-size:15px; flex-shrink:0; width:20px; text-align:center; }
+.bicon-img{ width:20px; height:20px; border-radius:3px; vertical-align:middle; }
 .bis-row .bname{ font-weight:600; font-size:13px; flex:1; }
 .bis-row .bname.collected{ text-decoration:line-through; }
 .bis-row .bslot{ font-size:11px; color:var(--text-dim); width:90px; flex-shrink:0; }
 .bis-row .bsource{ font-size:11px; color:var(--text-dim); flex:1; }
 .bis-row input[type=checkbox]{ accent-color: var(--class-color, var(--gold)); }
+.bis-wh-link{ text-decoration:none; }
+.bis-wh-link:hover{ text-decoration:underline; }
 .bis-row .bdel{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; }
 .bis-row .bdel:hover{ opacity:1; color:var(--danger); }
 .empty-note{ color:var(--text-dim); font-size:12px; }
@@ -535,6 +540,8 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
         <div class="todo-avatars" id="bisAvatars"></div>
       </div>
       <div class="bis-add" style="position:relative;">
+        <input type="hidden" id="bisWhId" value="">
+        <input type="hidden" id="bisIconUrl" value="">
         <input type="text" class="iname" id="bisName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
         <input type="text" class="islot" id="bisSlot" placeholder="Slot" data-i18n-placeholder="slotCol">
         <input type="text" class="isource" id="bisSource" placeholder="Dungeon/Raid de onde dropa" data-i18n-placeholder="bisSourcePlaceholder">
@@ -1055,7 +1062,7 @@ const ITEM_LOOT_TABLE = [
   ["Poison-Proof Stompers","Feet (Plate)","Altar of Fangs"],
   ["Scaleguard's Stalwart Greatboots","Feet (Plate)","Ruby Life Pools"],
   ["Auric Puddle Stompers","Feet (Plate)","King's Rest"],
-  ["Coiled Fangstone","Trinket","Altar of Fangs"],
+  ["Coiled Fangstone","Trinket","Altar of Fangs",273795,"https://render.worldofwarcraft.com/us/icons/56/7956734.jpg"],
   ["Vile Vial of Volatile Venom","Trinket","Altar of Fangs"],
   ["Knot of Writhing Serpents","Trinket","Altar of Fangs"],
   ["Tattered Amani War Banner","Trinket","Altar of Fangs"],
@@ -1122,7 +1129,7 @@ const ITEM_LOOT_TABLE = [
   ["Snakebite Recurve","Bow","Merektha"],
   ["Amirdrassil's Reach","Crossbow","The Blinding Vale"],
   ["Crossbow of Forgotten Majesty","Crossbow","King's Rest"],
-  ["Sinseared Repeater","Gun","Murder Row"],
+  ["Sinseared Repeater","Gun","Murder Row",271680,"https://render.worldofwarcraft.com/us/icons/56/5342966.jpg"],
   ["Doompetal","Wand","The Blinding Vale"],
   ["Nocuous Focal Fang","Off-Hand","Altar of Fangs"],
   ["Luminescent Sprout","Off-Hand","The Blinding Vale"],
@@ -1930,15 +1937,23 @@ function renderBisAvatars(){
   });
 }
 
-const bisRowHtml = b => `
+const bisRowHtml = b => {
+  const nameHtml = b.whId
+    ? `<a href="https://www.wowhead.com/item=${b.whId}" class="bis-wh-link">${escapeHtml(b.name)}</a>`
+    : escapeHtml(b.name);
+  const iconHtml = b.icon
+    ? `<img class="bicon-img" src="${b.icon}" alt="">`
+    : (b.slot ? slotIcon(b.slot) : '❔');
+  return `
   <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
     <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
-    <span class="bicon">${b.slot ? slotIcon(b.slot) : '❔'}</span>
-    <span class="bname ${b.collected?'collected':''}">${escapeHtml(b.name)}</span>
+    <span class="bicon">${iconHtml}</span>
+    <span class="bname ${b.collected?'collected':''}">${nameHtml}</span>
     <span class="bslot">${escapeHtml(b.slot || '—')}</span>
     <span class="bsource">${escapeHtml(b.source || '—')}</span>
     <button class="bdel">✕</button>
   </div>`;
+};
 
 function bindBisRow(row){
   const id = row.dataset.id;
@@ -1983,10 +1998,10 @@ function renderBisSearchResults(query){
   }
   panel.innerHTML = `
     <div class="bis-search-head"><span></span><span>${t('itemCol')}</span><span>${t('slotCol')}</span><span>${t('locationCol')}</span></div>
-    ${matches.map(([name, slot, loc]) => `
-      <div class="bis-search-row" data-name="${name}" data-slot="${slot}" data-loc="${loc}">
-        <span class="bsr-icon">${slotIcon(slot)}</span>
-        <span class="bsr-name">${name}</span>
+    ${matches.map(([name, slot, loc, whId, icon]) => `
+      <div class="bis-search-row" data-name="${name}" data-slot="${slot}" data-loc="${loc}" data-whid="${whId || ''}" data-icon="${icon || ''}">
+        <span class="bsr-icon">${icon ? `<img class="bicon-img" src="${icon}" alt="">` : slotIcon(slot)}</span>
+        <span class="bsr-name">${whId ? `<a href="https://www.wowhead.com/item=${whId}" class="bis-wh-link">${name}</a>` : name}</span>
         <span class="bsr-slot">${slot.split(' (')[0]}</span>
         <span class="bsr-loc">${loc}</span>
       </div>`).join('')}
@@ -1997,11 +2012,13 @@ function renderBisSearchResults(query){
       document.getElementById('bisName').value = row.dataset.name;
       document.getElementById('bisSlot').value = row.dataset.slot;
       document.getElementById('bisSource').value = row.dataset.loc;
+      document.getElementById('bisWhId').value = row.dataset.whid || '';
+      document.getElementById('bisIconUrl').value = row.dataset.icon || '';
       panel.classList.remove('open'); panel.innerHTML = '';
     });
   });
 }
-document.getElementById('bisName').addEventListener('input', (e) => renderBisSearchResults(e.target.value));
+document.getElementById('bisName').addEventListener('input', (e) => { document.getElementById('bisWhId').value = ''; document.getElementById('bisIconUrl').value = ''; renderBisSearchResults(e.target.value); });
 document.getElementById('bisName').addEventListener('focus', (e) => { if(e.target.value) renderBisSearchResults(e.target.value); });
 document.getElementById('bisName').addEventListener('blur', () => {
   setTimeout(() => { document.getElementById('bisSearchResults').classList.remove('open'); }, 150);
@@ -2012,11 +2029,15 @@ document.getElementById('bisAddBtn').addEventListener('click', async () => {
   const nameInput = document.getElementById('bisName');
   const slotInput = document.getElementById('bisSlot');
   const sourceInput = document.getElementById('bisSource');
+  const whIdInput = document.getElementById('bisWhId');
+  const iconInput = document.getElementById('bisIconUrl');
   const name = nameInput.value.trim();
   const slot = slotInput.value.trim();
   const source = sourceInput.value.trim();
+  const whId = whIdInput.value.trim();
+  const icon = iconInput.value.trim();
   if(!name) return;
-  const b = {id: uid(), name, slot, source: source || '—', collected:false};
+  const b = {id: uid(), name, slot, source: source || '—', collected:false, whId: whId || null, icon: icon || null};
   c.bis.push(b);
   await saveChar(c);
   const list = document.getElementById('bisList');
@@ -2024,7 +2045,7 @@ document.getElementById('bisAddBtn').addEventListener('click', async () => {
   if(empty) empty.remove();
   list.insertAdjacentHTML('beforeend', bisRowHtml(b));
   bindBisRow(list.querySelector(`[data-id="${b.id}"]`));
-  nameInput.value = ''; slotInput.value = ''; sourceInput.value = '';
+  nameInput.value = ''; slotInput.value = ''; sourceInput.value = ''; whIdInput.value = ''; iconInput.value = '';
 });
 
 /* ---------------- Dicas ---------------- */
