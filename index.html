@@ -77,23 +77,12 @@ section.tab{ display:none; }
 section.tab.active{ display:block; animation: fadeIn .25s ease; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
 
-#characters-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,300px)); gap: 18px; margin-bottom: 20px; justify-content:start; }
-.char-card{
-  background: var(--bg-panel); border: 1px solid var(--hairline); border-top: 3px solid var(--class-color, var(--gold));
-  border-radius: 12px; padding: 18px; position: relative; transition: box-shadow .2s; cursor: pointer;
-}
-.char-card:hover{ box-shadow: 0 0 28px -6px var(--class-color, var(--gold)); }
-.char-head{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1px; gap:10px; }
-.char-head-right{ text-align:right; flex-shrink:0; }
-.card-drag-handle{ font-size:16px; margin-top:4px; cursor:grab; }
+.char-selector-row{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
 .class-icon{ width:34px; height:34px; border-radius:50%; border:2px solid var(--class-color, var(--gold)); object-fit:cover; flex-shrink:0; }
 .class-icon-lg{ width:54px; height:54px; }
-.char-name{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; color: var(--text); }
-.char-class{ font-size: 11px; text-transform:uppercase; letter-spacing:.05em; color: var(--class-color, var(--gold)); font-weight:700; margin-top:2px;}
 .char-remove{ background:none; border:none; color: var(--text-dim); cursor:pointer; font-size:16px; opacity:.5; position:relative; z-index:5; }
 .char-remove:hover{ opacity:1; color: var(--danger); }
-.open-hint{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; opacity:0; transition:opacity .15s; margin:4px 0 10px 0; text-align:right;}
-.char-card:hover .open-hint{ opacity:.7; }
+.add-char-pill{ border-style:dashed !important; }
 
 .char-quickstats{ display:flex; flex-direction:column; align-items:flex-end; gap:1px; margin-top:5px; }
 .cqs-row{ display:flex; align-items:baseline; gap:4px; }
@@ -114,27 +103,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .char-meta-item.faction-alliance{ color:#5eb3f0; }
 .char-meta-item.faction-horde{ color:#e0554f; }
 
-.progress-list{ display:flex; flex-direction:column; gap:8px; margin-bottom: 14px; }
-.progress-item{ position:relative; }
-.progress-item .plabel{ display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-bottom:3px; }
-.progress-item .plabel .pcount{ color: var(--text); font-weight:600; }
 .pbar-track{ height:6px; background: var(--danger); border-radius:3px; overflow:hidden; }
 .pbar-fill{ height:100%; background: var(--ok); transition: width .25s; }
-.add-event-btn{
-  width:auto; background:none; border:1px dashed var(--hairline); color: var(--text-dim);
-  border-radius:8px; padding:3px 8px; font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.03em;
-  cursor:pointer; position:relative; z-index:5; margin:2px 0 4px 0;
-}
-.add-event-btn:hover{ color: var(--gold-dim); border-color: var(--gold-dim); }
-.add-event-btn:hover{ border-color: var(--gold-dim); color: var(--gold); }
-
-.spark-toggles{ display:flex; gap:6px; }
-.spark-toggle{
-  border:1px solid var(--hairline); background: var(--bg-panel-raised); color: var(--text-dim);
-  border-radius:8px; width:26px; height:26px; cursor:pointer; font-size:12px; font-weight:700; position:relative; z-index:5;
-}
-.spark-toggle.done{ background: var(--ok); border-color: var(--ok); color:#fff; }
-.spark-toggle-lg{ width:40px; height:40px; font-size:14px; }
 
 .vault-box{ background: var(--bg-panel-raised); border-radius:8px; padding:10px 12px; }
 .vault-box .vtitle{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); font-weight:700; margin-bottom:8px;}
@@ -144,49 +114,45 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .vault-slots{ display:flex; gap:6px; margin-bottom:8px; }
 .vault-slot{ flex:1; height:8px; border-radius:3px; background: var(--danger); }
 .vault-slot.filled{ background: var(--ok); }
-.raid-diff-box{ margin-bottom:12px; cursor:default; }
-.raid-diff-row{ display:flex; align-items:center; gap:8px; margin-bottom:6px; cursor:pointer; border-radius:8px; padding:2px 4px; margin-left:-4px; transition: background .15s; }
-.raid-diff-row:hover{ background: var(--bg-panel); }
-.raid-diff-row:last-child{ margin-bottom:0; }
-.raid-diff-row .vault-row-label{ width:48px; }
-.raid-diff-row .pbar-track{ flex:1; }
-.raid-diff-count{ font-size:10px; color:var(--text-dim); width:26px; text-align:right; flex-shrink:0; }
-.events-list{ display:flex; flex-direction:column; gap:4px; margin-top:6px; }
-.events-list label{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); cursor:pointer; position:relative; z-index:5;}
-.events-list input[type=checkbox]{ accent-color: var(--class-color, var(--gold)); }
-.events-list label.done{ color: var(--ok); }
-details.progress-detail summary{ list-style:none; cursor:pointer; }
-details.progress-detail summary::-webkit-details-marker{ display:none; }
 
-.add-char-card{
-  background: var(--bg-panel); border: 1px dashed var(--hairline); border-radius:12px;
-  display:flex; align-items:center; justify-content:center; min-height: 140px;
-  color: var(--text-dim); cursor:pointer; font-weight:600; font-size:13px; transition: all .15s;
-}
-.add-char-card:hover{ border-color: var(--gold-dim); color: var(--gold); }
+/* character page: milestones, gear, progression, recent runs */
+.milestone-row{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; background: var(--bg-panel-raised); margin-bottom:6px; }
+.milestone-row:last-child{ margin-bottom:0; }
+.milestone-row.done{ box-shadow: inset 3px 0 0 var(--ok); }
+.milestone-check{ width:14px; color: var(--ok); font-weight:700; flex-shrink:0; }
+.milestone-label{ flex:1; font-size:13px; color: var(--text); }
+.milestone-count{ font-size:11px; color: var(--text-dim); flex-shrink:0; }
 
-/* dungeon hover balloon */
-.dtip{
-  position: fixed; z-index: 200; background: #1a1a21; border: 1px solid var(--gold-dim);
-  border-radius: 12px; padding: 12px; min-width: 200px; max-width: 300px; box-shadow: 0 8px 24px rgba(0,0,0,.5);
-  display:none; pointer-events: none;
-}
-.dtip .dtip-title{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); font-weight:700; margin-bottom:8px;}
-.dtip .drow{ display:flex; align-items:center; gap:7px; font-size:12px; padding:2px 0; }
-.dtip .dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-.dtip .dot.on{ background: var(--ok); box-shadow: 0 0 6px var(--ok); }
-.dtip .dot.off{ background: var(--danger); box-shadow: 0 0 6px var(--danger); }
-.dtip .dname.on{ color:#8fd39f; }
-.dtip .dname.off{ color:#e08a80; }
-.raid-tip-legend{ display:flex; align-items:center; gap:6px; margin-bottom:4px; }
-.raid-tip-legend span{ width:9px; text-align:center; font-size:9px; color:var(--text-dim); font-weight:700; flex-shrink:0; }
-.raid-tip-legend span:first-child{ flex:1; width:auto; }
-.raid-tip-row{ display:flex; align-items:center; gap:10px; font-size:11px; padding:2px 0; color:var(--text-dim); }
-.raid-tip-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.raid-tip-dots{ display:flex; gap:6px; flex-shrink:0; }
-.raid-tip-dot{ width:7px; height:7px; border-radius:50%; display:inline-block; }
-.raid-tip-dot.on{ background: var(--ok); box-shadow: 0 0 6px var(--ok); }
-.raid-tip-dot.off{ background: var(--text-dim); opacity:.35; }
+.gear-columns{ display:grid; grid-template-columns: 1fr 1fr; gap:0 20px; }
+@media(max-width:600px){ .gear-columns{ grid-template-columns: 1fr; } }
+.gear-weapons{ margin-top:6px; }
+.gear-row{ display:flex; align-items:center; gap:10px; padding:8px 4px; border-bottom:1px solid var(--hairline); }
+.gear-row:last-child{ border-bottom:none; }
+.gear-row.empty{ opacity:.5; }
+.gear-icon{ width:32px; height:32px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
+.gear-info{ min-width:0; flex:1; }
+.gear-slot-label{ font-size:12px; color: var(--text-dim); }
+.gear-empty-note{ font-size:12px; color: var(--text-dim); margin-left:auto; }
+.gear-name{ font-size:13px; font-weight:600; text-decoration:none; display:block; }
+.gear-name:hover{ text-decoration:underline; }
+.gear-meta{ font-size:11px; color: var(--text-dim); margin-top:2px; }
+
+.best-run-row{ display:flex; align-items:center; gap:12px; padding:8px 4px; border-bottom:1px solid var(--hairline); }
+.best-run-row:last-child{ border-bottom:none; }
+.best-run-name{ width:200px; flex-shrink:0; font-size:13px; color: var(--text); }
+.best-run-level{ color: var(--gold-dim); font-weight:700; font-size:12px; }
+.best-run-row .pbar-track{ flex:1; }
+.best-run-score{ width:44px; flex-shrink:0; text-align:right; font-size:12px; color: var(--text-dim); }
+
+.recent-runs-list{ display:flex; flex-direction:column; gap:6px; }
+.recent-run-row{ display:flex; align-items:center; gap:10px; padding:8px 8px; border-radius:8px; background: var(--bg-panel-raised); text-decoration:none; color:inherit; }
+.recent-run-row:hover{ box-shadow: 0 0 0 1px var(--gold-dim); }
+.recent-run-icon{ width:32px; height:32px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
+.recent-run-info{ flex:1; min-width:0; }
+.recent-run-name{ font-size:13px; color: var(--text); font-weight:600; }
+.recent-run-stars{ color: var(--gold); font-size:11px; }
+.recent-run-meta{ font-size:11px; color: var(--text-dim); margin-top:2px; }
+.recent-run-time{ font-size:12px; color: var(--text-dim); flex-shrink:0; }
 
 /* chart panel */
 .chart-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:20px; margin-top: 10px; }
@@ -294,15 +260,7 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .mural-card .mdel:hover{ color:var(--danger); border-color: var(--danger); }
 .mural-empty{ color: var(--text-dim); font-size:13px; padding: 20px 0; }
 
-/* detail page */
-#tab-detail{ }
-.detail-sticky-head{
-  position: sticky; top: 0; z-index: 50; background: var(--bg);
-  padding: 10px 0 12px; margin-bottom: 20px; border-bottom: 1px solid var(--hairline);
-  box-shadow: 0 12px 24px -16px rgba(0,0,0,.7);
-}
-.detail-back{ background:none; border:1px solid var(--hairline); color:var(--text-dim); padding:7px 12px; border-radius:8px; cursor:pointer; font-size:11px; font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:.04em;}
-.detail-back:hover{ color:var(--gold); border-color:var(--gold-dim); }
+/* character page */
 .detail-header{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:12px; flex-wrap:wrap; gap:14px;}
 .detail-header h2{ font-family:'Rajdhani',sans-serif; font-size:26px; color: var(--class-color, var(--gold)); }
 .detail-header .dclass{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-top:4px;}
@@ -416,14 +374,18 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 
 .loading{ text-align:center; padding:60px 0; color:var(--text-dim); font-size:13px; }
 
-/* quick nav in detail page */
-.detail-quicknav{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:0; }
+/* sub-tab bar in the character page (Vault/Gear/Progression/Recent Runs/History) */
+.detail-quicknav{ display:flex; gap:8px; flex-wrap:wrap; margin:20px 0; }
 .detail-quicknav button{
   background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text-dim);
   padding:7px 14px; border-radius:20px; font-size:11px; font-weight:600; cursor:pointer; text-transform:uppercase; letter-spacing:.03em;
   transition: all .15s;
 }
 .detail-quicknav button:hover{ border-color: var(--class-color, var(--gold)); color: var(--class-color, var(--gold)); }
+.detail-quicknav button.active{ border-color: var(--class-color, var(--gold)); color:#16141c; background: var(--class-color, var(--gold)); }
+.cpage-subtab-panel, .cpage-progression-panel{ display:none; }
+.cpage-subtab-panel.active, .cpage-progression-panel.active{ display:block; }
+.cpage-objectives{ margin-bottom:0; }
 
 /* collapsible list — toggle always sits at the top, next to the title, and reveals the full list as one block */
 .hist-toggle{ margin-top:8px; }
@@ -438,7 +400,6 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
 .hist-toggle summary:hover{ color: var(--gold); }
 .card-collapse{ margin-top:0; }
 .card-collapse summary{ font-size:10px; padding:0 0 8px; letter-spacing:.05em; }
-.raid-diff-body{ margin-top:2px; }
 
 /* currency icon */
 .curr-icon{ font-size:18px; width:24px; text-align:center; }
@@ -661,7 +622,8 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
   </nav>
 
   <section class="tab active" id="tab-dashboard">
-    <div id="characters-grid"><div class="loading" data-i18n="loading">Carregando...</div></div>
+    <div class="char-selector-row" id="charSelector"><div class="loading" data-i18n="loading">Carregando...</div></div>
+    <div id="characterPage"></div>
     <div class="chart-panel">
       <div class="chead">
         <h2 data-i18n="evolutionTitle">Evolução</h2>
@@ -757,8 +719,6 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
     </div>
   </section>
 
-  <section class="tab" id="tab-detail"></section>
-
   <footer class="app-footer">
     <div>
       <span class="app-footer-brand" data-i18n="brandTitle">Keystone Hub</span>
@@ -804,8 +764,6 @@ details.progress-detail summary::-webkit-details-marker{ display:none; }
     </div>
   </div>
 </div>
-
-<div class="dtip" id="dungeonTip"></div>
 
 <div class="modal-overlay" id="confirmModal" style="display:none;">
   <div class="modal">
@@ -933,8 +891,19 @@ const I18N = {
     highestKey: "Chave mais alta",
     remove: "Remover", viewDetails: "Ver detalhes →",
     dungeonsSeasonTitle: (x,y) => `Dungeons da Season (${x}/${y})`,
-    sparkSeasonTitle: "Spark da Season",
     itemLevelEvolutionTitle: "Evolução de Item Level",
+    subtabVault: "Vault", subtabGear: "Equipamento", subtabProgression: "Progressão", subtabRecent: "Runs Recentes", subtabHistory: "Histórico",
+    objectivesTitle: (x,y) => `Objetivos (${x}/${y})`,
+    raidMilestone: (n) => `Derrote ${n} chefes da season`,
+    mplusMilestone: (n) => `Complete ${n} dungeons Mítico+`,
+    progressionMplusTab: "Mítico+", progressionRaidTab: "Raid",
+    noGearYet: "Sem dados de equipamento ainda — clique em Atualizar no topo do dashboard.",
+    noRecentRunsYet: "Nenhuma run de Mítico+ recente ainda.",
+    scoreCol: "Pontuação",
+    gearSlotHead: "Cabeça", gearSlotNeck: "Pescoço", gearSlotShoulder: "Ombro", gearSlotBack: "Costas",
+    gearSlotChest: "Peito", gearSlotWrist: "Pulso", gearSlotHands: "Mãos", gearSlotWaist: "Cintura",
+    gearSlotLegs: "Pernas", gearSlotFeet: "Pés", gearSlotRing1: "Anel 1", gearSlotRing2: "Anel 2",
+    gearSlotTrinket1: "Bugiganga 1", gearSlotTrinket2: "Bugiganga 2", gearSlotMainHand: "Mão Principal", gearSlotOffHand: "Mão Secundária",
     day: "Dia", week: "Semana", month: "Mês",
     viewFullHistory: (n) => n ? `Ver histórico completo (${n})` : "Ver histórico completo",
     dateCol: "Data",
@@ -1020,8 +989,19 @@ const I18N = {
     highestKey: "Highest Key",
     remove: "Remove", viewDetails: "View details →",
     dungeonsSeasonTitle: (x,y) => `Season Dungeons (${x}/${y})`,
-    sparkSeasonTitle: "Season Spark",
     itemLevelEvolutionTitle: "Item Level Evolution",
+    subtabVault: "Vault", subtabGear: "Gear", subtabProgression: "Progression", subtabRecent: "Recent Runs", subtabHistory: "History",
+    objectivesTitle: (x,y) => `Objectives (${x}/${y})`,
+    raidMilestone: (n) => `Defeat ${n} Season bosses`,
+    mplusMilestone: (n) => `Complete ${n} Mythic+ dungeons`,
+    progressionMplusTab: "Mythic+", progressionRaidTab: "Raid",
+    noGearYet: "No gear data yet — click Refresh at the top of the dashboard.",
+    noRecentRunsYet: "No recent Mythic+ runs yet.",
+    scoreCol: "Score",
+    gearSlotHead: "Head", gearSlotNeck: "Neck", gearSlotShoulder: "Shoulder", gearSlotBack: "Back",
+    gearSlotChest: "Chest", gearSlotWrist: "Wrist", gearSlotHands: "Hands", gearSlotWaist: "Waist",
+    gearSlotLegs: "Legs", gearSlotFeet: "Feet", gearSlotRing1: "Ring 1", gearSlotRing2: "Ring 2",
+    gearSlotTrinket1: "Trinket 1", gearSlotTrinket2: "Trinket 2", gearSlotMainHand: "Main Hand", gearSlotOffHand: "Off Hand",
     day: "Day", week: "Week", month: "Month",
     viewFullHistory: (n) => n ? `View full history (${n})` : "View full history",
     dateCol: "Date",
@@ -1071,7 +1051,6 @@ function refreshDynamicUI(){
   if(document.getElementById('mainApp').style.display === 'none') return;
   renderCharacters(); renderChart(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList(); renderTips();
   renderMuralFilters(); renderMuralGrid();
-  if(document.getElementById('tab-detail').classList.contains('active') && currentDetailChar){ renderDetail(currentDetailChar); }
 }
 function setLanguage(lang){
   currentLang = lang;
@@ -1807,7 +1786,26 @@ const RAID_NAME = "The Venomous Abyss";
 const RAID_POOL = ["Nek'zali the Soulcoiler","The Lost Explorers","Sszorak","The Coiled Altar","Entombed Sentinels","Vashnik the Malignant","The Twin Fangs","Ula'tek"];
 const RAID_DIFFICULTIES = ["LFR","Normal","Heroic","Mythic"];
 const WORLDBOSS_TIERS = ["World","Normal","Heroic","Mythic"];
-const SPARK_POOL = ["Spark 1","Spark 2"];
+
+/* Gear tab: two-column paperdoll-ish split, matching the standard WoW character sheet layout */
+const GEAR_LEFT_SLOTS = ["head","neck","shoulder","back","chest","wrist"];
+const GEAR_RIGHT_SLOTS = ["hands","waist","legs","feet","finger1","finger2","trinket1","trinket2"];
+const GEAR_WEAPON_SLOTS = ["mainhand","offhand"];
+const GEAR_SLOT_LABEL_KEYS = {
+  head:"gearSlotHead", neck:"gearSlotNeck", shoulder:"gearSlotShoulder", back:"gearSlotBack",
+  chest:"gearSlotChest", wrist:"gearSlotWrist", hands:"gearSlotHands", waist:"gearSlotWaist",
+  legs:"gearSlotLegs", feet:"gearSlotFeet", finger1:"gearSlotRing1", finger2:"gearSlotRing2",
+  trinket1:"gearSlotTrinket1", trinket2:"gearSlotTrinket2", mainhand:"gearSlotMainHand", offhand:"gearSlotOffHand"
+};
+const ITEM_QUALITY_COLOR = { 0:"#9d9d9d", 1:"#ffffff", 2:"#1eff00", 3:"#0070dd", 4:"#a335ee", 5:"#ff8000" };
+function zamIconUrl(icon, size){ return icon ? `https://wow.zamimg.com/images/wow/icons/${size||'medium'}/${icon}.jpg` : ''; }
+function formatClearTime(ms){
+  if(!ms && ms !== 0) return '—';
+  const totalSec = Math.round(ms/1000);
+  const m = Math.floor(totalSec/60), s = totalSec%60;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
 /* Midnight Season 2 Mythic+ loot table (source: Wowhead guide, beta/PTR data — expect
    it to drift as the season is patched; dungeon spelling normalized to DUNGEON_POOL). */
 const ITEM_LOOT_TABLE = [
@@ -2145,8 +2143,8 @@ const DEFAULT_CHARS = [
   {id:"c2", name:"Bludnymph", class:"Warrior"}
 ];
 
-let state = { characters: [], tips: [], range: 30, metric: "ilvl", muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", todoActiveChar: null, bisActiveChar: null };
-let chart = null, detailChartInstance = null, currentDetailChar = null, detailRange = 30;
+let state = { characters: [], tips: [], range: 30, metric: "ilvl", muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", todoActiveChar: null, bisActiveChar: null, dashboardActiveChar: null, dashboardActiveSubTab: "vault", progressionSubTab: "mplus" };
+let chart = null, detailRange = 30;
 
 function uid(){ return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 function todayStr(){ return new Date().toISOString().slice(0,10); }
@@ -2219,7 +2217,9 @@ function normalizeChar(c){
   if(typeof c.worldboss !== 'object' || c.worldboss === null){
     c.worldboss = Object.fromEntries(WORLDBOSS_TIERS.map(t=>[t,false]));
   }
-  if(!c.sparks) c.sparks = Object.fromEntries(SPARK_POOL.map(s=>[s,false]));
+  if(c.gearItems === undefined) c.gearItems = null;
+  if(!Array.isArray(c.mplusBestRuns)) c.mplusBestRuns = [];
+  if(!Array.isArray(c.mplusRecentRuns)) c.mplusRecentRuns = [];
   if(c.realm === undefined) c.realm = null;
   if(c.realmName === undefined) c.realmName = null;
   if(c.region === undefined) c.region = null;
@@ -2238,10 +2238,10 @@ function makeCharObj(id, name, cls, realm, realmName, region){
     dungeons: Object.fromEntries(DUNGEON_POOL.map(d=>[d,false])),
     events: [],
     raidBosses: Object.fromEntries(RAID_POOL.map(b=>[b, makeRaidBossEntry()])),
-    sparks: Object.fromEntries(SPARK_POOL.map(s=>[s,false])),
     worldboss: Object.fromEntries(WORLDBOSS_TIERS.map(t=>[t,false])),
     todos: DEFAULT_TODOS_I18N[currentLang].map(text => ({id: uid(), text, done:false})),
-    highestKey: 0, history: [], bis: []
+    highestKey: 0, history: [], bis: [],
+    gearItems: null, mplusBestRuns: [], mplusRecentRuns: []
   };
 }
 
@@ -2250,117 +2250,38 @@ async function saveRoster(){ await storageSet('roster', JSON.stringify(state.cha
 function countDone(obj){ return Object.values(obj).filter(Boolean).length; }
 
 /* ---------------- Dashboard cards ---------------- */
+/* ---------------- Dashboard: character selector pills + single-page character view ---------------- */
 function renderCharacters(){
-  const grid = document.getElementById('characters-grid');
-  grid.innerHTML = '';
-  for(const c of state.characters){
+  if(!state.dashboardActiveChar || !state.characters.some(c => c.id === state.dashboardActiveChar)){
+    state.dashboardActiveChar = state.characters[0] ? state.characters[0].id : null;
+  }
+  const wrap = document.getElementById('charSelector');
+  wrap.innerHTML = '';
+  state.characters.forEach(c => {
     const color = CLASS_HEX[c.class] || '#f2b53d';
-    const dCount = countDone(c.dungeons), dTotal = DUNGEON_POOL.length;
-    const eCount = c.events.filter(e => e.done).length, eTotal = c.events.length;
-    const todoCount = c.todos.filter(td => td.done).length, todoTotal = c.todos.length;
-    const raidCount = raidBossesDone(c), raidTotal = RAID_POOL.length;
-    const wbCount = countDone(c.worldboss), wbTotal = WORLDBOSS_TIERS.length;
-    const sparkCount = countDone(c.sparks), sparkTotal = SPARK_POOL.length;
-    const raidFilled = [raidCount>=2, raidCount>=4, raidCount>=6];
-    const mplusFilled = [dCount>=2, dCount>=4, dCount>=8];
-    const worldFilled = [eCount>=1, eCount>=2, eCount>=4];
-
-    const card = document.createElement('div');
-    card.className = 'char-card';
-    card.style.setProperty('--class-color', color);
-    card.innerHTML = `
-      <div class="char-head">
-        <div style="display:flex; align-items:flex-start; gap:8px;">
-          <span class="drag-handle card-drag-handle" title="${t('dragReorder')}">⠿</span>
-          <img class="class-icon" src="${classIconUrl(c.class)}" alt="${c.class}">
-          <div>
-            <div class="char-name">${c.name}</div>
-            <div class="char-class">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''}</div>
-          </div>
-        </div>
-        <div class="char-head-right">
-          <button class="char-remove" title="${t('remove')}">✕</button>
-          <div class="char-quickstats">
-            <div class="cqs-row"><span class="cqs-lbl">ILVL</span><b>${c.ilvl || '—'}</b></div>
-            <div class="cqs-row"><span class="cqs-lbl">IO</span><b>${c.ioscore || '—'}</b></div>
-          </div>
-        </div>
-      </div>
-      ${(c.realmName || c.race || c.faction) ? `
-      <div class="char-meta-row">
-        ${c.realmName ? `<span class="char-meta-item">${escapeHtml(c.realmName)} (${(c.region||'').toUpperCase()})</span>` : ''}
-        ${c.race ? `<span class="char-meta-item">${escapeHtml(c.race)}</span>` : ''}
-        ${c.faction ? `<span class="char-meta-item faction-${c.faction.toLowerCase()}">${escapeHtml(c.faction)}</span>` : ''}
-      </div>` : ''}
-      <div class="open-hint">${t('viewDetails')}</div>
-      <div class="progress-list">
-        <div class="progress-item" data-hover="dungeon">
-          <div class="plabel"><span>Dungeons</span><span class="pcount">${dCount}/${dTotal}</span></div>
-          <div class="pbar-track"><div class="pbar-fill" style="width:${dTotal? (dCount/dTotal*100):0}%"></div></div>
-        </div>
-        <div class="progress-item" data-hover="worldboss">
-          <div class="plabel"><span>World Boss</span><span class="pcount">${wbCount}/${wbTotal}</span></div>
-          <div class="pbar-track"><div class="pbar-fill" style="width:${wbTotal? (wbCount/wbTotal*100):0}%"></div></div>
-        </div>
-        <div class="progress-item" data-hover="spark">
-          <div class="plabel"><span>Spark</span><span class="pcount">${sparkCount}/${sparkTotal}</span></div>
-          <div class="pbar-track"><div class="pbar-fill" style="width:${sparkTotal? (sparkCount/sparkTotal*100):0}%"></div></div>
-        </div>
-        <div class="progress-item" data-hover="events">
-          <div class="plabel"><span>Events</span><span class="pcount">${eCount}/${eTotal}</span></div>
-          <div class="pbar-track"><div class="pbar-fill" style="width:${eTotal? (eCount/eTotal*100):0}%"></div></div>
-        </div>
-        ${eTotal === 0 ? `<button class="add-event-btn" data-action="add-event">+ Add Event</button>` : ''}
-        <div class="progress-item" data-hover="todo">
-          <div class="plabel"><span>To-Do</span><span class="pcount">${todoCount}/${todoTotal}</span></div>
-          <div class="pbar-track"><div class="pbar-fill" style="width:${todoTotal? (todoCount/todoTotal*100):0}%"></div></div>
-        </div>
-        ${todoTotal === 0 ? `<button class="add-event-btn" data-action="add-todo">+ Add To-Do</button>` : ''}
-      </div>
-      <div class="vault-box raid-diff-box" data-hover="raid">
-        <details class="hist-toggle card-collapse" open>
-          <summary>Raid</summary>
-          <div class="raid-diff-body">
-            ${RAID_DIFFICULTIES.map(diff => {
-              const diffCount = RAID_POOL.filter(b => c.raidBosses[b][diff]).length;
-              return `
-            <div class="raid-diff-row">
-              <span class="vault-row-label">${diff}</span>
-              <div class="pbar-track"><div class="pbar-fill" style="width:${(diffCount/raidTotal*100)}%"></div></div>
-              <span class="raid-diff-count">${diffCount}/${raidTotal}</span>
-            </div>`;
-            }).join('')}
-          </div>
-        </details>
-      </div>
-      <div class="vault-box">
-        <details class="hist-toggle card-collapse" open>
-          <summary>Great Vault</summary>
-          <div style="margin-top:8px;">
-            <div class="vault-row" title="${t('raidVaultTip', raidCount, raidTotal)}">
-              <span class="vault-row-label">Raid</span>
-              <div class="vault-slots">${raidFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
-            </div>
-            <div class="vault-row" title="${t('mplusVaultTip', dCount, dTotal)}">
-              <span class="vault-row-label">M+</span>
-              <div class="vault-slots">${mplusFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
-            </div>
-            <div class="vault-row" title="${t('worldVaultTip', eCount, eTotal)}" style="margin-bottom:0;">
-              <span class="vault-row-label">World</span>
-              <div class="vault-slots">${worldFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
-            </div>
-          </div>
-        </details>
-      </div>
+    const pill = document.createElement('div');
+    pill.className = 'char-select-btn' + (state.dashboardActiveChar === c.id ? ' active' : '');
+    pill.style.setProperty('--class-color', color);
+    pill.innerHTML = `
+      <span class="drag-handle" title="${t('dragReorder')}">⠿</span>
+      <img class="class-icon" src="${classIconUrl(c.class)}" alt="${c.class}">
+      <span>${escapeHtml(c.name)}</span>
+      <button class="char-remove" title="${t('remove')}">✕</button>
     `;
-
-    // click card -> open detail (ignore clicks on interactive elements)
-    card.addEventListener('click', (e) => {
-      if(e.target.closest('input, button, .events-list, details, .card-drag-handle')) return;
-      openDetail(c.id);
+    pill.addEventListener('click', (e) => {
+      if(e.target.closest('.char-remove, .drag-handle')) return;
+      state.dashboardActiveChar = c.id;
+      renderCharacters();
     });
-
-    enableDragReorder(card, c.id, async (fromId, toId) => {
+    pill.querySelector('.char-remove').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if(!(await customConfirm(t('removeCharMsg', c.name), t('removeCharTitle')))) return;
+      state.characters = state.characters.filter(x => x.id !== c.id);
+      await saveRoster();
+      if(state.dashboardActiveChar === c.id) state.dashboardActiveChar = null;
+      renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList();
+    });
+    enableDragReorder(pill, c.id, async (fromId, toId) => {
       const fromIdx = state.characters.findIndex(x => x.id === fromId);
       const toIdx = state.characters.findIndex(x => x.id === toId);
       if(fromIdx === -1 || toIdx === -1) return;
@@ -2369,83 +2290,336 @@ function renderCharacters(){
       await saveRoster();
       renderCharacters();
     });
+    wrap.appendChild(pill);
+  });
+  const addPill = document.createElement('div');
+  addPill.className = 'char-select-btn add-char-pill';
+  addPill.textContent = t('addCharacterBtn');
+  addPill.addEventListener('click', openAddCharModal);
+  wrap.appendChild(addPill);
 
-    // hover balloons: dungeon / raid / world boss / events
-    const hoverSources = {
-      dungeon: { title: `${c.name} — Dungeons`, items: () => DUNGEON_POOL.map(d => ({name:d, done:c.dungeons[d]})) },
-      worldboss: { title: `${c.name} — World Boss`, items: () => WORLDBOSS_TIERS.map(wt => ({name:wt, done:c.worldboss[wt]})) },
-      events: { title: `${c.name} — Events`, items: () => c.events.map(ev => ({name:ev.text, done:ev.done})) },
-      todo: { title: `${c.name} — To-Do`, items: () => c.todos.map(td => ({name:td.text, done:td.done})) }
-    };
-    Object.keys(hoverSources).forEach(key => {
-      const el = card.querySelector(`[data-hover="${key}"]`);
-      if(!el) return;
-      const src = hoverSources[key];
-      el.addEventListener('mouseenter', (e) => showListTip(src.title, src.items(), e));
-      el.addEventListener('mousemove', (e) => positionTip(e));
-      el.addEventListener('mouseleave', hideListTip);
-    });
-    const raidHoverEl = card.querySelector('[data-hover="raid"]');
-    if(raidHoverEl){
-      raidHoverEl.addEventListener('mouseenter', (e) => showRaidTip(c, e));
-      raidHoverEl.addEventListener('mousemove', (e) => positionTip(e));
-      raidHoverEl.addEventListener('mouseleave', hideListTip);
-    }
+  renderCharacterPage();
+}
 
-    card.querySelectorAll('.add-event-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if(btn.dataset.action === 'add-todo') goToTodoTab(c.id);
-        else openDetail(c.id, 'section-events');
-      });
-    });
-    card.querySelectorAll('.raid-diff-row').forEach(row => {
-      row.addEventListener('click', (e) => { e.stopPropagation(); openDetail(c.id, 'section-raid'); });
-    });
-    const rowJumpTargets = { dungeon:'section-dungeons', worldboss:'section-worldboss', events:'section-events', spark:'section-spark' };
-    Object.keys(rowJumpTargets).forEach(key => {
-      const row = card.querySelector(`[data-hover="${key}"]`);
-      if(!row) return;
-      row.addEventListener('click', (e) => { e.stopPropagation(); openDetail(c.id, rowJumpTargets[key]); });
-    });
-    const todoRow = card.querySelector('[data-hover="todo"]');
-    if(todoRow){
-      todoRow.addEventListener('click', (e) => { e.stopPropagation(); goToTodoTab(c.id); });
-    }
+function renderCharacterPage(){
+  const container = document.getElementById('characterPage');
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  if(!c){ container.innerHTML = ''; return; }
 
-    card.querySelector('.char-remove').addEventListener('click', async (e) => {
-      e.stopPropagation();
-      if(!(await customConfirm(t('removeCharMsg', c.name), t('removeCharTitle')))) return;
-      state.characters = state.characters.filter(x => x.id !== c.id);
-      await saveRoster();
-      renderCharacters(); renderChart(); renderMuralFilters(); renderTodoAvatars(); renderTodos(); renderBisAvatars(); renderBisList();
-    });
-    const refreshBtn = card.querySelector('.char-refresh-btn');
-    if(refreshBtn){
-      refreshBtn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        refreshBtn.disabled = true;
-        refreshBtn.classList.add('spinning');
-        try{
-          const data = await fetchRaiderIoProfile(c.name, c.realm, c.region);
-          applyRaiderIoData(c, data);
-          await saveChar(c);
-          renderCharacters(); renderChart();
-        } catch(err){
-          refreshBtn.disabled = false;
-          refreshBtn.classList.remove('spinning');
-        }
-      });
-    }
+  const color = CLASS_HEX[c.class] || '#f2b53d';
+  const dCount = countDone(c.dungeons), dTotal = DUNGEON_POOL.length;
+  const eCount = c.events.filter(e => e.done).length, eTotal = c.events.length;
+  const raidCount = raidBossesDone(c), raidTotal = RAID_POOL.length;
+  const wbCount = countDone(c.worldboss), wbTotal = WORLDBOSS_TIERS.length;
+  const raidFilled = [raidCount>=2, raidCount>=4, raidCount>=6];
+  const mplusFilled = [dCount>=2, dCount>=4, dCount>=8];
+  const worldFilled = [eCount>=1, eCount>=2, eCount>=4];
+  const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date));
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - detailRange);
+  const filteredHistory = sortedHistory.filter(h => new Date(h.date) >= cutoff);
+  const reversedHistory = filteredHistory.slice().reverse();
 
-    grid.appendChild(card);
+  const eventRowHtml = ev => `
+    <div class="bis-row ${ev.done?'collected':''}" data-id="${ev.id}">
+      <input type="checkbox" class="event-check" ${ev.done?'checked':''}>
+      <span class="bname ${ev.done?'collected':''}">${escapeHtml(ev.text)}</span>
+      <button class="bdel">✕</button>
+    </div>`;
+  const dungeonRow = d => `
+    <div class="drow">
+      <span class="dot ${c.dungeons[d]?'on':'off'}"></span>
+      <span>${d}</span>
+      <input type="checkbox" data-key="${d}" ${c.dungeons[d]?'checked':''}>
+    </div>`;
+  const wbRow = tier => `
+    <div class="drow">
+      <span class="dot ${c.worldboss[tier]?'on':'off'}"></span>
+      <span>${tier}</span>
+      <input type="checkbox" data-key="${tier}" ${c.worldboss[tier]?'checked':''}>
+    </div>`;
+  const raidTableRow = boss => `
+    <tr>
+      <td class="raid-boss-name">${boss}</td>
+      ${RAID_DIFFICULTIES.map(d => `<td><input type="checkbox" data-boss="${boss}" data-diff="${d}" ${c.raidBosses[boss][d]?'checked':''}></td>`).join('')}
+    </tr>`;
+  const milestoneRow = (label, count, total) => `
+    <div class="milestone-row ${count>=total?'done':''}">
+      <span class="milestone-check">${count>=total?'✓':''}</span>
+      <span class="milestone-label">${label}</span>
+      <span class="milestone-count">${Math.min(count,total)}/${total}</span>
+    </div>`;
+  const gearItemRow = slotKey => {
+    const item = c.gearItems ? c.gearItems[slotKey] : null;
+    const label = t(GEAR_SLOT_LABEL_KEYS[slotKey]);
+    if(!item) return `<div class="gear-row empty"><span class="gear-slot-label">${label}</span><span class="gear-empty-note">—</span></div>`;
+    const qColor = ITEM_QUALITY_COLOR[item.item_quality] || '#fff';
+    const iconUrl = zamIconUrl(item.icon);
+    const enchant = item.enchants_detail && item.enchants_detail[0] ? item.enchants_detail[0].name : '';
+    return `
+    <div class="gear-row">
+      ${iconUrl ? `<img class="gear-icon" src="${iconUrl}" alt="">` : ''}
+      <div class="gear-info">
+        <a href="https://www.wowhead.com/item=${item.item_id}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(item.name)}</a>
+        <div class="gear-meta">${item.item_level}${enchant ? ` · ${escapeHtml(enchant)}` : ''}</div>
+      </div>
+    </div>`;
+  };
+  const bestRunRow = run => {
+    const pct = run.par_time_ms ? Math.min(100, Math.round((run.par_time_ms / Math.max(run.clear_time_ms,1)) * 100)) : 0;
+    const inTime = run.clear_time_ms <= run.par_time_ms;
+    return `
+    <div class="best-run-row">
+      <span class="best-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}</span></span>
+      <div class="pbar-track"><div class="pbar-fill" style="width:${pct}%; background:${inTime?'var(--ok)':'var(--danger)'}"></div></div>
+      <span class="best-run-score">${run.score}</span>
+    </div>`;
+  };
+  const recentRunRow = run => {
+    const stars = '★'.repeat(run.num_keystone_upgrades || 0);
+    const dateStr = new Date(run.completed_at).toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+    const iconUrl = run.icon_url || '';
+    return `
+    <a class="recent-run-row" href="${run.url}" target="_blank" rel="noopener noreferrer">
+      ${iconUrl ? `<img class="recent-run-icon" src="${iconUrl}" alt="">` : ''}
+      <div class="recent-run-info">
+        <div class="recent-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}</span> <span class="recent-run-stars">${stars}</span></div>
+        <div class="recent-run-meta">${t('scoreCol')}: ${run.score} · ${dateStr}</div>
+      </div>
+      <div class="recent-run-time">${formatClearTime(run.clear_time_ms)}</div>
+    </a>`;
+  };
+  const rowsHtml = h => `<tr><td>${h.date}</td><td>${h.ilvl}</td><td>${h.ioscore}</td></tr>`;
+
+  const st = state.dashboardActiveSubTab;
+  const pst = state.progressionSubTab;
+  const sortedBestRuns = [...c.mplusBestRuns].sort((a,b) => (b.score||0) - (a.score||0));
+
+  container.innerHTML = `
+    <div class="cpage" style="--class-color:${color}">
+      <div class="detail-header">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <img class="class-icon class-icon-lg" src="${classIconUrl(c.class)}" alt="${c.class}">
+          <div>
+            <h2 style="color:${color}">${c.name}</h2>
+            <div class="dclass">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''}</div>
+            ${(c.realmName || c.race || c.faction) ? `
+            <div class="char-meta-row" style="margin:6px 0 0 0;">
+              ${c.realmName ? `<span class="char-meta-item">${escapeHtml(c.realmName)} (${(c.region||'').toUpperCase()})</span>` : ''}
+              ${c.race ? `<span class="char-meta-item">${escapeHtml(c.race)}</span>` : ''}
+              ${c.faction ? `<span class="char-meta-item faction-${c.faction.toLowerCase()}">${escapeHtml(c.faction)}</span>` : ''}
+            </div>` : ''}
+          </div>
+        </div>
+        <div class="char-quickstats" style="margin-top:0;">
+          <div class="cqs-row"><span class="cqs-lbl">ILVL</span><b>${c.ilvl || '—'}</b></div>
+          <div class="cqs-row"><span class="cqs-lbl">IO</span><b>${c.ioscore || '—'}</b></div>
+        </div>
+      </div>
+
+      <div class="dpanel cpage-objectives">
+        <h3 style="margin:0 0 12px;">${t('objectivesTitle', eCount, eTotal)}</h3>
+        <div class="bis-add">
+          <input type="text" class="iname" id="eventName" placeholder="${t('eventNamePlaceholder')}" style="flex:1;">
+          <button id="eventAddBtn">${t('add')}</button>
+        </div>
+        <div class="bis-list" id="eventsList">
+          ${c.events.length ? c.events.map(eventRowHtml).join('') : `<div class="empty-note" id="eventsEmpty">${t('noEventsYet')}</div>`}
+        </div>
+      </div>
+
+      <div class="detail-quicknav cpage-subtabs">
+        <button data-subtab="vault" class="${st==='vault'?'active':''}">${t('subtabVault')}</button>
+        <button data-subtab="gear" class="${st==='gear'?'active':''}">${t('subtabGear')}</button>
+        <button data-subtab="progression" class="${st==='progression'?'active':''}">${t('subtabProgression')}</button>
+        <button data-subtab="recent" class="${st==='recent'?'active':''}">${t('subtabRecent')}</button>
+        <button data-subtab="history" class="${st==='history'?'active':''}">${t('subtabHistory')}</button>
+      </div>
+
+      <div class="cpage-subtab-panel ${st==='vault'?'active':''}" data-subtab-panel="vault">
+        <div class="detail-grid">
+          <div class="detail-col">
+            <div class="dpanel">
+              <h3>Great Vault</h3>
+              <div class="vault-row" title="${t('raidVaultTip', raidCount, raidTotal)}">
+                <span class="vault-row-label">Raid</span>
+                <div class="vault-slots">${raidFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
+              </div>
+              <div class="vault-row" title="${t('mplusVaultTip', dCount, dTotal)}">
+                <span class="vault-row-label">M+</span>
+                <div class="vault-slots">${mplusFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
+              </div>
+              <div class="vault-row" title="${t('worldVaultTip', eCount, eTotal)}" style="margin-bottom:0;">
+                <span class="vault-row-label">World</span>
+                <div class="vault-slots">${worldFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
+              </div>
+            </div>
+            <div class="dpanel">
+              <h3>${t('subtabVault')} — Milestones</h3>
+              ${milestoneRow(t('raidMilestone',2), raidCount, 2)}
+              ${milestoneRow(t('raidMilestone',4), raidCount, 4)}
+              ${milestoneRow(t('raidMilestone',6), raidCount, 6)}
+              ${milestoneRow(t('mplusMilestone',1), dCount, 1)}
+              ${milestoneRow(t('mplusMilestone',4), dCount, 4)}
+              ${milestoneRow(t('mplusMilestone',8), dCount, 8)}
+            </div>
+          </div>
+          <div class="detail-col">
+            <div class="dpanel" id="section-dungeons">
+              <h3 id="dungeonCount">${t('dungeonsSeasonTitle', dCount, dTotal)}</h3>
+              <div class="dungeon-full-list" id="detailDungeonList">
+                ${DUNGEON_POOL.map(dungeonRow).join('')}
+              </div>
+            </div>
+            <div class="dpanel" id="section-worldboss">
+              <h3 id="wbCount">World Boss (${wbCount}/${wbTotal})</h3>
+              <div class="dungeon-full-list" id="detailWbList">
+                ${WORLDBOSS_TIERS.map(wbRow).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cpage-subtab-panel ${st==='gear'?'active':''}" data-subtab-panel="gear">
+        <div class="dpanel">
+          <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
+          ${c.gearItems ? `
+          <div class="gear-columns">
+            <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
+            <div class="gear-col">${GEAR_RIGHT_SLOTS.map(gearItemRow).join('')}</div>
+          </div>
+          <div class="gear-weapons">${GEAR_WEAPON_SLOTS.filter(s => c.gearItems[s]).map(gearItemRow).join('')}</div>
+          ` : `<div class="empty-note">${t('noGearYet')}</div>`}
+        </div>
+      </div>
+
+      <div class="cpage-subtab-panel ${st==='progression'?'active':''}" data-subtab-panel="progression">
+        <div class="dpanel">
+          <div class="detail-quicknav cpage-progression-subtabs" style="margin-bottom:16px;">
+            <button data-progsubtab="mplus" class="${pst==='mplus'?'active':''}">${t('progressionMplusTab')}</button>
+            <button data-progsubtab="raid" class="${pst==='raid'?'active':''}">${t('progressionRaidTab')}</button>
+          </div>
+          <div class="cpage-progression-panel ${pst==='mplus'?'active':''}" data-progsubtab-panel="mplus">
+            ${sortedBestRuns.length ? sortedBestRuns.map(bestRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+          </div>
+          <div class="cpage-progression-panel ${pst==='raid'?'active':''}" data-progsubtab-panel="raid">
+            <div class="raid-table-wrap">
+              <table class="raid-table">
+                <thead><tr><th></th>${RAID_DIFFICULTIES.map(d => `<th>${d}</th>`).join('')}</tr></thead>
+                <tbody id="detailRaidTableBody">
+                  ${RAID_POOL.map(raidTableRow).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cpage-subtab-panel ${st==='recent'?'active':''}" data-subtab-panel="recent">
+        <div class="dpanel">
+          <h3>${t('subtabRecent')}</h3>
+          <div class="recent-runs-list">
+            ${c.mplusRecentRuns.length ? c.mplusRecentRuns.map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+          </div>
+        </div>
+      </div>
+
+      <div class="cpage-subtab-panel ${st==='history'?'active':''}" data-subtab-panel="history">
+        <div class="dpanel">
+          <h3>${t('itemLevelEvolutionTitle')}</h3>
+          <div style="display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:10px; margin:14px 0;">
+            <div class="filter-group" id="detailRangeFilter">
+              <button data-range="7" class="${detailRange===7?'active':''}">${t('day')}</button>
+              <button data-range="30" class="${detailRange===30?'active':''}">${t('week')}</button>
+              <button data-range="90" class="${detailRange===90?'active':''}">${t('month')}</button>
+            </div>
+          </div>
+          <div id="detailChart"></div>
+          <details class="hist-toggle" open style="margin-top:12px;">
+            <summary>${t('viewFullHistory', reversedHistory.length)}</summary>
+            <table class="ilvl-table">
+              <thead><tr><th>${t('dateCol')}</th><th>Item Level</th><th>IOScore</th></tr></thead>
+              <tbody>
+                ${reversedHistory.length ? reversedHistory.map(rowsHtml).join('') : `<tr><td colspan="3" class="empty-note">${t('noRecordsPeriod')}</td></tr>`}
+              </tbody>
+            </table>
+          </details>
+        </div>
+      </div>
+    </div>
+  `;
+
+  container.querySelectorAll('.cpage-subtabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.dashboardActiveSubTab = btn.dataset.subtab;
+      container.querySelectorAll('.cpage-subtabs button').forEach(b => b.classList.toggle('active', b === btn));
+      container.querySelectorAll('.cpage-subtab-panel').forEach(p => p.classList.toggle('active', p.dataset.subtabPanel === btn.dataset.subtab));
+    });
+  });
+  container.querySelectorAll('.cpage-progression-subtabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.progressionSubTab = btn.dataset.progsubtab;
+      container.querySelectorAll('.cpage-progression-subtabs button').forEach(b => b.classList.toggle('active', b === btn));
+      container.querySelectorAll('.cpage-progression-panel').forEach(p => p.classList.toggle('active', p.dataset.progsubtabPanel === btn.dataset.progsubtab));
+    });
+  });
+
+  container.querySelector('#detailRangeFilter').addEventListener('click', (e) => {
+    if(e.target.tagName !== 'BUTTON') return;
+    detailRange = Number(e.target.dataset.range);
+    renderCharacterPage();
+  });
+
+  container.querySelectorAll('#section-dungeons input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', async (e) => {
+      c.dungeons[e.target.dataset.key] = e.target.checked;
+      await saveChar(c);
+      renderCharacterPage();
+    });
+  });
+  container.querySelectorAll('#detailRaidTableBody input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', async (e) => {
+      c.raidBosses[e.target.dataset.boss][e.target.dataset.diff] = e.target.checked;
+      await saveChar(c);
+      renderCharacterPage();
+    });
+  });
+  container.querySelectorAll('#detailWbList input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', async (e) => {
+      c.worldboss[e.target.dataset.key] = e.target.checked;
+      await saveChar(c);
+      renderCharacterPage();
+    });
+  });
+
+  function bindEventRow(row){
+    const id = row.dataset.id;
+    row.querySelector('.event-check').addEventListener('change', async (e) => {
+      const ev = c.events.find(x => x.id === id);
+      ev.done = e.target.checked;
+      await saveChar(c);
+      renderCharacterPage();
+    });
+    row.querySelector('.bdel').addEventListener('click', async () => {
+      c.events = c.events.filter(x => x.id !== id);
+      await saveChar(c);
+      renderCharacterPage();
+    });
   }
+  container.querySelectorAll('#eventsList .bis-row').forEach(bindEventRow);
+  container.querySelector('#eventAddBtn').addEventListener('click', async () => {
+    const nameInput = container.querySelector('#eventName');
+    const text = nameInput.value.trim();
+    if(!text) return;
+    c.events.push({id: uid(), text, done:false});
+    await saveChar(c);
+    renderCharacterPage();
+  });
+  container.querySelector('#eventName').addEventListener('keydown', (e) => { if(e.key==='Enter') container.querySelector('#eventAddBtn').click(); });
 
-  const addCard = document.createElement('div');
-  addCard.className = 'add-char-card';
-  addCard.innerText = t('addCharacterBtn');
-  addCard.addEventListener('click', openAddCharModal);
-  grid.appendChild(addCard);
+  container.querySelector('#detailChart').innerHTML = buildLineChartSVG(
+    [{ label:'Item Level', color, data: filteredHistory.map(h=>({x:h.date,y:h.ilvl})) }], 560, 190
+  );
 }
 
 function pushHistory(c){
@@ -2460,7 +2634,7 @@ function pushHistory(c){
 const DUNGEON_NAME_ALIASES = { "Den of Nalorakk": "Den of Noralakk", "Kings' Rest": "King's Rest" };
 
 async function fetchRaiderIoProfile(name, realmSlug, region){
-  const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current,mythic_plus_weekly_highest_level_runs`;
+  const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current,mythic_plus_weekly_highest_level_runs,mythic_plus_best_runs,mythic_plus_recent_runs`;
   const res = await fetch(url);
   if(!res.ok) throw new Error('character not found');
   return res.json();
@@ -2479,6 +2653,9 @@ function applyRaiderIoData(c, data){
       if(Object.prototype.hasOwnProperty.call(c.dungeons, poolName)) c.dungeons[poolName] = true;
     });
   }
+  c.gearItems = (data.gear && data.gear.items) || null;
+  c.mplusBestRuns = Array.isArray(data.mythic_plus_best_runs) ? data.mythic_plus_best_runs : [];
+  c.mplusRecentRuns = Array.isArray(data.mythic_plus_recent_runs) ? data.mythic_plus_recent_runs : [];
   pushHistory(c);
 }
 
@@ -2528,45 +2705,6 @@ async function refreshAllCharacters(){
   renderCharacters(); renderChart();
   if(btn){ btn.disabled = false; btn.querySelector('.rdb-icon').classList.remove('spinning'); }
 }
-
-/* dungeon tooltip balloon */
-/* Generic hover tooltip reused by Dungeons/Raid/World Boss/Events rows on the
-   dashboard card — items is [{name, done}], never editable here (read-only preview). */
-function showListTip(title, items, evt){
-  const tip = document.getElementById('dungeonTip');
-  tip.innerHTML = `<div class="dtip-title">${title}</div>` +
-    (items.length ? items.map(it => {
-      const on = !!it.done;
-      return `<div class="drow"><span class="dot ${on?'on':'off'}"></span><span class="dname ${on?'on':'off'}">${escapeHtml(it.name)}</span></div>`;
-    }).join('') : `<div class="drow"><span class="dname off">${t('noneYet')}</span></div>`);
-  tip.style.display = 'block';
-  positionTip(evt);
-}
-/* Raid tooltip: boss rows with one small dot per difficulty (LFR/Normal/Heroic/Mythic),
-   plus a letter legend — compact per-boss-per-difficulty view without listing every combo as text. */
-function showRaidTip(c, evt){
-  const tip = document.getElementById('dungeonTip');
-  tip.innerHTML = `<div class="dtip-title">${c.name} — Raid</div>` +
-    `<div class="raid-tip-legend"><span></span>${RAID_DIFFICULTIES.map(d => `<span>${d[0]}</span>`).join('')}</div>` +
-    RAID_POOL.map(boss => {
-      const dots = RAID_DIFFICULTIES.map(d => {
-        const on = c.raidBosses[boss][d];
-        return `<span class="raid-tip-dot ${on?'on':'off'}"></span>`;
-      }).join('');
-      return `<div class="raid-tip-row"><span class="raid-tip-name">${boss}</span><span class="raid-tip-dots">${dots}</span></div>`;
-    }).join('');
-  tip.style.display = 'block';
-  positionTip(evt);
-}
-function positionTip(evt){
-  const tip = document.getElementById('dungeonTip');
-  let x = evt.clientX + 16, y = evt.clientY + 12;
-  const rect = tip.getBoundingClientRect();
-  if(x + rect.width > window.innerWidth - 10) x = evt.clientX - rect.width - 16;
-  if(y + rect.height > window.innerHeight - 10) y = evt.clientY - rect.height - 12;
-  tip.style.left = x + 'px'; tip.style.top = y + 'px';
-}
-function hideListTip(){ document.getElementById('dungeonTip').style.display = 'none'; }
 
 let _confirmResolve = null;
 function customConfirm(message, title){
@@ -2673,7 +2811,6 @@ function clearWeeklyProgress(c){
   DUNGEON_POOL.forEach(d => c.dungeons[d] = false);
   RAID_POOL.forEach(b => { c.raidBosses[b] = makeRaidBossEntry(); });
   WORLDBOSS_TIERS.forEach(wt => c.worldboss[wt] = false);
-  SPARK_POOL.forEach(s => c.sparks[s] = false);
 }
 
 /* WoW weekly reset: NA = Tuesday 15:00 UTC, EU/KR/TW = Wednesday 04:00 UTC.
@@ -2709,279 +2846,6 @@ async function checkAutoWeeklyReset(){
     }
   }
   if(any) renderCharacters();
-}
-
-/* ---------------- Detail page ---------------- */
-function showDetailTab(){
-  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
-  document.getElementById('tab-detail').classList.add('active');
-}
-
-function openDetail(charId, jumpTo){
-  const c = state.characters.find(x => x.id === charId);
-  if(!c) return;
-  showDetailTab();
-  try{
-    renderDetail(c);
-    if(jumpTo){
-      // The tab was just switched from display:none to visible, so layout for the
-      // new content isn't settled yet — wait a couple of frames before measuring/scrolling.
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        const target = document.getElementById(jumpTo);
-        if(!target) return;
-        target.scrollIntoView({ behavior:'smooth', block:'start' });
-        target.classList.remove('jump-glow');
-        void target.offsetWidth; // restart the animation even if the same section was jumped to twice in a row
-        target.classList.add('jump-glow');
-        target.addEventListener('animationend', () => target.classList.remove('jump-glow'), { once:true });
-      }));
-    }
-  }
-  catch(err){ console.error('Erro ao abrir detalhe do personagem:', err); alert(t('detailOpenError')); }
-}
-
-function renderDetail(c){
-  currentDetailChar = c;
-  const color = CLASS_HEX[c.class] || '#f2b53d';
-  const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date));
-  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - detailRange);
-  const filteredHistory = sortedHistory.filter(h => new Date(h.date) >= cutoff);
-  const reversedHistory = filteredHistory.slice().reverse();
-  const dCount = countDone(c.dungeons), dTotal = DUNGEON_POOL.length;
-  const el = document.getElementById('tab-detail');
-  el.style.setProperty('--class-color', color);
-
-  const rowsHtml = h => `<tr><td>${h.date}</td><td>${h.ilvl}</td><td>${h.ioscore}</td></tr>`;
-
-  const dungeonRow = d => `
-    <div class="drow">
-      <span class="dot ${c.dungeons[d]?'on':'off'}"></span>
-      <span>${d}</span>
-      <input type="checkbox" data-key="${d}" ${c.dungeons[d]?'checked':''}>
-    </div>`;
-  const raidTableRow = boss => `
-    <tr>
-      <td class="raid-boss-name">${boss}</td>
-      ${RAID_DIFFICULTIES.map(d => `<td><input type="checkbox" data-boss="${boss}" data-diff="${d}" ${c.raidBosses[boss][d]?'checked':''}></td>`).join('')}
-    </tr>`;
-  const wbRow = tier => `
-    <div class="drow">
-      <span class="dot ${c.worldboss[tier]?'on':'off'}"></span>
-      <span>${tier}</span>
-      <input type="checkbox" data-key="${tier}" ${c.worldboss[tier]?'checked':''}>
-    </div>`;
-  const eventRowHtml = ev => `
-    <div class="bis-row ${ev.done?'collected':''}" data-id="${ev.id}">
-      <input type="checkbox" class="event-check" ${ev.done?'checked':''}>
-      <span class="bname ${ev.done?'collected':''}">${escapeHtml(ev.text)}</span>
-      <button class="bdel">✕</button>
-    </div>`;
-  const raidCount = raidBossesDone(c), raidTotal = RAID_POOL.length;
-  const wbCount = countDone(c.worldboss), wbTotal = WORLDBOSS_TIERS.length;
-
-  el.innerHTML = `
-    <div class="detail-sticky-head">
-      <button class="detail-back" id="detailBack">${t('backToDashboard')}</button>
-      <div class="detail-header" style="--class-color:${color}">
-        <div style="display:flex; align-items:center; gap:14px;">
-          <img class="class-icon class-icon-lg" src="${classIconUrl(c.class)}" alt="${c.class}">
-          <div>
-            <h2 style="color:${color}">${c.name}</h2>
-            <div class="dclass">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''}</div>
-            ${(c.realmName || c.race || c.faction) ? `
-            <div class="char-meta-row" style="margin:6px 0 0 0;">
-              ${c.realmName ? `<span class="char-meta-item">${escapeHtml(c.realmName)} (${(c.region||'').toUpperCase()})</span>` : ''}
-              ${c.race ? `<span class="char-meta-item">${escapeHtml(c.race)}</span>` : ''}
-              ${c.faction ? `<span class="char-meta-item faction-${c.faction.toLowerCase()}">${escapeHtml(c.faction)}</span>` : ''}
-            </div>` : ''}
-          </div>
-        </div>
-        <div class="char-quickstats" style="margin-top:0;">
-          <div class="cqs-row"><span class="cqs-lbl">ILVL</span><b>${c.ilvl || '—'}</b></div>
-          <div class="cqs-row"><span class="cqs-lbl">IO</span><b>${c.ioscore || '—'}</b></div>
-        </div>
-      </div>
-
-      <div class="detail-quicknav">
-        <button data-jump="section-dungeons">Dungeons</button>
-        <button data-jump="section-raid">Raid</button>
-        <button data-jump="section-worldboss">World Boss</button>
-        <button data-jump="section-events">Events</button>
-        <button data-jump="section-itemlevel">Item Level</button>
-      </div>
-    </div>
-
-    <div class="detail-grid">
-      <div class="detail-col">
-        <div class="dpanel" id="section-dungeons">
-          <details class="hist-toggle" open>
-            <summary><h3 id="dungeonCount" style="margin:0;">${t('dungeonsSeasonTitle', dCount, dTotal)}</h3></summary>
-            <div class="dungeon-full-list" id="detailDungeonList">
-              ${DUNGEON_POOL.map(dungeonRow).join('')}
-            </div>
-          </details>
-        </div>
-        <div class="dpanel" id="section-raid">
-          <details class="hist-toggle" open>
-            <summary><h3 id="raidCount" style="margin:0;">${RAID_NAME} (${raidCount}/${raidTotal})</h3></summary>
-            <div class="raid-table-wrap">
-              <table class="raid-table">
-                <thead><tr><th></th>${RAID_DIFFICULTIES.map(d => `<th>${d}</th>`).join('')}</tr></thead>
-                <tbody id="detailRaidTableBody">
-                  ${RAID_POOL.map(raidTableRow).join('')}
-                </tbody>
-              </table>
-            </div>
-          </details>
-        </div>
-      </div>
-      <div class="detail-col">
-        <div class="dpanel" id="section-worldboss">
-          <details class="hist-toggle" open>
-            <summary><h3 id="wbCount" style="margin:0;">World Boss (${wbCount}/${wbTotal})</h3></summary>
-            <div class="dungeon-full-list" id="detailWbList">
-              ${WORLDBOSS_TIERS.map(wbRow).join('')}
-            </div>
-          </details>
-        </div>
-        <div class="dpanel" id="section-spark">
-          <h3 style="margin-bottom:12px;">${t('sparkSeasonTitle')}</h3>
-          <div class="spark-toggles">
-            ${SPARK_POOL.map((s,i) => `<button class="spark-toggle spark-toggle-lg ${c.sparks[s]?'done':''}" data-key="${s}">${i+1}</button>`).join('')}
-          </div>
-        </div>
-        <div class="dpanel" id="section-events">
-          <details class="hist-toggle" open>
-            <summary><h3 style="margin:0;">Targeted Events</h3></summary>
-            <div class="bis-add" style="margin-top:12px;">
-              <input type="text" class="iname" id="eventName" placeholder="${t('eventNamePlaceholder')}" style="flex:1;">
-              <button id="eventAddBtn">${t('add')}</button>
-            </div>
-            <div class="bis-list" id="eventsList">
-              ${c.events.length ? c.events.map(eventRowHtml).join('') : `<div class="empty-note" id="eventsEmpty">${t('noEventsYet')}</div>`}
-            </div>
-          </details>
-        </div>
-      </div>
-      <div class="dpanel" id="section-itemlevel" style="grid-column: 1 / -1;">
-        <details class="hist-toggle" open>
-          <summary><h3 style="margin:0;">${t('itemLevelEvolutionTitle')}</h3></summary>
-          <div style="display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:10px; margin:14px 0;">
-            <div class="filter-group" id="detailRangeFilter">
-              <button data-range="7" class="${detailRange===7?'active':''}">${t('day')}</button>
-              <button data-range="30" class="${detailRange===30?'active':''}">${t('week')}</button>
-              <button data-range="90" class="${detailRange===90?'active':''}">${t('month')}</button>
-            </div>
-          </div>
-          <div id="detailChart"></div>
-          <details class="hist-toggle" open style="margin-top:12px;">
-            <summary>${t('viewFullHistory', reversedHistory.length)}</summary>
-            <table class="ilvl-table">
-              <thead><tr><th>${t('dateCol')}</th><th>Item Level</th><th>IOScore</th></tr></thead>
-              <tbody>
-                ${reversedHistory.length ? reversedHistory.map(rowsHtml).join('') : `<tr><td colspan="3" class="empty-note">${t('noRecordsPeriod')}</td></tr>`}
-              </tbody>
-            </table>
-          </details>
-        </details>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('detailBack').addEventListener('click', goToDashboard);
-
-  el.querySelectorAll('.detail-quicknav button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = document.getElementById(btn.dataset.jump);
-      if(target) target.scrollIntoView({ behavior:'smooth', block:'start' });
-    });
-  });
-
-  document.getElementById('detailRangeFilter').addEventListener('click', (e) => {
-    if(e.target.tagName !== 'BUTTON') return;
-    detailRange = Number(e.target.dataset.range);
-    renderDetail(currentDetailChar);
-  });
-
-  // Toggling a dungeon/raid boss only patches its own dot + the section count — never rebuilds the panel or the chart.
-  el.querySelectorAll('#section-dungeons input[type=checkbox]').forEach(cb => {
-    cb.addEventListener('change', async (e) => {
-      const key = e.target.dataset.key;
-      c.dungeons[key] = e.target.checked;
-      await saveChar(c);
-      const dot = e.target.closest('.drow').querySelector('.dot');
-      dot.classList.toggle('on', e.target.checked);
-      dot.classList.toggle('off', !e.target.checked);
-      document.getElementById('dungeonCount').textContent = t('dungeonsSeasonTitle', countDone(c.dungeons), dTotal);
-    });
-  });
-  el.querySelectorAll('#detailRaidTableBody input[type=checkbox]').forEach(cb => {
-    cb.addEventListener('change', async (e) => {
-      const boss = e.target.dataset.boss, diff = e.target.dataset.diff;
-      c.raidBosses[boss][diff] = e.target.checked;
-      await saveChar(c);
-      document.getElementById('raidCount').textContent = `${RAID_NAME} (${raidBossesDone(c)}/${raidTotal})`;
-    });
-  });
-  el.querySelectorAll('#detailWbList input[type=checkbox]').forEach(cb => {
-    cb.addEventListener('change', async (e) => {
-      const key = e.target.dataset.key;
-      c.worldboss[key] = e.target.checked;
-      await saveChar(c);
-      const dot = e.target.closest('.drow').querySelector('.dot');
-      dot.classList.toggle('on', e.target.checked);
-      dot.classList.toggle('off', !e.target.checked);
-      document.getElementById('wbCount').textContent = `World Boss (${countDone(c.worldboss)}/${wbTotal})`;
-    });
-  });
-  el.querySelectorAll('#section-spark .spark-toggle').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const key = btn.dataset.key;
-      c.sparks[key] = !c.sparks[key];
-      await saveChar(c);
-      btn.classList.toggle('done', c.sparks[key]);
-    });
-  });
-
-  function bindEventRow(row){
-    const id = row.dataset.id;
-    row.querySelector('.event-check').addEventListener('change', async (e) => {
-      const ev = c.events.find(x => x.id === id);
-      ev.done = e.target.checked;
-      await saveChar(c);
-      row.classList.toggle('collected', ev.done);
-      row.querySelector('.bname').classList.toggle('collected', ev.done);
-    });
-    row.querySelector('.bdel').addEventListener('click', async () => {
-      c.events = c.events.filter(x => x.id !== id);
-      await saveChar(c);
-      row.remove();
-      if(!c.events.length){
-        document.getElementById('eventsList').innerHTML = `<div class="empty-note" id="eventsEmpty">${t('noEventsYet')}</div>`;
-      }
-    });
-  }
-  el.querySelectorAll('#eventsList .bis-row').forEach(bindEventRow);
-  document.getElementById('eventAddBtn').addEventListener('click', async () => {
-    const nameInput = document.getElementById('eventName');
-    const text = nameInput.value.trim();
-    if(!text) return;
-    const ev = {id: uid(), text, done:false};
-    c.events.push(ev);
-    await saveChar(c);
-    const list = document.getElementById('eventsList');
-    const empty = document.getElementById('eventsEmpty');
-    if(empty) empty.remove();
-    list.insertAdjacentHTML('beforeend', eventRowHtml(ev));
-    bindEventRow(list.querySelector(`[data-id="${ev.id}"]`));
-    nameInput.value = '';
-  });
-  document.getElementById('eventName').addEventListener('keydown', (e) => { if(e.key==='Enter') document.getElementById('eventAddBtn').click(); });
-
-  document.getElementById('detailChart').innerHTML = buildLineChartSVG(
-    [{ label:'Item Level', color, data: filteredHistory.map(h=>({x:h.date,y:h.ilvl})) }], 560, 190
-  );
 }
 
 /* ---------------- Drag-and-drop reorder (shared by To-Do and Dicas) ---------------- */
