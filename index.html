@@ -2455,8 +2455,12 @@ function pushHistory(c){
   else{ c.history.push({date: today, ilvl: c.ilvl, ioscore: c.ioscore}); }
 }
 
+/* Raider.IO's live dungeon names for these two drifted from our DUNGEON_POOL
+   display names (kept as-is to avoid orphaning players' already-saved progress) */
+const DUNGEON_NAME_ALIASES = { "Den of Nalorakk": "Den of Noralakk", "Kings' Rest": "King's Rest" };
+
 async function fetchRaiderIoProfile(name, realmSlug, region){
-  const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current`;
+  const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current,mythic_plus_weekly_highest_level_runs`;
   const res = await fetch(url);
   if(!res.ok) throw new Error('character not found');
   return res.json();
@@ -2469,7 +2473,40 @@ function applyRaiderIoData(c, data){
   c.ilvl = Math.round((data.gear && data.gear.item_level_equipped) || 0);
   const scoreEntry = data.mythic_plus_scores_by_season && data.mythic_plus_scores_by_season[0];
   c.ioscore = scoreEntry ? Math.round(scoreEntry.scores.all * 10) / 10 : 0;
+  if(Array.isArray(data.mythic_plus_weekly_highest_level_runs)){
+    data.mythic_plus_weekly_highest_level_runs.forEach(run => {
+      const poolName = DUNGEON_NAME_ALIASES[run.dungeon] || run.dungeon;
+      if(Object.prototype.hasOwnProperty.call(c.dungeons, poolName)) c.dungeons[poolName] = true;
+    });
+  }
   pushHistory(c);
+}
+
+/* Raid/world-boss kills need Blizzard's client_credentials-secured API, which can't be
+   called directly from the public static site — proxied through a Cloudflare Worker that
+   holds the secret server-side. See worker/raid-proxy.js. */
+const RAID_PROXY_URL = 'https://midnight-raid-proxy.anunciacaoramon.workers.dev';
+const RAID_DIFF_MAP = { LFR:'LFR', NORMAL:'Normal', HEROIC:'Heroic', MYTHIC:'Mythic' };
+const WORLDBOSS_DIFF_MAP = { LFR:'World', NORMAL:'Normal', HEROIC:'Heroic', MYTHIC:'Mythic' };
+
+async function fetchRaidWorldBossProgress(realmSlug, region, name){
+  const url = `${RAID_PROXY_URL}/?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('raid proxy error');
+  return res.json();
+}
+function applyRaidWorldBossData(c, data){
+  const boundary = mostRecentResetBoundary(c.region).getTime();
+  (data.raid || []).forEach(({boss, difficulty, lastKill}) => {
+    const diff = RAID_DIFF_MAP[difficulty];
+    if(!diff || !lastKill || lastKill < boundary) return;
+    if(c.raidBosses[boss]) c.raidBosses[boss][diff] = true;
+  });
+  (data.worldBoss || []).forEach(({tier, lastKill}) => {
+    const mapped = WORLDBOSS_DIFF_MAP[tier];
+    if(!mapped || !lastKill || lastKill < boundary) return;
+    if(Object.prototype.hasOwnProperty.call(c.worldboss, mapped)) c.worldboss[mapped] = true;
+  });
 }
 
 async function refreshAllCharacters(){
@@ -2481,8 +2518,12 @@ async function refreshAllCharacters(){
     try{
       const data = await fetchRaiderIoProfile(c.name, c.realm, c.region);
       applyRaiderIoData(c, data);
-      await saveChar(c);
     } catch(e){ /* skip characters that fail to resolve, keep last known data */ }
+    try{
+      const rwData = await fetchRaidWorldBossProgress(c.realm, c.region, c.name);
+      applyRaidWorldBossData(c, rwData);
+    } catch(e){ /* worker unavailable, keep manual raid/world-boss entries as-is */ }
+    await saveChar(c);
   }));
   renderCharacters(); renderChart();
   if(btn){ btn.disabled = false; btn.querySelector('.rdb-icon').classList.remove('spinning'); }
@@ -2606,6 +2647,10 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
     const data = await fetchRaiderIoProfile(name, realmSlug, region);
     const c = makeCharObj(uid(), data.name, data.class, realmSlug, realmName, region);
     applyRaiderIoData(c, data);
+    try{
+      const rwData = await fetchRaidWorldBossProgress(realmSlug, region, data.name);
+      applyRaidWorldBossData(c, rwData);
+    } catch(e){ /* worker unavailable, character still gets added with M+/ilvl data */ }
     state.characters.push(c);
     await saveChar(c); await saveRoster();
     document.getElementById('addCharModal').style.display = 'none';
