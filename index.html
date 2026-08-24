@@ -42,33 +42,42 @@ body{
 .wrap{ max-width: 1500px; margin: 0 auto; }
 .app-body{ display:flex; align-items:flex-start; gap:24px; min-height:100vh; }
 .sidebar{
-  display:flex; flex-direction:column; gap:4px; width:190px; flex-shrink:0; position:sticky; top:20px;
-  background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:14px 10px;
+  display:flex; flex-direction:column; align-items:center; gap:2px; width:98px; flex-shrink:0; position:sticky; top:20px;
+  background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:16px 8px;
 }
-.sidebar-brand{ display:flex; justify-content:center; padding:4px 0 14px; }
-.sidebar-brand-mark{ width:42px; height:42px; object-fit:contain; filter: drop-shadow(0 0 10px rgba(163,53,238,.5)); }
+.sidebar-brand{ display:flex; justify-content:center; padding:0 0 18px; }
+.sidebar-brand-circle{
+  display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%;
+  background: var(--bg-panel-raised); border:1px solid rgba(163,53,238,.4); box-shadow: 0 0 14px -2px rgba(163,53,238,.5);
+}
+.sidebar-brand-mark{ width:26px; height:26px; object-fit:contain; }
 .sidebar-link{
-  display:flex; align-items:center; gap:10px; background:none; border:none; color: var(--text-dim);
-  font-weight:600; font-size:13px; padding:11px 12px; border-radius:9px; cursor:pointer; text-align:left;
-  transition: all .15s; position:relative;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; width:100%;
+  background:none; border:none; color: var(--text-dim);
+  font-weight:700; font-size:9px; padding:10px 4px; border-radius:10px; cursor:pointer; text-align:center;
+  transition: all .15s; position:relative; text-transform:uppercase; letter-spacing:.03em;
 }
-.sidebar-icon{ font-size:16px; width:18px; text-align:center; flex-shrink:0; }
+.sidebar-icon{ font-size:19px; line-height:1; }
 .sidebar-link:hover{ color: var(--text); background: var(--bg-panel-raised); }
-.sidebar-link.active{ color: var(--purple); background: var(--bg-panel-raised); box-shadow: inset 3px 0 0 var(--purple); }
-.sidebar-divider{ height:1px; background: var(--hairline); margin:8px 4px; }
-.sidebar-footer{ margin-top:auto; padding-top:14px; border-top:1px solid var(--hairline); display:flex; flex-direction:column; gap:8px; }
-.sidebar-footer-btn{
-  display:flex; align-items:center; gap:10px; background:none; border:1px solid var(--hairline); color: var(--text-dim);
-  font-weight:600; font-size:12px; padding:9px 12px; border-radius:9px; cursor:pointer; transition: all .15s;
+.sidebar-link.active{
+  color: var(--purple); background: linear-gradient(180deg, rgba(163,53,238,.22), rgba(163,53,238,.07));
+  box-shadow: 0 0 0 1px rgba(163,53,238,.4) inset;
 }
-.sidebar-footer-btn:hover{ color: var(--gold); border-color: var(--gold-dim); }
+.sidebar-divider{ height:1px; width:80%; background: var(--hairline); margin:8px 0; }
+.sidebar-footer{ margin-top:auto; padding-top:14px; border-top:1px solid var(--hairline); width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.sidebar-footer-btn{
+  display:flex; flex-direction:column; align-items:center; gap:4px; width:100%; background:none; border:1px solid transparent; color: var(--text-dim);
+  font-weight:700; font-size:9px; text-transform:uppercase; letter-spacing:.03em; padding:8px 4px; border-radius:9px; cursor:pointer; transition: all .15s;
+}
+.sidebar-footer-btn:hover{ color: var(--gold); background: var(--bg-panel-raised); }
 .sidebar-footer-btn:disabled{ opacity:.6; cursor:default; }
+.sidebar-footer-btn .rdb-icon{ font-size:16px; }
 .sidebar-footer-btn .rdb-icon.spinning{ animation: char-refresh-spin .8s linear infinite; }
 .sidebar-lang{ display:flex; gap:6px; justify-content:center; }
 .sidebar-user{ display:flex; flex-direction:column; gap:6px; align-items:center; font-size:10px; color:var(--text-dim); text-align:center; }
-.sidebar-user #userEmailLabel{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
-.lang-flag{ background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px; padding:5px 10px; font-size:16px; cursor:pointer; opacity:.9; line-height:1; }
-.lang-flag-text{ font-family:'Inter',sans-serif; font-weight:700; font-size:12px; color:var(--text-dim); letter-spacing:.03em; padding:6px 10px; }
+.sidebar-user #userEmailLabel{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:86px; }
+.lang-flag{ background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px; padding:5px 8px; font-size:14px; cursor:pointer; opacity:.9; line-height:1; }
+.lang-flag-text{ font-family:'Inter',sans-serif; font-weight:700; font-size:11px; color:var(--text-dim); letter-spacing:.03em; padding:6px 8px; }
 .lang-flag-text.active{ color: #16141c; }
 .lang-flag:hover{ opacity:1; border-color: var(--gold-dim); }
 .lang-flag.active{ opacity:1; border-color: var(--gold); background: var(--gold); box-shadow: 0 0 12px -2px rgba(242,181,61,.6); }
@@ -137,7 +146,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .add-champ-card .champ-card-name{ font-size:10px; color:inherit; white-space:normal; }
 
 .cpage-portrait{
-  width:72px; height:72px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  width:84px; height:84px; border-radius:50%; overflow:hidden; flex-shrink:0;
   border:3px solid var(--class-color, var(--gold)); box-shadow: 0 0 18px -3px var(--class-color, var(--gold));
 }
 .cpage-portrait img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -156,27 +165,31 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .cpage-topgrid > *{ position:relative; z-index:1; }
 @media(max-width:900px){ .cpage-topgrid{ grid-template-columns: 1fr 1fr; } .cpage-deco-badge{ display:none; } }
 .cpage-deco-badge{
-  display:flex; align-items:center; justify-content:center; font-size:52px;
-  filter: drop-shadow(0 0 16px rgba(163,53,238,.55)); opacity:.9;
+  display:flex; align-items:center; justify-content:center;
+  filter: drop-shadow(0 0 18px rgba(163,53,238,.55)); opacity:.95;
 }
 .stat-tile{
   background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
   border-radius:12px; padding:14px 16px; position:relative; display:flex; flex-direction:column; justify-content:center;
 }
+.stat-tile-center{ align-items:center; text-align:center; }
 .cpage-identity{ flex-direction:row; align-items:center; gap:14px; background:none; border:none; padding:14px 20px; }
 .cpage-identity h2{ font-family:'Rajdhani',sans-serif; font-size:22px; line-height:1.1; }
 .cpage-sub{ font-size:12px; color: var(--text-dim); margin-top:2px; }
-.cpage-badges{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+.cpage-faction{ font-size:11px; font-weight:700; font-style:italic; margin-top:2px; color: var(--text-dim); }
+.cpage-faction.faction-alliance{ color:#5eb3f0; }
+.cpage-faction.faction-horde{ color:#e0554f; }
+.cpage-badges{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
 .cpage-badge{
   font-size:10px; text-transform:uppercase; letter-spacing:.03em; font-weight:700; color: var(--text-dim);
   background: var(--bg-panel); border:1px solid var(--hairline); padding:3px 8px; border-radius:6px;
 }
-.cpage-badge.faction-alliance{ color:#5eb3f0; border-color:#5eb3f055; }
-.cpage-badge.faction-horde{ color:#e0554f; border-color:#e0554f55; }
+.cpage-badge-pill{ color: var(--gold); border-color: rgba(242,181,61,.35); background: rgba(242,181,61,.08); }
 .stat-tile-label{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
 .stat-tile-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:30px; line-height:1; }
 .stat-tile-value-sm{ font-size:15px; font-weight:600; color:var(--text); }
 .stat-tile-sub{ font-size:10px; color:var(--text-dim); margin-top:4px; }
+.stat-tile-sub2{ font-size:9px; color:var(--text-dim); margin-top:6px; opacity:.8; }
 .cpage-links{ display:flex; align-items:center; gap:10px; margin-top:8px; }
 .cpage-links a{ font-size:16px; text-decoration:none; opacity:.75; transition:opacity .15s; }
 .cpage-links a:hover{ opacity:1; }
@@ -201,8 +214,22 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .pbar-track{ height:6px; background: var(--danger); border-radius:3px; overflow:hidden; }
 .pbar-fill{ height:100%; background: var(--ok); transition: width .25s; }
 
-/* Dashboard card grid */
-.dash-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px; align-items:start; }
+/* Dashboard macro layout: a flexible main column (charts/runs/progression) plus a
+   fixed-width right rail (To-Do/News/Upcoming/Character Power), matching the
+   reference mockup's grouping. Collapses to one column on narrow screens. */
+.dash-layout{ display:grid; grid-template-columns: minmax(0,1fr) 300px; gap:16px; align-items:start; }
+.dash-main{ display:flex; flex-direction:column; gap:16px; min-width:0; }
+.dash-side{ display:flex; flex-direction:column; gap:16px; }
+.dash-row-2col{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+.dash-row-3col{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; }
+.dash-row-uneven{ display:grid; grid-template-columns: 0.8fr 1.2fr; gap:16px; }
+@media(max-width:1150px){
+  .dash-layout{ grid-template-columns: 1fr; }
+  .dash-row-3col{ grid-template-columns: 1fr 1fr; }
+}
+@media(max-width:700px){
+  .dash-row-2col, .dash-row-3col, .dash-row-uneven{ grid-template-columns: 1fr; }
+}
 .dash-card{
   background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:18px;
 }
@@ -212,7 +239,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-card-wide{ grid-column: 1 / -1; }
 .dash-card-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .dash-card-head h3{ margin-bottom:0; }
-.chart-range-toggle button{ padding:3px 9px; font-size:10px; }
+.chart-range-select{
+  appearance:none; -webkit-appearance:none; background: var(--bg-panel-raised) url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22%3E%3Cpath d=%22M1 1l4 4 4-4%22 stroke=%22%238792ad%22 stroke-width=%221.4%22 fill=%22none%22/%3E%3C/svg%3E') no-repeat right 8px center;
+  background-size:9px 6px; border:1px solid var(--hairline); color: var(--text-dim); font-family:'Inter',sans-serif;
+  font-size:11px; font-weight:600; padding:5px 22px 5px 10px; border-radius:7px; cursor:pointer;
+}
+.chart-range-select:hover{ color: var(--text); border-color: var(--gold-dim); }
 .dash-viewall-link{
   background:none; border:none; color: var(--purple); font-size:11px; font-weight:700;
   text-transform:uppercase; letter-spacing:.03em; cursor:pointer; transition: opacity .15s;
@@ -238,7 +270,10 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 /* Weekly Rewards: simple icon/label/fraction rows */
 .reward-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--hairline); }
 .reward-row:last-child{ border-bottom:none; }
-.reward-icon{ font-size:20px; width:24px; text-align:center; flex-shrink:0; }
+.reward-icon{
+  font-size:16px; width:32px; height:32px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px;
+}
 .reward-label{ flex:1; font-size:13px; color: var(--text); }
 .reward-value{ font-weight:700; color: var(--text); }
 
@@ -718,7 +753,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   <div class="app-body">
     <nav class="sidebar">
       <a class="sidebar-brand" href="#" id="homeLink" aria-label="Ir para o início" data-i18n-aria="ariaGoHome">
-        <img class="sidebar-brand-mark" src="assets/midnight-logo-cutout.png" alt="Midnight — Curse of Ula'tek">
+        <span class="sidebar-brand-circle"><img class="sidebar-brand-mark" src="assets/midnight-logo-cutout.png" alt="Midnight — Curse of Ula'tek"></span>
       </a>
       <button class="sidebar-link active" data-tab="dashboard" title="Dashboard">
         <span class="sidebar-icon">🏠</span><span class="sidebar-label" data-i18n="navDashboard">Dashboard</span>
@@ -1033,6 +1068,7 @@ const I18N = {
     daysAgo: (n) => n===1 ? "1 dia atrás" : `${n} dias atrás`,
     seasonBestTitle: "Melhores Chaves da Season", lastUpdatedLabel: "Atualizado",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
+    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
     ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score", currentLabel: "Atual",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
@@ -1133,6 +1169,7 @@ const I18N = {
     daysAgo: (n) => n===1 ? "1 day ago" : `${n} days ago`,
     seasonBestTitle: "Season Best", lastUpdatedLabel: "Updated",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Gear Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
+    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
     ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution", currentLabel: "Current",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
@@ -2612,12 +2649,14 @@ function renderCharacterPage(){
   const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date)).filter(h => new Date(h.date) >= SEASON_2_START);
   const chartCutoff = new Date(); chartCutoff.setDate(chartCutoff.getDate() - state.dashChartRange);
   const chartHistory = sortedHistory.filter(h => new Date(h.date) >= chartCutoff);
-  const chartRangeToggle = `
-    <div class="filter-group chart-range-toggle">
-      <button data-range="7" class="${state.dashChartRange===7?'active':''}">${t('day')}</button>
-      <button data-range="30" class="${state.dashChartRange===30?'active':''}">${t('week')}</button>
-      <button data-range="90" class="${state.dashChartRange===90?'active':''}">${t('month')}</button>
-    </div>`;
+  const chartRangeSelect = id => `
+    <select class="chart-range-select" data-chart="${id}">
+      <option value="7" ${state.dashChartRange===7?'selected':''}>7D</option>
+      <option value="30" ${state.dashChartRange===30?'selected':''}>30D</option>
+      <option value="90" ${state.dashChartRange===90?'selected':''}>90D</option>
+    </select>`;
+
+  const resetAtStr = nextReset.toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {weekday:'long', hour:'2-digit', minute:'2-digit'});
 
   container.innerHTML = `
     <div class="cpage" style="--class-color:${color}">
@@ -2628,10 +2667,11 @@ function renderCharacterPage(){
           </div>
           <div>
             <h2 style="color:${color}">${c.name}</h2>
-            <div class="cpage-sub">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''} · ${t('gearIlvlLabel')} ${c.ilvl || '—'}</div>
+            <div class="cpage-sub">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''}</div>
+            ${c.faction ? `<div class="cpage-faction faction-${c.faction.toLowerCase()}">&lt;${escapeHtml(c.faction)}&gt;</div>` : ''}
             <div class="cpage-badges">
+              <span class="cpage-badge cpage-badge-pill">🛡️ ${c.ilvl || '—'} ${t('itemLevelBadge')}</span>
               ${c.race ? `<span class="cpage-badge">${escapeHtml(c.race)}</span>` : ''}
-              ${c.faction ? `<span class="cpage-badge faction-${c.faction.toLowerCase()}">${escapeHtml(c.faction)}</span>` : ''}
               ${c.realmName ? `<span class="cpage-badge">${escapeHtml(c.realmName)} (${(c.region||'').toUpperCase()})</span>` : ''}
             </div>
             <div class="cpage-links">
@@ -2642,13 +2682,14 @@ function renderCharacterPage(){
             </div>
           </div>
         </div>
-        <div class="stat-tile">
+        <div class="stat-tile stat-tile-center">
           <div class="stat-tile-label">${t('mRatingLabel')}</div>
           <div class="stat-tile-value" style="color:var(--danger)">${c.ioscore || '—'}</div>
+          <div class="stat-tile-sub2">${t('ioScoreLabel')}</div>
           ${c.ioscoreSeason1 ? `<div class="stat-tile-sub">${t('season1PeakLabel')}: ${c.ioscoreSeason1}</div>` : ''}
         </div>
         <div class="cpage-deco-badge">
-          <svg viewBox="0 0 100 100" width="52" height="52">
+          <svg viewBox="0 0 100 100" width="84" height="84">
             <path d="M50 4 L92 20 V48 C92 74 74 92 50 98 C26 92 8 74 8 48 V20 Z" fill="none" stroke="var(--gold)" stroke-width="4"/>
             <path d="M50 4 L92 20 V48 C92 74 74 92 50 98 C26 92 8 74 8 48 V20 Z" fill="url(#dbGrad)" opacity=".18"/>
             <path d="M50 28 L68 50 L50 80 L32 50 Z" fill="var(--purple)" opacity=".9"/>
@@ -2656,181 +2697,192 @@ function renderCharacterPage(){
             <defs><linearGradient id="dbGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold)"/><stop offset="1" stop-color="var(--purple)"/></linearGradient></defs>
           </svg>
         </div>
-        <div class="stat-tile">
+        <div class="stat-tile stat-tile-center">
           <div class="stat-tile-label">${t('bestRunLabel')}</div>
           <div class="stat-tile-value" style="color:var(--gold)">${bestRun ? '+'+bestRun.mythic_level : '—'}</div>
           <div class="stat-tile-sub">${bestRun ? escapeHtml(bestRun.dungeon) : ''}</div>
         </div>
-        <div class="stat-tile">
-          <div class="stat-tile-label">${t('weeklyResetLabel')}</div>
+        <div class="stat-tile stat-tile-center">
+          <div class="stat-tile-label">⏰ ${t('weeklyResetLabel')}</div>
           <div class="stat-tile-value" style="color:var(--purple)">${daysLeft}</div>
           <div class="stat-tile-sub">${t('daysLeftLabel')}</div>
+          <div class="stat-tile-sub2">${t('resetAtPrefix')}: ${resetAtStr}</div>
         </div>
       </div>
 
-      <div class="dash-grid">
-        <div class="dash-card">
-          <div class="dash-card-head">
-            <h3>${t('ilvlEvoTitle')}</h3>
-            ${chartRangeToggle}
-          </div>
-          <div class="chart-readout" style="color:${color}">${c.ilvl || '—'}</div>
-          <div class="chart-readout-label">${t('currentLabel')} ${t('gearIlvlLabel')}</div>
-          <div id="dashIlvlChart"></div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-card-head">
-            <h3>${t('mplusEvoTitle')}</h3>
-            ${chartRangeToggle}
-          </div>
-          <div class="chart-readout" style="color:var(--danger)">${c.ioscore || '—'}</div>
-          <div class="chart-readout-label">${t('currentLabel')} ${t('mRatingLabel')}</div>
-          <div id="dashIoChart"></div>
-        </div>
-
-        <div class="dash-card" id="section-mplus">
-          <h3>${t('seasonBestTitle')}</h3>
-          <div class="recent-runs-list">
-            ${sortedBestRuns.length ? sortedBestRuns.map(seasonBestRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
-          </div>
-        </div>
-
-        <div class="dash-card">
-          <h3>${t('subtabRecent')}</h3>
-          <div class="recent-runs-list">
-            ${sortedRecentRuns.length ? sortedRecentRuns.map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
-          </div>
-        </div>
-
-        <div class="dash-card">
-          <div class="dash-card-head">
-            <h3>${t('bisTitle')}</h3>
-            <button class="dash-viewall-link" id="dashBisViewAll">${t('viewAllLabel')}</button>
-          </div>
-          <div class="bis-list" id="dashBisList">
-            ${sortedBis.length ? sortedBis.map(bisSummaryRow).join('') : `<div class="empty-note">${t('noBisYet')}</div>`}
-          </div>
-        </div>
-
-        <div class="dash-card">
-          <h3>${t('todoTitle')}</h3>
-          <div class="todo-add">
-            <input type="text" id="todoInput" placeholder="${t('todoPlaceholder')}" data-i18n-placeholder="todoPlaceholder">
-            <button id="todoAddBtn">${t('add')}</button>
-          </div>
-          <div id="todoList"></div>
-        </div>
-
-        <div class="dash-card">
-          <h3>${t('objectivesTitle', eCount, eTotal)}</h3>
-          <div class="bis-add">
-            <input type="text" class="iname" id="eventName" placeholder="${t('eventNamePlaceholder')}" style="flex:1;">
-            <button id="eventAddBtn">${t('add')}</button>
-          </div>
-          <div class="bis-list" id="eventsList">
-            ${c.events.length ? c.events.map(eventRowHtml).join('') : `<div class="empty-note" id="eventsEmpty">${t('noEventsYet')}</div>`}
-          </div>
-        </div>
-
-        <div class="dash-card">
-          <h3>${t('wowheadNewsTitle')}</h3>
-          <div class="news-list">${NEWS_PLACEHOLDER.map(newsRow).join('')}</div>
-          <div class="empty-note" style="margin-top:8px;">${t('wowheadNewsComingSoon')}</div>
-        </div>
-
-        <div class="dash-card" id="section-weekly">
-          <h3>${t('weeklyRewardsTitle')}</h3>
-          <div class="reward-row">
-            <span class="reward-icon">🧳</span>
-            <span class="reward-label">${t('raidsLabel')}</span>
-            <span class="reward-value">${raidSlots}/3</span>
-          </div>
-          <div class="reward-row">
-            <span class="reward-icon">⚔️</span>
-            <span class="reward-label">${t('mythicPlusLabel')}</span>
-            <span class="reward-value">${mplusSlots}/3</span>
-          </div>
-          <div class="reward-row">
-            <span class="reward-icon">🐉</span>
-            <span class="reward-label">${t('worldBossLabel')}</span>
-            <span class="reward-value">${worldSlots}/3</span>
-          </div>
-        </div>
-
-        <div class="dash-card">
-          <h3>${t('upcomingTitle')}</h3>
-          <div class="reward-row">
-            <span class="reward-icon">🐉</span>
-            <span class="reward-label">${t('worldBossLabel')}</span>
-            <span class="reward-value" style="color:${wbCount < WORLDBOSS_TIERS.length ? 'var(--ok)' : 'var(--text-dim)'}">${wbCount < WORLDBOSS_TIERS.length ? t('availableLabel') : t('doneLabel')}</span>
-          </div>
-          <div class="reward-row">
-            <span class="reward-icon">⏰</span>
-            <span class="reward-label">${t('weeklyResetLabel')}</span>
-            <span class="reward-value">${daysLeft}${t('daysAbbrev')}</span>
-          </div>
-        </div>
-
-        <div class="dash-card" id="section-raid">
-          <h3>${t('progressionTitle')}</h3>
-          <div class="raid-bar-row">
-            <span class="raid-bar-label">${RAID_NAME}</span>
-            <span class="raid-bar-count">${raidCount}/${RAID_POOL.length}</span>
-          </div>
-          <div class="pbar-track"><div class="pbar-fill" style="width:${RAID_POOL.length ? (raidCount/RAID_POOL.length*100) : 0}%; background:var(--purple)"></div></div>
-          <details class="hist-toggle" style="margin-top:12px;">
-            <summary>${t('bossByBossLabel')}</summary>
-            <div class="raid-table-wrap">
-              <table class="raid-table">
-                <thead><tr><th></th>${RAID_DIFFICULTIES.map(d => `<th>${d}</th>`).join('')}</tr></thead>
-                <tbody id="detailRaidTableBody">
-                  ${RAID_POOL.map(raidTableRow).join('')}
-                </tbody>
-              </table>
+      <div class="dash-layout">
+        <div class="dash-main">
+          <div class="dash-row-2col">
+            <div class="dash-card">
+              <div class="dash-card-head">
+                <h3>${t('ilvlEvoTitle')}</h3>
+                ${chartRangeSelect('ilvl')}
+              </div>
+              <div class="chart-readout" style="color:${color}">${c.ilvl || '—'}</div>
+              <div class="chart-readout-label">${t('currentLabel')} ${t('gearIlvlLabel')}</div>
+              <div id="dashIlvlChart"></div>
             </div>
-          </details>
-        </div>
-
-        <div class="dash-card">
-          <h3>${t('recentActivityTitle')}</h3>
-          ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,5).map(activityRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
-        </div>
-
-        <div class="dash-card">
-          <h3>${t('charPowerTitle')}</h3>
-          <div class="char-power-row">
-            <div class="char-power-stat">
-              <div class="stat-tile-label">${t('worldRankLabel')}</div>
-              <div class="stat-tile-value-sm">${c.worldRank ? '#'+c.worldRank.toLocaleString() : '—'}</div>
-            </div>
-            <div class="char-power-stat">
-              <div class="stat-tile-label">${t('raidsLabel')}</div>
-              <div class="stat-tile-value-sm">${highestRaidDiff ? `${highestRaidDiff} ${highestRaidDiffCount}/${RAID_POOL.length}` : '—'}</div>
+            <div class="dash-card">
+              <div class="dash-card-head">
+                <h3>${t('mplusEvoTitle')}</h3>
+                ${chartRangeSelect('ioscore')}
+              </div>
+              <div class="chart-readout" style="color:var(--danger)">${c.ioscore || '—'}</div>
+              <div class="chart-readout-label">${t('currentLabel')} ${t('mRatingLabel')}</div>
+              <div id="dashIoChart"></div>
             </div>
           </div>
-          <div class="char-power-row" style="margin-top:14px;">
-            <div class="char-power-stat">
-              <div class="stat-tile-label">${t('seasonBestTitle')}</div>
-              <div class="stat-tile-value-sm">${bestRun ? `${c.ioscore || '—'} +${bestRun.mythic_level}` : '—'}</div>
+
+          <div class="dash-row-3col">
+            <div class="dash-card" id="section-mplus">
+              <h3>${t('seasonBestTitle')}</h3>
+              <div class="recent-runs-list">
+                ${sortedBestRuns.length ? sortedBestRuns.map(seasonBestRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+              </div>
             </div>
-            <div class="char-power-stat">
-              <div class="stat-tile-label">${t('gearIlvlLabel')}</div>
-              <div class="stat-tile-value-sm">${c.ilvl || '—'}</div>
+
+            <div class="dash-card">
+              <h3>${t('subtabRecent')}</h3>
+              <div class="recent-runs-list">
+                ${sortedRecentRuns.length ? sortedRecentRuns.map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+              </div>
             </div>
+
+            <div class="dash-card">
+              <div class="dash-card-head">
+                <h3>${t('bisTitle')}</h3>
+                <button class="dash-viewall-link" id="dashBisViewAll">${t('viewAllLabel')}</button>
+              </div>
+              <div class="bis-list" id="dashBisList">
+                ${sortedBis.length ? sortedBis.map(bisSummaryRow).join('') : `<div class="empty-note">${t('noBisYet')}</div>`}
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-row-uneven">
+            <div class="dash-card" id="section-weekly">
+              <h3>${t('weeklyRewardsTitle')}</h3>
+              <div class="reward-row">
+                <span class="reward-icon">🧳</span>
+                <span class="reward-label">${t('raidsLabel')}</span>
+                <span class="reward-value">${raidSlots}/3</span>
+              </div>
+              <div class="reward-row">
+                <span class="reward-icon">⚔️</span>
+                <span class="reward-label">${t('mythicPlusLabel')}</span>
+                <span class="reward-value">${mplusSlots}/3</span>
+              </div>
+              <div class="reward-row">
+                <span class="reward-icon">🐉</span>
+                <span class="reward-label">${t('worldBossLabel')}</span>
+                <span class="reward-value">${worldSlots}/3</span>
+              </div>
+            </div>
+
+            <div class="dash-card" id="section-raid">
+              <h3>${t('progressionTitle')}</h3>
+              <div class="raid-bar-row">
+                <span class="raid-bar-label">${RAID_NAME}</span>
+                <span class="raid-bar-count">${raidCount}/${RAID_POOL.length}</span>
+              </div>
+              <div class="pbar-track"><div class="pbar-fill" style="width:${RAID_POOL.length ? (raidCount/RAID_POOL.length*100) : 0}%; background:var(--purple)"></div></div>
+              <details class="hist-toggle" style="margin-top:12px;">
+                <summary>${t('bossByBossLabel')}</summary>
+                <div class="raid-table-wrap">
+                  <table class="raid-table">
+                    <thead><tr><th></th>${RAID_DIFFICULTIES.map(d => `<th>${d}</th>`).join('')}</tr></thead>
+                    <tbody id="detailRaidTableBody">
+                      ${RAID_POOL.map(raidTableRow).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <h3>${t('recentActivityTitle')}</h3>
+            ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,5).map(activityRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+          </div>
+
+          <div class="dash-card dash-card-wide" id="section-gear">
+            <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
+            ${c.gearItems ? `
+            <div class="gear-columns">
+              <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
+              <div class="gear-col">${GEAR_RIGHT_SLOTS.map(gearItemRow).join('')}</div>
+              <div class="gear-weapons">
+                ${GEAR_WEAPON_SLOTS.map(gearItemRow).join('')}
+              </div>
+            </div>
+            ` : `<div class="empty-note">${t('noGearYet')}</div>`}
           </div>
         </div>
 
-        <div class="dash-card dash-card-wide" id="section-gear">
-          <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
-          ${c.gearItems ? `
-          <div class="gear-columns">
-            <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
-            <div class="gear-col">${GEAR_RIGHT_SLOTS.map(gearItemRow).join('')}</div>
-            <div class="gear-weapons">
-              ${GEAR_WEAPON_SLOTS.map(gearItemRow).join('')}
+        <div class="dash-side">
+          <div class="dash-card">
+            <h3>${t('todoTitle')}</h3>
+            <div class="todo-add">
+              <input type="text" id="todoInput" placeholder="${t('todoPlaceholder')}" data-i18n-placeholder="todoPlaceholder">
+              <button id="todoAddBtn">${t('add')}</button>
+            </div>
+            <div id="todoList"></div>
+          </div>
+
+          <div class="dash-card">
+            <h3>${t('objectivesTitle', eCount, eTotal)}</h3>
+            <div class="bis-add">
+              <input type="text" class="iname" id="eventName" placeholder="${t('eventNamePlaceholder')}" style="flex:1;">
+              <button id="eventAddBtn">${t('add')}</button>
+            </div>
+            <div class="bis-list" id="eventsList">
+              ${c.events.length ? c.events.map(eventRowHtml).join('') : `<div class="empty-note" id="eventsEmpty">${t('noEventsYet')}</div>`}
             </div>
           </div>
-          ` : `<div class="empty-note">${t('noGearYet')}</div>`}
+
+          <div class="dash-card">
+            <h3>${t('wowheadNewsTitle')}</h3>
+            <div class="news-list">${NEWS_PLACEHOLDER.map(newsRow).join('')}</div>
+            <div class="empty-note" style="margin-top:8px;">${t('wowheadNewsComingSoon')}</div>
+          </div>
+
+          <div class="dash-card">
+            <h3>${t('upcomingTitle')}</h3>
+            <div class="reward-row">
+              <span class="reward-icon">🐉</span>
+              <span class="reward-label">${t('worldBossLabel')}</span>
+              <span class="reward-value" style="color:${wbCount < WORLDBOSS_TIERS.length ? 'var(--ok)' : 'var(--text-dim)'}">${wbCount < WORLDBOSS_TIERS.length ? t('availableLabel') : t('doneLabel')}</span>
+            </div>
+            <div class="reward-row">
+              <span class="reward-icon">⏰</span>
+              <span class="reward-label">${t('weeklyResetLabel')}</span>
+              <span class="reward-value">${daysLeft}${t('daysAbbrev')}</span>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <h3>${t('charPowerTitle')}</h3>
+            <div class="char-power-row">
+              <div class="char-power-stat">
+                <div class="stat-tile-label">${t('worldRankLabel')}</div>
+                <div class="stat-tile-value-sm">${c.worldRank ? '#'+c.worldRank.toLocaleString() : '—'}</div>
+              </div>
+              <div class="char-power-stat">
+                <div class="stat-tile-label">${t('raidsLabel')}</div>
+                <div class="stat-tile-value-sm">${highestRaidDiff ? `${highestRaidDiff} ${highestRaidDiffCount}/${RAID_POOL.length}` : '—'}</div>
+              </div>
+            </div>
+            <div class="char-power-row" style="margin-top:14px;">
+              <div class="char-power-stat">
+                <div class="stat-tile-label">${t('seasonBestTitle')}</div>
+                <div class="stat-tile-value-sm">${bestRun ? `${c.ioscore || '—'} +${bestRun.mythic_level}` : '—'}</div>
+              </div>
+              <div class="char-power-stat">
+                <div class="stat-tile-label">${t('gearIlvlLabel')}</div>
+                <div class="stat-tile-value-sm">${c.ilvl || '—'}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2843,9 +2895,9 @@ function renderCharacterPage(){
     [{ label:'Mythic+ Score', color:'#a335ee', data: chartHistory.map(h=>({x:h.date,y:h.ioscore})) }], 380, 150
   );
 
-  container.querySelectorAll('.chart-range-toggle button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.dashChartRange = Number(btn.dataset.range);
+  container.querySelectorAll('.chart-range-select').forEach(sel => {
+    sel.addEventListener('change', () => {
+      state.dashChartRange = Number(sel.value);
       renderCharacterPage();
     });
   });
