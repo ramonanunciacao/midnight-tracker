@@ -40,39 +40,13 @@ body{
   color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 32px 20px 80px;
 }
 .wrap{ max-width: 1500px; margin: 0 auto; }
-header.top{
-  display:flex; align-items:flex-end; justify-content:space-between; flex-wrap: wrap; gap: 16px;
-  border-bottom: 1px solid var(--hairline); padding-bottom: 20px; margin-bottom: 24px;
-}
-.title-block .eyebrow{ font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px; font-weight:600; }
-.header-subtitle{ font-size: 12px; letter-spacing: .04em; color: var(--text-dim); margin-top: 2px; }
-.title-block h1{ font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(24px, 4vw, 38px); color: var(--gold); text-shadow: 0 0 20px rgba(242,181,61,0.5), 0 0 44px rgba(242,181,61,0.25); letter-spacing: .04em; text-transform:uppercase; }
-.title-block{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; cursor:pointer; transition: opacity .15s; }
-.title-block:hover{ opacity:.85; }
-.app-logo{ height:64px; width:auto; display:block; filter: drop-shadow(0 0 12px rgba(242,181,61,0.45)); flex-shrink:0; }
-/* main-app header is kept slim (just brand mark + actions) so it doesn't compete with the sidebar+dashboard below it */
-header.top{ padding-bottom:12px; margin-bottom:16px; }
-header.top .app-logo{ height:32px; }
-header.top .eyebrow, header.top .header-subtitle{ display:none; }
-header.top .title-block h1{ font-size:16px; text-shadow:none; }
-.reset-btn{
-  background: linear-gradient(180deg, #1e1e26, #14141a); border: 1px solid var(--gold-dim); color: var(--gold);
-  font-weight: 600; font-size: 13px; padding: 11px 18px; border-radius: 8px; cursor: pointer;
-  letter-spacing: .04em; text-transform: uppercase; transition: all .15s;
-  min-width:150px; text-align:center; white-space:nowrap;
-}
-.reset-btn:hover{ background: var(--gold); color: #16141c; border-color: var(--gold); }
-.lang-switch{ display:flex; gap:6px; }
-.lang-flag{ background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px; padding:5px 10px; font-size:16px; cursor:pointer; opacity:.9; line-height:1; }
-.lang-flag-text{ font-family:'Inter',sans-serif; font-weight:700; font-size:12px; color:var(--text-dim); letter-spacing:.03em; padding:6px 10px; }
-.lang-flag-text.active{ color: #16141c; }
-.lang-flag:hover{ opacity:1; border-color: var(--gold-dim); }
-.lang-flag.active{ opacity:1; border-color: var(--gold); background: var(--gold); box-shadow: 0 0 12px -2px rgba(242,181,61,.6); }
-.app-body{ display:flex; align-items:flex-start; gap:24px; }
+.app-body{ display:flex; align-items:flex-start; gap:24px; min-height:100vh; }
 .sidebar{
   display:flex; flex-direction:column; gap:4px; width:190px; flex-shrink:0; position:sticky; top:20px;
-  background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:10px;
+  background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:14px 10px;
 }
+.sidebar-brand{ display:flex; justify-content:center; padding:4px 0 14px; }
+.sidebar-brand-mark{ width:42px; height:42px; object-fit:contain; filter: drop-shadow(0 0 10px rgba(163,53,238,.5)); }
 .sidebar-link{
   display:flex; align-items:center; gap:10px; background:none; border:none; color: var(--text-dim);
   font-weight:600; font-size:13px; padding:11px 12px; border-radius:9px; cursor:pointer; text-align:left;
@@ -81,11 +55,28 @@ header.top .title-block h1{ font-size:16px; text-shadow:none; }
 .sidebar-icon{ font-size:16px; width:18px; text-align:center; flex-shrink:0; }
 .sidebar-link:hover{ color: var(--text); background: var(--bg-panel-raised); }
 .sidebar-link.active{ color: var(--purple); background: var(--bg-panel-raised); box-shadow: inset 3px 0 0 var(--purple); }
-.app-main{ flex:1; min-width:0; }
+.sidebar-divider{ height:1px; background: var(--hairline); margin:8px 4px; }
+.sidebar-footer{ margin-top:auto; padding-top:14px; border-top:1px solid var(--hairline); display:flex; flex-direction:column; gap:8px; }
+.sidebar-footer-btn{
+  display:flex; align-items:center; gap:10px; background:none; border:1px solid var(--hairline); color: var(--text-dim);
+  font-weight:600; font-size:12px; padding:9px 12px; border-radius:9px; cursor:pointer; transition: all .15s;
+}
+.sidebar-footer-btn:hover{ color: var(--gold); border-color: var(--gold-dim); }
+.sidebar-footer-btn:disabled{ opacity:.6; cursor:default; }
+.sidebar-footer-btn .rdb-icon.spinning{ animation: char-refresh-spin .8s linear infinite; }
+.sidebar-lang{ display:flex; gap:6px; justify-content:center; }
+.sidebar-user{ display:flex; flex-direction:column; gap:6px; align-items:center; font-size:10px; color:var(--text-dim); text-align:center; }
+.sidebar-user #userEmailLabel{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
+.lang-flag{ background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px; padding:5px 10px; font-size:16px; cursor:pointer; opacity:.9; line-height:1; }
+.lang-flag-text{ font-family:'Inter',sans-serif; font-weight:700; font-size:12px; color:var(--text-dim); letter-spacing:.03em; padding:6px 10px; }
+.lang-flag-text.active{ color: #16141c; }
+.lang-flag:hover{ opacity:1; border-color: var(--gold-dim); }
+.lang-flag.active{ opacity:1; border-color: var(--gold); background: var(--gold); box-shadow: 0 0 12px -2px rgba(242,181,61,.6); }
+.app-main{ flex:1; min-width:0; padding-top:20px; }
 @media(max-width:820px){
   .sidebar{ width:56px; }
-  .sidebar-label{ display:none; }
-  .sidebar-link{ justify-content:center; }
+  .sidebar-label, .sidebar-user, .sidebar-footer-btn .sidebar-label{ display:none; }
+  .sidebar-link, .sidebar-footer-btn{ justify-content:center; }
 }
 .new-badge{
   position:absolute; top:6px; right:8px; background:var(--danger); color:#fff;
@@ -151,13 +142,18 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .cpage-portrait img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-/* top identity + stat tile strip */
+/* top identity + stat tile strip — real dungeon splash art as a banner, dark-purple vignette over it for legibility */
 .cpage-topgrid{
   display:grid; grid-template-columns: 2fr 1fr 0.5fr 1fr 1fr; gap:12px; margin-bottom:20px; padding:22px 6px; align-items:center;
-  background: radial-gradient(ellipse 60% 100% at 15% 50%, rgba(79,143,255,.14), transparent 70%),
-              radial-gradient(ellipse 50% 100% at 85% 50%, rgba(163,53,238,.12), transparent 70%);
-  border-radius:16px;
+  position:relative; border-radius:16px; overflow:hidden; background-size:cover; background-position:center;
+  border:1px solid var(--hairline);
 }
+.cpage-topgrid::before{
+  content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background: linear-gradient(100deg, rgba(8,6,16,.94) 20%, rgba(20,8,30,.75) 55%, rgba(35,10,45,.55) 100%),
+              radial-gradient(ellipse 70% 120% at 90% 20%, rgba(163,53,238,.28), transparent 65%);
+}
+.cpage-topgrid > *{ position:relative; z-index:1; }
 @media(max-width:900px){ .cpage-topgrid{ grid-template-columns: 1fr 1fr; } .cpage-deco-badge{ display:none; } }
 .cpage-deco-badge{
   display:flex; align-items:center; justify-content:center; font-size:52px;
@@ -175,6 +171,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   font-size:10px; text-transform:uppercase; letter-spacing:.03em; font-weight:700; color: var(--text-dim);
   background: var(--bg-panel); border:1px solid var(--hairline); padding:3px 8px; border-radius:6px;
 }
+.cpage-badge.faction-alliance{ color:#5eb3f0; border-color:#5eb3f055; }
+.cpage-badge.faction-horde{ color:#e0554f; border-color:#e0554f55; }
 .stat-tile-label{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
 .stat-tile-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:30px; line-height:1; }
 .stat-tile-value-sm{ font-size:15px; font-weight:600; color:var(--text); }
@@ -209,9 +207,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:18px;
 }
 .dash-card h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
+.chart-readout{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:28px; line-height:1; }
+.chart-readout-label{ font-size:10px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin:2px 0 10px; }
 .dash-card-wide{ grid-column: 1 / -1; }
 .dash-card-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .dash-card-head h3{ margin-bottom:0; }
+.chart-range-toggle button{ padding:3px 9px; font-size:10px; }
 .dash-viewall-link{
   background:none; border:none; color: var(--purple); font-size:11px; font-weight:700;
   text-transform:uppercase; letter-spacing:.03em; cursor:pointer; transition: opacity .15s;
@@ -299,6 +300,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .recent-run-meta{ font-size:10px; color: var(--text-dim); flex-shrink:0; }
 .recent-run-time{ font-size:11px; color: var(--text-dim); flex-shrink:0; }
 .pbar-track-sm{ height:4px; }
+.recent-run-affix{ font-size:10px; color: var(--text-dim); margin-bottom:3px; }
 
 /* chart panel */
 .chart-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:20px; margin-top: 10px; }
@@ -557,8 +559,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .landing-login-btn:hover{ box-shadow:0 0 24px -4px rgba(242,181,61,.6); transform: translateY(-1px); }
 .landing-hero{
   display:flex; align-items:center; gap:40px; margin-bottom:64px; padding:28px 20px; border-radius:20px;
-  background: radial-gradient(ellipse 60% 100% at 20% 50%, rgba(79,143,255,.14), transparent 70%),
-              radial-gradient(ellipse 55% 100% at 90% 40%, rgba(163,53,238,.14), transparent 70%);
+  background: radial-gradient(ellipse 70% 120% at 85% 30%, rgba(163,53,238,.22), transparent 65%),
+              radial-gradient(ellipse 50% 100% at 10% 70%, rgba(122,53,238,.12), transparent 70%);
 }
 .landing-hero-text{ flex:1.2; min-width:280px; }
 .landing-hero-title{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:clamp(36px,6vw,64px); line-height:1.05; color:var(--gold); text-transform:uppercase; letter-spacing:.02em; text-shadow: 0 0 30px rgba(242,181,61,.45), 0 0 60px rgba(242,181,61,.2); margin-top:4px; }
@@ -713,44 +715,50 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 </div>
 
 <div class="wrap" id="mainApp" style="display:none;">
-  <header class="top">
-    <a class="title-block" href="#" id="homeLink" aria-label="Ir para o início" data-i18n-aria="ariaGoHome">
-      <img class="app-logo" src="assets/midnight-logo-cutout.png" alt="Midnight — Curse of Ula'tek">
-      <div>
-        <div class="eyebrow" data-i18n="brandEyebrow">Midnight · Season 2</div>
-        <h1 data-i18n="brandTitle">Keystone Hub</h1>
-        <div class="header-subtitle" data-i18n="brandSubtitle">Season Command Center</div>
-      </div>
-    </a>
-    <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="refresh-dashboard-btn" id="refreshDashboardBtn" title="Atualizar todos os personagens no Raider.IO"><span class="rdb-icon">↻</span> <span data-i18n="refreshDashboard">Atualizar</span></button>
-      </div>
-      <div class="user-badge">
-        <span id="userEmailLabel"></span>
-        <button class="logout-btn" id="logoutBtn" data-i18n="logout">Sair</button>
-      </div>
-      <div class="lang-switch" id="langSwitch">
-        <button class="lang-flag" data-lang="pt" title="Português">🇧🇷</button>
-        <button class="lang-flag lang-flag-text" data-lang="en" title="English">EN</button>
-      </div>
-    </div>
-  </header>
-
   <div class="app-body">
     <nav class="sidebar">
+      <a class="sidebar-brand" href="#" id="homeLink" aria-label="Ir para o início" data-i18n-aria="ariaGoHome">
+        <img class="sidebar-brand-mark" src="assets/midnight-logo-cutout.png" alt="Midnight — Curse of Ula'tek">
+      </a>
       <button class="sidebar-link active" data-tab="dashboard" title="Dashboard">
         <span class="sidebar-icon">🏠</span><span class="sidebar-label" data-i18n="navDashboard">Dashboard</span>
       </button>
       <button class="sidebar-link" data-tab="characters" title="Characters">
         <span class="sidebar-icon">👥</span><span class="sidebar-label" data-i18n="navCharacters">Characters</span>
       </button>
+      <button class="sidebar-link sidebar-jump" data-jump="section-gear" title="Gear">
+        <span class="sidebar-icon">🛡️</span><span class="sidebar-label" data-i18n="navGear">Gear</span>
+      </button>
+      <button class="sidebar-link sidebar-jump" data-jump="section-mplus" title="Mythic+">
+        <span class="sidebar-icon">💠</span><span class="sidebar-label" data-i18n="navMplus">Mythic+</span>
+      </button>
+      <button class="sidebar-link sidebar-jump" data-jump="section-raid" title="Raid">
+        <span class="sidebar-icon">🐉</span><span class="sidebar-label" data-i18n="navRaid">Raid</span>
+      </button>
+      <button class="sidebar-link sidebar-jump" data-jump="section-weekly" title="Weekly">
+        <span class="sidebar-icon">📅</span><span class="sidebar-label" data-i18n="navWeekly">Weekly</span>
+      </button>
+      <div class="sidebar-divider"></div>
       <button class="sidebar-link" data-tab="bis" title="BIS Gear" style="position:relative;">
         <span class="sidebar-icon">🎯</span><span class="sidebar-label" data-i18n="navBis">BIS Gear</span><span class="new-badge">NEW</span>
       </button>
       <button class="sidebar-link" data-tab="mural" title="Mural">
         <span class="sidebar-icon">🖼️</span><span class="sidebar-label" data-i18n="navMural">Mural</span>
       </button>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-footer-btn" id="refreshDashboardBtn" title="Atualizar todos os personagens no Raider.IO">
+          <span class="rdb-icon">↻</span><span class="sidebar-label" data-i18n="refreshDashboard">Atualizar</span>
+        </button>
+        <div class="sidebar-lang">
+          <button class="lang-flag" data-lang="pt" title="Português">🇧🇷</button>
+          <button class="lang-flag lang-flag-text" data-lang="en" title="English">EN</button>
+        </div>
+        <div class="sidebar-user">
+          <span id="userEmailLabel"></span>
+          <button class="logout-btn" id="logoutBtn" data-i18n="logout">Sair</button>
+        </div>
+      </div>
     </nav>
 
     <div class="app-main">
@@ -986,7 +994,7 @@ const I18N = {
     authGenericError: "Não foi possível entrar. Tente de novo.",
     ariaGoHome: "Ir para o início",
     logout: "Sair",
-    navDashboard: "Dashboard", navCharacters: "Personagens", navBis: "BIS Gear", navMural: "Mural",
+    navDashboard: "Dashboard", navCharacters: "Personagens", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Mural",
     loading: "Carregando...", evolutionTitle: "Evolução",
     todoPlaceholder: "Adicionar novo objetivo...", add: "Adicionar",
     tipsTitle: "Dicas", tipPlaceholder: "Adicionar nova dica...",
@@ -1026,13 +1034,14 @@ const I18N = {
     seasonBestTitle: "Melhores Chaves da Season", lastUpdatedLabel: "Atualizado",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
-    ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score",
+    ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score", currentLabel: "Atual",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     newsPlaceholder1: "Hotfixes recentes", newsPlaceholder2: "Novidades da Season 2", newsPlaceholder3: "Rotação de Mythic+ da semana",
     comingSoon: "em breve", weeklyRewardsTitle: "Recompensas Semanais", progressionTitle: "Progressão",
     bossByBossLabel: "Ver detalhes por chefe", recentActivityTitle: "Atividade Recente", charPowerTitle: "Poder do Personagem",
     worldRankLabel: "Raider.IO Rank", activityMplusClear: "Completou", viewAllLabel: "Ver Tudo",
+    upcomingTitle: "Próximos Eventos", availableLabel: "Disponível", doneLabel: "Concluído", daysAbbrev: "d",
     day: "Dia", week: "Semana", month: "Mês",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
@@ -1085,7 +1094,7 @@ const I18N = {
     authGenericError: "Couldn't sign in. Please try again.",
     ariaGoHome: "Go to home",
     logout: "Log Out",
-    navDashboard: "Dashboard", navCharacters: "Characters", navBis: "BIS Gear", navMural: "Board",
+    navDashboard: "Dashboard", navCharacters: "Characters", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Board",
     loading: "Loading...", evolutionTitle: "Evolution",
     todoPlaceholder: "Add a new goal...", add: "Add",
     tipsTitle: "Tips", tipPlaceholder: "Add a new tip...",
@@ -1125,13 +1134,14 @@ const I18N = {
     seasonBestTitle: "Season Best", lastUpdatedLabel: "Updated",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Gear Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
-    ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution",
+    ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution", currentLabel: "Current",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     newsPlaceholder1: "Recent hotfixes", newsPlaceholder2: "Season 2 highlights", newsPlaceholder3: "This week's Mythic+ rotation",
     comingSoon: "coming soon", weeklyRewardsTitle: "Weekly Rewards", progressionTitle: "Progression",
     bossByBossLabel: "View boss-by-boss detail", recentActivityTitle: "Recent Activity", charPowerTitle: "Character Power",
     worldRankLabel: "Raider.IO Rank", activityMplusClear: "Completed", viewAllLabel: "View All",
+    upcomingTitle: "Upcoming", availableLabel: "Available", doneLabel: "Done", daysAbbrev: "d",
     day: "Day", week: "Week", month: "Month",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
@@ -2311,7 +2321,7 @@ const DEFAULT_CHARS = [
   {id:"c2", name:"Bludnymph", class:"Warrior"}
 ];
 
-let state = { characters: [], tips: [], range: 30, metric: "ilvl", muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", bisActiveChar: null, dashboardActiveChar: null };
+let state = { characters: [], tips: [], range: 30, metric: "ilvl", muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", bisActiveChar: null, dashboardActiveChar: null, dashChartRange: 90 };
 let chart = null;
 
 function uid(){ return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
@@ -2506,6 +2516,7 @@ function renderCharacterPage(){
     const pct = run.par_time_ms ? Math.min(100, Math.round((run.par_time_ms / Math.max(run.clear_time_ms,1)) * 100)) : 0;
     const inTime = run.clear_time_ms <= run.par_time_ms;
     const affixNames = (run.affixes || []).map(a => a.name).join(', ');
+    const weeklyAffix = (run.affixes || []).find(a => a.name === 'Fortified' || a.name === 'Tyrannical');
     const domId = `${prefix}-${run.keystone_run_id}`;
     const tooltip = `${run.dungeon} +${run.mythic_level} — ${t('scoreCol')}: ${run.score}\n${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}${affixNames ? '\n'+affixNames : ''}\n${dateStr}`;
     return `
@@ -2517,6 +2528,7 @@ function renderCharacterPage(){
             <span class="recent-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}</span> <span class="recent-run-stars">${stars}</span></span>
             <span class="recent-run-meta">${t('scoreCol')}: ${run.score} · ${dateStr}</span>
           </div>
+          ${weeklyAffix ? `<div class="recent-run-affix">${escapeHtml(weeklyAffix.name)}</div>` : ''}
           <div class="pbar-track pbar-track-sm"><div class="pbar-fill" style="width:${pct}%; background:${inTime?'var(--ok)':'var(--danger)'}"></div></div>
         </div>
         <div class="recent-run-time">${formatClearTime(run.clear_time_ms)}</div>
@@ -2575,6 +2587,7 @@ function renderCharacterPage(){
   const sortedRecentRuns = [...c.mplusRecentRuns].sort((a,b) => new Date(b.completed_at) - new Date(a.completed_at));
   const bestRun = sortedBestRuns[0] || null;
   const sortedBis = [...c.bis];
+  const headerBannerUrl = bestRun ? (bestRun.background_image_url || '') : '';
 
   const wowheadArmoryUrl = c.realm && c.region ? `https://www.wowhead.com/character/${c.region}/${c.realm}/${encodeURIComponent(c.name.toLowerCase())}` : null;
   const raiderIoUrl = c.realm && c.region ? `https://raider.io/characters/${c.region}/${c.realm}/${encodeURIComponent(c.name)}` : null;
@@ -2597,12 +2610,18 @@ function renderCharacterPage(){
   ];
 
   const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date)).filter(h => new Date(h.date) >= SEASON_2_START);
-  const chartCutoff = new Date(); chartCutoff.setDate(chartCutoff.getDate() - 90);
+  const chartCutoff = new Date(); chartCutoff.setDate(chartCutoff.getDate() - state.dashChartRange);
   const chartHistory = sortedHistory.filter(h => new Date(h.date) >= chartCutoff);
+  const chartRangeToggle = `
+    <div class="filter-group chart-range-toggle">
+      <button data-range="7" class="${state.dashChartRange===7?'active':''}">${t('day')}</button>
+      <button data-range="30" class="${state.dashChartRange===30?'active':''}">${t('week')}</button>
+      <button data-range="90" class="${state.dashChartRange===90?'active':''}">${t('month')}</button>
+    </div>`;
 
   container.innerHTML = `
     <div class="cpage" style="--class-color:${color}">
-      <div class="cpage-topgrid">
+      <div class="cpage-topgrid" style="${headerBannerUrl ? `background-image:url('${headerBannerUrl}');` : ''}">
         <div class="stat-tile cpage-identity">
           <div class="cpage-portrait">
             <img src="${c.avatarUrl || classIconUrl(c.class)}" alt="${c.class}">
@@ -2612,6 +2631,7 @@ function renderCharacterPage(){
             <div class="cpage-sub">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''} · ${t('gearIlvlLabel')} ${c.ilvl || '—'}</div>
             <div class="cpage-badges">
               ${c.race ? `<span class="cpage-badge">${escapeHtml(c.race)}</span>` : ''}
+              ${c.faction ? `<span class="cpage-badge faction-${c.faction.toLowerCase()}">${escapeHtml(c.faction)}</span>` : ''}
               ${c.realmName ? `<span class="cpage-badge">${escapeHtml(c.realmName)} (${(c.region||'').toUpperCase()})</span>` : ''}
             </div>
             <div class="cpage-links">
@@ -2650,15 +2670,25 @@ function renderCharacterPage(){
 
       <div class="dash-grid">
         <div class="dash-card">
-          <h3>${t('ilvlEvoTitle')}</h3>
+          <div class="dash-card-head">
+            <h3>${t('ilvlEvoTitle')}</h3>
+            ${chartRangeToggle}
+          </div>
+          <div class="chart-readout" style="color:${color}">${c.ilvl || '—'}</div>
+          <div class="chart-readout-label">${t('currentLabel')} ${t('gearIlvlLabel')}</div>
           <div id="dashIlvlChart"></div>
         </div>
         <div class="dash-card">
-          <h3>${t('mplusEvoTitle')}</h3>
+          <div class="dash-card-head">
+            <h3>${t('mplusEvoTitle')}</h3>
+            ${chartRangeToggle}
+          </div>
+          <div class="chart-readout" style="color:var(--danger)">${c.ioscore || '—'}</div>
+          <div class="chart-readout-label">${t('currentLabel')} ${t('mRatingLabel')}</div>
           <div id="dashIoChart"></div>
         </div>
 
-        <div class="dash-card">
+        <div class="dash-card" id="section-mplus">
           <h3>${t('seasonBestTitle')}</h3>
           <div class="recent-runs-list">
             ${sortedBestRuns.length ? sortedBestRuns.map(seasonBestRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
@@ -2708,7 +2738,7 @@ function renderCharacterPage(){
           <div class="empty-note" style="margin-top:8px;">${t('wowheadNewsComingSoon')}</div>
         </div>
 
-        <div class="dash-card">
+        <div class="dash-card" id="section-weekly">
           <h3>${t('weeklyRewardsTitle')}</h3>
           <div class="reward-row">
             <span class="reward-icon">🧳</span>
@@ -2728,6 +2758,20 @@ function renderCharacterPage(){
         </div>
 
         <div class="dash-card">
+          <h3>${t('upcomingTitle')}</h3>
+          <div class="reward-row">
+            <span class="reward-icon">🐉</span>
+            <span class="reward-label">${t('worldBossLabel')}</span>
+            <span class="reward-value" style="color:${wbCount < WORLDBOSS_TIERS.length ? 'var(--ok)' : 'var(--text-dim)'}">${wbCount < WORLDBOSS_TIERS.length ? t('availableLabel') : t('doneLabel')}</span>
+          </div>
+          <div class="reward-row">
+            <span class="reward-icon">⏰</span>
+            <span class="reward-label">${t('weeklyResetLabel')}</span>
+            <span class="reward-value">${daysLeft}${t('daysAbbrev')}</span>
+          </div>
+        </div>
+
+        <div class="dash-card" id="section-raid">
           <h3>${t('progressionTitle')}</h3>
           <div class="raid-bar-row">
             <span class="raid-bar-label">${RAID_NAME}</span>
@@ -2776,7 +2820,7 @@ function renderCharacterPage(){
           </div>
         </div>
 
-        <div class="dash-card dash-card-wide">
+        <div class="dash-card dash-card-wide" id="section-gear">
           <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
           ${c.gearItems ? `
           <div class="gear-columns">
@@ -2798,6 +2842,13 @@ function renderCharacterPage(){
   container.querySelector('#dashIoChart').innerHTML = buildLineChartSVG(
     [{ label:'Mythic+ Score', color:'#a335ee', data: chartHistory.map(h=>({x:h.date,y:h.ioscore})) }], 380, 150
   );
+
+  container.querySelectorAll('.chart-range-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.dashChartRange = Number(btn.dataset.range);
+      renderCharacterPage();
+    });
+  });
 
   container.querySelector('#cpageRefreshBtn').addEventListener('click', async (e) => {
     const btn = e.currentTarget;
@@ -3672,6 +3723,19 @@ document.getElementById('homeLink').addEventListener('click', (e) => { e.prevent
 
 document.querySelectorAll('.sidebar-link').forEach(btn => {
   btn.addEventListener('click', () => {
+    if(btn.dataset.jump){
+      goToDashboard();
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const target = document.getElementById(btn.dataset.jump);
+        if(!target) return;
+        target.scrollIntoView({ behavior:'smooth', block:'start' });
+        target.classList.remove('jump-glow');
+        void target.offsetWidth;
+        target.classList.add('jump-glow');
+        target.addEventListener('animationend', () => target.classList.remove('jump-glow'), { once:true });
+      }));
+      return;
+    }
     if(btn.dataset.tab === 'dashboard'){ goToDashboard(); return; }
     switchToTab(btn.dataset.tab);
   });
