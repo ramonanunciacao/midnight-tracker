@@ -9,7 +9,13 @@
    Usage: GET <worker-url>/?region=us&realm=illidan&name=Rawthedk
    Returns: { raid: [{boss, difficulty, lastKill}], worldBoss: [{tier, lastKill}] }
    lastKill is a Unix ms timestamp; the app compares it against its own
-   weekly-reset boundary calculation to decide "killed this week or not". */
+   weekly-reset boundary calculation to decide "killed this week or not".
+
+   Second, unrelated usage: GET <worker-url>/?type=rio-run&season=season-mn-2&runId=71345
+   Plain passthrough of Raider.IO's public mythic-plus/run-details endpoint (full party
+   composition, deaths, per-encounter timing) — that endpoint has no CORS headers of its
+   own, so the browser can't call it directly; this branch needs no Blizzard token, it just
+   adds CORS headers to the same response. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -45,6 +51,26 @@ export default {
     }
 
     const url = new URL(request.url);
+
+    if(url.searchParams.get('type') === 'rio-run'){
+      const season = url.searchParams.get('season');
+      const runId = url.searchParams.get('runId');
+      if(!season || !runId){
+        return new Response(JSON.stringify({ error: 'missing season/runId' }), { status: 400, headers: corsHeaders });
+      }
+      try{
+        const rioUrl = `https://raider.io/api/v1/mythic-plus/run-details?season=${encodeURIComponent(season)}&id=${encodeURIComponent(runId)}`;
+        const res = await fetch(rioUrl);
+        if(!res.ok){
+          return new Response(JSON.stringify({ error: 'raider.io api error', status: res.status }), { status: res.status, headers: corsHeaders });
+        }
+        const data = await res.json();
+        return new Response(JSON.stringify(data), { headers: corsHeaders });
+      } catch(err){
+        return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
+      }
+    }
+
     const region = (url.searchParams.get('region') || '').toLowerCase();
     const realm = url.searchParams.get('realm');
     const name = url.searchParams.get('name');

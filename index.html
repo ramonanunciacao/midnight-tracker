@@ -36,7 +36,7 @@ body{
   background: radial-gradient(ellipse at top, #16223f 0%, var(--bg) 55%), var(--bg);
   color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 32px 20px 80px;
 }
-.wrap{ max-width: 1100px; margin: 0 auto; }
+.wrap{ max-width: 1500px; margin: 0 auto; }
 header.top{
   display:flex; align-items:flex-end; justify-content:space-between; flex-wrap: wrap; gap: 16px;
   border-bottom: 1px solid var(--hairline); padding-bottom: 20px; margin-bottom: 24px;
@@ -77,17 +77,67 @@ section.tab{ display:none; }
 section.tab.active{ display:block; animation: fadeIn .25s ease; }
 @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
 
-.char-selector-row{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
 .class-icon{ width:34px; height:34px; border-radius:50%; border:2px solid var(--class-color, var(--gold)); object-fit:cover; flex-shrink:0; }
 .class-icon-lg{ width:54px; height:54px; }
-.char-remove{ background:none; border:none; color: var(--text-dim); cursor:pointer; font-size:16px; opacity:.5; position:relative; z-index:5; }
-.char-remove:hover{ opacity:1; color: var(--danger); }
-.add-char-pill{ border-style:dashed !important; }
 
-.char-quickstats{ display:flex; flex-direction:column; align-items:flex-end; gap:1px; margin-top:5px; }
-.cqs-row{ display:flex; align-items:baseline; gap:4px; }
-.cqs-row b{ color:var(--text); font-size:14px; font-weight:700; }
-.cqs-row .cqs-lbl{ font-size:9px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); }
+/* character selector: League-loading-screen-style cards, collapsed by default, expand on hover/active */
+.char-selector-row{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:24px; align-items:flex-start; }
+.champ-card{
+  position:relative; width:64px; height:92px; border-radius:10px; overflow:hidden; cursor:pointer;
+  border:2px solid var(--hairline); background: var(--bg-panel-raised); flex-shrink:0;
+  transition: width .3s cubic-bezier(.22,.8,.24,1), border-color .2s, box-shadow .2s;
+}
+.champ-card:hover, .champ-card.active{
+  width:200px; border-color: var(--class-color, var(--gold));
+  box-shadow: 0 8px 24px -8px rgba(0,0,0,.6), 0 0 0 1px var(--class-color, var(--gold)) inset;
+}
+.champ-card-portrait{ position:absolute; inset:0; background: var(--bg-panel); }
+.champ-card-portrait img{ width:100%; height:100%; object-fit:cover; opacity:.6; transition: opacity .3s, transform .3s; transform: scale(1.06); }
+.champ-card:hover .champ-card-portrait img, .champ-card.active .champ-card-portrait img{ opacity:1; transform: scale(1); }
+.champ-card-drag, .champ-card-remove{
+  position:absolute; top:6px; opacity:0; transition: opacity .2s; z-index:3; cursor:pointer;
+  background: rgba(6,8,14,.7); border:none; color:#fff; border-radius:4px; font-size:12px; width:20px; height:20px;
+  display:flex; align-items:center; justify-content:center;
+}
+.champ-card-drag{ left:6px; cursor:grab; }
+.champ-card-remove{ right:6px; }
+.champ-card-remove:hover{ color: var(--danger); }
+.champ-card:hover .champ-card-drag, .champ-card:hover .champ-card-remove{ opacity:.85; }
+.champ-card-info{
+  position:absolute; left:0; right:0; bottom:0; z-index:2; padding:8px 10px 9px;
+  background: linear-gradient(180deg, transparent, rgba(5,7,13,.94) 50%);
+}
+.champ-card-name{ font-weight:700; font-size:12px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.champ-card-meta{
+  font-size:0; max-height:0; opacity:0; overflow:hidden; transition: all .25s;
+  white-space:nowrap; text-overflow:ellipsis; color: var(--class-color, var(--gold));
+  text-transform:uppercase; letter-spacing:.03em; font-weight:700;
+}
+.champ-card-stats{ font-size:0; max-height:0; opacity:0; overflow:hidden; transition: all .25s .03s; display:flex; gap:10px; color: var(--text-dim); }
+.champ-card-stats b{ color:#fff; }
+.champ-card:hover .champ-card-meta, .champ-card.active .champ-card-meta{ font-size:10px; max-height:16px; opacity:1; margin-top:3px; }
+.champ-card:hover .champ-card-stats, .champ-card.active .champ-card-stats{ font-size:11px; max-height:16px; opacity:1; margin-top:4px; }
+.add-champ-card{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  border-style:dashed; color: var(--text-dim);
+}
+.add-champ-card:hover{ border-color: var(--gold-dim); color: var(--gold); box-shadow:none; }
+.add-champ-plus{ font-size:22px; font-weight:700; line-height:1; }
+.add-champ-card .champ-card-info{ position:static; background:none; padding:4px 6px 0; text-align:center; }
+.add-champ-card .champ-card-name{ font-size:10px; color:inherit; white-space:normal; }
+
+.cpage-portrait{
+  width:66px; height:66px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  border:3px solid var(--class-color, var(--gold)); box-shadow: 0 0 18px -3px var(--class-color, var(--gold));
+}
+.cpage-portrait img{ width:100%; height:100%; object-fit:cover; display:block; }
+.gauge-row{ display:flex; gap:20px; }
+.gauge-wrap{ position:relative; width:92px; height:92px; flex-shrink:0; }
+.gauge-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.gauge-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:21px; color:#fff; line-height:1; }
+.gauge-label{ font-size:9px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); margin-top:3px; }
+.season1-callout{ font-size:12px; color:var(--text-dim); margin-bottom:10px; }
+.season1-callout b{ color: var(--gold-dim); }
 .refresh-dashboard-btn{
   display:inline-flex; align-items:center; justify-content:center; gap:6px; background:none; border:1px solid var(--hairline);
   color: var(--text-dim); font-size:11px; font-weight:600; padding:0 10px; height:32px; border-radius:8px;
@@ -114,18 +164,18 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .vault-slots{ display:flex; gap:6px; margin-bottom:8px; }
 .vault-slot{ flex:1; height:8px; border-radius:3px; background: var(--danger); }
 .vault-slot.filled{ background: var(--ok); }
+.vault-hero{ margin-bottom:20px; }
+.vault-hero-row{ display:flex; gap:24px; flex-wrap:wrap; margin-top:10px; }
+.vault-hero-item{ flex:1; min-width:160px; }
+.vault-hero-item .vault-row-label{ width:auto; display:block; margin-bottom:6px; font-size:11px; }
+.vault-hero-item .vault-slots{ margin-bottom:0; }
+.vault-hero-item .vault-slot{ height:12px; border-radius:4px; }
 
-/* character page: milestones, gear, progression, recent runs */
-.milestone-row{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; background: var(--bg-panel-raised); margin-bottom:6px; }
-.milestone-row:last-child{ margin-bottom:0; }
-.milestone-row.done{ box-shadow: inset 3px 0 0 var(--ok); }
-.milestone-check{ width:14px; color: var(--ok); font-weight:700; flex-shrink:0; }
-.milestone-label{ flex:1; font-size:13px; color: var(--text); }
-.milestone-count{ font-size:11px; color: var(--text-dim); flex-shrink:0; }
+/* character page: gear, progression, recent runs */
 
 .gear-columns{ display:grid; grid-template-columns: 1fr 1fr; gap:0 20px; }
 @media(max-width:600px){ .gear-columns{ grid-template-columns: 1fr; } }
-.gear-weapons{ margin-top:6px; }
+.gear-weapons{ grid-column: 1 / -1; margin-top:10px; padding-top:10px; border-top:1px solid var(--hairline); }
 .gear-row{ display:flex; align-items:center; gap:10px; padding:8px 4px; border-bottom:1px solid var(--hairline); }
 .gear-row:last-child{ border-bottom:none; }
 .gear-row.empty{ opacity:.5; }
@@ -137,12 +187,29 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .gear-name:hover{ text-decoration:underline; }
 .gear-meta{ font-size:11px; color: var(--text-dim); margin-top:2px; }
 
-.best-run-row{ display:flex; align-items:center; gap:12px; padding:8px 4px; border-bottom:1px solid var(--hairline); }
-.best-run-row:last-child{ border-bottom:none; }
-.best-run-name{ width:200px; flex-shrink:0; font-size:13px; color: var(--text); }
+.best-run-item{ border-bottom:1px solid var(--hairline); }
+.best-run-item:last-child{ border-bottom:none; }
+.best-run-row{ display:flex; align-items:center; gap:12px; padding:10px 4px; cursor:pointer; transition: background .15s; }
+.best-run-row:hover{ background: var(--bg-panel-raised); }
+.best-run-icon{ width:32px; height:32px; border-radius:6px; border:1px solid var(--hairline); flex-shrink:0; }
+.best-run-main{ flex:1; min-width:0; }
+.best-run-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:8px; }
+.best-run-name{ font-size:13px; color: var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .best-run-level{ color: var(--gold-dim); font-weight:700; font-size:12px; }
-.best-run-row .pbar-track{ flex:1; }
-.best-run-score{ width:44px; flex-shrink:0; text-align:right; font-size:12px; color: var(--text-dim); }
+.best-run-score{ font-size:12px; color: var(--text-dim); flex-shrink:0; }
+.best-run-expand-icon{ color: var(--text-dim); font-size:11px; flex-shrink:0; transition: transform .2s; }
+.best-run-row.expanded .best-run-expand-icon{ transform: rotate(180deg); }
+.best-run-detail{ max-height:0; overflow:hidden; transition: max-height .25s ease; padding:0 4px; }
+.best-run-detail.open{ max-height:400px; padding:4px 4px 14px; }
+.run-detail-section-title{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); font-weight:700; margin:8px 0 6px; }
+.comp-list{ display:flex; flex-direction:column; gap:4px; }
+.comp-row{ display:grid; grid-template-columns: 22px 1.3fr 1.3fr 40px; align-items:center; gap:8px; font-size:12px; padding:3px 6px; background: var(--bg-panel-raised); border-radius:6px; }
+.comp-role{ text-align:center; font-size:12px; }
+.comp-name{ font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.comp-spec{ color: var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.comp-ilvl{ text-align:right; color: var(--text-dim); }
+.deaths-row{ display:flex; flex-wrap:wrap; gap:6px; }
+.death-chip{ font-size:11px; color: var(--text-dim); background: var(--bg-panel-raised); padding:3px 8px; border-radius:12px; }
 
 .recent-runs-list{ display:flex; flex-direction:column; gap:6px; }
 .recent-run-row{ display:flex; align-items:center; gap:10px; padding:8px 8px; border-radius:8px; background: var(--bg-panel-raised); text-decoration:none; color:inherit; }
@@ -298,11 +365,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .jump-glow{ animation: jumpGlow 1s ease-out; }
 .dpanel h3{ font-family:'Rajdhani',sans-serif; font-size:14px; color: var(--gold); text-transform:uppercase; letter-spacing:.04em; margin-bottom:14px;}
-.dungeon-full-list{ display:flex; flex-direction:column; gap:6px; }
-.dungeon-full-list .drow{ display:flex; align-items:center; gap:10px; font-size:13px; padding:6px 8px; border-radius:8px; background: var(--bg-panel-raised); }
-.dungeon-full-list .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.dungeon-full-list .dot.on{ background: var(--ok); } .dungeon-full-list .dot.off{ background: var(--danger); }
-.dungeon-full-list .drow input[type=checkbox]{ margin-left:auto; accent-color: var(--class-color, var(--gold)); }
 .ilvl-table{ width:100%; border-collapse:collapse; font-size:12px; margin-top:12px; }
 .ilvl-table th{ text-align:left; color:var(--text-dim); text-transform:uppercase; font-size:10px; letter-spacing:.04em; padding:6px 4px; border-bottom:1px solid var(--hairline);}
 .ilvl-table td{ padding:6px 4px; border-bottom:1px solid var(--hairline); color:var(--text); }
@@ -924,6 +986,8 @@ const I18N = {
     gearSlotChest: "Peito", gearSlotWrist: "Pulso", gearSlotHands: "Mãos", gearSlotWaist: "Cintura",
     gearSlotLegs: "Pernas", gearSlotFeet: "Pés", gearSlotRing1: "Anel 1", gearSlotRing2: "Anel 2",
     gearSlotTrinket1: "Bugiganga 1", gearSlotTrinket2: "Bugiganga 2", gearSlotMainHand: "Mão Principal", gearSlotOffHand: "Mão Secundária",
+    subtabBis: "BiS", noRunDetails: "Não foi possível carregar os detalhes dessa run.",
+    deathsLabel: (n) => n === 1 ? "1 morte" : `${n} mortes`, compLabel: "Composição", season1PeakLabel: "Pico na Season 1",
     day: "Dia", week: "Semana", month: "Mês",
     viewFullHistory: (n) => n ? `Ver histórico completo (${n})` : "Ver histórico completo",
     dateCol: "Data",
@@ -1022,6 +1086,8 @@ const I18N = {
     gearSlotChest: "Chest", gearSlotWrist: "Wrist", gearSlotHands: "Hands", gearSlotWaist: "Waist",
     gearSlotLegs: "Legs", gearSlotFeet: "Feet", gearSlotRing1: "Ring 1", gearSlotRing2: "Ring 2",
     gearSlotTrinket1: "Trinket 1", gearSlotTrinket2: "Trinket 2", gearSlotMainHand: "Main Hand", gearSlotOffHand: "Off Hand",
+    subtabBis: "BiS", noRunDetails: "Couldn't load this run's details.",
+    deathsLabel: (n) => n === 1 ? "1 death" : `${n} deaths`, compLabel: "Composition", season1PeakLabel: "Season 1 peak",
     day: "Day", week: "Week", month: "Month",
     viewFullHistory: (n) => n ? `View full history (${n})` : "View full history",
     dateCol: "Date",
@@ -1806,6 +1872,10 @@ const RAID_NAME = "The Venomous Abyss";
 const RAID_POOL = ["Nek'zali the Soulcoiler","The Lost Explorers","Sszorak","The Coiled Altar","Entombed Sentinels","Vashnik the Malignant","The Twin Fangs","Ula'tek"];
 const RAID_DIFFICULTIES = ["LFR","Normal","Heroic","Mythic"];
 const WORLDBOSS_TIERS = ["World","Normal","Heroic","Mythic"];
+/* Season 2 launch (US Tuesday reset) — history points before this are Season 1 and are excluded
+   from the IO/ilvl evolution chart so the Season 1->2 score reset doesn't read as a regression. */
+const SEASON_2_START = new Date('2026-08-18T15:00:00Z');
+const CURRENT_SEASON_SLUG = 'season-mn-2';
 
 /* Gear tab: two-column paperdoll-ish split, matching the standard WoW character sheet layout */
 const GEAR_LEFT_SLOTS = ["head","neck","shoulder","back","chest","wrist"];
@@ -1819,6 +1889,60 @@ const GEAR_SLOT_LABEL_KEYS = {
 };
 const ITEM_QUALITY_COLOR = { 0:"#9d9d9d", 1:"#ffffff", 2:"#1eff00", 3:"#0070dd", 4:"#a335ee", 5:"#ff8000" };
 function zamIconUrl(icon, size){ return icon ? `https://wow.zamimg.com/images/wow/icons/${size||'medium'}/${icon}.jpg` : ''; }
+/* Soft visual ceilings for the header gauges — not hard game caps, just a reasonable
+   "full dial" reference point for this season so the arc reads meaningfully. */
+const ILVL_GAUGE_MAX = 330;
+const IO_GAUGE_MAX = 3500;
+function buildGaugeSVG(pct, color, size){
+  size = size || 92;
+  pct = Math.max(0, Math.min(1, pct || 0));
+  const r = size*0.4, cx = size/2, cy = size/2;
+  const toXY = aDeg => { const a = aDeg*Math.PI/180; return [cx + r*Math.sin(a), cy - r*Math.cos(a)]; };
+  const startA = -135, endA = 135, valA = startA + pct*(endA-startA);
+  const [x1,y1] = toXY(startA), [x2,y2] = toXY(endA), [vx,vy] = toXY(valA);
+  const largeArcVal = (valA-startA) > 180 ? 1 : 0;
+  const trackPath = `M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}`;
+  const valPath = `M ${x1} ${y1} A ${r} ${r} 0 ${largeArcVal} 1 ${vx} ${vy}`;
+  const sw = size*0.1;
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+    <path d="${trackPath}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="${sw}" stroke-linecap="round"/>
+    ${pct > 0 ? `<path d="${valPath}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round"/>` : ''}
+  </svg>`;
+}
+const ROLE_ICON = { tank:'🛡️', healer:'✚', dps:'⚔️' };
+function buildRunDetailHtml(data){
+  const encounters = (data.logged_details && data.logged_details.encounters) || [];
+  const rosterMap = new Map();
+  encounters.forEach(enc => (enc.roster || []).forEach(r => { if(r.character) rosterMap.set(r.character.id, r); }));
+  const roster = [...rosterMap.values()];
+  const deaths = (data.logged_details && data.logged_details.deaths) || [];
+  if(!roster.length) return `<div class="empty-note">${t('noRunDetails')}</div>`;
+  const rosterRow = r => {
+    const ch = r.character;
+    const clsName = ch.class ? ch.class.name : '';
+    const clsColor = CLASS_HEX[clsName] || '#fff';
+    const specName = ch.spec ? ch.spec.name : '';
+    const ilvl = r.items && r.items.item_level_equipped ? Math.round(r.items.item_level_equipped) : '—';
+    return `<div class="comp-row">
+      <span class="comp-role">${ROLE_ICON[r.role] || ''}</span>
+      <span class="comp-name" style="color:${clsColor}">${escapeHtml(ch.name)}</span>
+      <span class="comp-spec">${escapeHtml(specName)} ${escapeHtml(clsName)}</span>
+      <span class="comp-ilvl">${ilvl}</span>
+    </div>`;
+  };
+  const deathsHtml = deaths.length
+    ? deaths.map(d => {
+        const r = roster.find(x => x.character && x.character.id === d.character_id);
+        const dname = r ? r.character.name : '?';
+        return `<span class="death-chip">💀 ${escapeHtml(dname)} — ${formatClearTime(d.approximate_died_at)}</span>`;
+      }).join('')
+    : `<span class="empty-note">—</span>`;
+  return `
+    <div class="run-detail-section-title">${t('compLabel')}</div>
+    <div class="comp-list">${roster.map(rosterRow).join('')}</div>
+    <div class="run-detail-section-title">${t('deathsLabel', deaths.length)}</div>
+    <div class="deaths-row">${deathsHtml}</div>`;
+}
 function formatClearTime(ms){
   if(!ms && ms !== 0) return '—';
   const totalSec = Math.round(ms/1000);
@@ -2240,6 +2364,8 @@ function normalizeChar(c){
   if(c.gearItems === undefined) c.gearItems = null;
   if(!Array.isArray(c.mplusBestRuns)) c.mplusBestRuns = [];
   if(!Array.isArray(c.mplusRecentRuns)) c.mplusRecentRuns = [];
+  if(c.avatarUrl === undefined) c.avatarUrl = null;
+  if(typeof c.ioscoreSeason1 !== 'number') c.ioscoreSeason1 = 0;
   if(c.realm === undefined) c.realm = null;
   if(c.realmName === undefined) c.realmName = null;
   if(c.region === undefined) c.region = null;
@@ -2261,7 +2387,8 @@ function makeCharObj(id, name, cls, realm, realmName, region){
     worldboss: Object.fromEntries(WORLDBOSS_TIERS.map(t=>[t,false])),
     todos: DEFAULT_TODOS_I18N[currentLang].map(text => ({id: uid(), text, done:false})),
     highestKey: 0, history: [], bis: [],
-    gearItems: null, mplusBestRuns: [], mplusRecentRuns: []
+    gearItems: null, mplusBestRuns: [], mplusRecentRuns: [],
+    avatarUrl: null, ioscoreSeason1: 0
   };
 }
 
@@ -2269,8 +2396,7 @@ async function saveChar(c){ await storageSet('char:'+c.id, JSON.stringify(c)); }
 async function saveRoster(){ await storageSet('roster', JSON.stringify(state.characters.map(c=>c.id))); }
 function countDone(obj){ return Object.values(obj).filter(Boolean).length; }
 
-/* ---------------- Dashboard cards ---------------- */
-/* ---------------- Dashboard: character selector pills + single-page character view ---------------- */
+/* ---------------- Dashboard: character selector cards + single-page character view ---------------- */
 function renderCharacters(){
   if(!state.dashboardActiveChar || !state.characters.some(c => c.id === state.dashboardActiveChar)){
     state.dashboardActiveChar = state.characters[0] ? state.characters[0].id : null;
@@ -2280,20 +2406,26 @@ function renderCharacters(){
   state.characters.forEach(c => {
     const color = CLASS_HEX[c.class] || '#f2b53d';
     const pill = document.createElement('div');
-    pill.className = 'char-select-btn' + (state.dashboardActiveChar === c.id ? ' active' : '');
+    pill.className = 'champ-card' + (state.dashboardActiveChar === c.id ? ' active' : '');
     pill.style.setProperty('--class-color', color);
     pill.innerHTML = `
-      <span class="drag-handle" title="${t('dragReorder')}">⠿</span>
-      <img class="class-icon" src="${classIconUrl(c.class)}" alt="${c.class}">
-      <span>${escapeHtml(c.name)}</span>
-      <button class="char-remove" title="${t('remove')}">✕</button>
+      <div class="champ-card-portrait">
+        <img src="${c.avatarUrl || classIconUrl(c.class)}" alt="${c.class}">
+      </div>
+      <span class="champ-card-drag" title="${t('dragReorder')}">⠿</span>
+      <button class="champ-card-remove" title="${t('remove')}">✕</button>
+      <div class="champ-card-info">
+        <div class="champ-card-name">${escapeHtml(c.name)}</div>
+        <div class="champ-card-meta">${c.class}${c.spec ? ` · ${escapeHtml(c.spec)}` : ''}</div>
+        <div class="champ-card-stats"><span>ILVL <b>${c.ilvl || '—'}</b></span><span>IO <b>${c.ioscore || '—'}</b></span></div>
+      </div>
     `;
     pill.addEventListener('click', (e) => {
-      if(e.target.closest('.char-remove, .drag-handle')) return;
+      if(e.target.closest('.champ-card-remove, .champ-card-drag')) return;
       state.dashboardActiveChar = c.id;
       renderCharacters();
     });
-    pill.querySelector('.char-remove').addEventListener('click', async (e) => {
+    pill.querySelector('.champ-card-remove').addEventListener('click', async (e) => {
       e.stopPropagation();
       if(!(await customConfirm(t('removeCharMsg', c.name), t('removeCharTitle')))) return;
       state.characters = state.characters.filter(x => x.id !== c.id);
@@ -2313,8 +2445,8 @@ function renderCharacters(){
     wrap.appendChild(pill);
   });
   const addPill = document.createElement('div');
-  addPill.className = 'char-select-btn add-char-pill';
-  addPill.textContent = t('addCharacterBtn');
+  addPill.className = 'champ-card add-champ-card';
+  addPill.innerHTML = `<span class="add-champ-plus">+</span><div class="champ-card-info"><div class="champ-card-name">${t('addCharacterBtn')}</div></div>`;
   addPill.addEventListener('click', openAddCharModal);
   wrap.appendChild(addPill);
 
@@ -2333,8 +2465,8 @@ function renderCharacterPage(){
   const wbCount = countDone(c.worldboss), wbTotal = WORLDBOSS_TIERS.length;
   const raidFilled = [raidCount>=2, raidCount>=4, raidCount>=6];
   const mplusFilled = [dCount>=2, dCount>=4, dCount>=8];
-  const worldFilled = [eCount>=1, eCount>=2, eCount>=4];
-  const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date));
+  const worldFilled = [wbCount>=1, wbCount>=2, wbCount>=4];
+  const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date)).filter(h => new Date(h.date) >= SEASON_2_START);
   const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - detailRange);
   const filteredHistory = sortedHistory.filter(h => new Date(h.date) >= cutoff);
   const reversedHistory = filteredHistory.slice().reverse();
@@ -2345,29 +2477,22 @@ function renderCharacterPage(){
       <span class="bname ${ev.done?'collected':''}">${escapeHtml(ev.text)}</span>
       <button class="bdel">✕</button>
     </div>`;
-  const dungeonRow = d => `
-    <div class="drow">
-      <span class="dot ${c.dungeons[d]?'on':'off'}"></span>
-      <span>${d}</span>
-      <input type="checkbox" data-key="${d}" ${c.dungeons[d]?'checked':''}>
-    </div>`;
-  const wbRow = tier => `
-    <div class="drow">
-      <span class="dot ${c.worldboss[tier]?'on':'off'}"></span>
-      <span>${tier}</span>
-      <input type="checkbox" data-key="${tier}" ${c.worldboss[tier]?'checked':''}>
-    </div>`;
   const raidTableRow = boss => `
     <tr>
       <td class="raid-boss-name">${boss}</td>
       ${RAID_DIFFICULTIES.map(d => `<td><input type="checkbox" data-boss="${boss}" data-diff="${d}" ${c.raidBosses[boss][d]?'checked':''}></td>`).join('')}
     </tr>`;
-  const milestoneRow = (label, count, total) => `
-    <div class="milestone-row ${count>=total?'done':''}">
-      <span class="milestone-check">${count>=total?'✓':''}</span>
-      <span class="milestone-label">${label}</span>
-      <span class="milestone-count">${Math.min(count,total)}/${total}</span>
+  const bisSummaryRow = b => {
+    const iconHtml = b.icon ? `<img class="bicon-img" src="${b.icon}" alt="">` : (b.slot ? slotIcon(b.slot) : '❔');
+    const linkTag = b.whId ? 'a' : 'span';
+    const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer" class="bis-item-link bis-wh-link"` : ' class="bis-item-link"';
+    return `
+    <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
+      <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
+      <${linkTag}${linkAttrs}><span class="bicon">${iconHtml}</span><span class="bname ${b.collected?'collected':''}">${escapeHtml(b.name)}</span></${linkTag}>
+      <span class="bslot">${escapeHtml(b.slot || '—')}</span>
     </div>`;
+  };
   const gearItemRow = slotKey => {
     const item = c.gearItems ? c.gearItems[slotKey] : null;
     const label = t(GEAR_SLOT_LABEL_KEYS[slotKey]);
@@ -2387,11 +2512,21 @@ function renderCharacterPage(){
   const bestRunRow = run => {
     const pct = run.par_time_ms ? Math.min(100, Math.round((run.par_time_ms / Math.max(run.clear_time_ms,1)) * 100)) : 0;
     const inTime = run.clear_time_ms <= run.par_time_ms;
+    const stars = '★'.repeat(run.num_keystone_upgrades || 0);
     return `
-    <div class="best-run-row">
-      <span class="best-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}</span></span>
-      <div class="pbar-track"><div class="pbar-fill" style="width:${pct}%; background:${inTime?'var(--ok)':'var(--danger)'}"></div></div>
-      <span class="best-run-score">${run.score}</span>
+    <div class="best-run-item">
+      <div class="best-run-row" data-run-id="${run.keystone_run_id}">
+        ${run.icon_url ? `<img class="best-run-icon" src="${run.icon_url}" alt="">` : ''}
+        <div class="best-run-main">
+          <div class="best-run-top">
+            <span class="best-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}</span> <span class="recent-run-stars">${stars}</span></span>
+            <span class="best-run-score">${run.score}</span>
+          </div>
+          <div class="pbar-track"><div class="pbar-fill" style="width:${pct}%; background:${inTime?'var(--ok)':'var(--danger)'}"></div></div>
+        </div>
+        <span class="best-run-expand-icon">▾</span>
+      </div>
+      <div class="best-run-detail" id="run-detail-${run.keystone_run_id}"></div>
     </div>`;
   };
   const recentRunRow = run => {
@@ -2417,8 +2552,10 @@ function renderCharacterPage(){
   container.innerHTML = `
     <div class="cpage" style="--class-color:${color}">
       <div class="detail-header">
-        <div style="display:flex; align-items:center; gap:14px;">
-          <img class="class-icon class-icon-lg" src="${classIconUrl(c.class)}" alt="${c.class}">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div class="cpage-portrait">
+            <img src="${c.avatarUrl || classIconUrl(c.class)}" alt="${c.class}">
+          </div>
           <div>
             <h2 style="color:${color}">${c.name}</h2>
             <div class="dclass">${c.class}${c.spec ? ` — ${escapeHtml(c.spec)}` : ''}</div>
@@ -2430,9 +2567,15 @@ function renderCharacterPage(){
             </div>` : ''}
           </div>
         </div>
-        <div class="char-quickstats" style="margin-top:0;">
-          <div class="cqs-row"><span class="cqs-lbl">ILVL</span><b>${c.ilvl || '—'}</b></div>
-          <div class="cqs-row"><span class="cqs-lbl">IO</span><b>${c.ioscore || '—'}</b></div>
+        <div class="gauge-row">
+          <div class="gauge-wrap">
+            ${buildGaugeSVG((c.ilvl||0)/ILVL_GAUGE_MAX, color)}
+            <div class="gauge-center"><div class="gauge-value">${c.ilvl || '—'}</div><div class="gauge-label">ILVL</div></div>
+          </div>
+          <div class="gauge-wrap">
+            ${buildGaugeSVG((c.ioscore||0)/IO_GAUGE_MAX, color)}
+            <div class="gauge-center"><div class="gauge-value">${c.ioscore || '—'}</div><div class="gauge-label">IO SCORE</div></div>
+          </div>
         </div>
       </div>
 
@@ -2453,48 +2596,24 @@ function renderCharacterPage(){
         <button data-subtab="progression" class="${st==='progression'?'active':''}">${t('subtabProgression')}</button>
         <button data-subtab="recent" class="${st==='recent'?'active':''}">${t('subtabRecent')}</button>
         <button data-subtab="history" class="${st==='history'?'active':''}">${t('subtabHistory')}</button>
+        <button data-subtab="bis" class="${st==='bis'?'active':''}">${t('subtabBis')}</button>
       </div>
 
       <div class="cpage-subtab-panel ${st==='vault'?'active':''}" data-subtab-panel="vault">
-        <div class="detail-grid">
-          <div class="detail-col">
-            <div class="dpanel">
-              <h3>Great Vault</h3>
-              <div class="vault-row" title="${t('raidVaultTip', raidCount, raidTotal)}">
-                <span class="vault-row-label">Raid</span>
-                <div class="vault-slots">${raidFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
-              </div>
-              <div class="vault-row" title="${t('mplusVaultTip', dCount, dTotal)}">
-                <span class="vault-row-label">M+</span>
-                <div class="vault-slots">${mplusFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
-              </div>
-              <div class="vault-row" title="${t('worldVaultTip', eCount, eTotal)}" style="margin-bottom:0;">
-                <span class="vault-row-label">World</span>
-                <div class="vault-slots">${worldFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
-              </div>
+        <div class="dpanel vault-hero">
+          <h3>Great Vault</h3>
+          <div class="vault-hero-row">
+            <div class="vault-hero-item" title="${t('raidVaultTip', raidCount, raidTotal)}">
+              <span class="vault-row-label">Raid</span>
+              <div class="vault-slots">${raidFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
             </div>
-            <div class="dpanel">
-              <h3>${t('subtabVault')} — Milestones</h3>
-              ${milestoneRow(t('raidMilestone',2), raidCount, 2)}
-              ${milestoneRow(t('raidMilestone',4), raidCount, 4)}
-              ${milestoneRow(t('raidMilestone',6), raidCount, 6)}
-              ${milestoneRow(t('mplusMilestone',1), dCount, 1)}
-              ${milestoneRow(t('mplusMilestone',4), dCount, 4)}
-              ${milestoneRow(t('mplusMilestone',8), dCount, 8)}
+            <div class="vault-hero-item" title="${t('mplusVaultTip', dCount, dTotal)}">
+              <span class="vault-row-label">M+</span>
+              <div class="vault-slots">${mplusFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
             </div>
-          </div>
-          <div class="detail-col">
-            <div class="dpanel" id="section-dungeons">
-              <h3 id="dungeonCount">${t('dungeonsSeasonTitle', dCount, dTotal)}</h3>
-              <div class="dungeon-full-list" id="detailDungeonList">
-                ${DUNGEON_POOL.map(dungeonRow).join('')}
-              </div>
-            </div>
-            <div class="dpanel" id="section-worldboss">
-              <h3 id="wbCount">World Boss (${wbCount}/${wbTotal})</h3>
-              <div class="dungeon-full-list" id="detailWbList">
-                ${WORLDBOSS_TIERS.map(wbRow).join('')}
-              </div>
+            <div class="vault-hero-item" title="${t('worldVaultTip', wbCount, wbTotal)}">
+              <span class="vault-row-label">World</span>
+              <div class="vault-slots">${worldFilled.map(f => `<div class="vault-slot ${f?'filled':''}"></div>`).join('')}</div>
             </div>
           </div>
         </div>
@@ -2507,8 +2626,11 @@ function renderCharacterPage(){
           <div class="gear-columns">
             <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
             <div class="gear-col">${GEAR_RIGHT_SLOTS.map(gearItemRow).join('')}</div>
+            ${GEAR_WEAPON_SLOTS.some(s => c.gearItems[s]) ? `
+            <div class="gear-weapons">
+              ${GEAR_WEAPON_SLOTS.filter(s => c.gearItems[s]).map(gearItemRow).join('')}
+            </div>` : ''}
           </div>
-          <div class="gear-weapons">${GEAR_WEAPON_SLOTS.filter(s => c.gearItems[s]).map(gearItemRow).join('')}</div>
           ` : `<div class="empty-note">${t('noGearYet')}</div>`}
         </div>
       </div>
@@ -2554,6 +2676,7 @@ function renderCharacterPage(){
               <button data-range="90" class="${detailRange===90?'active':''}">${t('month')}</button>
             </div>
           </div>
+          ${c.ioscoreSeason1 ? `<div class="season1-callout">${t('season1PeakLabel')}: <b>${c.ioscoreSeason1}</b></div>` : ''}
           <div id="detailChart"></div>
           <details class="hist-toggle" open style="margin-top:12px;">
             <summary>${t('viewFullHistory', reversedHistory.length)}</summary>
@@ -2564,6 +2687,16 @@ function renderCharacterPage(){
               </tbody>
             </table>
           </details>
+        </div>
+      </div>
+
+      <div class="cpage-subtab-panel ${st==='bis'?'active':''}" data-subtab-panel="bis">
+        <div class="dpanel">
+          <h3>${t('subtabBis')} (${c.bis.filter(b=>b.collected).length}/${c.bis.length})</h3>
+          <div class="bis-list" id="dashBisList" style="margin-top:12px;">
+            ${c.bis.length ? c.bis.map(bisSummaryRow).join('') : `<div class="empty-note">${t('noBisYet')}</div>`}
+          </div>
+          <button class="clone-todo-btn" id="dashBisOpenFull" style="margin-top:14px;">${t('subtabBis')} →</button>
         </div>
       </div>
     </div>
@@ -2590,23 +2723,28 @@ function renderCharacterPage(){
     renderCharacterPage();
   });
 
-  container.querySelectorAll('#section-dungeons input[type=checkbox]').forEach(cb => {
-    cb.addEventListener('change', async (e) => {
-      c.dungeons[e.target.dataset.key] = e.target.checked;
-      await saveChar(c);
-      renderCharacterPage();
+  container.querySelectorAll('.best-run-row').forEach(row => {
+    row.addEventListener('click', async () => {
+      const runId = row.dataset.runId;
+      const detailEl = document.getElementById('run-detail-' + runId);
+      const isOpen = detailEl.classList.contains('open');
+      row.classList.toggle('expanded', !isOpen);
+      detailEl.classList.toggle('open', !isOpen);
+      if(isOpen || detailEl.dataset.loaded) return;
+      detailEl.innerHTML = `<div class="empty-note">…</div>`;
+      try{
+        const data = await fetchRunDetails(CURRENT_SEASON_SLUG, runId);
+        detailEl.innerHTML = buildRunDetailHtml(data);
+        detailEl.dataset.loaded = '1';
+      } catch(e){
+        detailEl.innerHTML = `<div class="empty-note">${t('noRunDetails')}</div>`;
+      }
     });
   });
+
   container.querySelectorAll('#detailRaidTableBody input[type=checkbox]').forEach(cb => {
     cb.addEventListener('change', async (e) => {
       c.raidBosses[e.target.dataset.boss][e.target.dataset.diff] = e.target.checked;
-      await saveChar(c);
-      renderCharacterPage();
-    });
-  });
-  container.querySelectorAll('#detailWbList input[type=checkbox]').forEach(cb => {
-    cb.addEventListener('change', async (e) => {
-      c.worldboss[e.target.dataset.key] = e.target.checked;
       await saveChar(c);
       renderCharacterPage();
     });
@@ -2640,6 +2778,17 @@ function renderCharacterPage(){
   container.querySelector('#detailChart').innerHTML = buildLineChartSVG(
     [{ label:'Item Level', color, data: filteredHistory.map(h=>({x:h.date,y:h.ilvl})) }], 560, 190
   );
+
+  container.querySelectorAll('#dashBisList .bis-check').forEach(cb => {
+    cb.addEventListener('change', async (e) => {
+      const id = e.target.closest('.bis-row').dataset.id;
+      const item = c.bis.find(b => b.id === id);
+      item.collected = e.target.checked;
+      await saveChar(c);
+      renderCharacterPage();
+    });
+  });
+  container.querySelector('#dashBisOpenFull').addEventListener('click', () => goToBisTab(c.id));
 }
 
 function pushHistory(c){
@@ -2654,7 +2803,7 @@ function pushHistory(c){
 const DUNGEON_NAME_ALIASES = { "Den of Nalorakk": "Den of Noralakk", "Kings' Rest": "King's Rest" };
 
 async function fetchRaiderIoProfile(name, realmSlug, region){
-  const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current,mythic_plus_weekly_highest_level_runs,mythic_plus_best_runs,mythic_plus_recent_runs`;
+  const url = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&fields=gear,mythic_plus_scores_by_season:current,previous,mythic_plus_weekly_highest_level_runs,mythic_plus_best_runs,mythic_plus_recent_runs`;
   const res = await fetch(url);
   if(!res.ok) throw new Error('character not found');
   return res.json();
@@ -2664,9 +2813,13 @@ function applyRaiderIoData(c, data){
   c.race = data.race || null;
   c.faction = data.faction || null;
   c.spec = data.active_spec_name || null;
+  c.avatarUrl = data.thumbnail_url || null;
   c.ilvl = Math.round((data.gear && data.gear.item_level_equipped) || 0);
-  const scoreEntry = data.mythic_plus_scores_by_season && data.mythic_plus_scores_by_season[0];
-  c.ioscore = scoreEntry ? Math.round(scoreEntry.scores.all * 10) / 10 : 0;
+  const seasons = Array.isArray(data.mythic_plus_scores_by_season) ? data.mythic_plus_scores_by_season : [];
+  const currentEntry = seasons.find(s => s.season === CURRENT_SEASON_SLUG);
+  const prevEntry = seasons.find(s => s.season !== CURRENT_SEASON_SLUG);
+  c.ioscore = currentEntry ? Math.round(currentEntry.scores.all * 10) / 10 : 0;
+  if(prevEntry) c.ioscoreSeason1 = Math.round(prevEntry.scores.all * 10) / 10;
   if(Array.isArray(data.mythic_plus_weekly_highest_level_runs)){
     data.mythic_plus_weekly_highest_level_runs.forEach(run => {
       const poolName = DUNGEON_NAME_ALIASES[run.dungeon] || run.dungeon;
@@ -2704,6 +2857,21 @@ function applyRaidWorldBossData(c, data){
     if(!mapped || !lastKill || lastKill < boundary) return;
     if(Object.prototype.hasOwnProperty.call(c.worldboss, mapped)) c.worldboss[mapped] = true;
   });
+}
+
+/* Raider.IO's run-composition detail also has no CORS headers of its own — same Worker,
+   different query shape (?type=rio-run), see worker/raid-proxy.js. Cached in-memory per
+   session so re-expanding an already-viewed run doesn't refetch. */
+const runDetailsCache = new Map();
+async function fetchRunDetails(season, runId){
+  const key = `${season}:${runId}`;
+  if(runDetailsCache.has(key)) return runDetailsCache.get(key);
+  const url = `${RAID_PROXY_URL}/?type=rio-run&season=${encodeURIComponent(season)}&runId=${encodeURIComponent(runId)}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('run details error');
+  const data = await res.json();
+  runDetailsCache.set(key, data);
+  return data;
 }
 
 async function refreshAllCharacters(){
@@ -3465,6 +3633,16 @@ function goToTodoTab(charId){
   state.todoActiveChar = charId;
   renderTodoAvatars();
   renderTodos();
+}
+
+function goToBisTab(charId){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
+  document.querySelector('nav.tabs button[data-tab="bis"]').classList.add('active');
+  document.getElementById('tab-bis').classList.add('active');
+  state.bisActiveChar = charId;
+  renderBisAvatars();
+  renderBisList();
 }
 
 document.querySelectorAll('nav.tabs button').forEach(btn => {
