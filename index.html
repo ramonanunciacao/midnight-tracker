@@ -37,9 +37,9 @@
 html{ scroll-padding-top: 200px; }
 body{
   background: radial-gradient(ellipse at top, #16223f 0%, var(--bg) 55%), var(--bg);
-  color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 32px 20px 80px;
+  color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 28px 32px 80px;
 }
-.wrap{ max-width: 1500px; margin: 0 auto; }
+.wrap{ max-width: none; margin: 0; }
 .app-body{ display:flex; align-items:flex-start; gap:24px; min-height:100vh; }
 .sidebar{
   display:flex; flex-direction:column; align-items:center; gap:2px; width:98px; flex-shrink:0; position:sticky; top:20px;
@@ -57,7 +57,8 @@ body{
   font-weight:700; font-size:9px; padding:10px 4px; border-radius:10px; cursor:pointer; text-align:center;
   transition: all .15s; position:relative; text-transform:uppercase; letter-spacing:.03em;
 }
-.sidebar-icon{ font-size:19px; line-height:1; }
+.sidebar-icon{ display:flex; align-items:center; justify-content:center; width:22px; height:22px; }
+.sidebar-icon svg{ width:100%; height:100%; display:block; }
 .sidebar-link:hover{ color: var(--text); background: var(--bg-panel-raised); }
 .sidebar-link.active{
   color: var(--purple); background: linear-gradient(180deg, rgba(163,53,238,.22), rgba(163,53,238,.07));
@@ -238,6 +239,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-card h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
 .chart-readout{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:28px; line-height:1; }
 .chart-readout-label{ font-size:10px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin:2px 0 10px; }
+.chart-tooltip{
+  position:absolute; transform: translate(-50%,-100%); pointer-events:none; white-space:nowrap;
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:6px; padding:4px 8px;
+  font-size:11px; font-weight:600; color: var(--text); transition: opacity .1s; z-index:2;
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
 .dash-card-wide{ grid-column: 1 / -1; }
 .dash-card-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .dash-card-head h3{ margin-bottom:0; }
@@ -346,22 +353,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .pbar-track-sm{ height:4px; }
 .recent-run-affix{ font-size:10px; color: var(--text-dim); margin-bottom:3px; }
 
-/* chart panel */
-.chart-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:20px; margin-top: 10px; }
-.chart-panel .chead{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
-.chart-panel h2{ font-family:'Rajdhani',sans-serif; font-size:15px; color:var(--gold); text-transform:uppercase; letter-spacing:.04em;}
 .filter-group{ display:flex; gap:6px; }
 .filter-group button{
   background:var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text-dim);
   padding:5px 12px; border-radius:3px; font-size:11px; cursor:pointer; font-weight:600; text-transform:uppercase;
 }
 .filter-group button.active{ background: var(--gold); color:#16141c; border-color: var(--gold); }
-.chart-metric-toggle{ display:flex; gap:6px; margin-bottom:14px; }
-.chart-metric-toggle button{
-  background:var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text-dim);
-  padding:5px 12px; border-radius:3px; font-size:11px; cursor:pointer; font-weight:600;
-}
-.chart-metric-toggle button.active{ border-color: var(--gold); color: var(--gold); }
 
 /* modal */
 .modal-overlay{ position:fixed; inset:0; background: rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; z-index: 100; }
@@ -406,13 +403,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .todo-empty-note{ color:var(--text-dim); font-size:13px; padding:12px 4px; }
 .todo-item .del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; }
 .todo-item .del:hover{ opacity:1; color:var(--danger); }
-.tip-add{ display:flex; gap:8px; margin-bottom:12px; }
-.tip-add input{ flex:1; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px; padding:8px 10px; font-size:13px; }
-.tip-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 14px; border-radius:8px; cursor:pointer; font-size:12px; }
-.tip-row{ display:flex; align-items:center; gap:8px; padding:6px 0; }
-.tip-row .tip-text{ flex:1; font-size:13px; color: var(--text-dim); }
-.tip-row .tip-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; }
-.tip-row .tip-del:hover{ opacity:1; color:var(--danger); }
 
 /* mural */
 .mural-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; margin-bottom:12px; text-transform:uppercase; letter-spacing:.04em;}
@@ -474,15 +464,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .raid-table .raid-boss-name{ text-align:left; color:var(--text); white-space:nowrap; padding-right:16px; }
 .raid-table input[type=checkbox]{ accent-color: var(--gold); width:15px; height:15px; cursor:pointer; }
 .raid-table tbody tr:hover{ background: var(--bg-panel-raised); }
-.dpanel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:20px; margin-bottom:16px; }
-.dpanel:last-child{ margin-bottom:0; }
 @keyframes jumpGlow{
   0%{ box-shadow: 0 0 0 0 rgba(242,181,61,0); }
   15%{ box-shadow: 0 0 0 3px rgba(242,181,61,.5), 0 0 32px 6px rgba(242,181,61,.35); }
   100%{ box-shadow: 0 0 0 0 rgba(242,181,61,0); }
 }
 .jump-glow{ animation: jumpGlow 1s ease-out; }
-.dpanel h3{ font-family:'Rajdhani',sans-serif; font-size:14px; color: var(--gold); text-transform:uppercase; letter-spacing:.04em; margin-bottom:14px;}
 .bis-add{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
 .bis-add input{ background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px; padding:8px 10px; font-size:12px; }
 .bis-add input.iname{ flex:1.4; min-width:140px; }
@@ -765,29 +752,29 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
         <span class="sidebar-brand-circle"><img class="sidebar-brand-mark" src="assets/midnight-logo-cutout.png" alt="Midnight — Curse of Ula'tek"></span>
       </a>
       <button class="sidebar-link active" data-tab="dashboard" title="Dashboard">
-        <span class="sidebar-icon">🏠</span><span class="sidebar-label" data-i18n="navDashboard">Dashboard</span>
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></span><span class="sidebar-label" data-i18n="navDashboard">Dashboard</span>
       </button>
       <button class="sidebar-link" data-tab="characters" title="Characters">
-        <span class="sidebar-icon">👥</span><span class="sidebar-label" data-i18n="navCharacters">Characters</span>
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20.5c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="sidebar-label" data-i18n="navCharacters">Characters</span>
       </button>
       <button class="sidebar-link sidebar-jump" data-jump="section-gear" title="Gear">
-        <span class="sidebar-icon">🛡️</span><span class="sidebar-label" data-i18n="navGear">Gear</span>
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3.2v4.8c0 5-3 8.6-7 10-4-1.4-7-5-7-10V6.2L12 3z"/></svg></span><span class="sidebar-label" data-i18n="navGear">Gear</span>
       </button>
       <button class="sidebar-link sidebar-jump" data-jump="section-mplus" title="Mythic+">
-        <span class="sidebar-icon">💠</span><span class="sidebar-label" data-i18n="navMplus">Mythic+</span>
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l4.5 6L12 21.5 7.5 8.5 12 2.5z"/><path d="M4.5 8.5h15"/></svg></span><span class="sidebar-label" data-i18n="navMplus">Mythic+</span>
       </button>
       <button class="sidebar-link sidebar-jump" data-jump="section-raid" title="Raid">
-        <span class="sidebar-icon">🐉</span><span class="sidebar-label" data-i18n="navRaid">Raid</span>
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span><span class="sidebar-label" data-i18n="navRaid">Raid</span>
       </button>
       <button class="sidebar-link sidebar-jump" data-jump="section-weekly" title="Weekly">
-        <span class="sidebar-icon">📅</span><span class="sidebar-label" data-i18n="navWeekly">Weekly</span>
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span><span class="sidebar-label" data-i18n="navWeekly">Weekly</span>
       </button>
       <div class="sidebar-divider"></div>
       <button class="sidebar-link" data-tab="bis" title="BIS Gear" style="position:relative;">
-        <span class="sidebar-icon">🎯</span><span class="sidebar-label" data-i18n="navBis">BIS Gear</span><span class="new-badge">NEW</span>
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22"/></svg></span><span class="sidebar-label" data-i18n="navBis">BIS Gear</span><span class="new-badge">NEW</span>
       </button>
       <button class="sidebar-link" data-tab="mural" title="Mural">
-        <span class="sidebar-icon">🖼️</span><span class="sidebar-label" data-i18n="navMural">Mural</span>
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
       </button>
 
       <div class="sidebar-footer">
@@ -808,29 +795,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
     <div class="app-main">
       <section class="tab active" id="tab-dashboard">
         <div id="characterPage"></div>
-        <div class="dpanel" id="tipsPanel">
-          <h3 data-i18n="tipsTitle">Dicas</h3>
-          <div class="tip-add">
-            <input type="text" id="tipInput" placeholder="Adicionar nova dica..." data-i18n-placeholder="tipPlaceholder">
-            <button id="tipAddBtn" data-i18n="add">Adicionar</button>
-          </div>
-          <div id="tipsList"></div>
-        </div>
-        <div class="chart-panel">
-          <div class="chead">
-            <h2 data-i18n="evolutionTitle">Evolução</h2>
-            <div class="filter-group" id="rangeFilter">
-              <button data-range="7">7d</button>
-              <button data-range="30" class="active">30d</button>
-              <button data-range="90">90d</button>
-            </div>
-          </div>
-          <div class="chart-metric-toggle" id="metricToggle">
-            <button data-metric="ilvl" class="active">Item Level</button>
-            <button data-metric="ioscore">IOScore</button>
-          </div>
-          <div id="evoChart"></div>
-        </div>
       </section>
 
       <section class="tab" id="tab-characters">
@@ -1039,9 +1003,8 @@ const I18N = {
     ariaGoHome: "Ir para o início",
     logout: "Sair",
     navDashboard: "Dashboard", navCharacters: "Personagens", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Mural",
-    loading: "Carregando...", evolutionTitle: "Evolução",
+    loading: "Carregando...",
     todoPlaceholder: "Adicionar novo objetivo...", add: "Adicionar",
-    tipsTitle: "Dicas", tipPlaceholder: "Adicionar nova dica...",
     muralTitle: "Mural", muralSub: "Espaço pra recado ou lembrete", character: "Personagem",
     muralWritePlaceholder: "Escreva aqui...", muralSendNote: "Enviar Recado", muralSendPrint: "Enviar print",
     sortNewest: "Mais novos", sortOldest: "Mais antigos",
@@ -1061,9 +1024,6 @@ const I18N = {
     remove: "Remover", viewDetails: "Ver detalhes →",
     dungeonsSeasonTitle: (x,y) => `Dungeons da Season (${x}/${y})`,
     subtabGear: "Equipamento", subtabRecent: "Runs Recentes",
-    objectivesTitle: (x,y) => `Objetivos (${x}/${y})`,
-    raidMilestone: (n) => `Derrote ${n} chefes da season`,
-    mplusMilestone: (n) => `Complete ${n} dungeons Mítico+`,
     noGearYet: "Sem dados de equipamento ainda — clique em Atualizar no topo do dashboard.",
     noRecentRunsYet: "Nenhuma run de Mítico+ recente ainda.",
     scoreCol: "Pontuação",
@@ -1084,18 +1044,14 @@ const I18N = {
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     newsPlaceholder1: "Hotfixes recentes", newsPlaceholder2: "Novidades da Season 2", newsPlaceholder3: "Rotação de Mythic+ da semana",
     comingSoon: "em breve", weeklyRewardsTitle: "Recompensas Semanais", progressionTitle: "Progressão",
-    bossByBossLabel: "Ver detalhes por chefe", recentActivityTitle: "Atividade Recente", charPowerTitle: "Poder do Personagem",
-    worldRankLabel: "Raider.IO Rank", activityMplusClear: "Completou", viewAllLabel: "Ver Tudo",
-    upcomingTitle: "Próximos Eventos", availableLabel: "Disponível", doneLabel: "Concluído", daysAbbrev: "d",
-    day: "Dia", week: "Semana", month: "Mês",
+    bossByBossLabel: "Ver detalhes por chefe", recentActivityTitle: "Atividade Recente",
+    activityMplusClear: "Completou", viewAllLabel: "Ver Tudo",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
     bisNoLocation: "Sem local definido", bisItemCount: (n) => n === 1 ? "1 item" : `${n} itens`,
     bisListTitle: "BiS List", bisMapTitle: "BiS Map — Onde Farmar",
     difficulty: "Dificuldade",
-    eventNamePlaceholder: "Nome do evento/quest que você quer trackear",
-    noEventsYet: "Nenhum evento cadastrado ainda. Adicione os que você quer trackear.",
     todoCreateCharFirst: "Crie um personagem pra começar a lista de objetivos dele.",
     todoNoGoalsYet: "Nenhum objetivo ainda. Adicione um acima.",
     dragReorder: "Arrastar pra reordenar",
@@ -1140,9 +1096,8 @@ const I18N = {
     ariaGoHome: "Go to home",
     logout: "Log Out",
     navDashboard: "Dashboard", navCharacters: "Characters", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Board",
-    loading: "Loading...", evolutionTitle: "Evolution",
+    loading: "Loading...",
     todoPlaceholder: "Add a new goal...", add: "Add",
-    tipsTitle: "Tips", tipPlaceholder: "Add a new tip...",
     muralTitle: "Board", muralSub: "Space for a note or reminder", character: "Character",
     muralWritePlaceholder: "Write here...", muralSendNote: "Send Note", muralSendPrint: "Send Screenshot",
     sortNewest: "Newest", sortOldest: "Oldest",
@@ -1162,9 +1117,6 @@ const I18N = {
     remove: "Remove", viewDetails: "View details →",
     dungeonsSeasonTitle: (x,y) => `Season Dungeons (${x}/${y})`,
     subtabGear: "Gear", subtabRecent: "Recent Runs",
-    objectivesTitle: (x,y) => `Objectives (${x}/${y})`,
-    raidMilestone: (n) => `Defeat ${n} Season bosses`,
-    mplusMilestone: (n) => `Complete ${n} Mythic+ dungeons`,
     noGearYet: "No gear data yet — click Refresh at the top of the dashboard.",
     noRecentRunsYet: "No recent Mythic+ runs yet.",
     scoreCol: "Score",
@@ -1185,18 +1137,14 @@ const I18N = {
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     newsPlaceholder1: "Recent hotfixes", newsPlaceholder2: "Season 2 highlights", newsPlaceholder3: "This week's Mythic+ rotation",
     comingSoon: "coming soon", weeklyRewardsTitle: "Weekly Rewards", progressionTitle: "Progression",
-    bossByBossLabel: "View boss-by-boss detail", recentActivityTitle: "Recent Activity", charPowerTitle: "Character Power",
-    worldRankLabel: "Raider.IO Rank", activityMplusClear: "Completed", viewAllLabel: "View All",
-    upcomingTitle: "Upcoming", availableLabel: "Available", doneLabel: "Done", daysAbbrev: "d",
-    day: "Day", week: "Week", month: "Month",
+    bossByBossLabel: "View boss-by-boss detail", recentActivityTitle: "Recent Activity",
+    activityMplusClear: "Completed", viewAllLabel: "View All",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
     bisNoLocation: "No location set", bisItemCount: (n) => n === 1 ? "1 item" : `${n} items`,
     bisListTitle: "BiS List", bisMapTitle: "BiS Map — Where to Farm",
     difficulty: "Difficulty",
-    eventNamePlaceholder: "Name of the event/quest you want to track",
-    noEventsYet: "No events yet. Add the ones you want to track.",
     todoCreateCharFirst: "Create a character to start their goal list.",
     todoNoGoalsYet: "No goals yet. Add one above.",
     dragReorder: "Drag to reorder",
@@ -1224,7 +1172,7 @@ function updateLangFlagsUI(){
 }
 function refreshDynamicUI(){
   if(document.getElementById('mainApp').style.display === 'none') return;
-  renderCharacters(); renderChart(); renderBisAvatars(); renderBisList(); renderTips();
+  renderCharacters(); renderBisAvatars(); renderBisList();
   renderMuralFilters(); renderMuralGrid();
 }
 function setLanguage(lang){
@@ -2350,24 +2298,12 @@ const DEFAULT_TODOS_I18N = {
   pt: ["Pegar quests semanais", "Eventos ao redor do mundo", "World Boss", "M0", "Nemesis(?) Delve Boss"],
   en: ["Pick up weekly quests", "World events", "World Boss", "M0", "Nemesis(?) Delve Boss"]
 };
-const DEFAULT_TIPS_I18N = {
-  pt: [
-    {id:"tip1", text:"Só faz delve se o item level ficar lixo depois disso aí tudo, senão não faz"},
-    {id:"tip2", text:"Guardar todos os crests champion dessa semana"},
-    {id:"tip3", text:"Adventurer e Veteran pode torar essa semana (obsoleto na próxima semana)"}
-  ],
-  en: [
-    {id:"tip1", text:"Only do a delve if the item level ends up worse than what you already have, otherwise skip it"},
-    {id:"tip2", text:"Save all champion crests from this week"},
-    {id:"tip3", text:"You can burn Adventurer and Veteran crests this week (obsolete next week)"}
-  ]
-};
 const DEFAULT_CHARS = [
   {id:"c1", name:"Rawthedk", class:"Death Knight"},
   {id:"c2", name:"Bludnymph", class:"Warrior"}
 ];
 
-let state = { characters: [], tips: [], range: 30, metric: "ilvl", muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", bisActiveChar: null, dashboardActiveChar: null, dashChartRange: 90 };
+let state = { characters: [], muralIndex: [], muralPosts: [], muralFilterChar: "all", muralSort: "newest", bisActiveChar: null, dashboardActiveChar: null, dashChartRange: 90 };
 let chart = null;
 
 function uid(){ return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
@@ -2395,11 +2331,6 @@ async function loadAll(){
     state.bisActiveChar = state.characters[0] ? state.characters[0].id : null;
   }
 
-  let tips;
-  try{ tips = await storageGet('tips'); }catch(e){ tips = null; }
-  if(!tips){ state.tips = DEFAULT_TIPS_I18N[currentLang].map(x => ({...x})); await storageSet('tips', JSON.stringify(state.tips)); }
-  else { state.tips = JSON.parse(tips.value); }
-
   let muralIdx;
   try{ muralIdx = await storageGet('muralIndex'); }catch(e){ muralIdx = null; }
   state.muralIndex = muralIdx ? JSON.parse(muralIdx.value) : [];
@@ -2411,10 +2342,8 @@ async function loadAll(){
   renderCharacters();
   renderBisAvatars();
   renderBisList();
-  renderTips();
   renderMuralFilters();
   renderMuralGrid();
-  renderChart();
   refreshAllCharacters();
   checkAutoWeeklyReset();
 }
@@ -2427,7 +2356,6 @@ function normalizeChar(c){
   if(!c.bis) c.bis = [];
   if(!c.history) c.history = [];
   if(!c.todos) c.todos = [];
-  if(!Array.isArray(c.events)) c.events = [];
   delete c.raidDifficulty;
   const bossesNeedMigration = !c.raidBosses || RAID_POOL.some(b => typeof c.raidBosses[b] !== 'object' || c.raidBosses[b] === null);
   if(bossesNeedMigration){
@@ -2509,7 +2437,7 @@ function renderCharacters(){
       state.characters = state.characters.filter(x => x.id !== c.id);
       await saveRoster();
       if(state.dashboardActiveChar === c.id) state.dashboardActiveChar = null;
-      renderCharacters(); renderChart(); renderMuralFilters(); renderBisAvatars(); renderBisList();
+      renderCharacters(); renderMuralFilters(); renderBisAvatars(); renderBisList();
     });
     enableDragReorder(pill, c.id, async (fromId, toId) => {
       const fromIdx = state.characters.findIndex(x => x.id === fromId);
@@ -2538,19 +2466,12 @@ function renderCharacterPage(){
 
   const color = CLASS_HEX[c.class] || '#f2b53d';
   const dCount = countDone(c.dungeons);
-  const eCount = c.events.filter(e => e.done).length, eTotal = c.events.length;
   const raidCount = raidBossesDone(c);
   const wbCount = countDone(c.worldboss);
   const raidSlots = [2,4,6].filter(n => raidCount >= n).length;
   const mplusSlots = [2,4,8].filter(n => dCount >= n).length;
   const worldSlots = [1,2,4].filter(n => wbCount >= n).length;
 
-  const eventRowHtml = ev => `
-    <div class="bis-row ${ev.done?'collected':''}" data-id="${ev.id}">
-      <input type="checkbox" class="event-check" ${ev.done?'checked':''}>
-      <span class="bname ${ev.done?'collected':''}">${escapeHtml(ev.text)}</span>
-      <button class="bdel">✕</button>
-    </div>`;
   const raidTableRow = boss => `
     <tr>
       <td class="raid-boss-name">${boss}</td>
@@ -2838,58 +2759,9 @@ function renderCharacterPage(){
           </div>
 
           <div class="dash-card">
-            <h3>${t('objectivesTitle', eCount, eTotal)}</h3>
-            <div class="bis-add">
-              <input type="text" class="iname" id="eventName" placeholder="${t('eventNamePlaceholder')}" style="flex:1;">
-              <button id="eventAddBtn">${t('add')}</button>
-            </div>
-            <div class="bis-list" id="eventsList">
-              ${c.events.length ? c.events.map(eventRowHtml).join('') : `<div class="empty-note" id="eventsEmpty">${t('noEventsYet')}</div>`}
-            </div>
-          </div>
-
-          <div class="dash-card">
             <h3>${t('wowheadNewsTitle')}</h3>
             <div class="news-list">${NEWS_PLACEHOLDER.map(newsRow).join('')}</div>
             <div class="empty-note" style="margin-top:8px;">${t('wowheadNewsComingSoon')}</div>
-          </div>
-
-          <div class="dash-card">
-            <h3>${t('upcomingTitle')}</h3>
-            <div class="reward-row">
-              <span class="reward-icon">🐉</span>
-              <span class="reward-label">${t('worldBossLabel')}</span>
-              <span class="reward-value" style="color:${wbCount < WORLDBOSS_TIERS.length ? 'var(--ok)' : 'var(--text-dim)'}">${wbCount < WORLDBOSS_TIERS.length ? t('availableLabel') : t('doneLabel')}</span>
-            </div>
-            <div class="reward-row">
-              <span class="reward-icon">⏰</span>
-              <span class="reward-label">${t('weeklyResetLabel')}</span>
-              <span class="reward-value">${daysLeft}${t('daysAbbrev')}</span>
-            </div>
-          </div>
-
-          <div class="dash-card">
-            <h3>${t('charPowerTitle')}</h3>
-            <div class="char-power-row">
-              <div class="char-power-stat">
-                <div class="stat-tile-label">Ⓡ ${t('worldRankLabel')}</div>
-                <div class="stat-tile-value-sm">${c.worldRank ? '#'+c.worldRank.toLocaleString() : '—'}</div>
-              </div>
-              <div class="char-power-stat">
-                <div class="stat-tile-label">🏆 ${t('raidsLabel')}</div>
-                <div class="stat-tile-value-sm">${highestRaidDiff ? `${highestRaidDiff} ${highestRaidDiffCount}/${RAID_POOL.length}` : '—'}</div>
-              </div>
-            </div>
-            <div class="char-power-row" style="margin-top:14px;">
-              <div class="char-power-stat">
-                <div class="stat-tile-label">🗝️ ${t('seasonBestTitle')}</div>
-                <div class="stat-tile-value-sm">${bestRun ? `${c.ioscore || '—'} +${bestRun.mythic_level}` : '—'}</div>
-              </div>
-              <div class="char-power-stat">
-                <div class="stat-tile-label">🛡️ ${t('gearIlvlLabel')}</div>
-                <div class="stat-tile-value-sm">${c.ilvl || '—'}</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -2897,11 +2769,13 @@ function renderCharacterPage(){
   `;
 
   container.querySelector('#dashIlvlChart').innerHTML = buildLineChartSVG(
-    [{ label:'Item Level', color, data: chartHistory.map(h=>({x:h.date,y:h.ilvl})) }], 380, 150
+    [{ label:'Item Level', color, data: chartHistory.map(h=>({x:h.date,y:h.ilvl})) }], 380, 150, 'ilvl'
   );
   container.querySelector('#dashIoChart').innerHTML = buildLineChartSVG(
-    [{ label:'Mythic+ Score', color:'#a335ee', data: chartHistory.map(h=>({x:h.date,y:h.ioscore})) }], 380, 150
+    [{ label:'Mythic+ Score', color:'#ef4444', data: chartHistory.map(h=>({x:h.date,y:h.ioscore})) }], 380, 150, 'ioscore'
   );
+  bindChartHover(container.querySelector('#dashIlvlChart'));
+  bindChartHover(container.querySelector('#dashIoChart'));
 
   container.querySelectorAll('.chart-range-select').forEach(sel => {
     sel.addEventListener('change', () => {
@@ -2951,31 +2825,6 @@ function renderCharacterPage(){
       renderCharacterPage();
     });
   });
-
-  function bindEventRow(row){
-    const id = row.dataset.id;
-    row.querySelector('.event-check').addEventListener('change', async (e) => {
-      const ev = c.events.find(x => x.id === id);
-      ev.done = e.target.checked;
-      await saveChar(c);
-      renderCharacterPage();
-    });
-    row.querySelector('.bdel').addEventListener('click', async () => {
-      c.events = c.events.filter(x => x.id !== id);
-      await saveChar(c);
-      renderCharacterPage();
-    });
-  }
-  container.querySelectorAll('#eventsList .bis-row').forEach(bindEventRow);
-  container.querySelector('#eventAddBtn').addEventListener('click', async () => {
-    const nameInput = container.querySelector('#eventName');
-    const text = nameInput.value.trim();
-    if(!text) return;
-    c.events.push({id: uid(), text, done:false});
-    await saveChar(c);
-    renderCharacterPage();
-  });
-  container.querySelector('#eventName').addEventListener('keydown', (e) => { if(e.key==='Enter') container.querySelector('#eventAddBtn').click(); });
 
   container.querySelectorAll('#dashBisList .bis-check').forEach(cb => {
     cb.addEventListener('change', async (e) => {
@@ -3098,7 +2947,7 @@ async function refreshAllCharacters(){
     } catch(e){ /* worker unavailable, keep manual raid/world-boss entries as-is */ }
     await saveChar(c);
   }));
-  renderCharacters(); renderChart();
+  renderCharacters();
   if(btn){ btn.disabled = false; btn.querySelector('.rdb-icon').classList.remove('spinning'); }
 }
 
@@ -3204,7 +3053,7 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
     state.characters.push(c);
     await saveChar(c); await saveRoster();
     document.getElementById('addCharModal').style.display = 'none';
-    renderCharacters(); renderChart(); renderMuralFilters(); renderBisAvatars(); renderBisList();
+    renderCharacters(); renderMuralFilters(); renderBisAvatars(); renderBisList();
   } catch(e){
     statusEl.textContent = t('charNotFound');
     statusEl.className = 'add-char-status error';
@@ -3493,43 +3342,6 @@ document.getElementById('bisAddBtn').addEventListener('click', async () => {
   nameInput.value = ''; slotInput.value = ''; sourceInput.value = ''; whIdInput.value = ''; iconInput.value = ''; bossInput.value = '';
 });
 
-/* ---------------- Dicas ---------------- */
-function renderTips(){
-  const list = document.getElementById('tipsList');
-  list.innerHTML = '';
-  state.tips.forEach(tip => {
-    const row = document.createElement('div');
-    row.className = 'tip-row';
-    row.innerHTML = `<span class="drag-handle" title="${t('dragReorder')}">⠿</span><span class="tip-text">${escapeHtml(tip.text)}</span><button class="tip-del" title="${t('remove')}">✕</button>`;
-    row.querySelector('.tip-del').addEventListener('click', () => removeTip(tip.id));
-    enableDragReorder(row, tip.id, async (fromId, toId) => {
-      const fromIdx = state.tips.findIndex(x => x.id === fromId);
-      const toIdx = state.tips.findIndex(x => x.id === toId);
-      if(fromIdx === -1 || toIdx === -1) return;
-      const [moved] = state.tips.splice(fromIdx, 1);
-      state.tips.splice(toIdx, 0, moved);
-      await storageSet('tips', JSON.stringify(state.tips));
-      renderTips();
-    });
-    list.appendChild(row);
-  });
-}
-document.getElementById('tipAddBtn').addEventListener('click', addTip);
-document.getElementById('tipInput').addEventListener('keydown', (e) => { if(e.key==='Enter') addTip(); });
-async function addTip(){
-  const input = document.getElementById('tipInput');
-  const text = input.value.trim();
-  if(!text) return;
-  state.tips.push({id: uid(), text});
-  await storageSet('tips', JSON.stringify(state.tips));
-  input.value = ''; renderTips();
-}
-async function removeTip(id){
-  state.tips = state.tips.filter(x => x.id !== id);
-  await storageSet('tips', JSON.stringify(state.tips));
-  renderTips();
-}
-
 /* ---------------- Mural ---------------- */
 function renderMuralFilters(){
   const charSel = document.getElementById('muralCharSelect');
@@ -3620,8 +3432,9 @@ function renderMuralGrid(){
 }
 
 /* ---------------- Chart (custom SVG, no external dependency) ---------------- */
-function buildLineChartSVG(datasets, w, h){
+function buildLineChartSVG(datasets, w, h, idPrefix){
   const padL = 46, padR = 14, padT = 14, padB = 26;
+  const uid2 = idPrefix || ('c'+Math.random().toString(36).slice(2,8));
   const allPoints = datasets.flatMap(d => d.data);
   if(!allPoints.length){
     return `<div class="empty-note" style="padding:34px 0; text-align:center;">${t('notEnoughData')}</div>`;
@@ -3633,6 +3446,7 @@ function buildLineChartSVG(datasets, w, h){
   const yPad = (maxY - minY) * 0.12;
   minY -= yPad; maxY += yPad;
   const innerW = w - padL - padR, innerH = h - padT - padB;
+  const baseline = padT + innerH;
   const xScale = i => padL + (xs.length <= 1 ? innerW/2 : (i/(xs.length-1)) * innerW);
   const yScale = v => padT + (1 - (v - minY)/(maxY - minY)) * innerH;
 
@@ -3652,6 +3466,8 @@ function buildLineChartSVG(datasets, w, h){
     }
   });
   const DRAW_MS = 900;
+  let defsSvg = '';
+  let areaSvg = '';
   let seriesSvg = '';
   datasets.forEach((ds, dsIdx) => {
     const pointMap = new Map(ds.data.map(p => [p.x, p.y]));
@@ -3661,16 +3477,24 @@ function buildLineChartSVG(datasets, w, h){
       if(pointMap.has(xVal)){
         const x = xScale(i), y = yScale(pointMap.get(xVal));
         path += (path ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
-        orderedPoints.push({x,y});
+        orderedPoints.push({x,y,xVal,val:pointMap.get(xVal)});
       }
     });
     if(path){
+      const gradId = `${uid2}-area-${dsIdx}`;
+      defsSvg += `<linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${ds.color}" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="${ds.color}" stop-opacity="0"/>
+      </linearGradient>`;
+      const first = orderedPoints[0], last = orderedPoints[orderedPoints.length-1];
+      const areaPath = `${path} L${last.x.toFixed(1)},${baseline.toFixed(1)} L${first.x.toFixed(1)},${baseline.toFixed(1)} Z`;
+      areaSvg += `<path d="${areaPath}" fill="url(#${gradId})" class="chart-area-fill" style="opacity:0; animation: chartFadeArea 500ms ease-out ${DRAW_MS*0.5}ms forwards;"/>`;
       seriesSvg += `<path d="${path}" pathLength="1000" fill="none" stroke="${ds.color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="chart-line-path" style="stroke-dasharray:1000; stroke-dashoffset:1000; animation: chartDrawLine ${DRAW_MS}ms ease-out forwards;"/>`;
     }
     const n = orderedPoints.length;
     orderedPoints.forEach((p,i) => {
       const delay = n > 1 ? (i/(n-1)) * DRAW_MS : 0;
-      seriesSvg += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="${ds.color}" class="chart-point" style="animation: chartFadePoint 260ms ease-out forwards; animation-delay:${delay.toFixed(0)}ms;"/>`;
+      seriesSvg += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="${ds.color}" class="chart-point" data-x="${escapeHtml(p.xVal)}" data-y="${p.val}" style="animation: chartFadePoint 260ms ease-out forwards; animation-delay:${delay.toFixed(0)}ms;"/>`;
     });
   });
 
@@ -3683,88 +3507,52 @@ function buildLineChartSVG(datasets, w, h){
   const styleTag = `<style>
     @keyframes chartDrawLine { to { stroke-dashoffset: 0; } }
     @keyframes chartFadePoint { from { opacity:0; transform: scale(0); } to { opacity:1; transform: scale(1); } }
-    .chart-point{ opacity:0; transform-origin: center; transform-box: fill-box; }
+    @keyframes chartFadeArea { to { opacity:1; } }
+    .chart-point{ opacity:0; transform-origin: center; transform-box: fill-box; cursor:pointer; transition: r .12s; }
+    .chart-point:hover, .chart-point.hovered{ r:5.5; }
   </style>`;
-  return `${legend}<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none" style="overflow:visible; display:block;">${styleTag}${gridSvg}${xLabelsSvg}${seriesSvg}</svg>`;
+  return `${legend}<div class="chart-svg-wrap" style="position:relative;">
+    <svg class="chart-svg" data-w="${w}" data-h="${h}" data-padt="${padT}" data-padb="${padB}" viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none" style="overflow:visible; display:block;">
+      <defs>${defsSvg}</defs>
+      ${styleTag}${gridSvg}${areaSvg}${seriesSvg}
+      <line class="chart-hover-line" x1="0" y1="${padT}" x2="0" y2="${baseline}" stroke="#8792ad" stroke-width="1" stroke-dasharray="3,3" style="opacity:0; pointer-events:none;"/>
+    </svg>
+    <div class="chart-tooltip" style="opacity:0;"></div>
+  </div>`;
 }
-
-/* When two characters share a class, their lines would otherwise be the same
-   color — shade each extra character within a class lighter/darker so lines
-   stay distinguishable while keeping the class hue recognizable. */
-function hexToHsl(hex){
-  const r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
-  const max = Math.max(r,g,b), min = Math.min(r,g,b);
-  let h, s; const l = (max+min)/2;
-  if(max === min){ h = s = 0; }
-  else{
-    const d = max-min;
-    s = l > 0.5 ? d/(2-max-min) : d/(max+min);
-    switch(max){
-      case r: h = (g-b)/d + (g<b?6:0); break;
-      case g: h = (b-r)/d + 2; break;
-      default: h = (r-g)/d + 4;
-    }
-    h /= 6;
-  }
-  return [h*360, s*100, l*100];
-}
-function hslToHex(h,s,l){
-  h/=360; s/=100; l/=100;
-  let r,g,b;
-  if(s === 0){ r=g=b=l; }
-  else{
-    const hue2rgb = (p,q,t) => {
-      if(t<0) t+=1; if(t>1) t-=1;
-      if(t<1/6) return p+(q-p)*6*t;
-      if(t<1/2) return q;
-      if(t<2/3) return p+(q-p)*(2/3-t)*6;
-      return p;
-    };
-    const q = l < 0.5 ? l*(1+s) : l+s-l*s;
-    const p = 2*l-q;
-    r = hue2rgb(p,q,h+1/3); g = hue2rgb(p,q,h); b = hue2rgb(p,q,h-1/3);
-  }
-  const toHex = x => Math.round(x*255).toString(16).padStart(2,'0');
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-function shadeForIndex(hex, idx){
-  if(idx === 0) return hex;
-  const [h,s,l] = hexToHsl(hex);
-  const step = Math.ceil(idx/2) * 16;
-  const newL = idx % 2 === 1 ? Math.min(88, l+step) : Math.max(14, l-step);
-  return hslToHex(h, s, newL);
-}
-
-function renderChart(){
-  const container = document.getElementById('evoChart');
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - state.range);
-  const classSeen = {};
-  const datasets = state.characters.map(c => {
-    const baseColor = CLASS_HEX[c.class] || '#f2b53d';
-    const idx = classSeen[c.class] || 0;
-    classSeen[c.class] = idx + 1;
-    const color = shadeForIndex(baseColor, idx);
-    const points = c.history.filter(h => new Date(h.date) >= cutoff).sort((a,b) => a.date.localeCompare(b.date))
-      .map(h => ({x: h.date, y: state.metric === 'ilvl' ? h.ilvl : h.ioscore}));
-    return { label: c.name, color, data: points };
+function bindChartHover(containerEl){
+  const svg = containerEl.querySelector('.chart-svg');
+  const tooltip = containerEl.querySelector('.chart-tooltip');
+  if(!svg || !tooltip) return;
+  const hoverLine = svg.querySelector('.chart-hover-line');
+  const points = [...svg.querySelectorAll('.chart-point')];
+  if(!points.length) return;
+  const w = Number(svg.dataset.w);
+  const showAt = (clientX) => {
+    const rect = svg.getBoundingClientRect();
+    const mx = (clientX - rect.left) / rect.width * w;
+    let nearest = points[0], minD = Infinity;
+    points.forEach(p => {
+      const d = Math.abs(parseFloat(p.getAttribute('cx')) - mx);
+      if(d < minD){ minD = d; nearest = p; }
+    });
+    points.forEach(p => p.classList.toggle('hovered', p === nearest));
+    const cx = parseFloat(nearest.getAttribute('cx')), cy = parseFloat(nearest.getAttribute('cy'));
+    hoverLine.setAttribute('x1', cx); hoverLine.setAttribute('x2', cx);
+    hoverLine.style.opacity = 1;
+    tooltip.style.opacity = 1;
+    tooltip.style.left = Math.min(88, Math.max(2, (cx / w * 100))) + '%';
+    tooltip.style.top = Math.max(0, (cy / Number(svg.dataset.h) * 100) - 14) + '%';
+    tooltip.textContent = `${nearest.dataset.x.slice(5)} · ${Number(nearest.dataset.y).toLocaleString()}`;
+  };
+  svg.addEventListener('mousemove', (e) => showAt(e.clientX));
+  svg.addEventListener('mouseleave', () => {
+    hoverLine.style.opacity = 0;
+    tooltip.style.opacity = 0;
+    points.forEach(p => p.classList.remove('hovered'));
   });
-  container.innerHTML = buildLineChartSVG(datasets, 900, 220);
 }
-document.getElementById('rangeFilter').addEventListener('click', (e) => {
-  if(e.target.tagName !== 'BUTTON') return;
-  document.querySelectorAll('#rangeFilter button').forEach(b=>b.classList.remove('active'));
-  e.target.classList.add('active');
-  state.range = Number(e.target.dataset.range);
-  renderChart();
-});
-document.getElementById('metricToggle').addEventListener('click', (e) => {
-  if(e.target.tagName !== 'BUTTON') return;
-  document.querySelectorAll('#metricToggle button').forEach(b=>b.classList.remove('active'));
-  e.target.classList.add('active');
-  state.metric = e.target.dataset.metric;
-  renderChart();
-});
+
 
 /* ---------------- Tabs ---------------- */
 function switchToTab(tabName){
@@ -3777,7 +3565,6 @@ function switchToTab(tabName){
 function goToDashboard(){
   switchToTab('dashboard');
   renderCharacters();
-  renderChart();
 }
 document.getElementById('homeLink').addEventListener('click', (e) => { e.preventDefault(); goToDashboard(); });
 
