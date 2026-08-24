@@ -1074,7 +1074,7 @@ const I18N = {
     deathsLabel: (n) => n === 1 ? "1 morte" : `${n} mortes`, compLabel: "Composição", season1PeakLabel: "Pico S1",
     justNow: "agora mesmo", minutesAgo: (n) => `${n} min atrás`, hoursAgo: (n) => n===1 ? "1 hora atrás" : `${n} horas atrás`,
     daysAgo: (n) => n===1 ? "1 dia atrás" : `${n} dias atrás`,
-    seasonBestTitle: "Melhores Chaves da Season", lastUpdatedLabel: "Atualizado",
+    lastUpdatedLabel: "Atualizado",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
     ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset", raidProgressLabel: "Progresso da Raid",
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
@@ -1167,7 +1167,7 @@ const I18N = {
     deathsLabel: (n) => n === 1 ? "1 death" : `${n} deaths`, compLabel: "Composition", season1PeakLabel: "S1 peak",
     justNow: "just now", minutesAgo: (n) => `${n} min ago`, hoursAgo: (n) => n===1 ? "1 hour ago" : `${n} hours ago`,
     daysAgo: (n) => n===1 ? "1 day ago" : `${n} days ago`,
-    seasonBestTitle: "Season Best", lastUpdatedLabel: "Updated",
+    lastUpdatedLabel: "Updated",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Gear Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
     ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset", raidProgressLabel: "Raid Progress",
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
@@ -2541,7 +2541,6 @@ function renderCharacterPage(){
       <div class="best-run-detail" id="run-detail-${domId}"></div>
     </div>`;
   };
-  const seasonBestRow = (run, idx) => runRow(run, 'sb', idx);
   const gearItemRow = slotKey => {
     const item = c.gearItems ? c.gearItems[slotKey] : null;
     const label = t(GEAR_SLOT_LABEL_KEYS[slotKey]);
@@ -2696,21 +2695,6 @@ function renderCharacterPage(){
       <div class="dash-layout">
         <div class="dash-main">
           <div class="dash-row-2col">
-            ${dungeonBestRuns.length ? `
-            <div class="dash-card season-best-strip-card">
-              <h3>${t('seasonBestDungeonsTitle')}</h3>
-              <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
-            </div>
-            ` : '<div></div>'}
-            <div class="dash-card">
-              <h3>${t('subtabRecent')}</h3>
-              <div class="recent-runs-list">
-                ${sortedRecentRuns.length ? sortedRecentRuns.map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
-              </div>
-            </div>
-          </div>
-
-          <div class="dash-row-2col">
             <div class="dash-card">
               <div class="dash-card-head">
                 <h3>${t('ilvlEvoTitle')}</h3>
@@ -2732,21 +2716,27 @@ function renderCharacterPage(){
           </div>
 
           <div class="dash-row-2col">
-            <div class="dash-card" id="section-mplus">
-              <h3>${t('seasonBestTitle')}</h3>
+            ${dungeonBestRuns.length ? `
+            <div class="dash-card season-best-strip-card" id="section-mplus">
+              <h3>${t('seasonBestDungeonsTitle')}</h3>
+              <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
+            </div>
+            ` : '<div id="section-mplus"></div>'}
+            <div class="dash-card">
+              <h3>${t('subtabRecent')}</h3>
               <div class="recent-runs-list">
-                ${sortedBestRuns.length ? sortedBestRuns.map(seasonBestRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+                ${sortedRecentRuns.length ? sortedRecentRuns.map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
               </div>
             </div>
+          </div>
 
-            <div class="dash-card">
-              <div class="dash-card-head">
-                <h3>${t('bisTitle')}</h3>
-                <button class="dash-viewall-link" id="dashBisViewAll">${t('viewAllLabel')}</button>
-              </div>
-              <div class="bis-list" id="dashBisList">
-                ${sortedBis.length ? sortedBis.map(bisSummaryRow).join('') : `<div class="empty-note">${t('noBisYet')}</div>`}
-              </div>
+          <div class="dash-card">
+            <div class="dash-card-head">
+              <h3>${t('bisTitle')}</h3>
+              <button class="dash-viewall-link" id="dashBisViewAll">${t('viewAllLabel')}</button>
+            </div>
+            <div class="bis-list" id="dashBisList">
+              ${sortedBis.length ? sortedBis.map(bisSummaryRow).join('') : `<div class="empty-note">${t('noBisYet')}</div>`}
             </div>
           </div>
 
@@ -3577,7 +3567,7 @@ function buildLineChartSVG(datasets, w, h, idPrefix){
   return `${legend}<div class="chart-svg-wrap" style="position:relative;">
     <svg class="chart-svg" data-w="${w}" data-h="${h}" data-padt="${padT}" data-padb="${padB}" viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none" style="overflow:visible; display:block;">
       <defs>${defsSvg}</defs>
-      ${styleTag}${gridSvg}${areaSvg}${seriesSvg}
+      ${styleTag}${gridSvg}${xLabelsSvg}${areaSvg}${seriesSvg}
       <line class="chart-hover-line" x1="0" y1="${padT}" x2="0" y2="${baseline}" stroke="#8792ad" stroke-width="1" stroke-dasharray="3,3" style="opacity:0; pointer-events:none;"/>
     </svg>
     <div class="chart-tooltip" style="opacity:0;"></div>
