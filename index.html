@@ -343,19 +343,18 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .deaths-row{ display:flex; flex-wrap:wrap; gap:6px; }
 .death-chip{ font-size:11px; color: var(--text-dim); background: var(--bg-panel-raised); padding:3px 8px; border-radius:12px; }
 
-.recent-runs-list{ display:flex; flex-direction:column; gap:6px; }
-.recent-run-row{ display:flex; align-items:center; gap:10px; padding:7px 8px; border-radius:8px; background: var(--bg-panel-raised); text-decoration:none; color:inherit; margin-bottom:5px; cursor:pointer; }
-.recent-run-row:last-child{ margin-bottom:0; }
-.recent-run-row:hover{ box-shadow: 0 0 0 1px var(--gold-dim); }
-.recent-run-icon{ width:28px; height:28px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
+.recent-runs-list{ display:flex; flex-direction:column; }
+.recent-run-row{ display:flex; align-items:center; gap:10px; padding:8px 4px; border-radius:6px; text-decoration:none; color:inherit; cursor:pointer; transition: background .15s; }
+.recent-run-row:hover{ background: var(--bg-panel-raised); }
+.recent-run-icon{ width:36px; height:36px; border-radius:8px; border:2px solid var(--hairline); flex-shrink:0; object-fit:cover; }
 .recent-run-info{ flex:1; min-width:0; }
-.recent-run-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:3px; }
-.recent-run-name{ font-size:12px; color: var(--text); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.recent-run-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+.recent-run-name{ font-size:13px; color: var(--text); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .recent-run-stars{ color: var(--gold); font-size:11px; }
 .recent-run-meta{ font-size:10px; color: var(--text-dim); flex-shrink:0; }
 .recent-run-time{ font-size:11px; color: var(--text-dim); flex-shrink:0; }
 .pbar-track-sm{ height:4px; }
-.recent-run-affix{ font-size:10px; color: var(--text-dim); margin-bottom:3px; }
+.recent-run-affix{ font-size:11px; color: var(--text-dim); margin-top:2px; }
 
 .filter-group{ display:flex; gap:6px; }
 .filter-group button{
@@ -2494,34 +2493,32 @@ function renderCharacterPage(){
       <td class="raid-boss-name">${boss}</td>
       ${RAID_DIFFICULTIES.map(d => `<td><input type="checkbox" data-boss="${boss}" data-diff="${d}" ${c.raidBosses[boss][d]?'checked':''}></td>`).join('')}
     </tr>`;
-  const runRow = (run, prefix) => {
+  const RUN_ICON_PALETTE = ['var(--cyan)', 'var(--purple)', 'var(--blue)', 'var(--danger)', '#8792ad'];
+  const runRow = (run, prefix, idx) => {
     const stars = '★'.repeat(run.num_keystone_upgrades || 0);
     const dateStr = new Date(run.completed_at).toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
-    const pct = run.par_time_ms ? Math.min(100, Math.round((run.par_time_ms / Math.max(run.clear_time_ms,1)) * 100)) : 0;
-    const inTime = run.clear_time_ms <= run.par_time_ms;
     const affixNames = (run.affixes || []).map(a => a.name).join(', ');
     const weeklyAffix = (run.affixes || []).find(a => a.name === 'Fortified' || a.name === 'Tyrannical');
     const domId = `${prefix}-${run.keystone_run_id}`;
-    const tooltip = `${run.dungeon} +${run.mythic_level} — ${t('scoreCol')}: ${run.score}\n${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}${affixNames ? '\n'+affixNames : ''}\n${dateStr}`;
+    const tooltip = `${run.dungeon} +${run.mythic_level} ${stars} — ${t('scoreCol')}: ${run.score}\n${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}${affixNames ? '\n'+affixNames : ''}\n${dateStr}`;
+    const iconColor = RUN_ICON_PALETTE[(idx || 0) % RUN_ICON_PALETTE.length];
     return `
     <div class="best-run-item">
       <div class="recent-run-row" data-run-id="${run.keystone_run_id}" data-detail-id="${domId}" title="${escapeHtml(tooltip)}">
-        ${run.icon_url ? `<img class="recent-run-icon" src="${run.icon_url}" alt="">` : ''}
+        ${run.icon_url ? `<img class="recent-run-icon" style="border-color:${iconColor}" src="${run.icon_url}" alt="">` : ''}
         <div class="recent-run-info">
           <div class="recent-run-top">
-            <span class="recent-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}</span> <span class="recent-run-stars">${stars}</span></span>
-            <span class="recent-run-meta">${t('scoreCol')}: ${run.score} · ${dateStr}</span>
+            <span class="recent-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}</span></span>
+            <span class="recent-run-meta">${formatRelativeTime(new Date(run.completed_at).getTime())}</span>
           </div>
           ${weeklyAffix ? `<div class="recent-run-affix">${escapeHtml(weeklyAffix.name)}</div>` : ''}
-          <div class="pbar-track pbar-track-sm"><div class="pbar-fill" style="width:${pct}%; background:${inTime?'var(--ok)':'var(--danger)'}"></div></div>
         </div>
-        <div class="recent-run-time">${formatClearTime(run.clear_time_ms)}</div>
         <span class="best-run-expand-icon">▾</span>
       </div>
       <div class="best-run-detail" id="run-detail-${domId}"></div>
     </div>`;
   };
-  const seasonBestRow = run => runRow(run, 'sb');
+  const seasonBestRow = (run, idx) => runRow(run, 'sb', idx);
   const gearItemRow = slotKey => {
     const item = c.gearItems ? c.gearItems[slotKey] : null;
     const label = t(GEAR_SLOT_LABEL_KEYS[slotKey]);
@@ -2554,7 +2551,7 @@ function renderCharacterPage(){
       <span class="bis-summary-slot">${escapeHtml((b.slot||'').split(' (')[0] || '—')}</span>
     </div>`;
   };
-  const recentRunRow = run => runRow(run, 'rr');
+  const recentRunRow = (run, idx) => runRow(run, 'rr', idx);
   const activityRow = run => `
     <div class="activity-row">
       <span class="activity-dot"></span>
@@ -3476,7 +3473,6 @@ function buildLineChartSVG(datasets, w, h, idPrefix){
   for(let i=0;i<=gridCount;i++){
     const v = minY + (maxY-minY)*i/gridCount;
     const y = yScale(v);
-    gridSvg += `<line x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}" stroke="#2a2a33" stroke-width="1"/>`;
     gridSvg += `<text x="${padL-8}" y="${y+3}" text-anchor="end" font-size="9" fill="#9a978f" font-family="Inter,sans-serif">${Math.round(v)}</text>`;
   }
   const labelStep = Math.max(1, Math.ceil(xs.length / 6));
@@ -3503,14 +3499,19 @@ function buildLineChartSVG(datasets, w, h, idPrefix){
     });
     if(path){
       const gradId = `${uid2}-area-${dsIdx}`;
+      const glowId = `${uid2}-glow-${dsIdx}`;
       defsSvg += `<linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${ds.color}" stop-opacity="0.35"/>
+        <stop offset="0%" stop-color="${ds.color}" stop-opacity="0.4"/>
         <stop offset="100%" stop-color="${ds.color}" stop-opacity="0"/>
-      </linearGradient>`;
+      </linearGradient>
+      <filter id="${glowId}" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="3.2" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>`;
       const first = orderedPoints[0], last = orderedPoints[orderedPoints.length-1];
       const areaPath = `${path} L${last.x.toFixed(1)},${baseline.toFixed(1)} L${first.x.toFixed(1)},${baseline.toFixed(1)} Z`;
       areaSvg += `<path d="${areaPath}" fill="url(#${gradId})" class="chart-area-fill" style="opacity:0; animation: chartFadeArea 500ms ease-out ${DRAW_MS*0.5}ms forwards;"/>`;
-      seriesSvg += `<path d="${path}" pathLength="1000" fill="none" stroke="${ds.color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="chart-line-path" style="stroke-dasharray:1000; stroke-dashoffset:1000; animation: chartDrawLine ${DRAW_MS}ms ease-out forwards;"/>`;
+      seriesSvg += `<path d="${path}" pathLength="1000" fill="none" stroke="${ds.color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#${glowId})" class="chart-line-path" style="stroke-dasharray:1000; stroke-dashoffset:1000; animation: chartDrawLine ${DRAW_MS}ms ease-out forwards;"/>`;
     }
     const n = orderedPoints.length;
     orderedPoints.forEach((p,i) => {
