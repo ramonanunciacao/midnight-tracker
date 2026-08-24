@@ -241,6 +241,28 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:18px;
 }
 .dash-card h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
+.season-best-strip-card{ margin-bottom:16px; }
+.season-best-strip{ display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; }
+.sb-tile{
+  position:relative; flex:0 0 108px; height:138px; border-radius:10px; overflow:hidden; cursor:default;
+  background-size:cover; background-position:center; border:1px solid var(--hairline);
+  display:flex; flex-direction:column; justify-content:space-between; transition: border-color .15s, transform .15s;
+}
+.sb-tile:hover{ border-color: rgba(163,53,238,.5); transform: translateY(-2px); }
+.sb-tile::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background: linear-gradient(180deg, rgba(6,5,12,.15) 0%, rgba(6,5,12,.05) 35%, rgba(6,5,12,.92) 100%);
+}
+.sb-tile-level{
+  position:relative; z-index:1; align-self:flex-start; margin:6px; padding:2px 8px; border-radius:6px;
+  background: rgba(10,8,18,.8); border:1px solid rgba(242,181,61,.55); color: var(--gold); font-weight:800; font-size:14px;
+  font-family:'Rajdhani',sans-serif; display:flex; align-items:center; gap:3px; line-height:1.6;
+}
+.sb-tile-name{
+  position:relative; z-index:1; padding:6px 8px; font-size:11px; font-weight:700; color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,.9); line-height:1.25;
+}
+@media(max-width:700px){ .sb-tile{ flex-basis:88px; height:118px; } }
 .chart-readout{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:28px; line-height:1; }
 .chart-readout-label{ font-size:10px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin:2px 0 10px; }
 .chart-tooltip{
@@ -263,12 +285,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   text-transform:uppercase; letter-spacing:.03em; cursor:pointer; transition: opacity .15s;
 }
 .dash-viewall-link:hover{ opacity:.75; }
-.activity-row{ display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--hairline); font-size:12px; }
-.activity-row:last-child{ border-bottom:none; }
-.activity-dot{ width:6px; height:6px; border-radius:50%; background: var(--purple); flex-shrink:0; }
-.activity-text{ flex:1; color: var(--text-dim); }
-.activity-text b{ color: var(--text); }
-.activity-time{ color: var(--text-dim); font-size:11px; flex-shrink:0; }
 .news-list{ display:flex; flex-direction:column; gap:2px; }
 .news-row{ display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid var(--hairline); font-size:12px; }
 .news-row:last-child{ border-bottom:none; }
@@ -1060,8 +1076,8 @@ const I18N = {
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     newsPlaceholder1: "Hotfixes recentes", newsPlaceholder2: "Novidades da Season 2", newsPlaceholder3: "Rotação de Mythic+ da semana",
     comingSoon: "em breve", weeklyRewardsTitle: "Recompensas Semanais", progressionTitle: "Progressão",
-    bossByBossLabel: "Ver detalhes por chefe", recentActivityTitle: "Atividade Recente",
-    activityMplusClear: "Completou", viewAllLabel: "Ver Tudo",
+    bossByBossLabel: "Ver detalhes por chefe",
+    viewAllLabel: "Ver Tudo", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
@@ -1153,8 +1169,8 @@ const I18N = {
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     newsPlaceholder1: "Recent hotfixes", newsPlaceholder2: "Season 2 highlights", newsPlaceholder3: "This week's Mythic+ rotation",
     comingSoon: "coming soon", weeklyRewardsTitle: "Weekly Rewards", progressionTitle: "Progression",
-    bossByBossLabel: "View boss-by-boss detail", recentActivityTitle: "Recent Activity",
-    activityMplusClear: "Completed", viewAllLabel: "View All",
+    bossByBossLabel: "View boss-by-boss detail",
+    viewAllLabel: "View All", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
@@ -2552,12 +2568,6 @@ function renderCharacterPage(){
     </div>`;
   };
   const recentRunRow = (run, idx) => runRow(run, 'rr', idx);
-  const activityRow = run => `
-    <div class="activity-row">
-      <span class="activity-dot"></span>
-      <span class="activity-text">${t('activityMplusClear')} <b>${escapeHtml(run.dungeon)} +${run.mythic_level}</b></span>
-      <span class="activity-time">${formatRelativeTime(new Date(run.completed_at).getTime())}</span>
-    </div>`;
   const newsRow = n => `
     <div class="news-row">
       <span class="news-title">${escapeHtml(n.title)}</span>
@@ -2569,6 +2579,18 @@ function renderCharacterPage(){
   const bestRun = sortedBestRuns[0] || null;
   const sortedBis = [...c.bis];
   const headerBannerUrl = bestRun ? (bestRun.background_image_url || '') : '';
+
+  const bestByDungeon = new Map();
+  c.mplusBestRuns.forEach(r => {
+    const prev = bestByDungeon.get(r.dungeon);
+    if(!prev || r.mythic_level > prev.mythic_level) bestByDungeon.set(r.dungeon, r);
+  });
+  const dungeonBestRuns = [...bestByDungeon.values()].sort((a,b) => b.mythic_level - a.mythic_level);
+  const dungeonTile = run => `
+    <div class="sb-tile" style="background-image:url('${run.background_image_url || run.icon_url || ''}')" title="${escapeHtml(run.dungeon)} +${run.mythic_level}">
+      <div class="sb-tile-level">🗝 ${run.mythic_level}</div>
+      <div class="sb-tile-name">${escapeHtml(run.dungeon)}</div>
+    </div>`;
 
   const wowheadArmoryUrl = c.realm && c.region ? `https://www.wowhead.com/character/${c.region}/${c.realm}/${encodeURIComponent(c.name.toLowerCase())}` : null;
   const raiderIoUrl = c.realm && c.region ? `https://raider.io/characters/${c.region}/${c.realm}/${encodeURIComponent(c.name)}` : null;
@@ -2658,6 +2680,13 @@ function renderCharacterPage(){
         </div>
       </div>
 
+      ${dungeonBestRuns.length ? `
+      <div class="dash-card dash-card-wide season-best-strip-card">
+        <h3>${t('seasonBestDungeonsTitle')}</h3>
+        <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
+      </div>
+      ` : ''}
+
       <div class="dash-layout">
         <div class="dash-main">
           <div class="dash-row-2col">
@@ -2745,11 +2774,6 @@ function renderCharacterPage(){
                 </div>
               </details>
             </div>
-          </div>
-
-          <div class="dash-card">
-            <h3>${t('recentActivityTitle')}</h3>
-            ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,5).map(activityRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
           </div>
 
           <div class="dash-card dash-card-wide" id="section-gear">
