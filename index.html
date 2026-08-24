@@ -231,7 +231,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-row-2col{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start; }
 .dash-row-3col{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; align-items:start; }
 .dash-row-uneven{ display:grid; grid-template-columns: 0.8fr 1.2fr; gap:16px; align-items:start; }
-.dash-row-flex{ display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start; }
 @media(max-width:1150px){
   .dash-layout{ grid-template-columns: 1fr; }
   .dash-row-3col{ grid-template-columns: 1fr 1fr; }
@@ -243,9 +242,18 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:18px;
 }
 .dash-card h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
-.chart-card{ flex:1 1 340px; max-width:380px; }
-.vault-card{ flex:1 1 220px; max-width:260px; }
-.progression-card{ flex:1 1 220px; max-width:260px; }
+/* Merged top row: one bordered card holding both charts + Weekly Rewards + Raid
+   Progression as internal sections (divided by hairlines) instead of four
+   separate boxes, so the row reads as one consistent panel. */
+.dash-topgroup{ display:flex; flex-wrap:wrap; padding:0; align-items:stretch; }
+.dash-topgroup-item{ flex:1 1 320px; padding:18px; border-right:1px solid var(--hairline); }
+.dash-topgroup-item:last-child{ border-right:none; }
+.dash-topgroup-narrow{ flex:1 1 200px; max-width:240px; }
+@media(max-width:900px){
+  .dash-topgroup-item{ border-right:none; border-bottom:1px solid var(--hairline); }
+  .dash-topgroup-item:last-child{ border-bottom:none; }
+  .dash-topgroup-narrow{ max-width:none; }
+}
 .vault-columns{ display:flex; gap:10px; }
 .vault-col{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; }
 .vault-col-icon{ font-size:16px; margin-bottom:2px; }
@@ -2775,8 +2783,8 @@ function renderCharacterPage(){
 
       <div class="dash-layout">
         <div class="dash-main">
-          <div class="dash-row-flex">
-            <div class="dash-card chart-card">
+          <div class="dash-card dash-topgroup">
+            <div class="dash-topgroup-item">
               <div class="dash-card-head">
                 <h3>${t('ilvlEvoTitle')}</h3>
                 ${chartRangeSelect('ilvl')}
@@ -2785,7 +2793,7 @@ function renderCharacterPage(){
               <div class="chart-readout-label">${t('currentLabel')} ${t('gearIlvlLabel')}</div>
               <div id="dashIlvlChart"></div>
             </div>
-            <div class="dash-card chart-card">
+            <div class="dash-topgroup-item">
               <div class="dash-card-head">
                 <h3>${t('mplusEvoTitle')}</h3>
                 ${chartRangeSelect('ioscore')}
@@ -2795,7 +2803,7 @@ function renderCharacterPage(){
               <div id="dashIoChart"></div>
             </div>
 
-            <div class="dash-card vault-card" id="section-weekly">
+            <div class="dash-topgroup-item dash-topgroup-narrow" id="section-weekly">
               <h3>${t('weeklyRewardsTitle')}</h3>
               <div class="vault-columns">
                 ${vaultColumn('🏆', t('raidsLabel'), [2,4,6], raidCount)}
@@ -2804,7 +2812,7 @@ function renderCharacterPage(){
               </div>
             </div>
 
-            <div class="dash-card progression-card" id="section-raid">
+            <div class="dash-topgroup-item dash-topgroup-narrow" id="section-raid">
               <h3>${t('progressionTitle')}</h3>
               <div class="raid-progress-value">${raidCount}/${RAID_POOL.length}${highestRaidDiff ? ` <span class="raid-progress-diff">${highestRaidDiff}</span>` : ''}</div>
               <div class="pbar-track"><div class="pbar-fill" style="width:${RAID_POOL.length ? (raidCount/RAID_POOL.length*100) : 0}%; background:var(--purple)"></div></div>
@@ -2830,6 +2838,13 @@ function renderCharacterPage(){
           </div>
           ` : `<div id="section-mplus"></div>`}
 
+          ${bisByLoc.size ? `
+          <div class="dash-card">
+            <h3>${t('bisSummaryTitle')}</h3>
+            <div class="bis-dungeon-grid">${[...bisByLoc.entries()].map(bisDungeonChip).join('')}</div>
+          </div>
+          ` : ''}
+
           <div class="dash-row-2col">
             <div class="dash-card">
               <h3>${t('subtabRecent')}</h3>
@@ -2854,13 +2869,6 @@ function renderCharacterPage(){
               </div>
             </div>
           </div>
-
-          ${bisByLoc.size ? `
-          <div class="dash-card">
-            <h3>${t('bisSummaryTitle')}</h3>
-            <div class="bis-dungeon-grid">${[...bisByLoc.entries()].map(bisDungeonChip).join('')}</div>
-          </div>
-          ` : ''}
 
           <div class="dash-card dash-card-wide" id="section-gear">
             <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
