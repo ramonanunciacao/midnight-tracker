@@ -50,6 +50,11 @@ header.top{
 .title-block{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; cursor:pointer; transition: opacity .15s; }
 .title-block:hover{ opacity:.85; }
 .app-logo{ height:64px; width:auto; display:block; filter: drop-shadow(0 0 12px rgba(242,181,61,0.45)); flex-shrink:0; }
+/* main-app header is kept slim (just brand mark + actions) so it doesn't compete with the sidebar+dashboard below it */
+header.top{ padding-bottom:12px; margin-bottom:16px; }
+header.top .app-logo{ height:32px; }
+header.top .eyebrow, header.top .header-subtitle{ display:none; }
+header.top .title-block h1{ font-size:16px; text-shadow:none; }
 .reset-btn{
   background: linear-gradient(180deg, #1e1e26, #14141a); border: 1px solid var(--gold-dim); color: var(--gold);
   font-weight: 600; font-size: 13px; padding: 11px 18px; border-radius: 8px; cursor: pointer;
@@ -148,12 +153,16 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 
 /* top identity + stat tile strip */
 .cpage-topgrid{
-  display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:12px; margin-bottom:20px; padding:22px 6px;
+  display:grid; grid-template-columns: 2fr 1fr 0.5fr 1fr 1fr; gap:12px; margin-bottom:20px; padding:22px 6px; align-items:center;
   background: radial-gradient(ellipse 60% 100% at 15% 50%, rgba(79,143,255,.14), transparent 70%),
               radial-gradient(ellipse 50% 100% at 85% 50%, rgba(163,53,238,.12), transparent 70%);
   border-radius:16px;
 }
-@media(max-width:900px){ .cpage-topgrid{ grid-template-columns: 1fr 1fr; } }
+@media(max-width:900px){ .cpage-topgrid{ grid-template-columns: 1fr 1fr; } .cpage-deco-badge{ display:none; } }
+.cpage-deco-badge{
+  display:flex; align-items:center; justify-content:center; font-size:52px;
+  filter: drop-shadow(0 0 16px rgba(163,53,238,.55)); opacity:.9;
+}
 .stat-tile{
   background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
   border-radius:12px; padding:14px 16px; position:relative; display:flex; flex-direction:column; justify-content:center;
@@ -198,7 +207,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px; align-items:start; }
 .dash-card{
   background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:18px;
-  border-top: 2px solid var(--purple-dim);
 }
 .dash-card h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
 .dash-card-wide{ grid-column: 1 / -1; }
@@ -226,27 +234,25 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .char-power-row{ display:flex; gap:20px; }
 .char-power-stat{ flex:1; }
 
-/* Vault: category art tile + achievement cards */
-.vault-cat-row{ display:flex; gap:16px; margin-bottom:16px; align-items:stretch; }
-.vault-cat-row:last-child{ margin-bottom:0; }
-.vault-cat{
-  width:150px; flex-shrink:0; border-radius:12px; background-size:cover; background-position:center;
-  display:flex; align-items:flex-end; padding:12px; position:relative; overflow:hidden; border:1px solid var(--hairline);
-}
-.vault-cat::before{ content:''; position:absolute; inset:0; background: linear-gradient(180deg, rgba(5,7,13,.1), rgba(5,7,13,.88)); }
-.vault-cat-title{ position:relative; z-index:1; font-family:'Rajdhani',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#fff; font-size:14px; }
-.vault-cat-small{ background: var(--bg-panel-raised); }
-.vault-cat-cards{ flex:1; display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:10px; }
-.ach-card{
-  position:relative; background: var(--bg-panel-raised); border:1px solid var(--danger); border-radius:10px;
-  padding:12px 14px; display:flex; flex-direction:column; justify-content:space-between; min-height:64px;
-}
-.ach-card.done{ border-color: var(--ok); }
-.ach-check{ color: var(--ok); font-weight:700; font-size:14px; position:absolute; top:10px; left:12px; }
-.ach-label{ font-size:12px; color: var(--text); padding-left: 20px; line-height:1.3; }
-.ach-stat{ align-self:flex-end; font-size:12px; font-weight:700; }
-.ach-card.done .ach-stat{ color: var(--ok); }
-.ach-card:not(.done) .ach-stat{ color: var(--danger); }
+/* Weekly Rewards: simple icon/label/fraction rows */
+.reward-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--hairline); }
+.reward-row:last-child{ border-bottom:none; }
+.reward-icon{ font-size:20px; width:24px; text-align:center; flex-shrink:0; }
+.reward-label{ flex:1; font-size:13px; color: var(--text); }
+.reward-value{ font-weight:700; color: var(--text); }
+
+/* Best in Slot rows */
+.bis-summary-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--hairline); }
+.bis-summary-row:last-child{ border-bottom:none; }
+.bis-summary-row.collected{ opacity:.55; }
+.bicon-lg{ width:32px; height:32px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.bicon-img-lg{ width:32px; height:32px; border-radius:6px; border:1px solid var(--hairline); }
+.bis-summary-info{ flex:1; min-width:0; }
+.bis-summary-name{ display:block; font-size:13px; font-weight:600; color: var(--purple); text-decoration:none; }
+.bis-summary-name.collected{ text-decoration:line-through; color: var(--text-dim); }
+.bis-summary-name:hover{ text-decoration:underline; }
+.bis-summary-source{ font-size:11px; color: var(--text-dim); margin-top:1px; }
+.bis-summary-slot{ font-size:11px; color: var(--text-dim); flex-shrink:0; }
 
 /* character page: gear, progression, recent runs */
 
@@ -549,7 +555,11 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .landing-nav-link.active{ color:var(--gold); background:var(--bg-panel-raised); }
 .landing-login-btn{ background:var(--gold); border:none; color:#16141c; font-weight:700; font-size:13px; padding:10px 22px; border-radius:999px; cursor:pointer; text-transform:uppercase; letter-spacing:.03em; transition: all .15s; min-width:100px; text-align:center; white-space:nowrap; }
 .landing-login-btn:hover{ box-shadow:0 0 24px -4px rgba(242,181,61,.6); transform: translateY(-1px); }
-.landing-hero{ display:flex; align-items:center; gap:40px; margin-bottom:64px; }
+.landing-hero{
+  display:flex; align-items:center; gap:40px; margin-bottom:64px; padding:28px 20px; border-radius:20px;
+  background: radial-gradient(ellipse 60% 100% at 20% 50%, rgba(79,143,255,.14), transparent 70%),
+              radial-gradient(ellipse 55% 100% at 90% 40%, rgba(163,53,238,.14), transparent 70%);
+}
 .landing-hero-text{ flex:1.2; min-width:280px; }
 .landing-hero-title{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:clamp(36px,6vw,64px); line-height:1.05; color:var(--gold); text-transform:uppercase; letter-spacing:.02em; text-shadow: 0 0 30px rgba(242,181,61,.45), 0 0 60px rgba(242,181,61,.2); margin-top:4px; }
 .landing-hero-desc{ color:var(--text-dim); font-size:15px; line-height:1.6; max-width:440px; margin:18px 0 28px; }
@@ -2475,6 +2485,9 @@ function renderCharacterPage(){
   const eCount = c.events.filter(e => e.done).length, eTotal = c.events.length;
   const raidCount = raidBossesDone(c);
   const wbCount = countDone(c.worldboss);
+  const raidSlots = [2,4,6].filter(n => raidCount >= n).length;
+  const mplusSlots = [2,4,8].filter(n => dCount >= n).length;
+  const worldSlots = [1,2,4].filter(n => wbCount >= n).length;
 
   const eventRowHtml = ev => `
     <div class="bis-row ${ev.done?'collected':''}" data-id="${ev.id}">
@@ -2487,12 +2500,6 @@ function renderCharacterPage(){
       <td class="raid-boss-name">${boss}</td>
       ${RAID_DIFFICULTIES.map(d => `<td><input type="checkbox" data-boss="${boss}" data-diff="${d}" ${c.raidBosses[boss][d]?'checked':''}></td>`).join('')}
     </tr>`;
-  const achievementCard = (label, count, total, statNumber) => `
-    <div class="ach-card ${count>=total?'done':''}">
-      ${count>=total ? '<span class="ach-check">✓</span>' : ''}
-      <span class="ach-label">${label}</span>
-      <span class="ach-stat">${statNumber}</span>
-    </div>`;
   const runRow = (run, prefix) => {
     const stars = '★'.repeat(run.num_keystone_upgrades || 0);
     const dateStr = new Date(run.completed_at).toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
@@ -2536,14 +2543,19 @@ function renderCharacterPage(){
     </div>`;
   };
   const bisSummaryRow = b => {
-    const iconHtml = b.icon ? `<img class="bicon-img" src="${b.icon}" alt="">` : (b.slot ? slotIcon(b.slot) : '❔');
+    const iconHtml = b.icon ? `<img class="bicon-img-lg" src="${b.icon}" alt="">` : (b.slot ? slotIcon(b.slot) : '❔');
     const linkTag = b.whId ? 'a' : 'span';
-    const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer" class="bis-item-link bis-wh-link"` : ' class="bis-item-link"';
+    const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer"` : '';
+    const sourceText = (b.source && b.source !== '—') ? b.source : (b.boss || '');
     return `
-    <div class="bis-row ${b.collected?'collected':''}" data-id="${b.id}">
+    <div class="bis-summary-row ${b.collected?'collected':''}" data-id="${b.id}">
       <input type="checkbox" class="bis-check" ${b.collected?'checked':''}>
-      <${linkTag}${linkAttrs}><span class="bicon">${iconHtml}</span><span class="bname ${b.collected?'collected':''}">${escapeHtml(b.name)}</span></${linkTag}>
-      <span class="bslot">${escapeHtml(b.slot || '—')}</span>
+      <span class="bicon-lg">${iconHtml}</span>
+      <div class="bis-summary-info">
+        <${linkTag}${linkAttrs} class="bis-summary-name ${b.collected?'collected':''}">${escapeHtml(b.name)}</${linkTag}>
+        ${sourceText ? `<div class="bis-summary-source">${escapeHtml(sourceText)}</div>` : ''}
+      </div>
+      <span class="bis-summary-slot">${escapeHtml((b.slot||'').split(' (')[0] || '—')}</span>
     </div>`;
   };
   const recentRunRow = run => runRow(run, 'rr');
@@ -2566,7 +2578,6 @@ function renderCharacterPage(){
 
   const wowheadArmoryUrl = c.realm && c.region ? `https://www.wowhead.com/character/${c.region}/${c.realm}/${encodeURIComponent(c.name.toLowerCase())}` : null;
   const raiderIoUrl = c.realm && c.region ? `https://raider.io/characters/${c.region}/${c.realm}/${encodeURIComponent(c.name)}` : null;
-  const mplusArt = sortedBestRuns.length ? (sortedBestRuns[0].background_image_url || '') : '';
 
   const boundary = mostRecentResetBoundary(c.region || 'us');
   const nextReset = new Date(boundary.getTime() + 7*24*60*60*1000);
@@ -2615,6 +2626,15 @@ function renderCharacterPage(){
           <div class="stat-tile-label">${t('mRatingLabel')}</div>
           <div class="stat-tile-value" style="color:var(--danger)">${c.ioscore || '—'}</div>
           ${c.ioscoreSeason1 ? `<div class="stat-tile-sub">${t('season1PeakLabel')}: ${c.ioscoreSeason1}</div>` : ''}
+        </div>
+        <div class="cpage-deco-badge">
+          <svg viewBox="0 0 100 100" width="52" height="52">
+            <path d="M50 4 L92 20 V48 C92 74 74 92 50 98 C26 92 8 74 8 48 V20 Z" fill="none" stroke="var(--gold)" stroke-width="4"/>
+            <path d="M50 4 L92 20 V48 C92 74 74 92 50 98 C26 92 8 74 8 48 V20 Z" fill="url(#dbGrad)" opacity=".18"/>
+            <path d="M50 28 L68 50 L50 80 L32 50 Z" fill="var(--purple)" opacity=".9"/>
+            <path d="M50 28 L68 50 L50 62 L32 50 Z" fill="var(--purple)" opacity=".55"/>
+            <defs><linearGradient id="dbGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold)"/><stop offset="1" stop-color="var(--purple)"/></linearGradient></defs>
+          </svg>
         </div>
         <div class="stat-tile">
           <div class="stat-tile-label">${t('bestRunLabel')}</div>
@@ -2690,35 +2710,20 @@ function renderCharacterPage(){
 
         <div class="dash-card">
           <h3>${t('weeklyRewardsTitle')}</h3>
-          <div class="vault-cat-row">
-            <div class="vault-cat" style="background:linear-gradient(160deg, #3a0d0d, #120404);">
-              <div class="vault-cat-title">${t('raidsLabel')}</div>
-            </div>
-            <div class="vault-cat-cards">
-              ${achievementCard(t('raidMilestone',2), raidCount, 2, c.ilvl || '—')}
-              ${achievementCard(t('raidMilestone',4), raidCount, 4, c.ilvl || '—')}
-              ${achievementCard(t('raidMilestone',6), raidCount, 6, c.ilvl || '—')}
-            </div>
+          <div class="reward-row">
+            <span class="reward-icon">🧳</span>
+            <span class="reward-label">${t('raidsLabel')}</span>
+            <span class="reward-value">${raidSlots}/3</span>
           </div>
-          <div class="vault-cat-row">
-            <div class="vault-cat" style="background-image:url('${mplusArt}');">
-              <div class="vault-cat-title">${t('mythicPlusLabel')}</div>
-            </div>
-            <div class="vault-cat-cards">
-              ${achievementCard(t('mplusMilestone',1), dCount, 1, c.ioscore || '—')}
-              ${achievementCard(t('mplusMilestone',4), dCount, 4, c.ioscore || '—')}
-              ${achievementCard(t('mplusMilestone',8), dCount, 8, c.ioscore || '—')}
-            </div>
+          <div class="reward-row">
+            <span class="reward-icon">⚔️</span>
+            <span class="reward-label">${t('mythicPlusLabel')}</span>
+            <span class="reward-value">${mplusSlots}/3</span>
           </div>
-          <div class="vault-cat-row">
-            <div class="vault-cat vault-cat-small">
-              <div class="vault-cat-title">${t('worldBossLabel')}</div>
-            </div>
-            <div class="vault-cat-cards">
-              ${achievementCard(t('worldBossLabel')+' 1', wbCount, 1, wbCount)}
-              ${achievementCard(t('worldBossLabel')+' 2', wbCount, 2, wbCount)}
-              ${achievementCard(t('worldBossLabel')+' 4', wbCount, 4, wbCount)}
-            </div>
+          <div class="reward-row">
+            <span class="reward-icon">🐉</span>
+            <span class="reward-label">${t('worldBossLabel')}</span>
+            <span class="reward-value">${worldSlots}/3</span>
           </div>
         </div>
 
@@ -2757,6 +2762,16 @@ function renderCharacterPage(){
             <div class="char-power-stat">
               <div class="stat-tile-label">${t('raidsLabel')}</div>
               <div class="stat-tile-value-sm">${highestRaidDiff ? `${highestRaidDiff} ${highestRaidDiffCount}/${RAID_POOL.length}` : '—'}</div>
+            </div>
+          </div>
+          <div class="char-power-row" style="margin-top:14px;">
+            <div class="char-power-stat">
+              <div class="stat-tile-label">${t('seasonBestTitle')}</div>
+              <div class="stat-tile-value-sm">${bestRun ? `${c.ioscore || '—'} +${bestRun.mythic_level}` : '—'}</div>
+            </div>
+            <div class="char-power-stat">
+              <div class="stat-tile-label">${t('gearIlvlLabel')}</div>
+              <div class="stat-tile-value-sm">${c.ilvl || '—'}</div>
             </div>
           </div>
         </div>
@@ -2853,7 +2868,7 @@ function renderCharacterPage(){
 
   container.querySelectorAll('#dashBisList .bis-check').forEach(cb => {
     cb.addEventListener('change', async (e) => {
-      const id = e.target.closest('.bis-row').dataset.id;
+      const id = e.target.closest('.bis-summary-row').dataset.id;
       const item = c.bis.find(b => b.id === id);
       item.collected = e.target.checked;
       await saveChar(c);
