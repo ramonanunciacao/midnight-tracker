@@ -241,10 +241,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:18px;
 }
 .dash-card h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
-.season-best-strip-card{ margin-bottom:16px; }
-.season-best-strip{ display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; }
+.season-best-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
 .sb-tile{
-  position:relative; flex:0 0 108px; height:138px; border-radius:10px; overflow:hidden; cursor:default;
+  position:relative; flex:0 0 84px; height:112px; border-radius:9px; overflow:hidden; cursor:default;
   background-size:cover; background-position:center; border:1px solid var(--hairline);
   display:flex; flex-direction:column; justify-content:space-between; transition: border-color .15s, transform .15s;
 }
@@ -258,6 +257,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   background: rgba(10,8,18,.8); border:1px solid rgba(242,181,61,.55); color: var(--gold); font-weight:800; font-size:14px;
   font-family:'Rajdhani',sans-serif; display:flex; align-items:center; gap:3px; line-height:1.6;
 }
+.sb-tile-chest{ color: var(--ok); }
 .sb-tile-name{
   position:relative; z-index:1; padding:6px 8px; font-size:11px; font-weight:700; color:#fff;
   text-shadow:0 1px 3px rgba(0,0,0,.9); line-height:1.25;
@@ -2583,14 +2583,19 @@ function renderCharacterPage(){
   const bestByDungeon = new Map();
   c.mplusBestRuns.forEach(r => {
     const prev = bestByDungeon.get(r.dungeon);
-    if(!prev || r.mythic_level > prev.mythic_level) bestByDungeon.set(r.dungeon, r);
+    const better = !prev || r.mythic_level > prev.mythic_level ||
+      (r.mythic_level === prev.mythic_level && (r.num_keystone_upgrades||0) > (prev.num_keystone_upgrades||0));
+    if(better) bestByDungeon.set(r.dungeon, r);
   });
   const dungeonBestRuns = [...bestByDungeon.values()].sort((a,b) => b.mythic_level - a.mythic_level);
-  const dungeonTile = run => `
-    <div class="sb-tile" style="background-image:url('${run.background_image_url || run.icon_url || ''}')" title="${escapeHtml(run.dungeon)} +${run.mythic_level}">
-      <div class="sb-tile-level">🗝 ${run.mythic_level}</div>
+  const dungeonTile = run => {
+    const chests = '+'.repeat(run.num_keystone_upgrades || 0);
+    return `
+    <div class="sb-tile" style="background-image:url('${run.background_image_url || run.icon_url || ''}')" title="${escapeHtml(run.dungeon)} +${run.mythic_level}${chests}">
+      <div class="sb-tile-level">🗝 +${run.mythic_level}${chests ? `<span class="sb-tile-chest">${chests}</span>` : ''}</div>
       <div class="sb-tile-name">${escapeHtml(run.dungeon)}</div>
     </div>`;
+  };
 
   const wowheadArmoryUrl = c.realm && c.region ? `https://www.wowhead.com/character/${c.region}/${c.realm}/${encodeURIComponent(c.name.toLowerCase())}` : null;
   const raiderIoUrl = c.realm && c.region ? `https://raider.io/characters/${c.region}/${c.realm}/${encodeURIComponent(c.name)}` : null;
@@ -2680,15 +2685,23 @@ function renderCharacterPage(){
         </div>
       </div>
 
-      ${dungeonBestRuns.length ? `
-      <div class="dash-card dash-card-wide season-best-strip-card">
-        <h3>${t('seasonBestDungeonsTitle')}</h3>
-        <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
-      </div>
-      ` : ''}
-
       <div class="dash-layout">
         <div class="dash-main">
+          <div class="dash-row-2col">
+            ${dungeonBestRuns.length ? `
+            <div class="dash-card season-best-strip-card">
+              <h3>${t('seasonBestDungeonsTitle')}</h3>
+              <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
+            </div>
+            ` : '<div></div>'}
+            <div class="dash-card">
+              <h3>${t('subtabRecent')}</h3>
+              <div class="recent-runs-list">
+                ${sortedRecentRuns.length ? sortedRecentRuns.map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+              </div>
+            </div>
+          </div>
+
           <div class="dash-row-2col">
             <div class="dash-card">
               <div class="dash-card-head">
@@ -2710,18 +2723,11 @@ function renderCharacterPage(){
             </div>
           </div>
 
-          <div class="dash-row-3col">
+          <div class="dash-row-2col">
             <div class="dash-card" id="section-mplus">
               <h3>${t('seasonBestTitle')}</h3>
               <div class="recent-runs-list">
                 ${sortedBestRuns.length ? sortedBestRuns.map(seasonBestRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
-              </div>
-            </div>
-
-            <div class="dash-card">
-              <h3>${t('subtabRecent')}</h3>
-              <div class="recent-runs-list">
-                ${sortedRecentRuns.length ? sortedRecentRuns.map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
               </div>
             </div>
 
