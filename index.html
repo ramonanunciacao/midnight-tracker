@@ -243,22 +243,37 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .mural-filters{ display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
 .mural-filters select, .mural-filters .filter-group{ font-size:12px; }
 .mural-filters label{ font-size:11px; text-transform:uppercase; color:var(--text-dim); margin-right:6px; letter-spacing:.04em;}
-.mural-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
+.mural-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:16px; align-items:start; }
 .mural-card{ position:relative; border-radius:12px; overflow:hidden; border:1px solid var(--hairline); background: var(--bg-panel-raised); }
-.mural-card img{ width:100%; display:block; aspect-ratio: 4/3; object-fit:cover; }
+.mural-card img{ width:100%; display:block; cursor:zoom-in; transition: opacity .15s; }
+.mural-card img:hover{ opacity:.88; }
 .mural-card .mtext{ padding:34px 14px 6px; font-size:13px; color:var(--text); line-height:1.5; min-height:100px; white-space:pre-wrap; word-break:break-word; }
 .mural-tag{
   position:absolute; top:8px; left:8px; background: rgba(11,11,14,.85); border:1px solid var(--class-color, var(--gold));
   color: var(--class-color, var(--gold)); font-size:10px; font-weight:700; padding:3px 8px; border-radius:3px;
   text-transform:uppercase; letter-spacing:.03em;
 }
-.mural-card .mdate{ font-size:10px; color:var(--text-dim); padding:8px 10px; }
+.mural-card .mdate{ font-size:10px; color:var(--text-dim); padding:8px 10px; display:flex; gap:8px; align-items:center; }
+.mural-card .mnum{ color: var(--gold-dim); font-weight:700; }
 .mural-card .mdel{
   position:absolute; top:8px; right:8px; background: rgba(11,11,14,.85); border:1px solid var(--hairline);
-  color:var(--text-dim); width:22px; height:22px; border-radius:3px; cursor:pointer; font-size:12px;
+  color:var(--text-dim); width:22px; height:22px; border-radius:3px; cursor:pointer; font-size:12px; z-index:2;
 }
 .mural-card .mdel:hover{ color:var(--danger); border-color: var(--danger); }
 .mural-empty{ color: var(--text-dim); font-size:13px; padding: 20px 0; }
+
+/* fullscreen image lightbox */
+.img-lightbox{
+  display:none; position:fixed; inset:0; z-index:300; background: rgba(4,6,12,.92);
+  align-items:center; justify-content:center; padding:40px; cursor:zoom-out;
+}
+.img-lightbox.open{ display:flex; }
+.img-lightbox img{ max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; box-shadow: 0 20px 60px rgba(0,0,0,.6); cursor:default; }
+.img-lightbox-close{
+  position:fixed; top:20px; right:24px; background: rgba(255,255,255,.08); border:1px solid var(--hairline);
+  color:#fff; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:16px;
+}
+.img-lightbox-close:hover{ border-color: var(--gold); color: var(--gold); }
 
 /* character page */
 .detail-header{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:12px; flex-wrap:wrap; gap:14px;}
@@ -763,6 +778,11 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
       <button class="confirm" id="cloneTodoConfirm" data-i18n="cloneConfirmBtn">Clonar</button>
     </div>
   </div>
+</div>
+
+<div class="img-lightbox" id="imgLightbox">
+  <button class="img-lightbox-close" id="imgLightboxClose">✕</button>
+  <img id="imgLightboxImg" src="" alt="">
 </div>
 
 <div class="modal-overlay" id="confirmModal" style="display:none;">
@@ -2724,6 +2744,22 @@ document.getElementById('confirmOkBtn').addEventListener('click', () => {
   if(_confirmResolve) _confirmResolve(true);
 });
 
+function openImgLightbox(src){
+  document.getElementById('imgLightboxImg').src = src;
+  document.getElementById('imgLightbox').classList.add('open');
+}
+function closeImgLightbox(){
+  document.getElementById('imgLightbox').classList.remove('open');
+  document.getElementById('imgLightboxImg').src = '';
+}
+document.getElementById('imgLightbox').addEventListener('click', (e) => {
+  if(e.target.id === 'imgLightbox') closeImgLightbox();
+});
+document.getElementById('imgLightboxClose').addEventListener('click', closeImgLightbox);
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') closeImgLightbox();
+});
+
 function openAddCharModal(){
   document.getElementById('newCharName').value = '';
   document.getElementById('newCharRealm').value = '';
@@ -3234,19 +3270,23 @@ function renderMuralGrid(){
 
   if(!posts.length){ grid.innerHTML = `<div class="mural-empty">${t('noNotesYet')}</div>`; return; }
 
-  grid.innerHTML = posts.map(p => {
+  grid.innerHTML = posts.map((p, idx) => {
     const c = state.characters.find(x => x.id === p.charId);
     const color = c ? (CLASS_HEX[c.class] || '#f2b53d') : '#f2b53d';
     const name = c ? c.name : t('unknown');
     const date = new Date(p.ts).toLocaleDateString(currentLang === 'pt' ? 'pt-BR' : 'en-US');
-    const body = p.dataUrl ? `<img src="${p.dataUrl}">` : `<div class="mtext">${escapeHtml(p.text)}</div>`;
+    const body = p.dataUrl ? `<img src="${p.dataUrl}" alt="">` : `<div class="mtext">${escapeHtml(p.text)}</div>`;
     return `<div class="mural-card" style="--class-color:${color}" data-id="${p.id}">
       <span class="mural-tag">${name}</span>
       <button class="mdel" title="${t('remove')}">✕</button>
       ${body}
-      <div class="mdate">${date}</div>
+      <div class="mdate">${p.dataUrl ? `<span class="mnum">#${idx+1}</span>` : ''}<span>${date}</span></div>
     </div>`;
   }).join('');
+
+  grid.querySelectorAll('.mural-card img').forEach(img => {
+    img.addEventListener('click', () => openImgLightbox(img.src));
+  });
 
   grid.querySelectorAll('.mdel').forEach(btn => {
     btn.addEventListener('click', async () => {
