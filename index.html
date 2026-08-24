@@ -154,14 +154,14 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .add-champ-card .champ-card-name{ font-size:10px; color:inherit; white-space:normal; }
 
 .cpage-portrait{
-  width:58px; height:58px; border-radius:50%; overflow:hidden; flex-shrink:0;
-  border:2px solid var(--class-color, var(--gold)); box-shadow: 0 0 14px -3px var(--class-color, var(--gold));
+  width:72px; height:72px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  border:3px solid var(--class-color, var(--gold)); box-shadow: 0 0 16px -3px var(--class-color, var(--gold));
 }
 .cpage-portrait img{ width:100%; height:100%; object-fit:cover; display:block; }
 
 /* top identity + stat tile strip — real dungeon splash art as a banner, dark-purple vignette over it for legibility */
 .cpage-topgrid{
-  display:grid; grid-template-columns: 1.25fr 1fr 0.6fr 1fr 1fr; gap:18px; margin-bottom:16px; padding:14px 22px 14px 12px; align-items:center;
+  display:grid; grid-template-columns: 1.25fr 1fr 0.6fr 1fr 1fr; gap:20px; margin-bottom:16px; padding:20px 28px 20px 18px; align-items:center;
   position:relative; border-radius:14px; overflow:hidden; background-size:cover; background-position:center;
   border:1px solid var(--hairline);
 }
@@ -179,30 +179,30 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .stat-tile{
   background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
-  border-radius:10px; padding:10px 14px; position:relative; display:flex; flex-direction:column; justify-content:center;
-  min-height:74px;
+  border-radius:12px; padding:14px 18px; position:relative; display:flex; flex-direction:column; justify-content:center;
+  min-height:86px;
 }
 .stat-tile-center{ align-items:center; text-align:center; }
 .stat-tile-outline{ background:rgba(10,8,18,.35); border:1px dashed rgba(163,53,238,.4); }
-.cpage-identity{ flex-direction:row; align-items:center; gap:10px; background:none; border:none; padding:0; }
-.cpage-identity h2{ font-family:'Rajdhani',sans-serif; font-size:25px; line-height:1.1; }
-.cpage-sub{ font-size:11px; color: var(--text-dim); margin-top:1px; }
-.cpage-faction{ font-size:10px; font-weight:700; font-style:italic; margin-top:1px; color: var(--text-dim); }
+.cpage-identity{ flex-direction:row; align-items:center; gap:14px; background:none; border:none; padding:0; }
+.cpage-identity h2{ font-family:'Rajdhani',sans-serif; font-size:30px; line-height:1.1; }
+.cpage-sub{ font-size:13px; color: var(--text-dim); margin-top:2px; }
+.cpage-faction{ font-size:11px; font-weight:700; font-style:italic; margin-top:2px; color: var(--text-dim); }
 .cpage-faction.faction-alliance{ color:#5eb3f0; }
 .cpage-faction.faction-horde{ color:#e0554f; }
-.cpage-badges{ display:flex; flex-wrap:wrap; gap:5px; margin-top:4px; }
+.cpage-badges{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
 .cpage-badge{
-  font-size:9px; text-transform:uppercase; letter-spacing:.03em; font-weight:700; color: var(--text-dim);
-  background: var(--bg-panel); border:1px solid var(--hairline); padding:2px 6px; border-radius:5px;
+  font-size:10px; text-transform:uppercase; letter-spacing:.03em; font-weight:700; color: var(--text-dim);
+  background: var(--bg-panel); border:1px solid var(--hairline); padding:3px 8px; border-radius:6px;
 }
 .cpage-badge-pill{ color: var(--gold); border-color: rgba(242,181,61,.35); background: rgba(242,181,61,.08); }
-.stat-tile-label{ font-size:9px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:2px; }
-.stat-tile-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:22px; line-height:1.1; }
+.stat-tile-label{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
+.stat-tile-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:27px; line-height:1.1; }
 .stat-tile-value-sm{ font-size:15px; font-weight:600; color:var(--text); }
-.stat-tile-sub{ font-size:9px; color:var(--text-dim); margin-top:2px; }
-.stat-tile-sub2{ font-size:8px; color:var(--text-dim); margin-top:2px; opacity:.8; }
-.cpage-links{ display:flex; align-items:center; gap:8px; margin-top:4px; }
-.cpage-links a{ font-size:16px; text-decoration:none; opacity:.75; transition:opacity .15s; }
+.stat-tile-sub{ font-size:10px; color:var(--text-dim); margin-top:3px; }
+.stat-tile-sub2{ font-size:9px; color:var(--text-dim); margin-top:3px; opacity:.8; }
+.cpage-links{ display:flex; align-items:center; gap:10px; margin-top:6px; }
+.cpage-links a{ font-size:18px; text-decoration:none; opacity:.75; transition:opacity .15s; }
 .cpage-links a:hover{ opacity:1; }
 .cpage-lastsync{ font-size:10px; color: var(--text-dim); margin-left:auto; }
 .cpage-refresh-btn{
@@ -234,9 +234,16 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-row-2col{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start; }
 .dash-row-3col{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; align-items:start; }
 .dash-row-uneven{ display:grid; grid-template-columns: 0.8fr 1.2fr; gap:16px; align-items:start; }
+.dash-row-strip{ display:grid; grid-template-columns: 1.7fr 1fr; gap:16px; align-items:stretch; }
+.recent-runs-side-card{ display:flex; flex-direction:column; min-height:0; }
+.recent-runs-list-compact{ overflow-y:auto; }
+.recent-runs-list-compact .recent-run-row{ padding:5px 4px; }
+.recent-runs-list-compact .recent-run-icon{ width:26px; height:26px; }
+.recent-runs-list-compact .recent-run-name{ font-size:11px; }
 @media(max-width:1150px){
   .dash-layout{ grid-template-columns: 1fr; }
   .dash-row-3col{ grid-template-columns: 1fr 1fr; }
+  .dash-row-strip{ grid-template-columns: 1fr; }
 }
 @media(max-width:700px){
   .dash-row-2col, .dash-row-3col, .dash-row-uneven{ grid-template-columns: 1fr; }
@@ -257,32 +264,29 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   .dash-topgroup-item:last-child{ border-bottom:none; }
   .dash-topgroup-narrow{ max-width:none; }
 }
-/* Weekly Rewards: compact obsi.gg-style rows — small category banner + a
-   strip of slot chips (check + requirement) per category. */
-.vault-columns{ display:flex; flex-direction:column; gap:6px; }
-.vault-row{
-  display:flex; align-items:stretch; gap:0; background: var(--bg-panel-raised); border:1px solid var(--hairline);
-  border-radius:8px; overflow:hidden;
+/* Weekly Rewards: obsi.gg-style — a category banner (real WoW icon on a
+   colored gradient) beside a row of reward cards, one per vault threshold.
+   No item-level number shown: we don't have Blizzard's season reward-ilvl
+   table, so a specific ilvl there would just be a guess. */
+.vault-obsi-row{ display:flex; align-items:stretch; gap:12px; margin-bottom:12px; }
+.vault-obsi-row:last-child{ margin-bottom:0; }
+.vault-obsi-banner{
+  width:150px; flex-shrink:0; border-radius:10px; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:8px; background: linear-gradient(160deg, var(--purple-dim), #1a0f2e);
 }
-.vault-row-banner{
-  width:34px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:15px;
-  background: linear-gradient(160deg, var(--purple-dim), #1a0f2e);
+.vault-obsi-banner.raids{ background: linear-gradient(160deg, #9a4a1e, #2a0f08); }
+.vault-obsi-banner.worldboss{ background: linear-gradient(160deg, #15825a, #06251a); }
+.vault-obsi-icon{ width:44px; height:44px; border-radius:8px; border:1px solid rgba(255,255,255,.25); }
+.vault-obsi-label{ font-size:13px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:.03em; }
+.vault-obsi-cards{ flex:1; display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:8px; min-width:0; }
+.vault-obsi-card{
+  display:flex; align-items:center; gap:10px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
+  border-radius:8px; padding:10px 12px;
 }
-.vault-row-banner.raids{ background: linear-gradient(160deg, #9a4a1e, #2a0f08); }
-.vault-row-banner.worldboss{ background: linear-gradient(160deg, #15825a, #06251a); }
-.vault-row-label{
-  font-size:8px; font-weight:700; color:var(--text); text-transform:uppercase; letter-spacing:.01em;
-  width:36px; flex-shrink:0; align-self:center; padding:0 5px; line-height:1.2;
-}
-.vault-row-slots{ flex:1; display:flex; gap:3px; padding:4px; min-width:0; }
-.vault-slot2{
-  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; min-width:0;
-  height:26px; border-radius:5px; border:1px solid var(--hairline); background: var(--bg-panel);
-}
-.vault-slot2.done{ border-color: var(--ok); background: rgba(34,197,94,.14); }
-.vault-slot2-icon{ font-size:9px; color: var(--ok); line-height:1; }
-.vault-slot2-req{ font-size:8px; color: var(--text-dim); line-height:1.3; }
-.vault-slot2.done .vault-slot2-req{ color: var(--ok); font-weight:700; }
+.vault-obsi-card.done{ border-color: rgba(34,197,94,.4); }
+.vault-obsi-check{ font-size:14px; color: var(--text-dim); flex-shrink:0; }
+.vault-obsi-card.done .vault-obsi-check{ color: var(--ok); }
+.vault-obsi-desc{ font-size:12px; color: var(--text); line-height:1.35; }
 .bis-dungeon-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap:10px; }
 .bis-dchip{
   display:flex; align-items:flex-start; gap:10px; background:var(--bg-panel-raised); border:1px solid var(--hairline);
@@ -339,6 +343,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .dash-card-wide{ grid-column: 1 / -1; }
 .dash-card-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.dash-card-head-inline{ display:flex; justify-content:flex-start; align-items:center; gap:10px; margin-bottom:12px; }
+.dash-card-head-inline h3{ margin-bottom:0; }
 .dash-card-head h3{ margin-bottom:0; }
 .chart-range-select{
   appearance:none; -webkit-appearance:none; background: var(--bg-panel-raised) url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 6%22%3E%3Cpath d=%22M1 1l4 4 4-4%22 stroke=%22%238792ad%22 stroke-width=%221.4%22 fill=%22none%22/%3E%3C/svg%3E') no-repeat right 8px center;
@@ -369,6 +375,24 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .raid-progress-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:24px; color:var(--danger); margin-bottom:8px; }
 .raid-progress-diff{ font-size:14px; color:var(--text-dim); font-weight:600; }
 .raid-progress-name{ font-size:12px; color:var(--text); margin-top:10px; }
+.raid-progress-todo{ font-size:11px; color:var(--text-dim); margin-top:8px; padding-top:8px; border-top:1px solid var(--hairline); }
+.raid-progress-hover{ position:relative; cursor:default; }
+.raid-diff-tooltip{
+  position:absolute; left:0; right:0; top:100%; margin-top:8px; z-index:6; min-width:220px;
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:10px; padding:12px 14px;
+  font-size:11px; color:var(--text-dim); line-height:1.9; opacity:0; visibility:hidden; pointer-events:none;
+  transform:translateY(-4px); transition: opacity .15s, transform .15s; box-shadow:0 10px 24px rgba(0,0,0,.55);
+}
+.raid-progress-hover:hover .raid-diff-tooltip{ opacity:1; visibility:visible; transform:translateY(0); }
+.raid-diff-title{
+  font-size:10px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--text);
+  margin-bottom:6px; text-decoration:underline; text-underline-offset:3px;
+}
+.raid-diff-line{ white-space:nowrap; }
+.raid-diff-mark{ display:inline-block; width:14px; }
+.raid-diff-done{ color: var(--ok); }
+.raid-diff-pending{ color: var(--text-dim); opacity:.6; }
+.raid-diff-count{ color: var(--gold-dim); font-weight:700; }
 .char-power-row{ display:flex; gap:20px; }
 .char-power-stat{ flex:1; }
 
@@ -401,6 +425,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .gear-name{ font-size:13px; font-weight:600; text-decoration:none; display:block; }
 .gear-name:hover{ text-decoration:underline; }
 .gear-meta{ font-size:11px; color: var(--text-dim); margin-top:2px; }
+.gear-bis-info{ display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
+.gear-bis-badge{
+  font-size:9px; font-weight:800; color: var(--ok); border:1px solid rgba(34,197,94,.4); background: rgba(34,197,94,.12);
+  border-radius:5px; padding:1px 6px; white-space:nowrap;
+}
+.gear-tier-unset{ color: var(--text-dim); border-color: var(--hairline); }
 
 .best-run-item{ border-bottom:1px solid var(--hairline); }
 .best-run-item:last-child{ border-bottom:none; }
@@ -433,7 +463,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .recent-run-meta{ font-size:10px; color: var(--text-dim); flex-shrink:0; }
 .recent-run-time{ font-size:11px; color: var(--text-dim); flex-shrink:0; }
 .pbar-track-sm{ height:4px; }
-.recent-run-affix{ font-size:11px; color: var(--text-dim); margin-top:2px; }
 
 .filter-group{ display:flex; gap:6px; }
 .filter-group button{
@@ -1116,6 +1145,10 @@ const I18N = {
     remove: "Remover", viewDetails: "Ver detalhes →",
     dungeonsSeasonTitle: (x,y) => `Dungeons da Season (${x}/${y})`,
     subtabGear: "Equipamento", subtabRecent: "Runs Recentes",
+    bossKillStatusLabel: "Chefes derrotados",
+    raidMilestone: (n) => `Derrote ${n} chefes da season`,
+    mplusMilestone: (n) => `Complete ${n} dungeons Mítico+`,
+    worldBossMilestone: (n) => `Derrote ${n} World Boss`,
     noGearYet: "Sem dados de equipamento ainda — clique em Atualizar no topo do dashboard.",
     noRecentRunsYet: "Nenhuma run de Mítico+ recente ainda.",
     scoreCol: "Pontuação",
@@ -1140,6 +1173,7 @@ const I18N = {
     viewAllLabel: "Ver Tudo", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     bisSummaryTitle: "BIS por Local", editBisLabel: "Editar BIS",
+    bisMatchTooltip: "Esse item está na sua lista de BIS", tierUnsetLabel: "Tier não definido",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
     bisNoLocation: "Sem local definido", bisItemCount: (n) => n === 1 ? "1 item" : `${n} itens`,
@@ -1210,6 +1244,10 @@ const I18N = {
     remove: "Remove", viewDetails: "View details →",
     dungeonsSeasonTitle: (x,y) => `Season Dungeons (${x}/${y})`,
     subtabGear: "Gear", subtabRecent: "Recent Runs",
+    bossKillStatusLabel: "Boss kill status",
+    raidMilestone: (n) => `Defeat ${n} Season bosses`,
+    mplusMilestone: (n) => `Complete ${n} Mythic+ dungeons`,
+    worldBossMilestone: (n) => `Defeat ${n} World Bosses`,
     noGearYet: "No gear data yet — click Refresh at the top of the dashboard.",
     noRecentRunsYet: "No recent Mythic+ runs yet.",
     scoreCol: "Score",
@@ -1234,6 +1272,7 @@ const I18N = {
     viewAllLabel: "View All", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     bisSummaryTitle: "BIS by Location", editBisLabel: "Edit BIS",
+    bisMatchTooltip: "This item is on your BIS list", tierUnsetLabel: "Tier not set",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
     bisNoLocation: "No location set", bisItemCount: (n) => n === 1 ? "1 item" : `${n} items`,
@@ -2582,12 +2621,11 @@ function renderCharacterPage(){
 
   const RUN_ICON_PALETTE = ['var(--cyan)', 'var(--purple)', 'var(--blue)', 'var(--danger)', '#8792ad'];
   const runRow = (run, prefix, idx) => {
-    const stars = '★'.repeat(run.num_keystone_upgrades || 0);
+    const chests = '+'.repeat(run.num_keystone_upgrades || 0);
     const dateStr = new Date(run.completed_at).toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
     const affixNames = (run.affixes || []).map(a => a.name).join(', ');
-    const weeklyAffix = (run.affixes || []).find(a => a.name === 'Fortified' || a.name === 'Tyrannical');
     const domId = `${prefix}-${run.keystone_run_id}`;
-    const tooltip = `${run.dungeon} +${run.mythic_level} ${stars} — ${t('scoreCol')}: ${run.score}\n${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}${affixNames ? '\n'+affixNames : ''}\n${dateStr}`;
+    const tooltip = `${run.dungeon} +${run.mythic_level}${chests} — ${t('scoreCol')}: ${run.score}\n${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}${affixNames ? '\n'+affixNames : ''}\n${dateStr}`;
     const iconColor = RUN_ICON_PALETTE[(idx || 0) % RUN_ICON_PALETTE.length];
     return `
     <div class="best-run-item">
@@ -2595,10 +2633,9 @@ function renderCharacterPage(){
         ${run.icon_url ? `<img class="recent-run-icon" style="border-color:${iconColor}" src="${run.icon_url}" alt="">` : ''}
         <div class="recent-run-info">
           <div class="recent-run-top">
-            <span class="recent-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}</span></span>
+            <span class="recent-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}${chests ? ` <span class="sb-tile-chest">${chests}</span>` : ''}</span></span>
             <span class="recent-run-meta">${formatRelativeTime(new Date(run.completed_at).getTime())}</span>
           </div>
-          ${weeklyAffix ? `<div class="recent-run-affix">${escapeHtml(weeklyAffix.name)}</div>` : ''}
         </div>
         <span class="best-run-expand-icon">▾</span>
       </div>
@@ -2612,6 +2649,15 @@ function renderCharacterPage(){
     const qColor = ITEM_QUALITY_COLOR[item.item_quality] || '#fff';
     const iconUrl = zamIconUrl(item.icon);
     const enchant = item.enchants_detail && item.enchants_detail[0] ? item.enchants_detail[0].name : '';
+    const bisMatch = c.bis.find(b =>
+      (b.whId && item.item_id && String(b.whId) === String(item.item_id)) ||
+      (!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
+    );
+    const bisInfo = bisMatch ? `
+      <div class="gear-bis-info">
+        <span class="gear-bis-badge" title="${t('bisMatchTooltip')}">✓ BIS</span>
+        ${bisMatch.tier ? bisTierBadgeHtml(bisMatch.tier) : `<span class="bis-tier-badge gear-tier-unset">${t('tierUnsetLabel')}</span>`}
+      </div>` : '';
     return `
     <div class="gear-row">
       ${iconUrl ? `<img class="gear-icon" src="${iconUrl}" alt="">` : ''}
@@ -2619,6 +2665,7 @@ function renderCharacterPage(){
         <a href="https://www.wowhead.com/item=${item.item_id}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(item.name)}</a>
         <div class="gear-meta">${item.item_level}${enchant ? ` · ${escapeHtml(enchant)}` : ''}</div>
       </div>
+      ${bisInfo}
     </div>`;
   };
   const recentRunRow = (run, idx) => runRow(run, 'rr', idx);
@@ -2652,15 +2699,17 @@ function renderCharacterPage(){
     </div>`;
   };
 
-  const vaultRow = (cls, icon, label, thresholds, count) => `
-    <div class="vault-row">
-      <div class="vault-row-banner ${cls}">${icon}</div>
-      <div class="vault-row-label">${label}</div>
-      <div class="vault-row-slots">
+  const vaultObsiRow = (cls, iconId, label, thresholds, count, descFn) => `
+    <div class="vault-obsi-row">
+      <div class="vault-obsi-banner ${cls}">
+        <img class="vault-obsi-icon" src="${zamIconUrl(iconId,'medium')}" alt="">
+        <span class="vault-obsi-label">${label}</span>
+      </div>
+      <div class="vault-obsi-cards">
         ${thresholds.map(th => `
-          <div class="vault-slot2 ${count>=th?'done':''}">
-            <span class="vault-slot2-icon">${count>=th?'✓':''}</span>
-            <span class="vault-slot2-req">${th}</span>
+          <div class="vault-obsi-card ${count>=th?'done':''}">
+            <span class="vault-obsi-check">${count>=th?'✓':'○'}</span>
+            <span class="vault-obsi-desc">${escapeHtml(descFn(th))}</span>
           </div>`).join('')}
       </div>
     </div>`;
@@ -2710,10 +2759,17 @@ function renderCharacterPage(){
     const n = RAID_POOL.filter(b => c.raidBosses[b][d]).length;
     if(n > 0){ highestRaidDiff = d; highestRaidDiffCount = n; }
   });
-  const raidDiffTooltip = ['Normal','Heroic','Mythic'].map(d => {
-    const killed = RAID_POOL.filter(b => c.raidBosses[b] && c.raidBosses[b][d]);
-    return `${d} (${killed.length}/${RAID_POOL.length}): ${killed.length ? killed.join(', ') : '—'}`;
-  }).join('\n');
+  const RAID_DIFF_RANK = ['Mythic','Heroic','Normal','LFR'];
+  const raidDiffTooltipHtml = `
+    <div class="raid-diff-title">${t('bossKillStatusLabel')}</div>
+    ${RAID_POOL.map(boss => {
+      const killedDiff = RAID_DIFF_RANK.find(d => c.raidBosses[boss] && c.raidBosses[boss][d]);
+      return killedDiff
+        ? `<div class="raid-diff-line raid-diff-done"><span class="raid-diff-mark">✓</span> ${escapeHtml(boss)} <span class="raid-diff-count">(${killedDiff.toUpperCase()})</span></div>`
+        : `<div class="raid-diff-line raid-diff-pending"><span class="raid-diff-mark">○</span> ${escapeHtml(boss)}</div>`;
+    }).join('')}`;
+  const todoDone = (c.todos || []).filter(x => x.done).length;
+  const todoTotal = (c.todos || []).length;
 
   const NEWS_PLACEHOLDER = [
     { title: t('newsPlaceholder1'), date: t('comingSoon') },
@@ -2762,7 +2818,7 @@ function renderCharacterPage(){
           ${c.ioscoreSeason1 ? `<div class="stat-tile-sub">${t('season1PeakLabel')}: ${c.ioscoreSeason1}</div>` : ''}
         </div>
         <div class="cpage-deco-badge">
-          <svg viewBox="0 0 100 100" width="60" height="60">
+          <svg viewBox="0 0 100 100" width="76" height="76">
             <defs>
               <linearGradient id="dbShieldGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0" stop-color="#ffe6a8"/><stop offset=".45" stop-color="var(--gold)"/><stop offset="1" stop-color="var(--gold-dim)"/>
@@ -2811,51 +2867,53 @@ function renderCharacterPage(){
               <div id="dashIoChart"></div>
             </div>
 
-            <div class="dash-topgroup-item dash-topgroup-narrow" id="section-weekly">
-              <h3>${t('weeklyRewardsTitle')}</h3>
-              <div class="vault-columns">
-                ${vaultRow('raids', '🏆', t('raidsLabel'), [2,4,6], raidCount)}
-                ${vaultRow('mplus', '🗝️', t('mythicPlusLabel'), [2,4,8], dCount)}
-                ${vaultRow('worldboss', '🐉', t('worldBossLabel'), [1,2,4], wbCount)}
-              </div>
-            </div>
-
-            <div class="dash-topgroup-item dash-topgroup-narrow" id="section-raid" title="${escapeHtml(raidDiffTooltip)}">
+            <div class="dash-topgroup-item dash-topgroup-narrow raid-progress-hover" id="section-raid">
               <h3>${t('progressionTitle')}</h3>
               <div class="raid-progress-value">${raidCount}/${RAID_POOL.length}${highestRaidDiff ? ` <span class="raid-progress-diff">${highestRaidDiff}</span>` : ''}</div>
               <div class="pbar-track"><div class="pbar-fill" style="width:${RAID_POOL.length ? (raidCount/RAID_POOL.length*100) : 0}%; background:var(--purple)"></div></div>
               <div class="raid-progress-name">${RAID_NAME}</div>
+              <div class="raid-progress-todo">${t('todoTitle')}: ${todoDone}/${todoTotal}</div>
+              <div class="raid-diff-tooltip">${raidDiffTooltipHtml}</div>
             </div>
           </div>
 
-          ${dungeonBestRuns.length ? `
-          <div class="dash-card season-best-strip-card" id="section-mplus">
-            <h3>${t('seasonBestDungeonsTitle')}</h3>
-            <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
+          <div class="dash-row-strip">
+            ${dungeonBestRuns.length ? `
+            <div class="dash-card season-best-strip-card" id="section-mplus">
+              <h3>${t('seasonBestDungeonsTitle')}</h3>
+              <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
+            </div>
+            ` : `<div id="section-mplus"></div>`}
+
+            <div class="dash-card recent-runs-side-card">
+              <h3>${t('subtabRecent')}</h3>
+              <div class="recent-runs-list recent-runs-list-compact">
+                ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,5).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+              </div>
+              ${sortedRecentRuns.length > 5 ? `
+              <details class="hist-toggle" style="margin-top:6px;">
+                <summary>${t('viewMoreRunsLabel')}</summary>
+                <div class="recent-runs-list">${sortedRecentRuns.slice(5).map((run,i) => recentRunRow(run, i+5)).join('')}</div>
+              </details>
+              ` : ''}
+            </div>
           </div>
-          ` : `<div id="section-mplus"></div>`}
+
+          <div class="dash-card dash-card-wide" id="section-weekly">
+            <h3>${t('weeklyRewardsTitle')}</h3>
+            ${vaultObsiRow('raids', 'inv_misc_treasurechest09', t('raidsLabel'), [2,4,6], raidCount, n => t('raidMilestone', n))}
+            ${vaultObsiRow('mplus', 'inv_relics_hourglass', t('mythicPlusLabel'), [2,4,8], dCount, n => t('mplusMilestone', n))}
+            ${vaultObsiRow('worldboss', 'inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n))}
+          </div>
 
           <div class="dash-card">
-            <div class="dash-card-head">
+            <div class="dash-card-head-inline">
               <h3>${t('bisSummaryTitle')}</h3>
               <button class="dash-viewall-link" id="dashBisEditBtn">${t('editBisLabel')}</button>
             </div>
             ${bisByLoc.size ? `
             <div class="bis-dungeon-grid">${[...bisByLoc.entries()].map(bisDungeonChip).join('')}</div>
             ` : `<div class="empty-note">${t('noBisYet')}</div>`}
-          </div>
-
-          <div class="dash-card">
-            <h3>${t('subtabRecent')}</h3>
-            <div class="recent-runs-list">
-              ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,5).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
-            </div>
-            ${sortedRecentRuns.length > 5 ? `
-            <details class="hist-toggle" style="margin-top:6px;">
-              <summary>${t('viewMoreRunsLabel')}</summary>
-              <div class="recent-runs-list">${sortedRecentRuns.slice(5).map((run,i) => recentRunRow(run, i+5)).join('')}</div>
-            </details>
-            ` : ''}
           </div>
 
           <div class="dash-card dash-card-wide" id="section-gear">
