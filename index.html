@@ -159,8 +159,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .cpage-topgrid::before{
   content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
-  background: linear-gradient(100deg, rgba(8,6,16,.94) 20%, rgba(20,8,30,.75) 55%, rgba(35,10,45,.55) 100%),
-              radial-gradient(ellipse 70% 120% at 90% 20%, rgba(163,53,238,.28), transparent 65%);
+  background: linear-gradient(100deg, rgba(8,6,16,.94) 20%, rgba(20,8,30,.75) 55%, rgba(30,12,45,.5) 100%),
+              radial-gradient(ellipse 70% 120% at 90% 20%, rgba(163,53,238,.26), transparent 65%),
+              radial-gradient(ellipse 50% 90% at 78% 0%, rgba(34,211,238,.16), transparent 60%);
 }
 .cpage-topgrid > *{ position:relative; z-index:1; }
 @media(max-width:900px){ .cpage-topgrid{ grid-template-columns: 1fr 1fr; } .cpage-deco-badge{ display:none; } }
@@ -173,6 +174,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   border-radius:12px; padding:14px 16px; position:relative; display:flex; flex-direction:column; justify-content:center;
 }
 .stat-tile-center{ align-items:center; text-align:center; }
+.stat-tile-outline{ background:rgba(10,8,18,.35); border:1px dashed rgba(163,53,238,.4); }
 .cpage-identity{ flex-direction:row; align-items:center; gap:14px; background:none; border:none; padding:14px 20px; }
 .cpage-identity h2{ font-family:'Rajdhani',sans-serif; font-size:22px; line-height:1.1; }
 .cpage-sub{ font-size:12px; color: var(--text-dim); margin-top:2px; }
@@ -264,6 +266,10 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .raid-bar-row{ display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; }
 .raid-bar-label{ color: var(--text); }
 .raid-bar-count{ color: var(--text-dim); }
+.raid-progress-label{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
+.raid-progress-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:26px; color:var(--danger); margin-bottom:10px; }
+.raid-progress-diff{ font-size:14px; color:var(--text-dim); font-weight:600; }
+.raid-progress-name{ font-size:12px; color:var(--text); margin-top:10px; }
 .char-power-row{ display:flex; gap:20px; }
 .char-power-stat{ flex:1; }
 
@@ -308,7 +314,10 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 
 .best-run-item{ border-bottom:1px solid var(--hairline); }
 .best-run-item:last-child{ border-bottom:none; }
-.best-run-level{ color: var(--gold-dim); font-weight:700; font-size:12px; }
+.best-run-level{
+  display:inline-flex; align-items:center; color: var(--purple); font-weight:700; font-size:11px;
+  background: rgba(163,53,238,.14); border:1px solid rgba(163,53,238,.35); border-radius:6px; padding:1px 6px; margin:0 4px;
+}
 .best-run-expand-icon{ color: var(--text-dim); font-size:11px; flex-shrink:0; transition: transform .2s; }
 .recent-run-row.expanded .best-run-expand-icon{ transform: rotate(180deg); }
 .best-run-detail{ max-height:0; overflow:hidden; transition: max-height .25s ease; padding:0 4px; }
@@ -1068,7 +1077,7 @@ const I18N = {
     daysAgo: (n) => n===1 ? "1 dia atrás" : `${n} dias atrás`,
     seasonBestTitle: "Melhores Chaves da Season", lastUpdatedLabel: "Atualizado",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
-    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
+    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset", raidProgressLabel: "Progresso da Raid",
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
     ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score", currentLabel: "Atual",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
@@ -1169,7 +1178,7 @@ const I18N = {
     daysAgo: (n) => n===1 ? "1 day ago" : `${n} days ago`,
     seasonBestTitle: "Season Best", lastUpdatedLabel: "Updated",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Gear Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
-    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
+    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset", raidProgressLabel: "Raid Progress",
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
     ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution", currentLabel: "Current",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
@@ -2702,9 +2711,9 @@ function renderCharacterPage(){
           <div class="stat-tile-value" style="color:var(--gold)">${bestRun ? '+'+bestRun.mythic_level : '—'}</div>
           <div class="stat-tile-sub">${bestRun ? escapeHtml(bestRun.dungeon) : ''}</div>
         </div>
-        <div class="stat-tile stat-tile-center">
-          <div class="stat-tile-label">⏰ ${t('weeklyResetLabel')}</div>
-          <div class="stat-tile-value" style="color:var(--purple)">${daysLeft}</div>
+        <div class="stat-tile stat-tile-center stat-tile-outline">
+          <div class="stat-tile-label">🕐 ${t('weeklyResetLabel')}</div>
+          <div class="stat-tile-value" style="color:var(--purple)">⏳ ${daysLeft}</div>
           <div class="stat-tile-sub">${t('daysLeftLabel')}</div>
           <div class="stat-tile-sub2">${t('resetAtPrefix')}: ${resetAtStr}</div>
         </div>
@@ -2763,12 +2772,12 @@ function renderCharacterPage(){
             <div class="dash-card" id="section-weekly">
               <h3>${t('weeklyRewardsTitle')}</h3>
               <div class="reward-row">
-                <span class="reward-icon">🧳</span>
+                <span class="reward-icon">🏆</span>
                 <span class="reward-label">${t('raidsLabel')}</span>
                 <span class="reward-value">${raidSlots}/3</span>
               </div>
               <div class="reward-row">
-                <span class="reward-icon">⚔️</span>
+                <span class="reward-icon">🗝️</span>
                 <span class="reward-label">${t('mythicPlusLabel')}</span>
                 <span class="reward-value">${mplusSlots}/3</span>
               </div>
@@ -2781,11 +2790,10 @@ function renderCharacterPage(){
 
             <div class="dash-card" id="section-raid">
               <h3>${t('progressionTitle')}</h3>
-              <div class="raid-bar-row">
-                <span class="raid-bar-label">${RAID_NAME}</span>
-                <span class="raid-bar-count">${raidCount}/${RAID_POOL.length}</span>
-              </div>
+              <div class="raid-progress-label">${t('raidProgressLabel')}</div>
+              <div class="raid-progress-value">${raidCount}/${RAID_POOL.length}${highestRaidDiff ? ` <span class="raid-progress-diff">${highestRaidDiff}</span>` : ''}</div>
               <div class="pbar-track"><div class="pbar-fill" style="width:${RAID_POOL.length ? (raidCount/RAID_POOL.length*100) : 0}%; background:var(--purple)"></div></div>
+              <div class="raid-progress-name">${RAID_NAME}</div>
               <details class="hist-toggle" style="margin-top:12px;">
                 <summary>${t('bossByBossLabel')}</summary>
                 <div class="raid-table-wrap">
@@ -2864,21 +2872,21 @@ function renderCharacterPage(){
             <h3>${t('charPowerTitle')}</h3>
             <div class="char-power-row">
               <div class="char-power-stat">
-                <div class="stat-tile-label">${t('worldRankLabel')}</div>
+                <div class="stat-tile-label">Ⓡ ${t('worldRankLabel')}</div>
                 <div class="stat-tile-value-sm">${c.worldRank ? '#'+c.worldRank.toLocaleString() : '—'}</div>
               </div>
               <div class="char-power-stat">
-                <div class="stat-tile-label">${t('raidsLabel')}</div>
+                <div class="stat-tile-label">🏆 ${t('raidsLabel')}</div>
                 <div class="stat-tile-value-sm">${highestRaidDiff ? `${highestRaidDiff} ${highestRaidDiffCount}/${RAID_POOL.length}` : '—'}</div>
               </div>
             </div>
             <div class="char-power-row" style="margin-top:14px;">
               <div class="char-power-stat">
-                <div class="stat-tile-label">${t('seasonBestTitle')}</div>
+                <div class="stat-tile-label">🗝️ ${t('seasonBestTitle')}</div>
                 <div class="stat-tile-value-sm">${bestRun ? `${c.ioscore || '—'} +${bestRun.mythic_level}` : '—'}</div>
               </div>
               <div class="char-power-stat">
-                <div class="stat-tile-label">${t('gearIlvlLabel')}</div>
+                <div class="stat-tile-label">🛡️ ${t('gearIlvlLabel')}</div>
                 <div class="stat-tile-value-sm">${c.ilvl || '—'}</div>
               </div>
             </div>
