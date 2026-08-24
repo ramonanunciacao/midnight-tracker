@@ -231,6 +231,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-row-2col{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start; }
 .dash-row-3col{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; align-items:start; }
 .dash-row-uneven{ display:grid; grid-template-columns: 0.8fr 1.2fr; gap:16px; align-items:start; }
+.dash-row-flex{ display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start; }
 @media(max-width:1150px){
   .dash-layout{ grid-template-columns: 1fr; }
   .dash-row-3col{ grid-template-columns: 1fr 1fr; }
@@ -242,11 +243,29 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px; padding:18px;
 }
 .dash-card h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
-.chart-card{ max-width:440px; }
+.chart-card{ flex:1 1 340px; max-width:380px; }
+.vault-card{ flex:1 1 220px; max-width:260px; }
+.progression-card{ flex:1 1 220px; max-width:260px; }
+.vault-columns{ display:flex; gap:10px; }
+.vault-col{ flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.vault-col-icon{ font-size:16px; margin-bottom:2px; }
+.vault-col-label{ font-size:9px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-dim); font-weight:700; margin-bottom:8px; }
+.vault-col-slots{ display:flex; flex-direction:column; gap:6px; align-items:center; }
+.vault-slot{ display:flex; flex-direction:column; align-items:center; gap:2px; }
+.vault-slot-box{
+  width:20px; height:20px; border-radius:5px; background: var(--bg-panel); border:1px solid var(--hairline);
+  transition: all .15s;
+}
+.vault-slot.unlocked .vault-slot-box{
+  background: linear-gradient(160deg, var(--gold), var(--gold-dim)); border-color: var(--gold);
+  box-shadow: 0 0 8px -1px rgba(242,181,61,.7);
+}
+.vault-slot-req{ font-size:9px; color: var(--text-dim); }
+.vault-slot.unlocked .vault-slot-req{ color: var(--gold); font-weight:700; }
 .bis-dungeon-grid{ display:flex; flex-wrap:wrap; gap:10px; }
 .bis-dchip{
   display:flex; align-items:flex-start; gap:8px; background:var(--bg-panel-raised); border:1px solid var(--hairline);
-  border-radius:10px; padding:8px 10px; flex:1 1 200px; max-width:260px;
+  border-radius:10px; padding:8px 10px; flex:1 1 220px; max-width:300px;
 }
 .bis-dchip-icon-wrap{ position:relative; flex-shrink:0; }
 .bis-dchip-icon{ width:36px; height:36px; border-radius:7px; border:1px solid var(--hairline); object-fit:cover; display:block; }
@@ -256,12 +275,15 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   min-width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;
   padding:0 3px; border:1.5px solid var(--bg-panel-raised);
 }
-.bis-dchip-info{ min-width:0; }
-.bis-dchip-loc{ font-size:12px; font-weight:700; color:var(--text); margin-bottom:2px; }
-.bis-dchip-items{
-  font-size:10px; color:var(--text-dim); line-height:1.4; overflow:hidden; text-overflow:ellipsis;
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+.bis-dchip-info{ min-width:0; flex:1; }
+.bis-dchip-loc{ font-size:12px; font-weight:700; color:var(--text); margin-bottom:3px; }
+.bis-dchip-items{ display:flex; flex-direction:column; gap:2px; }
+.bis-dchip-item{ display:flex; align-items:center; gap:5px; }
+.bis-dchip-item-icon{ width:16px; height:16px; border-radius:3px; border:1px solid var(--hairline); flex-shrink:0; }
+.bis-dchip-item-name{
+  font-size:10px; color: var(--purple); text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
+.bis-dchip-item-name:hover{ text-decoration:underline; }
 .season-best-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
 .sb-tile{
   position:relative; flex:0 0 84px; height:112px; border-radius:9px; overflow:hidden; cursor:default;
@@ -321,22 +343,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .raid-bar-row{ display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px; }
 .raid-bar-label{ color: var(--text); }
 .raid-bar-count{ color: var(--text-dim); }
-.raid-progress-label{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
-.raid-progress-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:26px; color:var(--danger); margin-bottom:10px; }
+.raid-progress-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:24px; color:var(--danger); margin-bottom:8px; }
 .raid-progress-diff{ font-size:14px; color:var(--text-dim); font-weight:600; }
 .raid-progress-name{ font-size:12px; color:var(--text); margin-top:10px; }
 .char-power-row{ display:flex; gap:20px; }
 .char-power-stat{ flex:1; }
 
-/* Weekly Rewards: simple icon/label/fraction rows */
-.reward-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--hairline); }
-.reward-row:last-child{ border-bottom:none; }
-.reward-icon{
-  font-size:16px; width:32px; height:32px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
-  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px;
-}
-.reward-label{ flex:1; font-size:13px; color: var(--text); }
-.reward-value{ font-weight:700; color: var(--text); }
 
 /* Best in Slot rows */
 .bis-summary-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--hairline); }
@@ -1097,14 +1109,14 @@ const I18N = {
     daysAgo: (n) => n===1 ? "1 dia atrás" : `${n} dias atrás`,
     lastUpdatedLabel: "Atualizado",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
-    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset", raidProgressLabel: "Progresso da Raid",
+    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
     ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score", currentLabel: "Atual",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     viewMoreRunsLabel: "Ver mais runs",
     newsPlaceholder1: "Hotfixes recentes", newsPlaceholder2: "Novidades da Season 2", newsPlaceholder3: "Rotação de Mythic+ da semana",
-    comingSoon: "em breve", weeklyRewardsTitle: "Recompensas Semanais", progressionTitle: "Progressão",
+    comingSoon: "em breve", weeklyRewardsTitle: "Recompensas Semanais", progressionTitle: "Raid Progression",
     bossByBossLabel: "Ver detalhes por chefe",
     viewAllLabel: "Ver Tudo", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
@@ -1192,14 +1204,14 @@ const I18N = {
     daysAgo: (n) => n===1 ? "1 day ago" : `${n} days ago`,
     lastUpdatedLabel: "Updated",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Gear Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
-    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset", raidProgressLabel: "Raid Progress",
+    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
     ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution", currentLabel: "Current",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     viewMoreRunsLabel: "View more runs",
     newsPlaceholder1: "Recent hotfixes", newsPlaceholder2: "Season 2 highlights", newsPlaceholder3: "This week's Mythic+ rotation",
-    comingSoon: "coming soon", weeklyRewardsTitle: "Weekly Rewards", progressionTitle: "Progression",
+    comingSoon: "coming soon", weeklyRewardsTitle: "Weekly Rewards", progressionTitle: "Raid Progression",
     bossByBossLabel: "View boss-by-boss detail",
     viewAllLabel: "View All", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
@@ -2629,6 +2641,19 @@ function renderCharacterPage(){
     </div>`;
   };
 
+  const vaultColumn = (icon, label, thresholds, count) => `
+    <div class="vault-col">
+      <div class="vault-col-icon">${icon}</div>
+      <div class="vault-col-label">${label}</div>
+      <div class="vault-col-slots">
+        ${thresholds.map(th => `
+          <div class="vault-slot ${count>=th?'unlocked':''}">
+            <div class="vault-slot-box"></div>
+            <div class="vault-slot-req">${th}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
   const bisByLoc = new Map();
   sortedBis.forEach(b => {
     const loc = (b.source && b.source !== '—') ? b.source : t('bisNoLocation');
@@ -2638,15 +2663,24 @@ function renderCharacterPage(){
   const bisDungeonChip = ([loc, items]) => {
     const dungeonMatch = bestByDungeon.get(loc);
     const iconUrl = dungeonMatch ? (dungeonMatch.icon_url || dungeonMatch.background_image_url) : (items[0].icon || '');
+    const itemRow = b => {
+      const linkTag = b.whId ? 'a' : 'span';
+      const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer"` : '';
+      return `
+      <div class="bis-dchip-item">
+        ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
+        <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
+      </div>`;
+    };
     return `
-    <div class="bis-dchip" title="${escapeHtml(items.map(b => b.name).join(', '))}">
+    <div class="bis-dchip">
       <div class="bis-dchip-icon-wrap">
         ${iconUrl ? `<img class="bis-dchip-icon" src="${iconUrl}" alt="">` : `<div class="bis-dchip-icon bis-dchip-icon-empty"></div>`}
         <span class="bis-dchip-count">${items.length}</span>
       </div>
       <div class="bis-dchip-info">
         <div class="bis-dchip-loc">${escapeHtml(loc)}</div>
-        <div class="bis-dchip-items">${items.map(b => escapeHtml(b.name)).join(', ')}</div>
+        <div class="bis-dchip-items">${items.map(itemRow).join('')}</div>
       </div>
     </div>`;
   };
@@ -2741,7 +2775,7 @@ function renderCharacterPage(){
 
       <div class="dash-layout">
         <div class="dash-main">
-          <div class="dash-row-2col">
+          <div class="dash-row-flex">
             <div class="dash-card chart-card">
               <div class="dash-card-head">
                 <h3>${t('ilvlEvoTitle')}</h3>
@@ -2760,35 +2794,22 @@ function renderCharacterPage(){
               <div class="chart-readout-label">${t('currentLabel')} ${t('mRatingLabel')}</div>
               <div id="dashIoChart"></div>
             </div>
-          </div>
 
-          <div class="dash-row-uneven">
-            <div class="dash-card" id="section-weekly">
+            <div class="dash-card vault-card" id="section-weekly">
               <h3>${t('weeklyRewardsTitle')}</h3>
-              <div class="reward-row">
-                <span class="reward-icon">🏆</span>
-                <span class="reward-label">${t('raidsLabel')}</span>
-                <span class="reward-value">${raidSlots}/3</span>
-              </div>
-              <div class="reward-row">
-                <span class="reward-icon">🗝️</span>
-                <span class="reward-label">${t('mythicPlusLabel')}</span>
-                <span class="reward-value">${mplusSlots}/3</span>
-              </div>
-              <div class="reward-row">
-                <span class="reward-icon">🐉</span>
-                <span class="reward-label">${t('worldBossLabel')}</span>
-                <span class="reward-value">${worldSlots}/3</span>
+              <div class="vault-columns">
+                ${vaultColumn('🏆', t('raidsLabel'), [2,4,6], raidCount)}
+                ${vaultColumn('🗝️', t('mythicPlusLabel'), [2,4,8], dCount)}
+                ${vaultColumn('🐉', t('worldBossLabel'), [1,2,4], wbCount)}
               </div>
             </div>
 
-            <div class="dash-card" id="section-raid">
+            <div class="dash-card progression-card" id="section-raid">
               <h3>${t('progressionTitle')}</h3>
-              <div class="raid-progress-label">${t('raidProgressLabel')}</div>
               <div class="raid-progress-value">${raidCount}/${RAID_POOL.length}${highestRaidDiff ? ` <span class="raid-progress-diff">${highestRaidDiff}</span>` : ''}</div>
               <div class="pbar-track"><div class="pbar-fill" style="width:${RAID_POOL.length ? (raidCount/RAID_POOL.length*100) : 0}%; background:var(--purple)"></div></div>
               <div class="raid-progress-name">${RAID_NAME}</div>
-              <details class="hist-toggle" style="margin-top:12px;">
+              <details class="hist-toggle" style="margin-top:8px;">
                 <summary>${t('bossByBossLabel')}</summary>
                 <div class="raid-table-wrap">
                   <table class="raid-table">
@@ -2809,26 +2830,28 @@ function renderCharacterPage(){
           </div>
           ` : `<div id="section-mplus"></div>`}
 
-          <div class="dash-card">
-            <h3>${t('subtabRecent')}</h3>
-            <div class="recent-runs-list">
-              ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,5).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+          <div class="dash-row-2col">
+            <div class="dash-card">
+              <h3>${t('subtabRecent')}</h3>
+              <div class="recent-runs-list">
+                ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,5).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+              </div>
+              ${sortedRecentRuns.length > 5 ? `
+              <details class="hist-toggle" style="margin-top:6px;">
+                <summary>${t('viewMoreRunsLabel')}</summary>
+                <div class="recent-runs-list">${sortedRecentRuns.slice(5).map((run,i) => recentRunRow(run, i+5)).join('')}</div>
+              </details>
+              ` : ''}
             </div>
-            ${sortedRecentRuns.length > 5 ? `
-            <details class="hist-toggle" style="margin-top:6px;">
-              <summary>${t('viewMoreRunsLabel')}</summary>
-              <div class="recent-runs-list">${sortedRecentRuns.slice(5).map((run,i) => recentRunRow(run, i+5)).join('')}</div>
-            </details>
-            ` : ''}
-          </div>
 
-          <div class="dash-card">
-            <div class="dash-card-head">
-              <h3>${t('bisTitle')}</h3>
-              <button class="dash-viewall-link" id="dashBisViewAll">${t('viewAllLabel')}</button>
-            </div>
-            <div class="bis-list" id="dashBisList">
-              ${sortedBis.length ? sortedBis.map(bisSummaryRow).join('') : `<div class="empty-note">${t('noBisYet')}</div>`}
+            <div class="dash-card">
+              <div class="dash-card-head">
+                <h3>${t('bisTitle')}</h3>
+                <button class="dash-viewall-link" id="dashBisViewAll">${t('viewAllLabel')}</button>
+              </div>
+              <div class="bis-list" id="dashBisList">
+                ${sortedBis.length ? sortedBis.map(bisSummaryRow).join('') : `<div class="empty-note">${t('noBisYet')}</div>`}
+              </div>
             </div>
           </div>
 
