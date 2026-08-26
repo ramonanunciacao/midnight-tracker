@@ -628,7 +628,11 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bis-row .bdel:hover{ opacity:1; color:var(--danger); }
 .empty-note{ color:var(--text-dim); font-size:12px; }
 
-.bis-list-selector{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:16px; }
+.bis-list-selector-wrap{ margin-bottom:16px; }
+.bis-list-selector-label{
+  font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700; margin-bottom:8px;
+}
+.bis-list-selector{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:0; }
 .bis-list-pill{
   display:flex; align-items:center; gap:6px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
   border-radius:20px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600; color:var(--text-dim);
@@ -1080,7 +1084,10 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
       <button class="modal-close-btn" id="bisModalClose" aria-label="Close">✕</button>
     </div>
 
-    <div class="bis-list-selector" id="bisListSelector"></div>
+    <div class="bis-list-selector-wrap">
+      <h4 class="bis-list-selector-label" data-i18n="yourBisListsLabel">Suas listas BIS</h4>
+      <div class="bis-list-selector" id="bisListSelector"></div>
+    </div>
 
     <div class="bis-add" style="position:relative;">
       <input type="hidden" id="bisWhId" value="">
@@ -1271,6 +1278,7 @@ const I18N = {
     switchBisListConfirmTitle: "Trocar de lista BIS?",
     switchBisListConfirmMsg: (name) => `Isso vai ressincronizar as tags de BIS no seu gear de acordo com a lista "${name}". Itens que batem com essa lista mostrarão a tag; os que não batem, não.`,
     renameBisListHint: "Clique duas vezes para renomear",
+    yourBisListsLabel: "Suas listas BIS (ex: Tank, DPS) — clique duas vezes no nome para renomear",
     bisMatchTooltip: "Esse item está na sua lista de BIS", tierUnsetLabel: "Tier não definido",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
@@ -1377,6 +1385,7 @@ const I18N = {
     switchBisListConfirmTitle: "Switch BIS list?",
     switchBisListConfirmMsg: (name) => `This will resync the BIS tags on your gear according to the "${name}" list. Items that match it will show the tag; items that don't, won't.`,
     renameBisListHint: "Double-click to rename",
+    yourBisListsLabel: "Your BIS lists (e.g. Tank, DPS) — double-click a name to rename it",
     bisMatchTooltip: "This item is on your BIS list", tierUnsetLabel: "Tier not set",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
