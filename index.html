@@ -2201,18 +2201,27 @@ const ITEM_QUALITY_COLOR = { 0:"#9d9d9d", 1:"#ffffff", 2:"#1eff00", 3:"#0070dd",
 const BIS_TIERS = ['adventurer','veteran','champion','hero','mythic'];
 const BIS_TIER_LABEL = { adventurer:'Adventurer', veteran:'Veteran', champion:'Champion', hero:'Hero', mythic:'Mythic' };
 const BIS_TIER_COLOR = { adventurer:'#5dade2', veteran:'#a78bda', champion:'#e17b7b', hero:'#e0a458', mythic:'#f2d675' };
-/* Real Midnight Season 2 upgrade-track item level bands (Patch 12.1), sourced from
-   Method.gg's published per-rank Champion/Hero/Myth tables plus a community
-   track-vs-ilvl chart - not invented. Method.gg's own numbers show the top two
-   ranks of Champion (305, 308) exactly match the bottom two ranks of Hero, and
-   the top two ranks of Hero (318, 321) exactly match the bottom two ranks of
-   Myth - the same ilvl legitimately comes from either track depending on the
-   item's real source, which genuinely can't be reconstructed from ilvl alone
-   (this is a real WoW itemization quirk, not a gap in our data). Rather than
-   guess a side and risk a confidently wrong tag, those two ilvl pairs are left
-   unclassified (tier:null) here - the real tier for those still gets filled in
-   by fetchRealItemTier() below when it can reach Wowhead's live tooltip data,
-   which reads the item's actual "Upgrade Level" line instead of inferring one. */
+/* Real Midnight Season 2 (Mistcrests) upgrade-track item level bands, Patch 12.1.
+   Wowhead's own "Item Level Upgrade System for Midnight: Mistcrests" guide
+   (wowhead.com/guide/midnight/item-level-gear-upgrades-dawncrests) confirms the
+   five tracks used here (Adventurer/Veteran/Champion/Hero/Myth, one Mistcrest
+   type each) but its own breakdown table is an embedded image we can't read
+   programmatically. The actual numbers below are Method.gg's published per-rank
+   Champion/Hero/Myth tables (fetched directly, not paraphrased) plus a
+   community track-vs-ilvl reference chart for Adventurer/Veteran - not invented.
+   Method.gg's own numbers show the top two ranks of Champion (305, 308) exactly
+   match the bottom two ranks of Hero, and the top two ranks of Hero (318, 321)
+   exactly match the bottom two ranks of Myth - the same ilvl legitimately comes
+   from either track depending on the item's real source, which genuinely can't
+   be reconstructed from ilvl alone (a real WoW itemization quirk, not a gap in
+   our data). Rather than guess a side and risk a confidently wrong tag, those
+   two ilvl pairs are left unclassified (tier:null) here - the real tier for
+   those still gets filled in by fetchRealItemTier() below when it can reach
+   Wowhead's live tooltip data, which reads the item's actual "Upgrade Level"
+   line instead of inferring one. Adventurer/Veteran are far below any ilvl a
+   BIS-tracking endgame character would realistically be at, so their exact
+   boundaries matter little in practice; they're included for legend
+   completeness rather than expected to ever classify real equipped gear. */
 const GEAR_TRACK_BANDS = [
   { tier:'mythic', min:322 },    // unambiguous: past Hero's own max (321)
   { tier:null, min:318 },        // ambiguous: Hero 5-6/6 or Myth 1-2/6
