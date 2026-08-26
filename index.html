@@ -524,45 +524,49 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 
 /* todo */
 .todo-panel, .mural-panel, .upgrades-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
-.upgrades-sub{ font-size:12px; color:var(--text-dim); margin-bottom:14px; }
-.upgrades-mode-filter{ margin-bottom:14px; }
-.upgrades-table{ width:auto; min-width:420px; max-width:560px; border-collapse:collapse; font-size:12.5px; }
-.upgrades-table th{
-  text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim);
-  font-weight:700; padding:5px 10px; border-bottom:1px solid var(--hairline);
+.upgrades-sub{ font-size:13px; color:var(--text-dim); margin-bottom:18px; }
+.upgrades-layout{ display:flex; gap:24px; align-items:flex-start; }
+.upgrades-quiz-col{
+  flex:0 0 360px; background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:12px; padding:18px;
 }
-.upgrades-table td{ padding:5px 10px; border-bottom:1px solid var(--hairline); color:var(--text); line-height:1.3; }
+.upgrades-quiz-col-title{
+  font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:800; color:var(--text); margin-bottom:14px;
+}
+.upgrades-table-col{ flex:1; min-width:0; }
+.upgrades-mode-filter{ margin-bottom:16px; }
+.upgrades-table{ width:100%; border-collapse:collapse; font-size:14px; }
+.upgrades-table th{
+  text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim);
+  font-weight:700; padding:9px 14px; border-bottom:1px solid var(--hairline);
+}
+.upgrades-table td{ padding:11px 14px; border-bottom:1px solid var(--hairline); color:var(--text); line-height:1.4; }
 .upgrades-table tr:last-child td{ border-bottom:none; }
 .upgrades-table tr:hover td{ background: var(--bg-panel-raised); }
-.upg-level{ font-weight:700; font-family:'Rajdhani',sans-serif; font-size:14px; }
+.upg-level{ font-weight:700; font-family:'Rajdhani',sans-serif; font-size:17px; }
 .upg-ilvl{ color: var(--gold-dim); font-weight:700; text-align:right; }
-.upg-crest-chip{ font-weight:700; font-size:11.5px; white-space:nowrap; }
+.upg-crest-chip{ font-weight:700; font-size:13px; white-space:nowrap; }
 .upg-track-badge{
-  font-size:10.5px; font-weight:700; border:1px solid; border-radius:5px; padding:2px 7px; white-space:nowrap;
+  font-size:12px; font-weight:700; border:1px solid; border-radius:6px; padding:4px 10px; white-space:nowrap;
   display:inline-block;
 }
-.upg-nodata{ font-size:11px; color:var(--text-dim); font-style:italic; }
+.upg-nodata{ font-size:12px; color:var(--text-dim); font-style:italic; }
 .upg-note-hint{
-  display:inline-flex; align-items:center; justify-content:center; width:13px; height:13px; border-radius:50%;
-  border:1px solid var(--hairline); color:var(--text-dim); font-size:9px; cursor:help; margin-left:5px; vertical-align:middle;
+  display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%;
+  border:1px solid var(--hairline); color:var(--text-dim); font-size:10px; cursor:help; margin-left:6px; vertical-align:middle;
 }
 .upgrades-subtitle{
-  font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700;
-  margin:20px 0 8px;
+  font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700;
+  margin:24px 0 10px;
 }
-.upgrades-table-compact td, .upgrades-table-compact th{ padding:4px 10px; }
-.upgrades-source-note{ font-size:10.5px; color:var(--text-dim); margin-top:10px; line-height:1.5; max-width:560px; }
-.upgrades-head-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:14px; }
-.upgrades-head-row .upgrades-sub{ margin-bottom:0; }
-.quiz-trigger-btn{
-  background: linear-gradient(135deg, var(--purple), var(--purple-dim)); border:none; color:#fff; font-weight:800;
-  font-size:12px; padding:10px 16px; border-radius:10px; cursor:pointer; flex-shrink:0; white-space:nowrap;
-  transition: transform .15s, box-shadow .15s; box-shadow:0 4px 14px rgba(163,53,238,.25);
+.upgrades-table-compact td, .upgrades-table-compact th{ padding:7px 14px; }
+.upgrades-source-note{ font-size:11px; color:var(--text-dim); margin-top:12px; line-height:1.5; }
+@media(max-width:900px){
+  .upgrades-layout{ flex-direction:column; }
+  .upgrades-quiz-col{ flex-basis:auto; width:100%; }
 }
-.quiz-trigger-btn:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(163,53,238,.35); }
 
-/* Quiz modal - Kahoot-ish: big colorful tappable option cards, one question at a time */
-.quiz-modal{ width:520px; max-width:96vw; text-align:left; }
+/* Quiz - Kahoot-ish: big colorful tappable option cards, one question at a time.
+   Lives inline next to the table now, not in a modal. */
 .quiz-question{ font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:18px; }
 .quiz-options{ display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-bottom:18px; }
 .quiz-option-card{
@@ -605,6 +609,55 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   border-radius:10px; cursor:pointer; font-size:12px;
 }
 .quiz-restart-btn:hover{ color:var(--text); border-color: var(--gold-dim); }
+
+.bonusrolls-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
+.bonusrolls-info-note{
+  font-size:12px; color:var(--text-dim); line-height:1.6; background: var(--bg-panel-raised); border:1px solid var(--hairline);
+  border-radius:10px; padding:12px 14px; margin:14px 0 20px; max-width:640px;
+}
+.bonusrolls-available-row{
+  display:flex; align-items:center; justify-content:space-between; gap:16px; background: var(--bg-panel-raised);
+  border:1px solid var(--hairline); border-radius:12px; padding:16px 20px; max-width:640px; margin-bottom:18px;
+}
+.bonusrolls-available-label{ font-size:14px; font-weight:700; color:var(--text); }
+.bonusrolls-available-sub{ font-size:11px; color:var(--text-dim); margin-top:2px; }
+.bonusrolls-stepper{ display:flex; align-items:center; gap:14px; }
+.bonusrolls-stepper button{
+  width:32px; height:32px; border-radius:8px; background:var(--bg-panel); border:1px solid var(--hairline);
+  color:var(--text); font-size:16px; font-weight:800; cursor:pointer;
+}
+.bonusrolls-stepper button:hover{ border-color: var(--gold-dim); color: var(--gold); }
+.bonusrolls-stepper span{ font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:800; min-width:28px; text-align:center; }
+.bonusrolls-summary{ margin-bottom:20px; }
+.bonusrolls-summary-value{ font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:800; }
+.bonusrolls-spend-form{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px; max-width:640px; }
+.bonusrolls-spend-form select, .bonusrolls-spend-form input{
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px;
+  padding:9px 12px; font-size:13px;
+}
+.bonusrolls-spend-form select{ flex:1; min-width:160px; }
+.bonusrolls-spend-form input{ flex:1; min-width:160px; }
+.bonusrolls-spend-form button#bonusRollLogBtn{
+  background: var(--gold); border:none; color:#16141c; font-weight:800; padding:9px 18px; border-radius:8px; cursor:pointer;
+}
+.bonusrolls-spend-form button#bonusRollLogBtn:disabled{ opacity:.4; cursor:default; }
+.bonusrolls-history{ display:flex; flex-direction:column; gap:6px; max-width:640px; }
+.bonusroll-log-row{
+  display:flex; align-items:center; gap:12px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
+  border-radius:8px; padding:9px 12px;
+}
+.bonusroll-log-result{
+  width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:12px; flex-shrink:0;
+}
+.bonusroll-log-result.hit{ background: rgba(34,197,94,.18); color: var(--ok); }
+.bonusroll-log-result.miss{ background: rgba(239,68,68,.18); color: var(--danger); }
+.bonusroll-log-info{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+.bonusroll-log-loc{ font-size:12.5px; font-weight:700; color:var(--text); }
+.bonusroll-log-item{ font-size:11px; color:var(--text-dim); }
+.bonusroll-log-date{ font-size:11px; color:var(--text-dim); flex-shrink:0; }
+.bonusroll-log-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; flex-shrink:0; }
+.bonusroll-log-del:hover{ opacity:1; color:var(--danger); }
 .todo-add{ display:flex; gap:8px; margin-bottom:18px; }
 .todo-add input{ flex:1; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px; padding:10px 12px; font-size:14px; }
 .todo-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 18px; border-radius:8px; cursor:pointer; }
@@ -1045,6 +1098,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
       <button class="sidebar-link" data-tab="upgrades" title="Upgrade Chart">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2 10l2-2 2 2M9 4l2-2 2 2M16 13l2-2 2 2"/></svg></span><span class="sidebar-label" data-i18n="navUpgrades">Upgrade Chart</span>
       </button>
+      <button class="sidebar-link" data-tab="bonusrolls" title="Bonus Rolls">
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="sidebar-label" data-i18n="navBonusRolls">Bonus Rolls</span>
+      </button>
 
       <div class="sidebar-footer">
         <button class="sidebar-footer-btn" id="refreshDashboardBtn" title="Atualizar todos os personagens no Raider.IO">
@@ -1100,18 +1156,57 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 
   <section class="tab" id="tab-upgrades">
     <div class="upgrades-panel">
-      <div class="upgrades-head-row">
-        <div>
-          <h2 data-i18n="upgradesTitle">Upgrade Chart</h2>
-          <div class="upgrades-sub" data-i18n="upgradesSub">Veja exatamente o que cada nível de Mythic+ e cada boss de raid dropa</div>
+      <h2 data-i18n="upgradesTitle">Upgrade Chart</h2>
+      <div class="upgrades-sub" data-i18n="upgradesSub">Veja exatamente o que cada nível de Mythic+ e cada boss de raid dropa</div>
+      <div class="upgrades-layout">
+        <div class="upgrades-quiz-col">
+          <div class="upgrades-quiz-col-title" data-i18n="quizTriggerBtn">🎯 O que devo farmar?</div>
+          <div id="quizBody"></div>
         </div>
-        <button class="quiz-trigger-btn" id="upgradesQuizBtn" data-i18n="quizTriggerBtn">🎯 O que devo farmar?</button>
+        <div class="upgrades-table-col">
+          <div class="filter-group upgrades-mode-filter" id="upgradesModeFilter">
+            <button data-mode="mplus" class="active" data-i18n="upgradesMplusTab">Mythic+</button>
+            <button data-mode="raid" data-i18n="upgradesRaidTab">Raid</button>
+          </div>
+          <div id="upgradesTableWrap"></div>
+        </div>
       </div>
-      <div class="filter-group upgrades-mode-filter" id="upgradesModeFilter">
-        <button data-mode="mplus" class="active" data-i18n="upgradesMplusTab">Mythic+</button>
-        <button data-mode="raid" data-i18n="upgradesRaidTab">Raid</button>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-bonusrolls">
+    <div class="bonusrolls-panel">
+      <h2 data-i18n="bonusRollsTitle">Bonus Rolls</h2>
+      <div class="upgrades-sub" data-i18n="bonusRollsSub">Acompanhe seus bonus rolls: quantos você tem, onde gastou, e se acertou o item</div>
+      <div class="bonusrolls-info-note" data-i18n="bonusRollsInfoNote">Cada bonus roll custa 1 Nebulous Voidcore e pode ser gasto em bosses de raid, dungeons Mythic+, Bountiful Delves ou Nightmare Prey Hunts após completar o conteúdo. O item level é o mesmo do Great Vault daquele conteúdo, e um item já obtido some da lista - por isso dá pra farmar um item específico.</div>
+
+      <div class="bonusrolls-available-row">
+        <div>
+          <div class="bonusrolls-available-label" data-i18n="bonusRollsAvailableLabel">Bonus Rolls disponíveis</div>
+          <div class="bonusrolls-available-sub" data-i18n="bonusRollsAvailableSub">Ajuste manualmente conforme você ganha ou gasta</div>
+        </div>
+        <div class="bonusrolls-stepper">
+          <button id="bonusRollDecBtn">−</button>
+          <span id="bonusRollAvailableVal">0</span>
+          <button id="bonusRollIncBtn">+</button>
+        </div>
       </div>
-      <div id="upgradesTableWrap"></div>
+
+      <div class="bonusrolls-summary" id="bonusRollsSummary"></div>
+
+      <h3 class="upgrades-subtitle" data-i18n="bonusRollsLogSpendTitle">Registrar um gasto</h3>
+      <div class="bonusrolls-spend-form">
+        <select id="bonusRollLocationSelect"></select>
+        <input type="text" id="bonusRollItemInput" data-i18n-placeholder="bonusRollItemPlaceholder" placeholder="Item recebido (opcional)">
+        <div class="filter-group" id="bonusRollResultToggle">
+          <button data-result="hit" class="active" data-i18n="bonusRollHitLabel">Acertou</button>
+          <button data-result="miss" data-i18n="bonusRollMissLabel">Errou</button>
+        </div>
+        <button id="bonusRollLogBtn" data-i18n="bonusRollLogBtn">Registrar</button>
+      </div>
+
+      <h3 class="upgrades-subtitle" data-i18n="bonusRollsHistoryTitle">Histórico</h3>
+      <div class="bonusrolls-history" id="bonusRollsHistory"></div>
     </div>
   </section>
     </div>
@@ -1305,15 +1400,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   </div>
 </div>
 
-<div class="modal-overlay quiz-modal-overlay" id="upgradesQuizModal" style="display:none;">
-  <div class="modal quiz-modal">
-    <div class="bis-modal-head">
-      <h3 data-i18n="quizTitle">Encontre sua dungeon ideal</h3>
-      <button class="modal-close-btn" id="quizModalClose" aria-label="Close">✕</button>
-    </div>
-    <div id="quizBody"></div>
-  </div>
-</div>
 
 <script>
 /* ============ FIREBASE SETUP ============
@@ -1395,6 +1481,18 @@ const I18N = {
     quizRestartBtn: "Recomeçar", quizResultLabel: "Sua dungeon alvo é",
     quizResultExplain: (track, rank) => `Dropa item ${track} ${rank}`,
     quizResultCrestPart: (amt, crest) => ` e ${amt}x crest ${crest} — o maior número de crests possível nesse tier.`,
+    navBonusRolls: "Bonus Rolls",
+    bonusRollsTitle: "Bonus Rolls", bonusRollsSub: "Acompanhe seus bonus rolls: quantos você tem, onde gastou, e se acertou o item",
+    bonusRollsInfoNote: "Cada bonus roll custa 1 Nebulous Voidcore e pode ser gasto em bosses de raid, dungeons Mythic+, Bountiful Delves ou Nightmare Prey Hunts após completar o conteúdo. O item level é o mesmo do Great Vault daquele conteúdo, e um item já obtido some da lista - por isso dá pra farmar um item específico.",
+    bonusRollsAvailableLabel: "Bonus Rolls disponíveis", bonusRollsAvailableSub: "Ajuste manualmente conforme você ganha ou gasta",
+    bonusRollsLogSpendTitle: "Registrar um gasto", bonusRollItemPlaceholder: "Item recebido (opcional)",
+    bonusRollHitLabel: "Acertou", bonusRollMissLabel: "Errou", bonusRollLogBtn: "Registrar",
+    bonusRollsHistoryTitle: "Histórico", bonusRollsNoHistory: "Nenhum gasto registrado ainda.",
+    bonusRollsNoneAvailable: "Você não tem bonus rolls disponíveis - ajuste o contador acima primeiro.",
+    bonusRollsSummaryText: (hits, total, pct) => total ? `${hits}/${total} acertos (${pct}%)` : "Nenhum gasto registrado ainda",
+    bonusRollOptGroupRaid: "Raid", bonusRollOptGroupMplus: "Mythic+", bonusRollOptGroupOther: "Outros",
+    bonusRollDelve: "Bountiful Delve", bonusRollPreyHunt: "Nightmare Prey Hunt",
+    bonusRollDeleteConfirm: "Remover esse registro? Isso vai devolver 1 bonus roll disponível.",
     raidUlatekNormalNote: "Ula'tek (último boss) dropa 20 Champion + 10 Hero, em vez do padrão da dificuldade Normal",
     raidUlatekHeroicNote: "Ula'tek (último boss) dropa 20 Hero + 10 Myth, em vez do padrão da dificuldade Heroica",
     loading: "Carregando...",
@@ -1523,6 +1621,18 @@ const I18N = {
     quizRestartBtn: "Start over", quizResultLabel: "Your target dungeon is",
     quizResultExplain: (track, rank) => `Drops ${track} ${rank} gear`,
     quizResultCrestPart: (amt, crest) => ` and ${amt}x ${crest} crests - the highest crest yield at that tier.`,
+    navBonusRolls: "Bonus Rolls",
+    bonusRollsTitle: "Bonus Rolls", bonusRollsSub: "Track your bonus rolls: how many you have, where you spent them, and whether you hit",
+    bonusRollsInfoNote: "Each bonus roll costs 1 Nebulous Voidcore and can be spent on raid bosses, Mythic+ dungeons, Bountiful Delves, or Nightmare Prey Hunts after completing the content. Item level matches that content's Great Vault reward, and an item you've already looted drops off the table - so you can target-farm a specific item.",
+    bonusRollsAvailableLabel: "Bonus Rolls available", bonusRollsAvailableSub: "Adjust manually as you earn or spend them",
+    bonusRollsLogSpendTitle: "Log a spend", bonusRollItemPlaceholder: "Item received (optional)",
+    bonusRollHitLabel: "Hit", bonusRollMissLabel: "Miss", bonusRollLogBtn: "Log it",
+    bonusRollsHistoryTitle: "History", bonusRollsNoHistory: "No spends logged yet.",
+    bonusRollsNoneAvailable: "You don't have any bonus rolls available - adjust the counter above first.",
+    bonusRollsSummaryText: (hits, total, pct) => total ? `${hits}/${total} hits (${pct}%)` : "No spends logged yet",
+    bonusRollOptGroupRaid: "Raid", bonusRollOptGroupMplus: "Mythic+", bonusRollOptGroupOther: "Other",
+    bonusRollDelve: "Bountiful Delve", bonusRollPreyHunt: "Nightmare Prey Hunt",
+    bonusRollDeleteConfirm: "Remove this entry? This will give back 1 available bonus roll.",
     raidUlatekNormalNote: "Ula'tek (last boss) drops 20 Champion + 10 Hero, instead of Normal difficulty's usual amount",
     raidUlatekHeroicNote: "Ula'tek (last boss) drops 20 Hero + 10 Myth, instead of Heroic difficulty's usual amount",
     loading: "Loading...",
@@ -3266,6 +3376,9 @@ function normalizeChar(c){
   if(c.faction === undefined) c.faction = null;
   if(c.spec === undefined) c.spec = null;
   if(c.lastWeeklyReset === undefined) c.lastWeeklyReset = null;
+  if(!c.bonusRolls || typeof c.bonusRolls !== 'object') c.bonusRolls = { available: 0, log: [] };
+  if(typeof c.bonusRolls.available !== 'number') c.bonusRolls.available = 0;
+  if(!Array.isArray(c.bonusRolls.log)) c.bonusRolls.log = [];
   return c;
 }
 
@@ -3291,7 +3404,8 @@ function makeCharObj(id, name, cls, realm, realmName, region){
     todos: DEFAULT_TODOS_I18N[currentLang].map(text => ({id: uid(), text, done:false})),
     highestKey: 0, history: [], bisLists: [defaultBisList], activeBisListId: defaultBisList.id,
     gearItems: null, mplusBestRuns: [], mplusRecentRuns: [],
-    avatarUrl: null, ioscoreSeason1: 0, lastSyncedAt: null, worldRank: null
+    avatarUrl: null, ioscoreSeason1: 0, lastSyncedAt: null, worldRank: null,
+    bonusRolls: { available: 0, log: [] }
   };
 }
 
@@ -4289,8 +4403,7 @@ document.addEventListener('keydown', (e) => {
   if(e.key !== 'Escape') return;
   if(document.getElementById('bisBrowseModal').style.display !== 'none'){ closeBisBrowseModal(); return; }
   if(document.getElementById('bisModal').style.display !== 'none'){ closeBisModal(); return; }
-  if(document.getElementById('recentRunsModal').style.display !== 'none'){ closeRecentRunsModal(); return; }
-  if(document.getElementById('upgradesQuizModal').style.display !== 'none') closeQuizModal();
+  if(document.getElementById('recentRunsModal').style.display !== 'none') closeRecentRunsModal();
 });
 
 function openBisBrowseModal(){
@@ -4858,13 +4971,9 @@ let quizWants = [];
 let quizItemTier = null;
 let quizCrestTier = null;
 
-function openQuizModal(){
+function resetQuiz(){
   quizWants = []; quizItemTier = null; quizCrestTier = null;
   renderQuizWantsStep();
-  document.getElementById('upgradesQuizModal').style.display = 'flex';
-}
-function closeQuizModal(){
-  document.getElementById('upgradesQuizModal').style.display = 'none';
 }
 function quizGoNext(){
   if(quizWants.includes('item') && quizItemTier === null){ renderQuizTierStep('item'); return; }
@@ -4921,7 +5030,7 @@ function renderQuizResult(){
     body.innerHTML = `
       <div class="quiz-result-empty">${t('quizNoMatchMsg')}</div>
       <button class="quiz-restart-btn" id="quizRestartBtn">${t('quizRestartBtn')}</button>`;
-    document.getElementById('quizRestartBtn').addEventListener('click', openQuizModal);
+    document.getElementById('quizRestartBtn').addEventListener('click', resetQuiz);
     return;
   }
   // Among matching levels, the highest-crest-yield one is strictly the best target -
@@ -4945,14 +5054,99 @@ function renderQuizResult(){
         </div>`).join('')}
     </div>
     <button class="quiz-restart-btn" id="quizRestartBtn">${t('quizRestartBtn')}</button>`;
-  document.getElementById('quizRestartBtn').addEventListener('click', openQuizModal);
+  document.getElementById('quizRestartBtn').addEventListener('click', resetQuiz);
   requestAnimationFrame(() => requestAnimationFrame(() => {
     document.querySelectorAll('.quiz-ruler-tick').forEach(el => el.classList.add('revealed'));
   }));
 }
-document.getElementById('upgradesQuizBtn').addEventListener('click', openQuizModal);
-document.getElementById('quizModalClose').addEventListener('click', closeQuizModal);
-document.getElementById('upgradesQuizModal').addEventListener('click', (e) => { if(e.target.id === 'upgradesQuizModal') closeQuizModal(); });
+
+/* ---------------- Bonus Rolls tracker (per character, fully manual - the game
+   itself doesn't expose bonus roll history anywhere). ---------------- */
+let bonusRollResult = 'hit';
+function bonusRollLocationOptionsHtml(){
+  return `
+    <optgroup label="${t('bonusRollOptGroupRaid')}">
+      ${RAID_POOL.map(b => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('')}
+    </optgroup>
+    <optgroup label="${t('bonusRollOptGroupMplus')}">
+      ${DUNGEON_POOL.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('')}
+    </optgroup>
+    <optgroup label="${t('bonusRollOptGroupOther')}">
+      <option value="${escapeHtml(t('bonusRollDelve'))}">${escapeHtml(t('bonusRollDelve'))}</option>
+      <option value="${escapeHtml(t('bonusRollPreyHunt'))}">${escapeHtml(t('bonusRollPreyHunt'))}</option>
+    </optgroup>`;
+}
+function renderBonusRollsHistory(c){
+  const wrap = document.getElementById('bonusRollsHistory');
+  const log = [...c.bonusRolls.log].sort((a,b) => b.ts - a.ts);
+  if(!log.length){ wrap.innerHTML = `<div class="empty-note">${t('bonusRollsNoHistory')}</div>`; return; }
+  wrap.innerHTML = log.map(entry => `
+    <div class="bonusroll-log-row">
+      <span class="bonusroll-log-result ${entry.result}">${entry.result === 'hit' ? '✓' : '✕'}</span>
+      <div class="bonusroll-log-info">
+        <span class="bonusroll-log-loc">${escapeHtml(entry.location)}</span>
+        ${entry.item ? `<span class="bonusroll-log-item">${escapeHtml(entry.item)}</span>` : ''}
+      </div>
+      <span class="bonusroll-log-date">${new Date(entry.ts).toLocaleDateString(currentLang==='pt'?'pt-BR':'en-US')}</span>
+      <button class="bonusroll-log-del" data-id="${entry.id}">✕</button>
+    </div>`).join('');
+  wrap.querySelectorAll('.bonusroll-log-del').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const ok = await customConfirm(t('bonusRollDeleteConfirm'), t('bonusRollsHistoryTitle'));
+      if(!ok) return;
+      c.bonusRolls.log = c.bonusRolls.log.filter(e => e.id !== btn.dataset.id);
+      c.bonusRolls.available += 1;
+      await saveChar(c);
+      renderBonusRolls();
+    });
+  });
+}
+function renderBonusRolls(){
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  if(!c) return;
+  document.getElementById('bonusRollAvailableVal').textContent = c.bonusRolls.available;
+  const hits = c.bonusRolls.log.filter(e => e.result === 'hit').length;
+  const total = c.bonusRolls.log.length;
+  const pct = total ? Math.round(hits/total*100) : 0;
+  document.getElementById('bonusRollsSummary').innerHTML =
+    `<div class="bonusrolls-summary-value" style="color:${total ? (pct>=50?'var(--ok)':'var(--danger)') : 'var(--text-dim)'}">${t('bonusRollsSummaryText', hits, total, pct)}</div>`;
+  document.getElementById('bonusRollLocationSelect').innerHTML = bonusRollLocationOptionsHtml();
+  const logBtn = document.getElementById('bonusRollLogBtn');
+  logBtn.disabled = c.bonusRolls.available <= 0;
+  logBtn.title = c.bonusRolls.available <= 0 ? t('bonusRollsNoneAvailable') : '';
+  renderBonusRollsHistory(c);
+}
+document.getElementById('bonusRollIncBtn').addEventListener('click', async () => {
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  if(!c) return;
+  c.bonusRolls.available += 1;
+  await saveChar(c);
+  renderBonusRolls();
+});
+document.getElementById('bonusRollDecBtn').addEventListener('click', async () => {
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  if(!c) return;
+  c.bonusRolls.available = Math.max(0, c.bonusRolls.available - 1);
+  await saveChar(c);
+  renderBonusRolls();
+});
+document.getElementById('bonusRollResultToggle').querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    bonusRollResult = btn.dataset.result;
+    document.getElementById('bonusRollResultToggle').querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+  });
+});
+document.getElementById('bonusRollLogBtn').addEventListener('click', async () => {
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  if(!c || c.bonusRolls.available <= 0) return;
+  const location = document.getElementById('bonusRollLocationSelect').value;
+  const item = document.getElementById('bonusRollItemInput').value.trim();
+  c.bonusRolls.log.push({ id: uid(), ts: Date.now(), location, item, result: bonusRollResult });
+  c.bonusRolls.available -= 1;
+  await saveChar(c);
+  document.getElementById('bonusRollItemInput').value = '';
+  renderBonusRolls();
+});
 
 /* ---------------- Tabs ---------------- */
 function switchToTab(tabName){
@@ -4985,7 +5179,8 @@ document.querySelectorAll('.sidebar-link').forEach(btn => {
     }
     if(btn.dataset.tab === 'dashboard'){ goToDashboard(); return; }
     if(btn.dataset.tab === 'bis'){ openBisModal(); return; }
-    if(btn.dataset.tab === 'upgrades'){ switchToTab('upgrades'); renderUpgradesTable(); return; }
+    if(btn.dataset.tab === 'upgrades'){ switchToTab('upgrades'); renderUpgradesTable(); resetQuiz(); return; }
+    if(btn.dataset.tab === 'bonusrolls'){ switchToTab('bonusrolls'); renderBonusRolls(); return; }
     switchToTab(btn.dataset.tab);
   });
 });
