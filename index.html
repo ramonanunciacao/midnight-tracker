@@ -970,6 +970,28 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .murlok-suggestion-row{ margin-left:22px; padding-left:8px; border-left:2px solid var(--cyan); opacity:.92; }
 .murlok-suggestion-icon{ flex-shrink:0; }
 .murlok-suggestion-tag{ color: var(--cyan); font-size:10px; text-transform:uppercase; letter-spacing:.03em; flex-shrink:0; }
+.murlok-drift-banner{
+  display:flex; flex-direction:column; gap:10px; background: var(--bg-panel-raised);
+  border:1px solid var(--gold-dim); border-left:4px solid var(--gold); border-radius:10px;
+  padding:12px 16px; margin-bottom:14px;
+}
+.murlok-drift-head{ font-weight:700; color: var(--gold); font-size:13px; }
+.murlok-drift-list{ display:flex; flex-direction:column; gap:6px; }
+.murlok-drift-row{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; }
+.murlok-drift-slot{ color: var(--text-dim); font-weight:700; margin-right:2px; }
+.murlok-drift-item{ display:inline-flex; align-items:center; gap:4px; }
+.murlok-drift-item img{ width:16px; height:16px; border-radius:3px; }
+.murlok-drift-item-old{ color: var(--text-dim); text-decoration: line-through; opacity:.8; }
+.murlok-drift-item-new{ color: var(--text); font-weight:600; }
+.murlok-drift-arrow{ color: var(--text-dim); }
+.murlok-drift-actions{ display:flex; gap:8px; }
+.murlok-drift-apply-btn, .murlok-drift-dismiss-btn{
+  font-size:12px; padding:6px 14px; border-radius:6px; cursor:pointer;
+  border:1px solid var(--hairline); background: var(--bg-panel); color: var(--text);
+}
+.murlok-drift-apply-btn{ border-color: var(--gold-dim); color: var(--gold); }
+.murlok-drift-apply-btn:hover{ background: var(--gold-dim); color:#1a1206; }
+.murlok-drift-dismiss-btn:hover{ background: var(--bg-panel-raised); filter:brightness(1.3); }
 .bis-browse-item-slot{ color:var(--text-dim); font-size:11px; margin-left:auto; flex-shrink:0; }
 .bis-browse-item-added-badge{
   color: var(--ok); font-size:11px; font-weight:700; flex-shrink:0; margin-left:auto; white-space:nowrap;
@@ -1843,6 +1865,8 @@ const I18N = {
     murlokTierSetLabel: "Tier Set", murlokOldSeasonLabel: "Season Anterior",
     murlokCraftLabel: "Craft", murlokSourceUnknown: "Fonte desconhecida",
     murlokSuggestionTag: "Sugestão de stats similares",
+    murlokDriftTitle: "A build recomendada do Murlok mudou desde que você importou",
+    murlokDriftApplyBtn: "Atualizar lista", murlokDriftDismissBtn: "Ignorar",
     murlokBuildSpecLabel: (spec, cls) => `Build de ${spec} ${cls} (top jogadores)`,
     murlokNoSpecMsg: "Sincronize o personagem pra saber a spec antes de buscar a build.",
     murlokPlayerRealmPlaceholder: "Realm (ex: illidan)", murlokPlayerNamePlaceholder: "Nome do personagem",
@@ -2014,6 +2038,8 @@ const I18N = {
     murlokTierSetLabel: "Tier Set", murlokOldSeasonLabel: "Previous Season",
     murlokCraftLabel: "Craft", murlokSourceUnknown: "Unknown source",
     murlokSuggestionTag: "Similar-stat suggestion",
+    murlokDriftTitle: "Murlok's recommended build has changed since you imported it",
+    murlokDriftApplyBtn: "Update list", murlokDriftDismissBtn: "Dismiss",
     murlokBuildSpecLabel: (spec, cls) => `${spec} ${cls} build (top players)`,
     murlokNoSpecMsg: "Sync the character to know its spec before fetching a build.",
     murlokPlayerRealmPlaceholder: "Realm (e.g. illidan)", murlokPlayerNamePlaceholder: "Character name",
@@ -4040,6 +4066,7 @@ function renderCharacterPage(){
 
   container.innerHTML = `
     <div class="cpage" style="--class-color:${color}">
+      <div id="murlokDriftBanner"></div>
       <div class="cpage-topgrid" style="${headerBannerUrl ? `background-image:url('${headerBannerUrl}');` : ''}">
         <div class="stat-tile cpage-identity">
           <div class="cpage-portrait">
@@ -4379,6 +4406,9 @@ function renderCharacterPage(){
   container.querySelector('#todoAddBtn').addEventListener('click', addTodo);
   container.querySelector('#todoInput').addEventListener('keydown', (e) => { if(e.key==='Enter') addTodo(); });
   renderTodos();
+
+  renderMurlokDriftBanner(c);
+  maybeCheckMurlokDrift(c);
 }
 
 function pushHistory(c){
@@ -5647,6 +5677,13 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
       whId: r.item.whId || null, icon: r.item.icon || null, boss: null
     });
   });
+  if(murlokImportMode === 'build'){
+    // Remember which build this list mirrors so we can quietly re-check it later and
+    // flag it if the top players' picks move on to something else.
+    c.murlokBuildContext = { class: MURLOK_CLASS_SLUG[c.class], spec: murlokSpecSlug, hero: murlokHeroSlug || '' };
+    c.murlokLastChecked = Date.now();
+    c.murlokPendingChanges = [];
+  }
   c.activeBisListId = murlokList.id;
   await saveChar(c);
   renderBisListSelector();
@@ -5654,6 +5691,115 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
   murlokSelected = new Set();
   renderMurlokResult();
 });
+
+/* The imported "Murlok.IO List" is a snapshot of the top-players build at import time,
+   and that build drifts as the sample changes what it uses (a new trending trinket, etc.).
+   Once a day per character we quietly re-fetch the same live build and diff it slot by
+   slot against what's stored; if anything real changed, a dismissible banner shows up on
+   the dashboard with the actual before/after items - nothing gets swapped automatically. */
+const MURLOK_DRIFT_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
+async function checkMurlokDrift(c){
+  if(!c.murlokBuildContext) return;
+  const murlokList = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
+  if(!murlokList || !murlokList.items.length) return;
+  const { class: clsSlug, spec: specSlug, hero: heroSlug } = c.murlokBuildContext;
+  if(!clsSlug || !specSlug) return;
+  let data;
+  try{ data = await fetchMurlokGear({ mode: 'build', class: clsSlug, spec: specSlug, hero: heroSlug || '' }); }
+  catch(e){ return; }
+  c.murlokLastChecked = Date.now();
+  if(!data || !data.slots){ await saveChar(c); return; }
+  const changes = [];
+  MURLOK_SLOT_ORDER.forEach(murlokSlot => {
+    const raw = data.slots[murlokSlot];
+    if(!raw || !raw.length) return;
+    const bisSlot = MURLOK_SLOT_TO_BIS[murlokSlot];
+    const isMulti = murlokSlot === 'Rings' || murlokSlot === 'Trinkets';
+    const seen = new Set(); const livePicks = [];
+    for(const it of raw){
+      if(seen.has(it.whId)) continue;
+      seen.add(it.whId); livePicks.push(it);
+      if(livePicks.length === (isMulti ? 2 : 1)) break;
+    }
+    const storedItems = murlokList.items.filter(b => b.slot === bisSlot && b.whId);
+    if(!storedItems.length) return;
+    const storedIds = new Set(storedItems.map(b => String(b.whId)));
+    const liveIds = new Set(livePicks.map(it => String(it.whId)));
+    const added = livePicks.filter(it => !storedIds.has(String(it.whId)));
+    const removed = storedItems.filter(b => !liveIds.has(String(b.whId)));
+    if(added.length || removed.length) changes.push({ bisSlot, added, removed });
+  });
+  c.murlokPendingChanges = changes;
+  await saveChar(c);
+}
+function maybeCheckMurlokDrift(c){
+  if(!c.murlokBuildContext) return;
+  const last = c.murlokLastChecked || 0;
+  if(Date.now() - last < MURLOK_DRIFT_CHECK_INTERVAL_MS) return;
+  checkMurlokDrift(c).then(() => {
+    if(state.dashboardActiveChar === c.id) renderMurlokDriftBanner(c);
+  });
+}
+function murlokDriftItemChip(item, cls){
+  const icon = item.icon ? `<img class="bicon-img" src="${item.icon}" alt="">` : '';
+  return `<span class="murlok-drift-item ${cls}">${icon}${escapeHtml(item.name)}</span>`;
+}
+function renderMurlokDriftBanner(c){
+  const wrap = document.getElementById('murlokDriftBanner');
+  if(!wrap) return;
+  const changes = c.murlokPendingChanges || [];
+  if(!changes.length){ wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `
+    <div class="murlok-drift-banner">
+      <div class="murlok-drift-head">⚠️ ${t('murlokDriftTitle')}</div>
+      <div class="murlok-drift-list">
+        ${changes.map(ch => `
+          <div class="murlok-drift-row">
+            <span class="murlok-drift-slot">${BIS_SLOT_GROUP_LABEL[bisSlotGroupKey(ch.bisSlot)] || ch.bisSlot}:</span>
+            ${ch.removed.map(it => murlokDriftItemChip(it, 'murlok-drift-item-old')).join('')}
+            ${(ch.removed.length && ch.added.length) ? '<span class="murlok-drift-arrow">→</span>' : ''}
+            ${ch.added.map(it => murlokDriftItemChip(it, 'murlok-drift-item-new')).join('')}
+          </div>`).join('')}
+      </div>
+      <div class="murlok-drift-actions">
+        <button class="murlok-drift-apply-btn" id="murlokDriftApplyBtn">${t('murlokDriftApplyBtn')}</button>
+        <button class="murlok-drift-dismiss-btn" id="murlokDriftDismissBtn">${t('murlokDriftDismissBtn')}</button>
+      </div>
+    </div>`;
+  document.getElementById('murlokDriftApplyBtn').addEventListener('click', () => applyMurlokDrift(c));
+  document.getElementById('murlokDriftDismissBtn').addEventListener('click', async () => {
+    c.murlokPendingChanges = [];
+    await saveChar(c);
+    renderMurlokDriftBanner(c);
+  });
+}
+async function applyMurlokDrift(c){
+  const murlokList = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
+  if(!murlokList) return;
+  const changes = c.murlokPendingChanges || [];
+  for(const ch of changes){
+    ch.removed.forEach(old => {
+      const idx = murlokList.items.findIndex(b => String(b.whId) === String(old.whId));
+      if(idx !== -1) murlokList.items.splice(idx, 1);
+    });
+    for(const item of ch.added){
+      let loc = findMurlokItemLocation(item.whId);
+      if(!loc){
+        const result = await classifyUnknownMurlokItem(item.whId, ch.bisSlot);
+        loc = result.label;
+      }
+      murlokList.items.push({
+        id: uid(), name: item.name, slot: ch.bisSlot, source: loc || '—',
+        whId: item.whId || null, icon: item.icon || null, boss: null
+      });
+    }
+  }
+  c.murlokPendingChanges = [];
+  await saveChar(c);
+  renderMurlokDriftBanner(c);
+  renderBisListSelector();
+  renderBisList();
+}
 
 function renderBisSearchResults(query){
   const panel = document.getElementById('bisSearchResults');
