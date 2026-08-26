@@ -257,9 +257,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
    Progression as internal sections (divided by hairlines) instead of four
    separate boxes, so the row reads as one consistent panel. */
 .dash-topgroup{ display:flex; flex-wrap:wrap; padding:0; align-items:stretch; }
-.dash-topgroup-item{ flex:1 1 320px; padding:18px; border-right:1px solid var(--hairline); }
+.dash-topgroup-item{ flex:1 1 260px; padding:18px; border-right:1px solid var(--hairline); }
 .dash-topgroup-item:last-child{ border-right:none; }
-.dash-topgroup-narrow{ flex:1 1 200px; max-width:240px; }
+.dash-topgroup-narrow{ flex:1 1 280px; max-width:320px; }
 @media(max-width:900px){
   .dash-topgroup-item{ border-right:none; border-bottom:1px solid var(--hairline); }
   .dash-topgroup-item:last-child{ border-bottom:none; }
@@ -410,6 +410,20 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .raid-diff-done{ color: var(--ok); }
 .raid-diff-pending{ color: var(--text-dim); opacity:.6; }
 .raid-diff-count{ color: var(--gold-dim); font-weight:700; }
+.weekly-rewards-mini{ margin-top:16px; padding-top:14px; border-top:1px solid var(--hairline); }
+.weekly-rewards-mini-title{
+  font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700; margin-bottom:10px;
+}
+.weekly-rewards-mini .vault-obsi-row{ flex-direction:column; align-items:stretch; gap:4px; margin-bottom:10px; }
+.weekly-rewards-mini .vault-obsi-banner{
+  width:auto; flex-direction:row; justify-content:flex-start; padding:4px 8px; gap:6px; border-radius:6px;
+}
+.weekly-rewards-mini .vault-obsi-icon{ width:16px; height:16px; border-radius:4px; }
+.weekly-rewards-mini .vault-obsi-label{ font-size:10px; }
+.weekly-rewards-mini .vault-obsi-cards{ display:flex; flex-direction:column; grid-template-columns:none; gap:3px; }
+.weekly-rewards-mini .vault-obsi-card{ padding:4px 8px; gap:6px; border-radius:6px; }
+.weekly-rewards-mini .vault-obsi-check{ font-size:11px; }
+.weekly-rewards-mini .vault-obsi-desc{ font-size:10px; line-height:1.25; }
 .char-power-row{ display:flex; gap:20px; }
 .char-power-stat{ flex:1; }
 
@@ -460,13 +474,19 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .best-run-detail.open{ max-height:400px; padding:4px 4px 14px; }
 .run-detail-section-title{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); font-weight:700; margin:8px 0 6px; }
 .comp-list{ display:flex; flex-direction:column; gap:4px; }
-.comp-row{ display:grid; grid-template-columns: 22px 1.3fr 1.3fr 40px; align-items:center; gap:8px; font-size:12px; padding:3px 6px; background: var(--bg-panel-raised); border-radius:6px; }
+.comp-row{ display:grid; grid-template-columns: 22px 20px 1.3fr 1.3fr 40px; align-items:center; gap:8px; font-size:12px; padding:3px 6px; background: var(--bg-panel-raised); border-radius:6px; }
 .comp-role{ text-align:center; font-size:12px; }
+.comp-class-icon{ width:20px; height:20px; border-radius:4px; border:1px solid var(--hairline); }
 .comp-name{ font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .comp-spec{ color: var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .comp-ilvl{ text-align:right; color: var(--text-dim); }
 .deaths-row{ display:flex; flex-wrap:wrap; gap:6px; }
 .death-chip{ font-size:11px; color: var(--text-dim); background: var(--bg-panel-raised); padding:3px 8px; border-radius:12px; }
+.run-detail-rio-link{
+  display:inline-block; margin-top:10px; font-size:11px; font-weight:700; color: var(--purple); text-decoration:none;
+  text-transform:uppercase; letter-spacing:.03em;
+}
+.run-detail-rio-link:hover{ text-decoration:underline; }
 
 .recent-runs-list{ display:flex; flex-direction:column; }
 .recent-run-row{ display:flex; align-items:center; gap:10px; padding:8px 4px; border-radius:6px; text-decoration:none; color:inherit; cursor:pointer; transition: background .15s; }
@@ -481,6 +501,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .recent-run-score{ font-size:11px; color: var(--gold-dim); flex-shrink:0; white-space:nowrap; }
 .recent-runs-list-compact .recent-run-time,
 .recent-runs-list-compact .recent-run-score{ font-size:9.5px; }
+.recent-run-timebar-track{ width:40px; height:4px; background: var(--danger); border-radius:2px; overflow:hidden; flex-shrink:0; }
+.recent-run-timebar-fill{ height:100%; transition: width .25s; }
 .pbar-track-sm{ height:4px; }
 
 .filter-group{ display:flex; gap:6px; }
@@ -1277,7 +1299,7 @@ const I18N = {
     noGearYet: "Sem dados de equipamento ainda — clique em Atualizar no topo do dashboard.",
     noRecentRunsYet: "Nenhuma run de Mítico+ recente ainda.",
     scoreCol: "Pontuação",
-    clearTimeLabel: "Tempo de conclusão", ofTimeLabel: "de",
+    clearTimeLabel: "Tempo de conclusão",
     viewMoreRunsLabel: "Ver mais runs", viewLessRunsLabel: "Ver menos runs",
     gearSlotHead: "Cabeça", gearSlotNeck: "Pescoço", gearSlotShoulder: "Ombro", gearSlotBack: "Costas",
     gearSlotChest: "Peito", gearSlotWrist: "Pulso", gearSlotHands: "Mãos", gearSlotWaist: "Cintura",
@@ -1285,10 +1307,11 @@ const I18N = {
     gearSlotTrinket1: "Bugiganga 1", gearSlotTrinket2: "Bugiganga 2", gearSlotMainHand: "Mão Principal", gearSlotOffHand: "Mão Secundária",
     noRunDetails: "Não foi possível carregar os detalhes dessa run.",
     deathsLabel: (n) => n === 1 ? "1 morte" : `${n} mortes`, compLabel: "Composição", season1PeakLabel: "Pico S1",
+    viewOnRaiderIo: "Ver no Raider.IO",
     justNow: "agora mesmo", minutesAgo: (n) => `${n} min atrás`, hoursAgo: (n) => n===1 ? "1 hora atrás" : `${n} horas atrás`,
     daysAgo: (n) => n===1 ? "1 dia atrás" : `${n} dias atrás`,
     lastUpdatedLabel: "Atualizado",
-    mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
+    mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World",
     ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
     ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score", currentLabel: "Atual",
@@ -1385,7 +1408,7 @@ const I18N = {
     noGearYet: "No gear data yet — click Refresh at the top of the dashboard.",
     noRecentRunsYet: "No recent Mythic+ runs yet.",
     scoreCol: "Score",
-    clearTimeLabel: "Clear time", ofTimeLabel: "of",
+    clearTimeLabel: "Clear time",
     viewMoreRunsLabel: "View more runs", viewLessRunsLabel: "View less runs",
     gearSlotHead: "Head", gearSlotNeck: "Neck", gearSlotShoulder: "Shoulder", gearSlotBack: "Back",
     gearSlotChest: "Chest", gearSlotWrist: "Wrist", gearSlotHands: "Hands", gearSlotWaist: "Waist",
@@ -1393,10 +1416,11 @@ const I18N = {
     gearSlotTrinket1: "Trinket 1", gearSlotTrinket2: "Trinket 2", gearSlotMainHand: "Main Hand", gearSlotOffHand: "Off Hand",
     noRunDetails: "Couldn't load this run's details.",
     deathsLabel: (n) => n === 1 ? "1 death" : `${n} deaths`, compLabel: "Composition", season1PeakLabel: "S1 peak",
+    viewOnRaiderIo: "View on Raider.IO",
     justNow: "just now", minutesAgo: (n) => `${n} min ago`, hoursAgo: (n) => n===1 ? "1 hour ago" : `${n} hours ago`,
     daysAgo: (n) => n===1 ? "1 day ago" : `${n} days ago`,
     lastUpdatedLabel: "Updated",
-    mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Gear Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World Boss",
+    mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Gear Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", worldBossLabel: "World",
     ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
     ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution", currentLabel: "Current",
@@ -2269,21 +2293,24 @@ function deriveBisItemTier(c, b){
 }
 function zamIconUrl(icon, size){ return icon ? `https://wow.zamimg.com/images/wow/icons/${size||'medium'}/${icon}.jpg` : ''; }
 const ROLE_ICON = { tank:'🛡️', healer:'✚', dps:'⚔️' };
-function buildRunDetailHtml(data){
+function buildRunDetailHtml(data, runUrl){
   const encounters = (data.logged_details && data.logged_details.encounters) || [];
   const rosterMap = new Map();
   encounters.forEach(enc => (enc.roster || []).forEach(r => { if(r.character) rosterMap.set(r.character.id, r); }));
   const roster = [...rosterMap.values()];
   const deaths = (data.logged_details && data.logged_details.deaths) || [];
-  if(!roster.length) return `<div class="empty-note">${t('noRunDetails')}</div>`;
+  const linkHtml = runUrl ? `<a class="run-detail-rio-link" href="${escapeHtml(runUrl)}" target="_blank" rel="noopener noreferrer">${t('viewOnRaiderIo')} →</a>` : '';
+  if(!roster.length) return `<div class="empty-note">${t('noRunDetails')}</div>${linkHtml}`;
   const rosterRow = r => {
     const ch = r.character;
     const clsName = ch.class ? ch.class.name : '';
     const clsColor = CLASS_HEX[clsName] || '#fff';
     const specName = ch.spec ? ch.spec.name : '';
     const ilvl = r.items && r.items.item_level_equipped ? Math.round(r.items.item_level_equipped) : '—';
+    const iconUrl = classIconUrl(clsName);
     return `<div class="comp-row">
       <span class="comp-role">${ROLE_ICON[r.role] || ''}</span>
+      ${iconUrl ? `<img class="comp-class-icon" src="${iconUrl}" alt="${escapeHtml(clsName)}">` : ''}
       <span class="comp-name" style="color:${clsColor}">${escapeHtml(ch.name)}</span>
       <span class="comp-spec">${escapeHtml(specName)} ${escapeHtml(clsName)}</span>
       <span class="comp-ilvl">${ilvl}</span>
@@ -2300,7 +2327,8 @@ function buildRunDetailHtml(data){
     <div class="run-detail-section-title">${t('compLabel')}</div>
     <div class="comp-list">${roster.map(rosterRow).join('')}</div>
     <div class="run-detail-section-title">${t('deathsLabel', deaths.length)}</div>
-    <div class="deaths-row">${deathsHtml}</div>`;
+    <div class="deaths-row">${deathsHtml}</div>
+    ${linkHtml}`;
 }
 function formatRelativeTime(ts){
   if(!ts) return '—';
@@ -3153,14 +3181,17 @@ function renderCharacterPage(){
     const domId = `${prefix}-${run.keystone_run_id}`;
     const tooltip = `${run.dungeon} +${run.mythic_level}${chests} — ${t('scoreCol')}: ${run.score}\n${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}${affixNames ? '\n'+affixNames : ''}\n${dateStr}`;
     const iconColor = RUN_ICON_PALETTE[(idx || 0) % RUN_ICON_PALETTE.length];
+    const timePct = run.par_time_ms ? Math.min(100, (run.clear_time_ms / run.par_time_ms) * 100) : 0;
+    const overTime = !!(run.par_time_ms && run.clear_time_ms > run.par_time_ms);
     return `
     <div class="best-run-item">
-      <div class="recent-run-row" data-run-id="${run.keystone_run_id}" data-detail-id="${domId}" title="${escapeHtml(tooltip)}">
+      <div class="recent-run-row" data-run-id="${run.keystone_run_id}" data-detail-id="${domId}" data-run-url="${escapeHtml(run.url || '')}" title="${escapeHtml(tooltip)}">
         ${run.icon_url ? `<img class="recent-run-icon" style="border-color:${iconColor}" src="${run.icon_url}" alt="">` : ''}
         <div class="recent-run-info">
           <div class="recent-run-top">
             <span class="recent-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}${chests ? ` <span class="sb-tile-chest">${chests}</span>` : ''}</span></span>
-            <span class="recent-run-time" title="${t('clearTimeLabel')}">⏱ ${formatClearTime(run.clear_time_ms)} ${t('ofTimeLabel')} ${formatClearTime(run.par_time_ms)}</span>
+            <span class="recent-run-time" title="${t('clearTimeLabel')}">⏱ ${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}</span>
+            <div class="recent-run-timebar-track"><div class="recent-run-timebar-fill" style="width:${timePct}%; background:${overTime?'var(--danger)':'var(--ok)'}"></div></div>
             <span class="recent-run-score" title="${t('scoreCol')}">★ ${run.score ? run.score.toFixed(1) : '—'}</span>
             <span class="recent-run-meta">${formatRelativeTime(new Date(run.completed_at).getTime())}</span>
           </div>
@@ -3400,6 +3431,13 @@ function renderCharacterPage(){
               <div class="pbar-track"><div class="pbar-fill" style="width:${RAID_POOL.length ? (raidCount/RAID_POOL.length*100) : 0}%; background:var(--purple)"></div></div>
               <div class="raid-progress-name">${RAID_NAME}</div>
               <div class="raid-diff-tooltip">${raidDiffTooltipHtml}</div>
+
+              <div class="weekly-rewards-mini" id="section-weekly">
+                <h4 class="weekly-rewards-mini-title">${t('weeklyRewardsTitle')}</h4>
+                ${vaultObsiRow('raids', 'inv_misc_treasurechest03b', t('raidsLabel'), [2,4,6], raidCountThisWeek, n => t('raidMilestone', n))}
+                ${vaultObsiRow('mplus', 'inv_relics_hourglass', t('mythicPlusLabel'), [2,4,8], dCount, n => t('mplusMilestone', n))}
+                ${vaultObsiRow('worldboss', 'inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n))}
+              </div>
             </div>
           </div>
 
@@ -3418,13 +3456,6 @@ function renderCharacterPage(){
               </div>
               ${sortedRecentRuns.length > 4 ? `<button class="dash-viewall-link view-more-runs-btn" id="viewMoreRunsBtn" style="margin-top:8px;">${t('viewMoreRunsLabel')}</button>` : ''}
             </div>
-          </div>
-
-          <div class="dash-card dash-card-wide" id="section-weekly">
-            <h3>${t('weeklyRewardsTitle')}</h3>
-            ${vaultObsiRow('raids', 'inv_misc_treasurechest09', t('raidsLabel'), [2,4,6], raidCount, n => t('raidMilestone', n))}
-            ${vaultObsiRow('mplus', 'inv_relics_hourglass', t('mythicPlusLabel'), [2,4,8], dCount, n => t('mplusMilestone', n))}
-            ${vaultObsiRow('worldboss', 'inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n))}
           </div>
 
           <div class="dash-card">
@@ -3484,7 +3515,7 @@ function renderCharacterPage(){
   `;
 
   container.querySelector('#dashIlvlChart').innerHTML = buildLineChartSVG(
-    [{ label:'Item Level', color, data: chartHistory.map(h=>({x:h.date,y:h.ilvl})) }], 380, 150, 'ilvl'
+    [{ label:'Item Level', color, data: chartHistory.map(h=>({x:h.date,y:h.ilvl})) }], 320, 128, 'ilvl'
   );
   // Mythic+ Score resets to 0 at the start of every season (unlike item level, which
   // carries over) - anchor the chart there instead of starting mid-flight at whatever
@@ -3495,7 +3526,7 @@ function renderCharacterPage(){
     ioscoreChartData.unshift({x: seasonStartDateStr, y: 0});
   }
   container.querySelector('#dashIoChart').innerHTML = buildLineChartSVG(
-    [{ label:'Mythic+ Score', color:'#ef4444', data: ioscoreChartData }], 380, 150, 'ioscore'
+    [{ label:'Mythic+ Score', color:'#ef4444', data: ioscoreChartData }], 320, 128, 'ioscore'
   );
   bindChartHover(container.querySelector('#dashIlvlChart'));
   bindChartHover(container.querySelector('#dashIoChart'));
@@ -3534,7 +3565,7 @@ function renderCharacterPage(){
         detailEl.innerHTML = `<div class="empty-note">…</div>`;
         try{
           const data = await fetchRunDetails(CURRENT_SEASON_SLUG, runId);
-          detailEl.innerHTML = buildRunDetailHtml(data);
+          detailEl.innerHTML = buildRunDetailHtml(data, row.dataset.runUrl);
           detailEl.dataset.loaded = '1';
         } catch(e){
           detailEl.innerHTML = `<div class="empty-note">${t('noRunDetails')}</div>`;
