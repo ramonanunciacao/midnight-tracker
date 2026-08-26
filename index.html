@@ -351,6 +351,11 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-card-wide{ grid-column: 1 / -1; }
 .dash-card-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
 .dash-card-head-inline{ display:flex; justify-content:flex-start; align-items:center; gap:10px; margin-bottom:12px; }
+.dash-bis-head-actions{ display:flex; align-items:center; gap:10px; margin-left:auto; }
+.dash-bis-list-select{
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:7px;
+  padding:4px 8px; font-size:11px; cursor:pointer;
+}
 .dash-card-head-inline h3{ margin-bottom:0; }
 .dash-card-head h3{ margin-bottom:0; }
 .chart-range-select{
@@ -638,6 +643,27 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   font-size:9px; font-weight:700; border:1px solid; border-radius:5px; padding:1px 6px; flex-shrink:0; white-space:nowrap;
 }
 .empty-note{ color:var(--text-dim); font-size:12px; }
+
+.bis-list-selector{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:16px; }
+.bis-list-pill{
+  display:flex; align-items:center; gap:6px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
+  border-radius:20px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600; color:var(--text-dim);
+  transition: border-color .15s, color .15s;
+}
+.bis-list-pill:hover{ border-color: rgba(163,53,238,.5); }
+.bis-list-pill.active{ border-color: var(--purple); background: rgba(163,53,238,.15); color: var(--text); }
+.bis-list-pill-name{ cursor: text; }
+.bis-list-pill-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:11px; }
+.bis-list-pill-del:hover{ opacity:1; color:var(--danger); }
+.bis-list-pill-input{
+  background: var(--bg-panel); border:1px solid var(--purple); border-radius:6px; color:var(--text); font-size:12px;
+  font-weight:600; padding:2px 6px; width:110px;
+}
+.bis-list-pill-add{
+  background:none; border:1px dashed var(--hairline); border-radius:20px; color:var(--text-dim); cursor:pointer;
+  padding:6px 14px; font-size:14px; font-weight:700; transition: border-color .15s, color .15s;
+}
+.bis-list-pill-add:hover{ border-color: var(--purple); color: var(--text); }
 
 /* BIS modal: an overlay with a blurred backdrop instead of the old dedicated tab. */
 .bis-modal-overlay{ backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
@@ -1070,6 +1096,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
       <button class="modal-close-btn" id="bisModalClose" aria-label="Close">✕</button>
     </div>
 
+    <div class="bis-list-selector" id="bisListSelector"></div>
+
     <div class="bis-add" style="position:relative;">
       <input type="hidden" id="bisWhId" value="">
       <input type="hidden" id="bisIconUrl" value="">
@@ -1256,6 +1284,9 @@ const I18N = {
     bisSummaryTitle: "BIS por Local", editBisLabel: "Editar BIS", searchBisPlaceholder: "Buscar por nome ou slot (ex: trinket)...",
     defaultBisListName: "BIS", newBisListLabel: "Nova lista", deleteBisListConfirm: "Remover essa lista e todos os itens dela?",
     activeBisListLabel: "Lista ativa",
+    switchBisListConfirmTitle: "Trocar de lista BIS?",
+    switchBisListConfirmMsg: (name) => `Isso vai ressincronizar as tags de BIS no seu gear de acordo com a lista "${name}". Itens que batem com essa lista mostrarão a tag; os que não batem, não.`,
+    renameBisListHint: "Clique duas vezes para renomear",
     bisMatchTooltip: "Esse item está na sua lista de BIS", tierUnsetLabel: "Tier não definido",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
@@ -1359,6 +1390,9 @@ const I18N = {
     bisSummaryTitle: "BIS by Location", editBisLabel: "Edit BIS", searchBisPlaceholder: "Search by name or slot (e.g. trinket)...",
     defaultBisListName: "BIS", newBisListLabel: "New list", deleteBisListConfirm: "Remove this list and all its items?",
     activeBisListLabel: "Active list",
+    switchBisListConfirmTitle: "Switch BIS list?",
+    switchBisListConfirmMsg: (name) => `This will resync the BIS tags on your gear according to the "${name}" list. Items that match it will show the tag; items that don't, won't.`,
+    renameBisListHint: "Double-click to rename",
     bisMatchTooltip: "This item is on your BIS list", tierUnsetLabel: "Tier not set",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
@@ -2188,6 +2222,21 @@ function deriveGearTierFromIlvl(ilvl){
   if(!ilvl) return null;
   const band = GEAR_TRACK_BANDS.find(b => ilvl >= b.min);
   return band ? band.tier : null;
+}
+const WOWHEAD_TRACK_TO_TIER = { champion:'champion', hero:'hero', myth:'mythic' };
+async function fetchRealItemTier(itemId, bonuses){
+  if(!itemId || !Array.isArray(bonuses) || !bonuses.length) return null;
+  try{
+    const url = `https://nether.wowhead.com/tooltip/item/${itemId}?bonus=${bonuses.join(':')}&dataEnv=1&locale=0`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const tooltip = data && data.tooltip ? data.tooltip : '';
+    const m = /Upgrade Level:\s*([A-Za-z]+)\s*(?:<!--uindex-->)?\d+\/\d+/.exec(tooltip);
+    if(!m) return null;
+    return WOWHEAD_TRACK_TO_TIER[m[1].toLowerCase()] || null;
+  } catch(e){
+    return null;
+  }
 }
 function findEquippedMatchForBis(c, b){
   if(!c || !c.gearItems) return null;
@@ -3124,9 +3173,10 @@ function renderCharacterPage(){
     );
     const gearTier = bisMatch ? deriveGearTierFromIlvl(item.item_level) : null;
     const bisBadgeColor = gearTier ? BIS_TIER_COLOR[gearTier] : '#8792ad';
+    const bonusesAttr = Array.isArray(item.bonuses) && item.bonuses.length ? item.bonuses.join(':') : '';
     const bisInfo = bisMatch ? `
       <div class="gear-bis-info">
-        <span class="gear-bis-badge" style="color:${bisBadgeColor}; border-color:${bisBadgeColor}66; background:${bisBadgeColor}18;" title="${t('bisMatchTooltip')}">✓ BIS${gearTier ? ' · ' + BIS_TIER_LABEL[gearTier] : ''}</span>
+        <span class="gear-bis-badge" data-item-id="${item.item_id||''}" data-bonuses="${bonusesAttr}" style="color:${bisBadgeColor}; border-color:${bisBadgeColor}66; background:${bisBadgeColor}18;" title="${t('bisMatchTooltip')}">✓ BIS${gearTier ? ' · ' + BIS_TIER_LABEL[gearTier] : ''}</span>
       </div>` : '';
     return `
     <div class="gear-row">
@@ -3372,7 +3422,14 @@ function renderCharacterPage(){
           <div class="dash-card">
             <div class="dash-card-head-inline">
               <h3>${t('bisSummaryTitle')}</h3>
-              <button class="dash-viewall-link" id="dashBisEditBtn">${t('editBisLabel')}</button>
+              <div class="dash-bis-head-actions">
+                ${c.bisLists.length > 1 ? `
+                <select class="dash-bis-list-select" id="dashBisListSelect" title="${t('activeBisListLabel')}">
+                  ${c.bisLists.map(l => `<option value="${l.id}" ${l.id===c.activeBisListId?'selected':''}>${escapeHtml(l.name)}</option>`).join('')}
+                </select>
+                ` : ''}
+                <button class="dash-viewall-link" id="dashBisEditBtn">${t('editBisLabel')}</button>
+              </div>
             </div>
             ${bisByLoc.size ? `
             <input type="text" class="bis-summary-search" id="bisSummarySearch" placeholder="${t('searchBisPlaceholder')}">
@@ -3494,9 +3551,36 @@ function renderCharacterPage(){
     });
   }
 
+  container.querySelectorAll('.gear-bis-badge[data-bonuses]').forEach(badge => {
+    const bonuses = badge.dataset.bonuses ? badge.dataset.bonuses.split(':').map(Number) : [];
+    if(!bonuses.length) return;
+    fetchRealItemTier(badge.dataset.itemId, bonuses).then(realTier => {
+      if(!realTier) return;
+      const color = BIS_TIER_COLOR[realTier];
+      badge.style.color = color;
+      badge.style.borderColor = color + '66';
+      badge.style.background = color + '18';
+      badge.textContent = `✓ BIS · ${BIS_TIER_LABEL[realTier]}`;
+    });
+  });
+
   container.querySelector('#dashBisEditBtn').addEventListener('click', () => {
     openBisModal(c.id);
   });
+
+  const dashBisListSelect = container.querySelector('#dashBisListSelect');
+  if(dashBisListSelect){
+    dashBisListSelect.addEventListener('change', async (e) => {
+      const newId = e.target.value;
+      if(newId === c.activeBisListId) return;
+      const newList = c.bisLists.find(l => l.id === newId);
+      const ok = await customConfirm(t('switchBisListConfirmMsg', newList ? newList.name : ''), t('switchBisListConfirmTitle'));
+      if(!ok){ e.target.value = c.activeBisListId; return; }
+      c.activeBisListId = newId;
+      await saveChar(c);
+      renderCharacterPage();
+    });
+  }
 
   const bisSummarySearch = container.querySelector('#bisSummarySearch');
   if(bisSummarySearch){
@@ -3870,6 +3954,98 @@ async function addTodo(){
 }
 
 /* ---------------- BIS Gear (modal, per character) ---------------- */
+async function switchActiveBisList(c, id){
+  if(c.activeBisListId === id) return;
+  c.activeBisListId = id;
+  await saveChar(c);
+  renderBisListSelector();
+  renderBisBrowseGrid();
+  renderBisList();
+  if(document.getElementById('characterPage')) renderCharacterPage();
+}
+function startEditBisListName(c, nameEl){
+  const id = nameEl.dataset.id;
+  const list = c.bisLists.find(l => l.id === id);
+  if(!list) return;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'bis-list-pill-input';
+  input.value = list.name;
+  nameEl.replaceWith(input);
+  input.focus();
+  input.select();
+  let done = false;
+  const commit = async () => {
+    if(done) return;
+    done = true;
+    list.name = input.value.trim() || list.name;
+    await saveChar(c);
+    renderBisListSelector();
+    if(document.getElementById('characterPage')) renderCharacterPage();
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') input.blur();
+    if(e.key === 'Escape'){ done = true; renderBisListSelector(); }
+  });
+}
+function renderBisListSelector(){
+  const wrap = document.getElementById('bisListSelector');
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  if(!c){ wrap.innerHTML = ''; return; }
+  const lists = c.bisLists;
+  wrap.innerHTML = lists.map(l => `
+    <div class="bis-list-pill ${l.id === c.activeBisListId ? 'active' : ''}" data-id="${l.id}">
+      <span class="bis-list-pill-name" data-id="${l.id}" title="${t('renameBisListHint')}">${escapeHtml(l.name)}</span>
+      ${lists.length > 1 ? `<button class="bis-list-pill-del" data-id="${l.id}" title="${t('remove')}">✕</button>` : ''}
+    </div>
+  `).join('') + `<button class="bis-list-pill-add" id="bisAddListBtn" title="${t('newBisListLabel')}">+</button>`;
+
+  wrap.querySelectorAll('.bis-list-pill').forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      if(e.target.closest('.bis-list-pill-del') || e.target.tagName === 'INPUT') return;
+      switchActiveBisList(c, pill.dataset.id);
+    });
+  });
+  wrap.querySelectorAll('.bis-list-pill-name').forEach(nameEl => {
+    nameEl.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      startEditBisListName(c, nameEl);
+    });
+  });
+  wrap.querySelectorAll('.bis-list-pill-del').forEach(delBtn => {
+    delBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const id = delBtn.dataset.id;
+      const list = c.bisLists.find(l => l.id === id);
+      if(!list) return;
+      const ok = await customConfirm(t('deleteBisListConfirm'), list.name);
+      if(!ok) return;
+      c.bisLists = c.bisLists.filter(l => l.id !== id);
+      if(c.activeBisListId === id) c.activeBisListId = c.bisLists[0].id;
+      await saveChar(c);
+      renderBisListSelector();
+      renderBisBrowseGrid();
+      renderBisList();
+      if(document.getElementById('characterPage')) renderCharacterPage();
+    });
+  });
+  const addBtn = document.getElementById('bisAddListBtn');
+  if(addBtn){
+    addBtn.addEventListener('click', async () => {
+      const newList = { id: uid(), name: t('newBisListLabel'), items: [] };
+      c.bisLists.push(newList);
+      c.activeBisListId = newList.id;
+      await saveChar(c);
+      renderBisListSelector();
+      renderBisBrowseGrid();
+      renderBisList();
+      const nameEl = wrap.querySelector(`.bis-list-pill-name[data-id="${newList.id}"]`);
+      if(nameEl) startEditBisListName(c, nameEl);
+    });
+  }
+}
+
 function openBisModal(charId){
   if(charId) state.bisActiveChar = charId;
   if(!state.bisActiveChar || !state.characters.some(c => c.id === state.bisActiveChar)){
@@ -3880,6 +4056,7 @@ function openBisModal(charId){
   bisSlotFilter = ''; bisStatFilter = ''; bisActiveBrowseLoc = null;
   document.getElementById('bisSlotFilter').value = '';
   document.getElementById('bisStatFilter').value = '';
+  renderBisListSelector();
   renderBisBrowseGrid();
   renderBisList();
   document.getElementById('bisModal').style.display = 'flex';
@@ -4039,7 +4216,6 @@ document.getElementById('bisStatFilter').addEventListener('change', (e) => {
 });
 
 const bisRowHtml = b => {
-  const c = state.characters.find(x => x.id === state.bisActiveChar);
   const iconHtml = b.icon
     ? `<img class="bicon-img" src="${b.icon}" alt="">`
     : (b.slot ? slotIcon(b.slot) : '❔');
@@ -4056,7 +4232,6 @@ const bisRowHtml = b => {
     </div>
     ${statsStr ? `<span class="bis-row-stats">${escapeHtml(statsStr)}</span>` : ''}
     ${loc ? `<span class="bis-row-loc">${escapeHtml(loc)}</span>` : ''}
-    ${bisTierBadgeHtml(deriveBisItemTier(c, b))}
     <button class="bdel">✕</button>
   </div>`;
 };
