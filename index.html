@@ -541,15 +541,14 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .upgrades-mode-filter{ margin-bottom:16px; }
 .upgrades-table{ width:100%; border-collapse:collapse; font-size:14px; }
 .upgrades-table th{
-  text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim);
+  text-align:center; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim);
   font-weight:700; padding:9px 14px; border-bottom:1px solid var(--hairline);
 }
-.upgrades-table td{ padding:11px 14px; border-bottom:1px solid var(--hairline); color:var(--text); line-height:1.4; }
+.upgrades-table td{ padding:11px 14px; border-bottom:1px solid var(--hairline); color:var(--text); line-height:1.4; text-align:center; }
 .upgrades-table tr:last-child td{ border-bottom:none; }
 .upgrades-table tr:hover td{ background: var(--bg-panel-raised); }
 .upg-level{ font-weight:700; font-family:'Rajdhani',sans-serif; font-size:17px; }
-.upg-ilvl{ color: var(--gold-dim); font-weight:700; text-align:center; }
-.upg-ilvl-head{ text-align:center; }
+.upg-ilvl{ color: var(--gold-dim); font-weight:700; }
 .upg-crest-chip{ font-weight:700; font-size:13px; white-space:nowrap; }
 .upg-track-badge{
   font-size:12px; font-weight:700; border:1px solid; border-radius:6px; padding:4px 10px; white-space:nowrap;
@@ -651,8 +650,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .bonusroll-log-result{
   width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-weight:800; font-size:12px; flex-shrink:0;
+  font-weight:800; font-size:12px; flex-shrink:0; cursor:pointer; transition: transform .1s;
 }
+.bonusroll-log-result:hover{ transform: scale(1.12); }
 .bonusroll-log-result.hit{ background: rgba(34,197,94,.18); color: var(--ok); }
 .bonusroll-log-result.miss{ background: rgba(239,68,68,.18); color: var(--danger); }
 .bonusroll-log-info{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
@@ -1207,18 +1207,24 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 
       <h3 class="upgrades-subtitle" data-i18n="bonusRollsWishlistTitle">Bonus Roll BIS</h3>
       <div class="upgrades-sub" data-i18n="bonusRollsWishlistSub">Adicione os itens que você quer pegar de bonus roll - por nome ou por dungeon/raid</div>
-      <div class="bis-add" style="position:relative;">
-        <input type="hidden" id="bonusWishWhId" value="">
-        <input type="hidden" id="bonusWishIconUrl" value="">
-        <input type="hidden" id="bonusWishBoss" value="">
-        <input type="text" class="iname" id="bonusWishName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
-        <input type="hidden" id="bonusWishSlot">
-        <input type="hidden" id="bonusWishSource">
-        <button id="bonusWishAddBtn" data-i18n="add">Adicionar</button>
-        <div class="bis-search-results" id="bonusWishSearchResults"></div>
+      <div class="upgrades-layout">
+        <div class="upgrades-quiz-col">
+          <div class="bis-add" style="position:relative;">
+            <input type="hidden" id="bonusWishWhId" value="">
+            <input type="hidden" id="bonusWishIconUrl" value="">
+            <input type="hidden" id="bonusWishBoss" value="">
+            <input type="text" class="iname" id="bonusWishName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
+            <input type="hidden" id="bonusWishSlot">
+            <input type="hidden" id="bonusWishSource">
+            <button id="bonusWishAddBtn" data-i18n="add">Adicionar</button>
+            <div class="bis-search-results" id="bonusWishSearchResults"></div>
+          </div>
+          <button class="bis-browse-trigger-btn" id="bonusWishBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
+        </div>
+        <div class="upgrades-table-col">
+          <div class="bis-dungeon-grid" id="bonusWishGrid"></div>
+        </div>
       </div>
-      <button class="bis-browse-trigger-btn" id="bonusWishBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
-      <div class="bis-dungeon-grid" id="bonusWishGrid" style="margin-top:14px; margin-bottom:20px;"></div>
 
       <h3 class="upgrades-subtitle" data-i18n="bonusRollsLogSpendTitle">Registrar item recebido</h3>
       <div class="bonusrolls-spend-form">
@@ -1534,6 +1540,7 @@ const I18N = {
     bonusRollOptGroupRaid: "Raid", bonusRollOptGroupMplus: "Mythic+", bonusRollOptGroupOther: "Outros",
     bonusRollDelve: "Bountiful Delve", bonusRollPreyHunt: "Nightmare Prey Hunt",
     bonusRollDeleteConfirm: "Remover esse registro? Isso vai devolver 1 bonus roll disponível.",
+    bonusRollToggleResultHint: "Clique para alternar entre acerto e erro",
     raidUlatekNormalNote: "Ula'tek (último boss) dropa 20 Champion + 10 Hero, em vez do padrão da dificuldade Normal",
     raidUlatekHeroicNote: "Ula'tek (último boss) dropa 20 Hero + 10 Myth, em vez do padrão da dificuldade Heroica",
     loading: "Carregando...",
@@ -1679,6 +1686,7 @@ const I18N = {
     bonusRollOptGroupRaid: "Raid", bonusRollOptGroupMplus: "Mythic+", bonusRollOptGroupOther: "Other",
     bonusRollDelve: "Bountiful Delve", bonusRollPreyHunt: "Nightmare Prey Hunt",
     bonusRollDeleteConfirm: "Remove this entry? This will give back 1 available bonus roll.",
+    bonusRollToggleResultHint: "Click to toggle between hit and miss",
     raidUlatekNormalNote: "Ula'tek (last boss) drops 20 Champion + 10 Hero, instead of Normal difficulty's usual amount",
     raidUlatekHeroicNote: "Ula'tek (last boss) drops 20 Hero + 10 Myth, instead of Heroic difficulty's usual amount",
     loading: "Loading...",
@@ -3901,18 +3909,6 @@ function renderCharacterPage(){
 
           <div class="dash-card">
             <div class="dash-card-head-inline">
-              <h3>${t('todoTitle')}</h3>
-              <span class="todo-count" id="todoCount" style="color:${todoCountColor(todoDone, todoTotal)}">${todoDone}/${todoTotal}</span>
-            </div>
-            <div class="todo-add">
-              <input type="text" id="todoInput" placeholder="${t('todoPlaceholder')}" data-i18n-placeholder="todoPlaceholder">
-              <button id="todoAddBtn">${t('add')}</button>
-            </div>
-            <div id="todoList"></div>
-          </div>
-
-          <div class="dash-card">
-            <div class="dash-card-head-inline">
               <h3>${t('bonusRollsTitle')}</h3>
               <button class="dash-viewall-link" id="dashBonusRollsBtn">${t('viewDetails')}</button>
             </div>
@@ -3930,6 +3926,18 @@ function renderCharacterPage(){
                 <div class="bonus-widget-stat-label">${t('bonusRollsWishlistProgressLabel')}</div>
               </div>
             </div>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-head-inline">
+              <h3>${t('todoTitle')}</h3>
+              <span class="todo-count" id="todoCount" style="color:${todoCountColor(todoDone, todoTotal)}">${todoDone}/${todoTotal}</span>
+            </div>
+            <div class="todo-add">
+              <input type="text" id="todoInput" placeholder="${t('todoPlaceholder')}" data-i18n-placeholder="todoPlaceholder">
+              <button id="todoAddBtn">${t('add')}</button>
+            </div>
+            <div id="todoList"></div>
           </div>
         </div>
       </div>
@@ -5083,7 +5091,7 @@ function renderUpgradesTable(){
           <th>${t('upgradesLevelCol')}</th>
           <th>${t('upgradesCrestCol')}</th>
           <th>${t('upgradesItemCol')}</th>
-          <th class="upg-ilvl-head">${t('upgradesIlvlCol')}</th>
+          <th>${t('upgradesIlvlCol')}</th>
         </tr></thead>
         <tbody>
           ${MPLUS_DROP_TABLE.map(row => `
@@ -5119,9 +5127,9 @@ function renderUpgradesTable(){
       <table class="upgrades-table upgrades-table-compact">
         <thead><tr>
           <th>${t('upgradesRankCol')}</th>
-          <th class="upg-ilvl-head" style="color:${UPGRADE_TRACK_COLOR.champion}">${UPGRADE_TRACK_LABEL.champion}</th>
-          <th class="upg-ilvl-head" style="color:${UPGRADE_TRACK_COLOR.hero}">${UPGRADE_TRACK_LABEL.hero}</th>
-          <th class="upg-ilvl-head" style="color:${UPGRADE_TRACK_COLOR.mythic}">${UPGRADE_TRACK_LABEL.mythic}</th>
+          <th style="color:${UPGRADE_TRACK_COLOR.champion}">${UPGRADE_TRACK_LABEL.champion}</th>
+          <th style="color:${UPGRADE_TRACK_COLOR.hero}">${UPGRADE_TRACK_LABEL.hero}</th>
+          <th style="color:${UPGRADE_TRACK_COLOR.mythic}">${UPGRADE_TRACK_LABEL.mythic}</th>
         </tr></thead>
         <tbody>
           ${RAID_RANK_ILVL_TABLE.map(row => `
@@ -5445,7 +5453,7 @@ function renderBonusRollsHistory(c){
   if(!log.length){ wrap.innerHTML = `<div class="empty-note">${t('bonusRollsNoHistory')}</div>`; return; }
   wrap.innerHTML = log.map(entry => `
     <div class="bonusroll-log-row">
-      <span class="bonusroll-log-result ${entry.result}">${entry.result === 'hit' ? '✓' : '✕'}</span>
+      <span class="bonusroll-log-result ${entry.result}" data-id="${entry.id}" title="${t('bonusRollToggleResultHint')}">${entry.result === 'hit' ? '✓' : '✕'}</span>
       <div class="bonusroll-log-info">
         <span class="bonusroll-log-loc">${escapeHtml(entry.location)}</span>
         ${entry.item ? `<span class="bonusroll-log-item">${escapeHtml(entry.item)}</span>` : ''}
@@ -5453,6 +5461,15 @@ function renderBonusRollsHistory(c){
       <span class="bonusroll-log-date">${new Date(entry.ts).toLocaleDateString(currentLang==='pt'?'pt-BR':'en-US')}</span>
       <button class="bonusroll-log-del" data-id="${entry.id}">✕</button>
     </div>`).join('');
+  wrap.querySelectorAll('.bonusroll-log-result').forEach(badge => {
+    badge.addEventListener('click', async () => {
+      const entry = c.bonusRolls.log.find(e => e.id === badge.dataset.id);
+      if(!entry) return;
+      entry.result = entry.result === 'hit' ? 'miss' : 'hit';
+      await saveChar(c);
+      renderBonusRolls();
+    });
+  });
   wrap.querySelectorAll('.bonusroll-log-del').forEach(btn => {
     btn.addEventListener('click', async () => {
       const ok = await customConfirm(t('bonusRollDeleteConfirm'), t('bonusRollsHistoryTitle'));
