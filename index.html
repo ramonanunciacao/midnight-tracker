@@ -443,6 +443,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   font-size:9px; font-weight:800; color: var(--ok); border:1px solid rgba(34,197,94,.4); background: rgba(34,197,94,.12);
   border-radius:5px; padding:1px 6px; white-space:nowrap;
 }
+.gear-bis-progress{ font-size:11px; font-weight:700; color: var(--gold-dim); vertical-align:middle; }
 
 .best-run-item{ border-bottom:1px solid var(--hairline); }
 .best-run-item:last-child{ border-bottom:none; }
@@ -1555,6 +1556,7 @@ const I18N = {
     yourBisListsLabel: "Suas listas BIS (ex: Tank, DPS) — clique duas vezes no nome para renomear",
     yourBisListLabel: "Sua lista BIS", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "Esse item está na sua lista de BIS", tierUnsetLabel: "Tier não definido",
+    bisProgressLabel: "BIS",
     alreadyAddedLabel: "Já adicionado à lista",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
@@ -1695,6 +1697,7 @@ const I18N = {
     yourBisListsLabel: "Your BIS lists (e.g. Tank, DPS) — double-click a name to rename it",
     yourBisListLabel: "Your BIS list", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "This item is on your BIS list", tierUnsetLabel: "Tier not set",
+    bisProgressLabel: "BIS",
     alreadyAddedLabel: "Already added to the list",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
@@ -2599,6 +2602,29 @@ function findEquippedMatchForBis(c, b){
 function deriveBisItemTier(c, b){
   const matched = findEquippedMatchForBis(c, b);
   return matched ? deriveGearTierFromIlvl(matched.item_level) : null;
+}
+/* How many of the character's real equip slots currently show a BIS match.
+   Off-hand only counts as a trackable slot (16 total, otherwise 15) when
+   it's actually in play: either something's equipped there right now, or
+   the player has added an Off-Hand-slot item to their active BIS list -
+   a pure two-hander with no off-hand BIS want has no real 16th slot to fill. */
+function bisSlotProgress(c){
+  const allSlots = [...GEAR_LEFT_SLOTS, ...GEAR_RIGHT_SLOTS, ...GEAR_WEAPON_SLOTS];
+  const activeItems = getActiveBisList(c).items;
+  const offhandEquipped = !!(c.gearItems && c.gearItems.offhand);
+  const offhandWanted = activeItems.some(b => (b.slot||'').split(' (')[0] === 'Off-Hand');
+  const slots = (offhandEquipped || offhandWanted) ? allSlots : allSlots.filter(s => s !== 'offhand');
+  let matched = 0;
+  slots.forEach(slotKey => {
+    const item = c.gearItems ? c.gearItems[slotKey] : null;
+    if(!item) return;
+    const isMatch = activeItems.some(b =>
+      (b.whId && item.item_id && String(b.whId) === String(item.item_id)) ||
+      (!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
+    );
+    if(isMatch) matched++;
+  });
+  return { matched, total: slots.length };
 }
 function zamIconUrl(icon, size){ return icon ? `https://wow.zamimg.com/images/wow/icons/${size||'medium'}/${icon}.jpg` : ''; }
 const ROLE_ICON = { tank:'🛡️', healer:'✚', dps:'⚔️' };
@@ -3786,7 +3812,7 @@ function renderCharacterPage(){
           </div>
 
           <div class="dash-card dash-card-wide" id="section-gear">
-            <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
+            <h3>${t('subtabGear')} (${c.ilvl || '—'}) <span class="gear-bis-progress">${(() => { const p = bisSlotProgress(c); return `${p.matched}/${p.total} ${t('bisProgressLabel')}`; })()}</span></h3>
             ${c.gearItems ? `
             <div class="gear-columns">
               <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
