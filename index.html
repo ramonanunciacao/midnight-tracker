@@ -2207,13 +2207,17 @@ const BIS_TIER_COLOR = { adventurer:'#5dade2', veteran:'#a78bda', champion:'#e17
    ranks of Champion (305, 308) exactly match the bottom two ranks of Hero, and
    the top two ranks of Hero (318, 321) exactly match the bottom two ranks of
    Myth - the same ilvl legitimately comes from either track depending on the
-   item's real source, which can't be reconstructed from ilvl alone. To avoid
-   over-crediting (tagging something "Mythic" that's really a not-fully-upgraded
-   Hero piece), the cutoff for each tier is set just past the LOWER track's own
-   maximum rank, so an ambiguous ilvl is bucketed to the lower/safer tier. */
+   item's real source, which genuinely can't be reconstructed from ilvl alone
+   (this is a real WoW itemization quirk, not a gap in our data). Rather than
+   guess a side and risk a confidently wrong tag, those two ilvl pairs are left
+   unclassified (tier:null) here - the real tier for those still gets filled in
+   by fetchRealItemTier() below when it can reach Wowhead's live tooltip data,
+   which reads the item's actual "Upgrade Level" line instead of inferring one. */
 const GEAR_TRACK_BANDS = [
-  { tier:'mythic', min:324 },  // past Hero's own max (321); Myth 3/6+ is unambiguous
-  { tier:'hero', min:309 },    // past Champion's own max (308); Hero 3/6+ is unambiguous
+  { tier:'mythic', min:322 },    // unambiguous: past Hero's own max (321)
+  { tier:null, min:318 },        // ambiguous: Hero 5-6/6 or Myth 1-2/6
+  { tier:'hero', min:309 },      // unambiguous: past Champion's own max (308)
+  { tier:null, min:305 },        // ambiguous: Champion 5-6/6 or Hero 1-2/6
   { tier:'champion', min:292 },
   { tier:'veteran', min:279 },
   { tier:'adventurer', min:266 },
@@ -2224,19 +2228,26 @@ function deriveGearTierFromIlvl(ilvl){
   return band ? band.tier : null;
 }
 const WOWHEAD_TRACK_TO_TIER = { champion:'champion', hero:'hero', myth:'mythic' };
+function parseTierFromTooltipHtml(tooltip){
+  const m = /Upgrade Level:\s*([A-Za-z]+)\s*(?:<!--uindex-->)?\d+\/\d+/.exec(tooltip || '');
+  return m ? (WOWHEAD_TRACK_TO_TIER[m[1].toLowerCase()] || null) : null;
+}
 async function fetchRealItemTier(itemId, bonuses){
   if(!itemId || !Array.isArray(bonuses) || !bonuses.length) return null;
-  try{
-    const url = `https://nether.wowhead.com/tooltip/item/${itemId}?bonus=${bonuses.join(':')}&dataEnv=1&locale=0`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const tooltip = data && data.tooltip ? data.tooltip : '';
-    const m = /Upgrade Level:\s*([A-Za-z]+)\s*(?:<!--uindex-->)?\d+\/\d+/.exec(tooltip);
-    if(!m) return null;
-    return WOWHEAD_TRACK_TO_TIER[m[1].toLowerCase()] || null;
-  } catch(e){
-    return null;
+  const hosts = ['nether.wowhead.com', 'www.wowhead.com'];
+  for(const host of hosts){
+    try{
+      const url = `https://${host}/tooltip/item/${itemId}?bonus=${bonuses.join(':')}&dataEnv=1&locale=0`;
+      const res = await fetch(url);
+      if(!res.ok) continue;
+      const data = await res.json();
+      const tier = parseTierFromTooltipHtml(data && data.tooltip);
+      if(tier) return tier;
+    } catch(e){
+      // try next host
+    }
   }
+  return null;
 }
 function findEquippedMatchForBis(c, b){
   if(!c || !c.gearItems) return null;
