@@ -364,6 +364,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   text-transform:uppercase; letter-spacing:.03em; cursor:pointer; transition: opacity .15s;
 }
 .dash-viewall-link:hover{ opacity:.75; }
+.view-more-runs-btn{ display:block; text-align:left; padding:0; }
 .news-card-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
 .news-card-head h3{ margin-bottom:0; }
 .news-wh-badge{
@@ -633,10 +634,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bis-row .bis-tier-badge{ flex-shrink:0; }
 .bis-row .bdel{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; flex-shrink:0; }
 .bis-row .bdel:hover{ opacity:1; color:var(--danger); }
-.bis-tier-select{
-  background: var(--bg-panel); border:1px solid var(--hairline); border-radius:6px; font-size:10px; font-weight:700;
-  padding:3px 4px; flex-shrink:0; cursor:pointer;
-}
 .bis-tier-badge{
   font-size:9px; font-weight:700; border:1px solid; border-radius:5px; padding:1px 6px; flex-shrink:0; white-space:nowrap;
 }
@@ -684,6 +681,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bis-browse-item-row.added{ opacity:.5; cursor:default; }
 .bis-browse-item-info{ display:flex; flex-direction:column; gap:1px; min-width:0; flex:1; }
 .bis-browse-item-name{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bis-wh-link{ text-decoration:none; color: var(--text) !important; }
+.bis-wh-link:hover{ text-decoration:underline; }
 .bis-browse-item-stats{ font-size:10px; color: var(--gold-dim); }
 .bis-browse-item-loc{ color:var(--text-dim); font-size:10px; flex-shrink:0; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .bis-browse-item-slot{ color:var(--text-dim); font-size:11px; margin-left:auto; flex-shrink:0; }
@@ -1123,10 +1122,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
         </select>
         <select class="bis-stat-filter" id="bisStatFilter">
           <option value="" data-i18n="allStatsLabel">Todos os stats</option>
-          <option value="Critical Strike">Critical Strike</option>
-          <option value="Haste">Haste</option>
-          <option value="Mastery">Mastery</option>
-          <option value="Versatility">Versatility</option>
+          <option value="Critical Strike/Haste">Critical Strike / Haste</option>
+          <option value="Critical Strike/Mastery">Critical Strike / Mastery</option>
+          <option value="Critical Strike/Versatility">Critical Strike / Versatility</option>
+          <option value="Haste/Mastery">Haste / Mastery</option>
+          <option value="Haste/Versatility">Haste / Versatility</option>
+          <option value="Mastery/Versatility">Mastery / Versatility</option>
         </select>
         </div>
       </div>
@@ -1232,6 +1233,7 @@ const I18N = {
     noRecentRunsYet: "Nenhuma run de Mítico+ recente ainda.",
     scoreCol: "Pontuação",
     clearTimeLabel: "Tempo de conclusão", ofTimeLabel: "de",
+    viewMoreRunsLabel: "Ver mais runs", viewLessRunsLabel: "Ver menos runs",
     gearSlotHead: "Cabeça", gearSlotNeck: "Pescoço", gearSlotShoulder: "Ombro", gearSlotBack: "Costas",
     gearSlotChest: "Peito", gearSlotWrist: "Pulso", gearSlotHands: "Mãos", gearSlotWaist: "Cintura",
     gearSlotLegs: "Pernas", gearSlotFeet: "Pés", gearSlotRing1: "Anel 1", gearSlotRing2: "Anel 2",
@@ -1334,6 +1336,7 @@ const I18N = {
     noRecentRunsYet: "No recent Mythic+ runs yet.",
     scoreCol: "Score",
     clearTimeLabel: "Clear time", ofTimeLabel: "of",
+    viewMoreRunsLabel: "View more runs", viewLessRunsLabel: "View less runs",
     gearSlotHead: "Head", gearSlotNeck: "Neck", gearSlotShoulder: "Shoulder", gearSlotBack: "Back",
     gearSlotChest: "Chest", gearSlotWrist: "Wrist", gearSlotHands: "Hands", gearSlotWaist: "Waist",
     gearSlotLegs: "Legs", gearSlotFeet: "Feet", gearSlotRing1: "Ring 1", gearSlotRing2: "Ring 2",
@@ -2161,9 +2164,40 @@ const GEAR_SLOT_LABEL_KEYS = {
   trinket1:"gearSlotTrinket1", trinket2:"gearSlotTrinket2", mainhand:"gearSlotMainHand", offhand:"gearSlotOffHand"
 };
 const ITEM_QUALITY_COLOR = { 0:"#9d9d9d", 1:"#ffffff", 2:"#1eff00", 3:"#0070dd", 4:"#a335ee", 5:"#ff8000" };
-const BIS_TIERS = ['veteran','champion','hero','mythic'];
-const BIS_TIER_LABEL = { veteran:'Veteran', champion:'Champion', hero:'Hero', mythic:'Mythic' };
-const BIS_TIER_COLOR = { veteran:'#4f8fff', champion:'#a335ee', hero:'#ff8000', mythic:'#ef4444' };
+const BIS_TIERS = ['adventurer','veteran','champion','hero','mythic'];
+const BIS_TIER_LABEL = { adventurer:'Adventurer', veteran:'Veteran', champion:'Champion', hero:'Hero', mythic:'Mythic' };
+const BIS_TIER_COLOR = { adventurer:'#5dade2', veteran:'#a78bda', champion:'#e17b7b', hero:'#e0a458', mythic:'#f2d675' };
+/* Real Midnight Season 2 upgrade-track item level bands (Patch 12.1), sourced from
+   Method.gg's published Champion/Hero/Myth tables plus a community track-vs-ilvl chart -
+   not invented. Tracks overlap by a few ilvl at their edges (a known WoW quirk - the same
+   ilvl can come from either track depending on source), so classification below buckets by
+   each track's own starting ilvl, checked highest-first. */
+const GEAR_TRACK_BANDS = [
+  { tier:'mythic', min:318 },
+  { tier:'hero', min:305 },
+  { tier:'champion', min:292 },
+  { tier:'veteran', min:279 },
+  { tier:'adventurer', min:266 },
+];
+function deriveGearTierFromIlvl(ilvl){
+  if(!ilvl) return null;
+  const band = GEAR_TRACK_BANDS.find(b => ilvl >= b.min);
+  return band ? band.tier : null;
+}
+function findEquippedMatchForBis(c, b){
+  if(!c || !c.gearItems) return null;
+  for(const slotKey in c.gearItems){
+    const item = c.gearItems[slotKey];
+    if(!item) continue;
+    if(b.whId && item.item_id && String(b.whId) === String(item.item_id)) return item;
+    if(!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase()) return item;
+  }
+  return null;
+}
+function deriveBisItemTier(c, b){
+  const matched = findEquippedMatchForBis(c, b);
+  return matched ? deriveGearTierFromIlvl(matched.item_level) : null;
+}
 function zamIconUrl(icon, size){ return icon ? `https://wow.zamimg.com/images/wow/icons/${size||'medium'}/${icon}.jpg` : ''; }
 const ROLE_ICON = { tank:'🛡️', healer:'✚', dps:'⚔️' };
 function buildRunDetailHtml(data){
@@ -2843,12 +2877,6 @@ const SLOT_ICON = {
   Bow:'🏹', Crossbow:'🏹', Gun:'🏹', Wand:'🪄', Shield:'🛡️', 'Off-Hand':'🛡️'
 };
 function slotIcon(slot){ return SLOT_ICON[slot.split(' (')[0]] || '❔'; }
-function bisTierSelectHtml(b){
-  const color = b.tier ? BIS_TIER_COLOR[b.tier] : '#8792ad';
-  const opts = `<option value="">—</option>` +
-    BIS_TIERS.map(tr => `<option value="${tr}" ${b.tier===tr?'selected':''}>${BIS_TIER_LABEL[tr]}</option>`).join('');
-  return `<select class="bis-tier-select" data-id="${b.id}" style="color:${color}; border-color:${color}66;">${opts}</select>`;
-}
 function bisTierBadgeHtml(tier){
   if(!tier) return '';
   const color = BIS_TIER_COLOR[tier];
@@ -3089,11 +3117,11 @@ function renderCharacterPage(){
       (b.whId && item.item_id && String(b.whId) === String(item.item_id)) ||
       (!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
     );
-    const bisBadgeColor = bisMatch && bisMatch.tier ? BIS_TIER_COLOR[bisMatch.tier] : '#8792ad';
+    const gearTier = bisMatch ? deriveGearTierFromIlvl(item.item_level) : null;
+    const bisBadgeColor = gearTier ? BIS_TIER_COLOR[gearTier] : '#8792ad';
     const bisInfo = bisMatch ? `
       <div class="gear-bis-info">
-        <span class="gear-bis-badge" style="color:${bisBadgeColor}; border-color:${bisBadgeColor}66; background:${bisBadgeColor}18;" title="${t('bisMatchTooltip')}">✓ BIS</span>
-        ${bisTierSelectHtml(bisMatch)}
+        <span class="gear-bis-badge" style="color:${bisBadgeColor}; border-color:${bisBadgeColor}66; background:${bisBadgeColor}18;" title="${t('bisMatchTooltip')}">✓ BIS${gearTier ? ' · ' + BIS_TIER_LABEL[gearTier] : ''}</span>
       </div>` : '';
     return `
     <div class="gear-row">
@@ -3116,7 +3144,7 @@ function renderCharacterPage(){
   const sortedBestRuns = [...c.mplusBestRuns].sort((a,b) => (b.score||0) - (a.score||0));
   const sortedRecentRuns = [...c.mplusRecentRuns].sort((a,b) => new Date(b.completed_at) - new Date(a.completed_at));
   const bestRun = sortedBestRuns[0] || null;
-  const sortedBis = [...getActiveBisList(c).items].filter(b => b.tier !== 'mythic');
+  const sortedBis = [...getActiveBisList(c).items].filter(b => deriveBisItemTier(c, b) !== 'mythic');
   const headerBannerUrl = bestRun ? (bestRun.background_image_url || '') : '';
 
   const bestByDungeon = new Map();
@@ -3168,7 +3196,7 @@ function renderCharacterPage(){
       <div class="bis-dchip-item" data-search="${escapeHtml(searchKey)}">
         ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
         <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
-        ${bisTierBadgeHtml(b.tier)}
+        ${bisTierBadgeHtml(deriveBisItemTier(c, b))}
       </div>`;
     };
     return `
@@ -3323,9 +3351,10 @@ function renderCharacterPage(){
 
             <div class="dash-card recent-runs-side-card">
               <h3>${t('subtabRecent')}</h3>
-              <div class="recent-runs-list recent-runs-list-compact recent-runs-scroll">
-                ${sortedRecentRuns.length ? sortedRecentRuns.map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+              <div class="recent-runs-list recent-runs-list-compact" id="recentRunsList">
+                ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,4).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
               </div>
+              ${sortedRecentRuns.length > 4 ? `<button class="dash-viewall-link view-more-runs-btn" id="viewMoreRunsBtn" style="margin-top:8px;">${t('viewMoreRunsLabel')}</button>` : ''}
             </div>
           </div>
 
@@ -3426,24 +3455,40 @@ function renderCharacterPage(){
     }
   });
 
-  container.querySelectorAll('.recent-run-row').forEach(row => {
-    row.addEventListener('click', async () => {
-      const runId = row.dataset.runId;
-      const detailEl = document.getElementById('run-detail-' + row.dataset.detailId);
-      const isOpen = detailEl.classList.contains('open');
-      row.classList.toggle('expanded', !isOpen);
-      detailEl.classList.toggle('open', !isOpen);
-      if(isOpen || detailEl.dataset.loaded) return;
-      detailEl.innerHTML = `<div class="empty-note">…</div>`;
-      try{
-        const data = await fetchRunDetails(CURRENT_SEASON_SLUG, runId);
-        detailEl.innerHTML = buildRunDetailHtml(data);
-        detailEl.dataset.loaded = '1';
-      } catch(e){
-        detailEl.innerHTML = `<div class="empty-note">${t('noRunDetails')}</div>`;
-      }
+  function bindRecentRunRows(){
+    container.querySelectorAll('.recent-run-row').forEach(row => {
+      row.addEventListener('click', async () => {
+        const runId = row.dataset.runId;
+        const detailEl = document.getElementById('run-detail-' + row.dataset.detailId);
+        const isOpen = detailEl.classList.contains('open');
+        row.classList.toggle('expanded', !isOpen);
+        detailEl.classList.toggle('open', !isOpen);
+        if(isOpen || detailEl.dataset.loaded) return;
+        detailEl.innerHTML = `<div class="empty-note">…</div>`;
+        try{
+          const data = await fetchRunDetails(CURRENT_SEASON_SLUG, runId);
+          detailEl.innerHTML = buildRunDetailHtml(data);
+          detailEl.dataset.loaded = '1';
+        } catch(e){
+          detailEl.innerHTML = `<div class="empty-note">${t('noRunDetails')}</div>`;
+        }
+      });
     });
-  });
+  }
+  bindRecentRunRows();
+
+  const viewMoreRunsBtn = container.querySelector('#viewMoreRunsBtn');
+  if(viewMoreRunsBtn){
+    let recentRunsExpanded = false;
+    viewMoreRunsBtn.addEventListener('click', () => {
+      recentRunsExpanded = !recentRunsExpanded;
+      const list = container.querySelector('#recentRunsList');
+      list.innerHTML = (recentRunsExpanded ? sortedRecentRuns : sortedRecentRuns.slice(0,4)).map(recentRunRow).join('');
+      list.classList.toggle('recent-runs-scroll', recentRunsExpanded);
+      viewMoreRunsBtn.textContent = recentRunsExpanded ? t('viewLessRunsLabel') : t('viewMoreRunsLabel');
+      bindRecentRunRows();
+    });
+  }
 
   container.querySelector('#dashBisEditBtn').addEventListener('click', () => {
     openBisModal(c.id);
@@ -3464,24 +3509,6 @@ function renderCharacterPage(){
       });
     });
   }
-
-  container.querySelectorAll('.gear-bis-info .bis-tier-select').forEach(sel => {
-    sel.addEventListener('change', async (e) => {
-      const item = getActiveBisList(c).items.find(b => b.id === sel.dataset.id);
-      if(!item) return;
-      item.tier = e.target.value || null;
-      await saveChar(c);
-      const color = item.tier ? BIS_TIER_COLOR[item.tier] : '#8792ad';
-      e.target.style.color = color;
-      e.target.style.borderColor = color + '66';
-      const badge = sel.closest('.gear-bis-info').querySelector('.gear-bis-badge');
-      if(badge){
-        badge.style.color = color;
-        badge.style.borderColor = color + '66';
-        badge.style.background = color + '18';
-      }
-    });
-  });
 
   container.querySelector('#todoAddBtn').addEventListener('click', addTodo);
   container.querySelector('#todoInput').addEventListener('keydown', (e) => { if(e.key==='Enter') addTodo(); });
@@ -3867,7 +3894,7 @@ async function addBisItem(data){
   if(!c || !data.name) return null;
   const b = {
     id: uid(), name: data.name, slot: data.slot || '', source: data.source || '—',
-    whId: data.whId || null, icon: data.icon || null, boss: data.boss || null, tier: null
+    whId: data.whId || null, icon: data.icon || null, boss: data.boss || null
   };
   getActiveBisList(c).items.push(b);
   await saveChar(c);
@@ -3895,7 +3922,11 @@ function formatItemStatsShort(whId){
 }
 function bisItemMatchesFilters(item){
   if(bisSlotFilter && (item.slot||'').split(' (')[0] !== bisSlotFilter) return false;
-  if(bisStatFilter && !itemSecondaryStats(item.whId).some(([name]) => name === bisStatFilter)) return false;
+  if(bisStatFilter){
+    const wanted = bisStatFilter.split('/');
+    const itemStatNames = itemSecondaryStats(item.whId).map(([name]) => name);
+    if(!wanted.every(w => itemStatNames.includes(w))) return false;
+  }
   return true;
 }
 
@@ -3953,11 +3984,14 @@ function renderBisBrowseItems(){
     const already = c && getActiveBisList(c).items.some(b => (item.whId && String(b.whId) === String(item.whId)) || b.name.toLowerCase() === item.name.toLowerCase());
     const iconHtml = item.icon ? `<img class="bicon-img" src="${item.icon}" alt="">` : slotIcon(item.slot);
     const statsStr = formatItemStatsShort(item.whId);
+    const nameHtml = item.whId
+      ? `<a href="https://www.wowhead.com/item=${item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link">${escapeHtml(item.name)}</a>`
+      : `<span class="bis-browse-item-name">${escapeHtml(item.name)}</span>`;
     return `
     <div class="bis-browse-item-row ${already?'added':''}" data-idx="${i}">
       <span class="bicon">${iconHtml}</span>
       <div class="bis-browse-item-info">
-        <span class="bis-browse-item-name">${escapeHtml(item.name)}</span>
+        ${nameHtml}
         ${statsStr ? `<span class="bis-browse-item-stats">${escapeHtml(statsStr)}</span>` : ''}
       </div>
       ${!loc ? `<span class="bis-browse-item-loc">${escapeHtml(item.loc)}</span>` : ''}
@@ -3979,6 +4013,9 @@ function renderBisBrowseItems(){
   } else {
     itemsWrap.innerHTML = items.map(itemRowHtml).join('');
   }
+  itemsWrap.querySelectorAll('.bis-browse-item-row .bis-wh-link').forEach(link => {
+    link.addEventListener('click', (e) => e.stopPropagation());
+  });
   itemsWrap.querySelectorAll('.bis-browse-item-row').forEach(row => {
     if(row.classList.contains('added')) return;
     row.addEventListener('click', async () => {
@@ -3998,6 +4035,7 @@ document.getElementById('bisStatFilter').addEventListener('change', (e) => {
 });
 
 const bisRowHtml = b => {
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
   const iconHtml = b.icon
     ? `<img class="bicon-img" src="${b.icon}" alt="">`
     : (b.slot ? slotIcon(b.slot) : '❔');
@@ -4014,7 +4052,7 @@ const bisRowHtml = b => {
     </div>
     ${statsStr ? `<span class="bis-row-stats">${escapeHtml(statsStr)}</span>` : ''}
     ${loc ? `<span class="bis-row-loc">${escapeHtml(loc)}</span>` : ''}
-    ${bisTierBadgeHtml(b.tier)}
+    ${bisTierBadgeHtml(deriveBisItemTier(c, b))}
     <button class="bdel">✕</button>
   </div>`;
 };
@@ -4028,7 +4066,7 @@ function bindBisRow(row){
     activeList.items = activeList.items.filter(b => b.id !== id);
     await saveChar(c);
     row.remove();
-    if(!activeList.items.filter(b => b.tier !== 'mythic').length){
+    if(!activeList.items.filter(b => deriveBisItemTier(c, b) !== 'mythic').length){
       document.getElementById('bisList').innerHTML = `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`;
     }
   });
@@ -4038,7 +4076,7 @@ function renderBisList(){
   const list = document.getElementById('bisList');
   const c = state.characters.find(x => x.id === state.bisActiveChar);
   if(!c){ list.innerHTML = `<div class="empty-note">${t('todoCreateCharFirst')}</div>`; return; }
-  const items = getActiveBisList(c).items.filter(b => b.tier !== 'mythic');
+  const items = getActiveBisList(c).items.filter(b => deriveBisItemTier(c, b) !== 'mythic');
   list.innerHTML = items.length ? items.map(bisRowHtml).join('') : `<div class="empty-note" id="bisEmpty">${t('noBisYet')}</div>`;
   list.querySelectorAll('.bis-row').forEach(bindBisRow);
 }
