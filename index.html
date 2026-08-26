@@ -963,6 +963,10 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .bis-wh-link:hover{ text-decoration:underline; }
 .bis-browse-item-stats{ font-size:10px; color: var(--gold-dim); }
 .bis-browse-item-loc{ color:var(--text-dim); font-size:10px; flex-shrink:0; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.murlok-loc-loading{ opacity:.5; }
+.murlok-loc-tierset{ color: var(--gold-dim); }
+.murlok-loc-oldseason{ color: var(--danger); }
+.murlok-loc-craft{ color: var(--cyan); }
 .bis-browse-item-slot{ color:var(--text-dim); font-size:11px; margin-left:auto; flex-shrink:0; }
 .bis-browse-item-added-badge{
   color: var(--ok); font-size:11px; font-weight:700; flex-shrink:0; margin-left:auto; white-space:nowrap;
@@ -1833,6 +1837,8 @@ const I18N = {
     murlokImportTitle: "Espelhar do Murlok", murlokImportSub: "Baseado em dados reais de murlok.io - a build dos top jogadores ou o gear de um jogador específico",
     murlokModeBuild: "Build recomendada", murlokModePlayer: "Jogador específico",
     murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
+    murlokTierSetLabel: "Tier Set", murlokOldSeasonLabel: "Season Anterior",
+    murlokCraftLabel: "Craft", murlokSourceUnknown: "Fonte desconhecida",
     murlokBuildSpecLabel: (spec, cls) => `Build de ${spec} ${cls} (top jogadores)`,
     murlokNoSpecMsg: "Sincronize o personagem pra saber a spec antes de buscar a build.",
     murlokPlayerRealmPlaceholder: "Realm (ex: illidan)", murlokPlayerNamePlaceholder: "Nome do personagem",
@@ -2001,6 +2007,8 @@ const I18N = {
     murlokImportTitle: "Mirror from Murlok", murlokImportSub: "Based on real data from murlok.io - the top players' build or a specific player's gear",
     murlokModeBuild: "Recommended build", murlokModePlayer: "Specific player",
     murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
+    murlokTierSetLabel: "Tier Set", murlokOldSeasonLabel: "Previous Season",
+    murlokCraftLabel: "Craft", murlokSourceUnknown: "Unknown source",
     murlokBuildSpecLabel: (spec, cls) => `${spec} ${cls} build (top players)`,
     murlokNoSpecMsg: "Sync the character to know its spec before fetching a build.",
     murlokPlayerRealmPlaceholder: "Realm (e.g. illidan)", murlokPlayerNamePlaceholder: "Character name",
@@ -5300,6 +5308,40 @@ function findMurlokItemLocation(whId){
   const found = ITEM_LOOT_TABLE.find(row => String(row[3]) === String(whId));
   return found ? found[2] : null;
 }
+/* Items Murlok returns that aren't in our own curated ITEM_LOOT_TABLE (crafted gear,
+   Catalyst/tier-set pieces, world-boss drops, or leftover previous-season items Murlok's
+   sample hasn't fully rotated out yet) used to just show as "no location set". Wowhead's
+   tooltip API is real, public, and CORS-open (confirmed by fetching it directly - no proxy
+   needed), so instead of guessing we fetch the real tooltip and classify from what it
+   actually says: an item-set link means a real current tier piece (Catalyst/Vault, not a
+   direct drop); an ilvl below this season's real floor (292, from MPLUS_DROP_TABLE) means
+   a genuine leftover previous-season item; a real "Dropped by" line we just show verbatim
+   (e.g. a world boss not in our dungeon/raid tables); anything left with none of those is
+   the closest honest guess left - a crafted/BOE item. */
+const MURLOK_SEASON_MIN_ILVL = 292;
+const wowheadTooltipCache = new Map();
+async function fetchWowheadTooltip(whId){
+  if(wowheadTooltipCache.has(whId)) return wowheadTooltipCache.get(whId);
+  const promise = fetch(`https://nether.wowhead.com/tooltip/item/${whId}?locale=0&content=1`)
+    .then(res => res.ok ? res.json() : null)
+    .catch(() => null);
+  wowheadTooltipCache.set(whId, promise);
+  return promise;
+}
+async function classifyUnknownMurlokItem(whId){
+  const data = await fetchWowheadTooltip(whId);
+  if(!data || !data.tooltip) return { label: t('murlokSourceUnknown'), category: 'unknown' };
+  const tooltip = data.tooltip;
+  const ilvlM = /Item Level <!--ilvl-->(\d+)/.exec(tooltip);
+  const ilvl = ilvlM ? Number(ilvlM[1]) : null;
+  const hasItemSet = /\/item-set=/.test(tooltip);
+  const droppedByM = /Dropped by:\s*([^<]+)</.exec(tooltip);
+  const droppedBy = droppedByM ? droppedByM[1].trim() : null;
+  if(hasItemSet) return { label: t('murlokTierSetLabel'), category: 'tierset' };
+  if(ilvl !== null && ilvl < MURLOK_SEASON_MIN_ILVL) return { label: t('murlokOldSeasonLabel'), category: 'oldseason' };
+  if(droppedBy) return { label: droppedBy, category: 'other' };
+  return { label: t('murlokCraftLabel'), category: 'craft' };
+}
 function getOrCreateMurlokBisList(c){
   let list = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
   if(!list){
@@ -5459,7 +5501,9 @@ function renderMurlokResult(){
           <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : (murlokSelected.has(r.key) ? 'checked' : '')}>
           ${r.item.icon ? `<img class="bicon-img" src="${r.item.icon}" alt="">` : slotIcon(r.bisSlot)}
           <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link" style="flex:1;">${escapeHtml(r.item.name)}</a>
-          ${r.loc ? `<span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>` : ''}
+          ${r.loc
+            ? `<span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>`
+            : `<span class="bis-browse-item-loc murlok-loc-loading" data-key="${escapeHtml(r.key)}">…</span>`}
           ${(r.item.count !== null && r.item.count !== undefined) ? `<span class="murlok-item-count">${t('murlokPlayersLabel', r.item.count)}</span>` : ''}
           ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
         </div>`).join('')}
@@ -5472,6 +5516,19 @@ function renderMurlokResult(){
     });
   });
   document.getElementById('murlokAddSelectedBtn').style.display = rows.some(r => !r.already) ? '' : 'none';
+
+  // Real location is known instantly for items in our own table; anything else gets
+  // classified from Wowhead's real tooltip data in the background, patched in once resolved.
+  rows.filter(r => !r.loc).forEach(r => {
+    classifyUnknownMurlokItem(r.item.whId).then(({ label, category }) => {
+      r.locLabel = label;
+      const el = wrap.querySelector(`.murlok-loc-loading[data-key="${CSS.escape(r.key)}"]`);
+      if(!el) return;
+      el.textContent = label;
+      el.classList.remove('murlok-loc-loading');
+      el.classList.add(`murlok-loc-${category}`);
+    });
+  });
 }
 document.getElementById('murlokModeToggle').querySelectorAll('button').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -5514,7 +5571,7 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
   const murlokList = getOrCreateMurlokBisList(c);
   toAdd.forEach(r => {
     murlokList.items.push({
-      id: uid(), name: r.item.name, slot: r.bisSlot, source: r.loc || '—',
+      id: uid(), name: r.item.name, slot: r.bisSlot, source: r.loc || r.locLabel || '—',
       whId: r.item.whId || null, icon: r.item.icon || null, boss: null
     });
   });
