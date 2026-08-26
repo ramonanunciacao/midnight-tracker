@@ -5644,17 +5644,23 @@ document.getElementById('kslExportBtn').addEventListener('click', async () => {
   copyBtn.style.display = 'none';
   statusEl.className = 'ksl-status-note';
   statusEl.textContent = t('loading');
-  const result = await exportCharacterToKeystoneLoot(c);
-  if(result.error){
+  try{
+    const result = await exportCharacterToKeystoneLoot(c);
+    if(result.error){
+      statusEl.className = 'ksl-status-note ksl-status-error';
+      statusEl.textContent = result.error;
+      return;
+    }
+    outputEl.value = result.str;
+    outputEl.style.display = '';
+    copyBtn.style.display = '';
+    statusEl.className = 'ksl-status-note ksl-status-ok';
+    statusEl.textContent = t('kslExportSuccessMsg', result.skipped);
+  } catch(err){
     statusEl.className = 'ksl-status-note ksl-status-error';
-    statusEl.textContent = result.error;
-    return;
+    statusEl.textContent = 'Erro: ' + (err && err.message || err);
+    console.error('KSL export failed', err);
   }
-  outputEl.value = result.str;
-  outputEl.style.display = '';
-  copyBtn.style.display = '';
-  statusEl.className = 'ksl-status-note ksl-status-ok';
-  statusEl.textContent = t('kslExportSuccessMsg', result.skipped);
 });
 document.getElementById('kslCopyBtn').addEventListener('click', async () => {
   const outputEl = document.getElementById('kslExportOutput');
@@ -5675,17 +5681,23 @@ document.getElementById('kslImportBtn').addEventListener('click', async () => {
   if(!c || !input.trim()) return;
   statusEl.className = 'ksl-status-note';
   statusEl.textContent = t('loading');
-  const result = await importKeystoneLootString(c, input);
-  if(result.error){
+  try{
+    const result = await importKeystoneLootString(c, input);
+    if(result.error){
+      statusEl.className = 'ksl-status-note ksl-status-error';
+      statusEl.textContent = result.error;
+      return;
+    }
+    statusEl.className = 'ksl-status-note ksl-status-ok';
+    statusEl.textContent = t('kslImportSuccessMsg', result.added, result.skipped);
+    renderBisListSelector();
+    renderBisList();
+    if(document.getElementById('characterPage')) renderCharacterPage();
+  } catch(err){
     statusEl.className = 'ksl-status-note ksl-status-error';
-    statusEl.textContent = result.error;
-    return;
+    statusEl.textContent = 'Erro: ' + (err && err.message || err);
+    console.error('KSL import failed', err);
   }
-  statusEl.className = 'ksl-status-note ksl-status-ok';
-  statusEl.textContent = t('kslImportSuccessMsg', result.added, result.skipped);
-  renderBisListSelector();
-  renderBisList();
-  if(document.getElementById('characterPage')) renderCharacterPage();
 });
 
 function renderMurlokSpecPills(cls, activeSpec){
