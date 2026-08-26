@@ -4013,6 +4013,7 @@ function renderCharacterPage(){
       <div class="bis-dchip-item" data-search="${escapeHtml(searchKey)}">
         ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
         <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
+        ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
         <span class="bis-dchip-item-slot">${escapeHtml((b.slot||'').split(' (')[0])}</span>
       </div>`;
     };
@@ -5616,7 +5617,7 @@ function renderMurlokResult(){
         murlokSelected.delete(r.key);
         const already = activeItems.some(b => String(b.whId) === String(suggestion.whId));
         const catRow = {
-          bisSlot: r.bisSlot, key: `${r.key}-cat`, already, loc: suggestion.loc,
+          bisSlot: r.bisSlot, key: `${r.key}-cat`, already, loc: suggestion.loc, isCatalyst: true,
           item: { whId: suggestion.whId, name: suggestion.name, icon: suggestion.icon, count: null }
         };
         if(!already) murlokSelected.add(catRow.key);
@@ -5705,7 +5706,8 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
   toAdd.forEach(r => {
     murlokList.items.push({
       id: uid(), name: r.item.name, slot: r.bisSlot, source: r.loc || r.locLabel || '—',
-      whId: r.item.whId || null, icon: r.item.icon || null, boss: null
+      whId: r.item.whId || null, icon: r.item.icon || null, boss: null,
+      catalyst: !!r.isCatalyst
     });
   });
   if(murlokImportMode === 'build'){
@@ -5814,15 +5816,26 @@ async function applyMurlokDrift(c){
       if(idx !== -1) murlokList.items.splice(idx, 1);
     });
     for(const item of ch.added){
-      let loc = findMurlokItemLocation(item.whId);
-      if(!loc){
-        const result = await classifyUnknownMurlokItem(item.whId, ch.bisSlot);
-        loc = result.label;
+      const loc = findMurlokItemLocation(item.whId);
+      if(loc){
+        murlokList.items.push({
+          id: uid(), name: item.name, slot: ch.bisSlot, source: loc,
+          whId: item.whId || null, icon: item.icon || null, boss: null
+        });
+        continue;
       }
-      murlokList.items.push({
-        id: uid(), name: item.name, slot: ch.bisSlot, source: loc || '—',
-        whId: item.whId || null, icon: item.icon || null, boss: null
-      });
+      const result = await classifyUnknownMurlokItem(item.whId, ch.bisSlot);
+      if(result.category === 'tierset' && result.suggestion){
+        murlokList.items.push({
+          id: uid(), name: result.suggestion.name, slot: ch.bisSlot, source: result.suggestion.loc || '—',
+          whId: result.suggestion.whId || null, icon: result.suggestion.icon || null, boss: null, catalyst: true
+        });
+      } else {
+        murlokList.items.push({
+          id: uid(), name: item.name, slot: ch.bisSlot, source: result.label || '—',
+          whId: item.whId || null, icon: item.icon || null, boss: null
+        });
+      }
     }
   }
   c.murlokPendingChanges = [];
