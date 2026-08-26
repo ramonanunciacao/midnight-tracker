@@ -736,6 +736,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bis-browse-item-stats{ font-size:10px; color: var(--gold-dim); }
 .bis-browse-item-loc{ color:var(--text-dim); font-size:10px; flex-shrink:0; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .bis-browse-item-slot{ color:var(--text-dim); font-size:11px; margin-left:auto; flex-shrink:0; }
+.bis-browse-item-added-badge{
+  color: var(--ok); font-size:11px; font-weight:700; flex-shrink:0; margin-left:auto; white-space:nowrap;
+}
 .bis-browse-boss-head{
   font-size:10px; text-transform:uppercase; letter-spacing:.03em; font-weight:700; color:var(--gold-dim);
   padding:8px 8px 3px; border-top:1px solid var(--hairline); margin-top:4px;
@@ -1342,6 +1345,7 @@ const I18N = {
     yourBisListsLabel: "Suas listas BIS (ex: Tank, DPS) — clique duas vezes no nome para renomear",
     yourBisListLabel: "Sua lista BIS", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "Esse item está na sua lista de BIS", tierUnsetLabel: "Tier não definido",
+    alreadyAddedLabel: "Já adicionado à lista",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
     bisNoLocation: "Sem local definido", bisItemCount: (n) => n === 1 ? "1 item" : `${n} itens`,
@@ -1451,6 +1455,7 @@ const I18N = {
     yourBisListsLabel: "Your BIS lists (e.g. Tank, DPS) — double-click a name to rename it",
     yourBisListLabel: "Your BIS list", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "This item is on your BIS list", tierUnsetLabel: "Tier not set",
+    alreadyAddedLabel: "Already added to the list",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
     bisNoLocation: "No location set", bisItemCount: (n) => n === 1 ? "1 item" : `${n} items`,
@@ -4229,8 +4234,10 @@ function renderBisBrowseItems(){
         ${nameHtml}
         ${statsStr ? `<span class="bis-browse-item-stats">${escapeHtml(statsStr)}</span>` : ''}
       </div>
+      ${already ? `<span class="bis-browse-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : `
       ${!loc ? `<span class="bis-browse-item-loc">${escapeHtml(item.loc)}</span>` : ''}
       <span class="bis-browse-item-slot">${escapeHtml((item.slot||'').split(' (')[0])}</span>
+      `}
     </div>`;
   };
   const hasBosses = items.some(i => i.boss);
