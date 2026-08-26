@@ -524,23 +524,87 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 
 /* todo */
 .todo-panel, .mural-panel, .upgrades-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
-.upgrades-sub{ font-size:12px; color:var(--text-dim); margin-bottom:16px; }
-.upgrades-mode-filter{ margin-bottom:18px; }
-.upgrades-table{ width:100%; border-collapse:collapse; font-size:13px; }
+.upgrades-sub{ font-size:12px; color:var(--text-dim); margin-bottom:14px; }
+.upgrades-mode-filter{ margin-bottom:14px; }
+.upgrades-table{ width:auto; min-width:420px; max-width:560px; border-collapse:collapse; font-size:12.5px; }
 .upgrades-table th{
-  text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim);
-  font-weight:700; padding:8px 12px; border-bottom:1px solid var(--hairline);
+  text-align:left; font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim);
+  font-weight:700; padding:5px 10px; border-bottom:1px solid var(--hairline);
 }
-.upgrades-table td{ padding:9px 12px; border-bottom:1px solid var(--hairline); color:var(--text); }
+.upgrades-table td{ padding:5px 10px; border-bottom:1px solid var(--hairline); color:var(--text); line-height:1.3; }
 .upgrades-table tr:last-child td{ border-bottom:none; }
 .upgrades-table tr:hover td{ background: var(--bg-panel-raised); }
-.upg-level{ font-weight:700; font-family:'Rajdhani',sans-serif; font-size:15px; }
+.upg-level{ font-weight:700; font-family:'Rajdhani',sans-serif; font-size:14px; }
 .upg-ilvl{ color: var(--gold-dim); font-weight:700; text-align:right; }
-.upg-crest-chip{ font-weight:700; font-size:12px; white-space:nowrap; }
+.upg-crest-chip{ font-weight:700; font-size:11.5px; white-space:nowrap; }
 .upg-track-badge{
-  font-size:11px; font-weight:700; border:1px solid; border-radius:6px; padding:3px 8px; white-space:nowrap;
+  font-size:10.5px; font-weight:700; border:1px solid; border-radius:5px; padding:2px 7px; white-space:nowrap;
+  display:inline-block;
 }
-.upgrades-source-note{ font-size:11px; color:var(--text-dim); margin-top:14px; line-height:1.5; }
+.upg-nodata{ font-size:11px; color:var(--text-dim); font-style:italic; }
+.upg-note-hint{
+  display:inline-flex; align-items:center; justify-content:center; width:13px; height:13px; border-radius:50%;
+  border:1px solid var(--hairline); color:var(--text-dim); font-size:9px; cursor:help; margin-left:5px; vertical-align:middle;
+}
+.upgrades-subtitle{
+  font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700;
+  margin:20px 0 8px;
+}
+.upgrades-table-compact td, .upgrades-table-compact th{ padding:4px 10px; }
+.upgrades-source-note{ font-size:10.5px; color:var(--text-dim); margin-top:10px; line-height:1.5; max-width:560px; }
+.upgrades-head-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:14px; }
+.upgrades-head-row .upgrades-sub{ margin-bottom:0; }
+.quiz-trigger-btn{
+  background: linear-gradient(135deg, var(--purple), var(--purple-dim)); border:none; color:#fff; font-weight:800;
+  font-size:12px; padding:10px 16px; border-radius:10px; cursor:pointer; flex-shrink:0; white-space:nowrap;
+  transition: transform .15s, box-shadow .15s; box-shadow:0 4px 14px rgba(163,53,238,.25);
+}
+.quiz-trigger-btn:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(163,53,238,.35); }
+
+/* Quiz modal - Kahoot-ish: big colorful tappable option cards, one question at a time */
+.quiz-modal{ width:520px; max-width:96vw; text-align:left; }
+.quiz-question{ font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:18px; }
+.quiz-options{ display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-bottom:18px; }
+.quiz-option-card{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  background: var(--bg-panel-raised); border:2px solid var(--hairline); border-radius:14px; padding:22px 10px;
+  color:var(--text); font-weight:700; font-size:14px; cursor:pointer; transition: all .15s;
+}
+.quiz-option-card:hover{ border-color: var(--purple); transform:translateY(-2px); }
+.quiz-option-card.selected{ border-color: var(--purple); background: rgba(163,53,238,.18); }
+.quiz-option-icon{ font-size:28px; }
+.quiz-tier-card{
+  padding:18px 10px; border-color: var(--tier-color, var(--hairline)); color: var(--tier-color, var(--text));
+  font-family:'Rajdhani',sans-serif; font-size:16px;
+}
+.quiz-tier-card:hover{ background: color-mix(in srgb, var(--tier-color) 18%, transparent); transform:translateY(-2px) scale(1.03); }
+.quiz-next-btn{
+  width:100%; background: var(--gold); border:none; color:#16141c; font-weight:800; padding:12px; border-radius:10px;
+  cursor:pointer; font-size:13px; text-transform:uppercase; letter-spacing:.03em;
+}
+.quiz-next-btn:disabled{ opacity:.4; cursor:default; }
+.quiz-result-target{ text-align:center; margin-bottom:20px; }
+.quiz-result-label{ font-size:12px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.04em; font-weight:700; }
+.quiz-result-level{
+  font-family:'Rajdhani',sans-serif; font-size:52px; font-weight:800; color: var(--gold); line-height:1.1; margin:4px 0;
+}
+.quiz-result-explain{ font-size:13px; color:var(--text-dim); }
+.quiz-result-empty{ font-size:14px; color:var(--text-dim); text-align:center; padding:20px 10px; line-height:1.5; }
+.quiz-ruler{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:18px; }
+.quiz-ruler-tick{
+  flex:0 0 auto; min-width:78px; background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:10px;
+  padding:10px 8px; text-align:center; opacity:0; transform:translateY(10px) scale(.9); transition: opacity .3s, transform .3s;
+}
+.quiz-ruler-tick.revealed{ opacity:1; transform:translateY(0) scale(1); }
+.quiz-ruler-tick.target{ border-color: var(--gold); background: rgba(242,181,61,.12); }
+.quiz-ruler-level{ font-family:'Rajdhani',sans-serif; font-weight:800; font-size:16px; color:var(--text); }
+.quiz-ruler-track{ font-size:10px; font-weight:700; margin-top:3px; }
+.quiz-ruler-crest{ font-size:9.5px; margin-top:2px; }
+.quiz-restart-btn{
+  width:100%; background:none; border:1px solid var(--hairline); color:var(--text-dim); font-weight:700; padding:10px;
+  border-radius:10px; cursor:pointer; font-size:12px;
+}
+.quiz-restart-btn:hover{ color:var(--text); border-color: var(--gold-dim); }
 .todo-add{ display:flex; gap:8px; margin-bottom:18px; }
 .todo-add input{ flex:1; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px; padding:10px 12px; font-size:14px; }
 .todo-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 18px; border-radius:8px; cursor:pointer; }
@@ -1036,8 +1100,13 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 
   <section class="tab" id="tab-upgrades">
     <div class="upgrades-panel">
-      <h2 data-i18n="upgradesTitle">Upgrade Chart</h2>
-      <div class="upgrades-sub" data-i18n="upgradesSub">Veja exatamente o que cada nível de Mythic+ e cada boss de raid dropa</div>
+      <div class="upgrades-head-row">
+        <div>
+          <h2 data-i18n="upgradesTitle">Upgrade Chart</h2>
+          <div class="upgrades-sub" data-i18n="upgradesSub">Veja exatamente o que cada nível de Mythic+ e cada boss de raid dropa</div>
+        </div>
+        <button class="quiz-trigger-btn" id="upgradesQuizBtn" data-i18n="quizTriggerBtn">🎯 O que devo farmar?</button>
+      </div>
       <div class="filter-group upgrades-mode-filter" id="upgradesModeFilter">
         <button data-mode="mplus" class="active" data-i18n="upgradesMplusTab">Mythic+</button>
         <button data-mode="raid" data-i18n="upgradesRaidTab">Raid</button>
@@ -1236,6 +1305,16 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   </div>
 </div>
 
+<div class="modal-overlay quiz-modal-overlay" id="upgradesQuizModal" style="display:none;">
+  <div class="modal quiz-modal">
+    <div class="bis-modal-head">
+      <h3 data-i18n="quizTitle">Encontre sua dungeon ideal</h3>
+      <button class="modal-close-btn" id="quizModalClose" aria-label="Close">✕</button>
+    </div>
+    <div id="quizBody"></div>
+  </div>
+</div>
+
 <script>
 /* ============ FIREBASE SETUP ============
    1. Crie um projeto em https://console.firebase.google.com
@@ -1305,7 +1384,19 @@ const I18N = {
     upgradesMplusTab: "Mythic+", upgradesRaidTab: "Raid",
     upgradesLevelCol: "Nível", upgradesCrestCol: "Crest", upgradesItemCol: "Item", upgradesIlvlCol: "Item Level", upgradesBossCol: "Boss",
     upgradesSourceNote: "Fonte: guias da Method.gg para Midnight Season 2. +11 e +12+ reaproveitam os valores reais de +10 (a fonte não detalhou níveis além de \"10 ou mais\").",
-    upgradesRaidSourceNote: "Fonte: guia da Method.gg para Midnight Season 2. Apenas a dificuldade Mítica tinha uma tabela publicada por boss — LFR/Normal/Heroico não foram detalhados na fonte.",
+    upgradesRaidSourceNote: "Fonte: guia da Method.gg para Midnight Season 2 (crests por dificuldade + \"Normal dropa Champion, Heroico dropa Hero, Mítico dropa Myth\"). LFR não aparece em nenhuma das fontes.",
+    upgradesDifficultyCol: "Dificuldade", upgradesNoDataLabel: "Sem dados",
+    upgradesMythicBossDetailTitle: "Detalhe por boss (Mítico)",
+    quizTriggerBtn: "🎯 O que devo farmar?", quizTitle: "Encontre sua dungeon ideal",
+    quizWantsQuestion: "O que você está procurando?", quizWantItem: "Item", quizWantCrest: "Crest",
+    quizNextBtn: "Próximo →",
+    quizItemTierQuestion: "Qual tier de item você quer?", quizCrestTierQuestion: "Qual tier de crest você quer?",
+    quizNoMatchMsg: "Nenhum nível de keystone dá as duas coisas ao mesmo tempo — tente escolher só uma opção, ou tiers mais próximos um do outro.",
+    quizRestartBtn: "Recomeçar", quizResultLabel: "Sua dungeon alvo é",
+    quizResultExplain: (track, rank) => `Dropa item ${track} ${rank}`,
+    quizResultCrestPart: (amt, crest) => ` e ${amt}x crest ${crest} — o maior número de crests possível nesse tier.`,
+    raidUlatekNormalNote: "Ula'tek (último boss) dropa 20 Champion + 10 Hero, em vez do padrão da dificuldade Normal",
+    raidUlatekHeroicNote: "Ula'tek (último boss) dropa 20 Hero + 10 Myth, em vez do padrão da dificuldade Heroica",
     loading: "Carregando...",
     todoPlaceholder: "Adicionar novo objetivo...", add: "Adicionar",
     muralTitle: "Mural", muralSub: "Espaço pra recado ou lembrete", character: "Personagem",
@@ -1421,7 +1512,19 @@ const I18N = {
     upgradesMplusTab: "Mythic+", upgradesRaidTab: "Raid",
     upgradesLevelCol: "Level", upgradesCrestCol: "Crest", upgradesItemCol: "Item", upgradesIlvlCol: "Item Level", upgradesBossCol: "Boss",
     upgradesSourceNote: "Source: Method.gg's Midnight Season 2 guides. +11 and +12+ reuse +10's real numbers (the source didn't break down levels past \"10 or higher\").",
-    upgradesRaidSourceNote: "Source: Method.gg's Midnight Season 2 guide. Only Mythic difficulty had a published per-boss table - LFR/Normal/Heroic weren't detailed in the source.",
+    upgradesRaidSourceNote: "Source: Method.gg's Midnight Season 2 guide (per-difficulty crests + \"Normal drops Champion, Heroic drops Hero, Mythic drops Myth\"). LFR isn't covered by either source.",
+    upgradesDifficultyCol: "Difficulty", upgradesNoDataLabel: "No data",
+    upgradesMythicBossDetailTitle: "Per-boss detail (Mythic)",
+    quizTriggerBtn: "🎯 What should I farm?", quizTitle: "Find your ideal dungeon",
+    quizWantsQuestion: "What are you looking for?", quizWantItem: "Item", quizWantCrest: "Crest",
+    quizNextBtn: "Next →",
+    quizItemTierQuestion: "Which item tier do you want?", quizCrestTierQuestion: "Which crest tier do you want?",
+    quizNoMatchMsg: "No keystone level gives both at once — try picking just one, or tiers closer to each other.",
+    quizRestartBtn: "Start over", quizResultLabel: "Your target dungeon is",
+    quizResultExplain: (track, rank) => `Drops ${track} ${rank} gear`,
+    quizResultCrestPart: (amt, crest) => ` and ${amt}x ${crest} crests - the highest crest yield at that tier.`,
+    raidUlatekNormalNote: "Ula'tek (last boss) drops 20 Champion + 10 Hero, instead of Normal difficulty's usual amount",
+    raidUlatekHeroicNote: "Ula'tek (last boss) drops 20 Hero + 10 Myth, instead of Heroic difficulty's usual amount",
     loading: "Loading...",
     todoPlaceholder: "Add a new goal...", add: "Add",
     muralTitle: "Board", muralSub: "Space for a note or reminder", character: "Character",
@@ -2312,6 +2415,18 @@ const RAID_MYTHIC_DROP_TABLE = [
   { boss:"The Twin Fangs",          track:'mythic', rank:'3/6', ilvl:324 },
   { boss:"The Coiled Altar",        track:'mythic', rank:'9/6', ilvl:344 },
   { boss:"Ula'tek",                 track:'mythic', rank:'9/6', ilvl:344 },
+];
+/* Per-difficulty crest + track summary, from the same Mistcrests guide's raid
+   section: "Normal drops Champion, Heroic drops Hero, Mythic drops Myth" plus
+   the crest amount ranges (a normal weekly clear awards a range depending on
+   which bosses you kill; Ula'tek, the last boss, drops extra crests one tier
+   up from the rest of that difficulty). LFR genuinely isn't covered by either
+   source guide, so it's shown as unavailable rather than guessed. */
+const RAID_DIFFICULTY_TABLE = [
+  { difficulty:'LFR', crest:null, crestRange:null, track:null, note:null },
+  { difficulty:'Normal', crest:'champion', crestRange:'10-20', track:'champion', note:'raidUlatekNormalNote' },
+  { difficulty:'Heroic', crest:'hero', crestRange:'10-20', track:'hero', note:'raidUlatekHeroicNote' },
+  { difficulty:'Mythic', crest:'mythic', crestRange:'10-20', track:'mythic', note:null },
 ];
 const UPGRADE_TRACK_COLOR = { champion:'#e17b7b', hero:'#e0a458', mythic:'#f2d675' };
 const UPGRADE_TRACK_LABEL = { champion:'Champion', hero:'Hero', mythic:'Myth' };
@@ -4174,7 +4289,8 @@ document.addEventListener('keydown', (e) => {
   if(e.key !== 'Escape') return;
   if(document.getElementById('bisBrowseModal').style.display !== 'none'){ closeBisBrowseModal(); return; }
   if(document.getElementById('bisModal').style.display !== 'none'){ closeBisModal(); return; }
-  if(document.getElementById('recentRunsModal').style.display !== 'none') closeRecentRunsModal();
+  if(document.getElementById('recentRunsModal').style.display !== 'none'){ closeRecentRunsModal(); return; }
+  if(document.getElementById('upgradesQuizModal').style.display !== 'none') closeQuizModal();
 });
 
 function openBisBrowseModal(){
@@ -4694,6 +4810,24 @@ function renderUpgradesTable(){
     wrap.innerHTML = `
       <table class="upgrades-table">
         <thead><tr>
+          <th>${t('upgradesDifficultyCol')}</th>
+          <th>${t('upgradesCrestCol')}</th>
+          <th>${t('upgradesItemCol')}</th>
+        </tr></thead>
+        <tbody>
+          ${RAID_DIFFICULTY_TABLE.map(row => `
+            <tr>
+              <td class="upg-level">${escapeHtml(row.difficulty)}</td>
+              <td>${row.crest ? `<span class="upg-crest-chip" style="color:${UPGRADE_TRACK_COLOR[row.crest]}">${row.crestRange}x ${UPGRADE_TRACK_LABEL[row.crest]}</span>` : `<span class="upg-nodata">${t('upgradesNoDataLabel')}</span>`}${row.note ? `<span class="upg-note-hint" title="${t(row.note)}">ⓘ</span>` : ''}</td>
+              <td>${row.track ? `<span class="upg-track-badge" style="color:${UPGRADE_TRACK_COLOR[row.track]}; border-color:${UPGRADE_TRACK_COLOR[row.track]}66; background:${UPGRADE_TRACK_COLOR[row.track]}18;">${UPGRADE_TRACK_LABEL[row.track]}</span>` : `<span class="upg-nodata">${t('upgradesNoDataLabel')}</span>`}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="upgrades-source-note">${t('upgradesRaidSourceNote')}</div>
+
+      <h3 class="upgrades-subtitle">${t('upgradesMythicBossDetailTitle')}</h3>
+      <table class="upgrades-table upgrades-table-compact">
+        <thead><tr>
           <th>${t('upgradesBossCol')}</th>
           <th>${t('upgradesItemCol')}</th>
           <th>${t('upgradesIlvlCol')}</th>
@@ -4706,8 +4840,7 @@ function renderUpgradesTable(){
               <td class="upg-ilvl">${row.ilvl}</td>
             </tr>`).join('')}
         </tbody>
-      </table>
-      <div class="upgrades-source-note">${t('upgradesRaidSourceNote')}</div>`;
+      </table>`;
   }
 }
 document.getElementById('upgradesModeFilter').querySelectorAll('button').forEach(btn => {
@@ -4717,6 +4850,109 @@ document.getElementById('upgradesModeFilter').querySelectorAll('button').forEach
     renderUpgradesTable();
   });
 });
+
+/* ---------------- "What should I farm?" quiz (Mythic+ only - it's the only
+   drop table with a clean, single-value-per-level shape a quiz can target). ---------------- */
+const QUIZ_TIERS = ['champion','hero','mythic'];
+let quizWants = [];
+let quizItemTier = null;
+let quizCrestTier = null;
+
+function openQuizModal(){
+  quizWants = []; quizItemTier = null; quizCrestTier = null;
+  renderQuizWantsStep();
+  document.getElementById('upgradesQuizModal').style.display = 'flex';
+}
+function closeQuizModal(){
+  document.getElementById('upgradesQuizModal').style.display = 'none';
+}
+function quizGoNext(){
+  if(quizWants.includes('item') && quizItemTier === null){ renderQuizTierStep('item'); return; }
+  if(quizWants.includes('crest') && quizCrestTier === null){ renderQuizTierStep('crest'); return; }
+  renderQuizResult();
+}
+function renderQuizWantsStep(){
+  const body = document.getElementById('quizBody');
+  body.innerHTML = `
+    <div class="quiz-question">${t('quizWantsQuestion')}</div>
+    <div class="quiz-options">
+      <button class="quiz-option-card ${quizWants.includes('item')?'selected':''}" data-want="item">
+        <span class="quiz-option-icon">🎽</span><span>${t('quizWantItem')}</span>
+      </button>
+      <button class="quiz-option-card ${quizWants.includes('crest')?'selected':''}" data-want="crest">
+        <span class="quiz-option-icon">💎</span><span>${t('quizWantCrest')}</span>
+      </button>
+    </div>
+    <button class="quiz-next-btn" id="quizNextBtn" ${quizWants.length?'':'disabled'}>${t('quizNextBtn')}</button>`;
+  body.querySelectorAll('.quiz-option-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const w = btn.dataset.want;
+      quizWants = quizWants.includes(w) ? quizWants.filter(x => x !== w) : [...quizWants, w];
+      renderQuizWantsStep();
+    });
+  });
+  document.getElementById('quizNextBtn').addEventListener('click', quizGoNext);
+}
+function renderQuizTierStep(kind){
+  const body = document.getElementById('quizBody');
+  const question = kind === 'item' ? t('quizItemTierQuestion') : t('quizCrestTierQuestion');
+  body.innerHTML = `
+    <div class="quiz-question">${question}</div>
+    <div class="quiz-options">
+      ${QUIZ_TIERS.map(tier => `
+        <button class="quiz-option-card quiz-tier-card" data-tier="${tier}" style="--tier-color:${UPGRADE_TRACK_COLOR[tier]}">
+          <span>${UPGRADE_TRACK_LABEL[tier]}</span>
+        </button>`).join('')}
+    </div>`;
+  body.querySelectorAll('.quiz-tier-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(kind === 'item') quizItemTier = btn.dataset.tier;
+      else quizCrestTier = btn.dataset.tier;
+      quizGoNext();
+    });
+  });
+}
+function renderQuizResult(){
+  const body = document.getElementById('quizBody');
+  const matches = MPLUS_DROP_TABLE.filter(row =>
+    (!quizItemTier || row.track === quizItemTier) && (!quizCrestTier || row.crest === quizCrestTier)
+  );
+  if(!matches.length){
+    body.innerHTML = `
+      <div class="quiz-result-empty">${t('quizNoMatchMsg')}</div>
+      <button class="quiz-restart-btn" id="quizRestartBtn">${t('quizRestartBtn')}</button>`;
+    document.getElementById('quizRestartBtn').addEventListener('click', openQuizModal);
+    return;
+  }
+  // Among matching levels, the highest-crest-yield one is strictly the best target -
+  // same item tier, more crest currency for it.
+  const best = matches.reduce((a,b) => (b.crestAmt||0) > (a.crestAmt||0) ? b : a);
+  const bestIdx = MPLUS_DROP_TABLE.indexOf(best);
+  const crestPart = best.crest ? t('quizResultCrestPart', best.crestAmt, UPGRADE_TRACK_LABEL[best.crest]) : '';
+
+  body.innerHTML = `
+    <div class="quiz-result-target">
+      <div class="quiz-result-label">${t('quizResultLabel')}</div>
+      <div class="quiz-result-level">${best.level}</div>
+      <div class="quiz-result-explain">${t('quizResultExplain', UPGRADE_TRACK_LABEL[best.track], best.rank)}${crestPart}</div>
+    </div>
+    <div class="quiz-ruler" id="quizRuler">
+      ${MPLUS_DROP_TABLE.map((row,i) => `
+        <div class="quiz-ruler-tick ${i===bestIdx?'target':''}" style="transition-delay:${Math.abs(i-bestIdx)*90}ms">
+          <div class="quiz-ruler-level">${row.level}</div>
+          <div class="quiz-ruler-track" style="color:${UPGRADE_TRACK_COLOR[row.track]}">${UPGRADE_TRACK_LABEL[row.track]} ${row.rank}</div>
+          ${row.crest ? `<div class="quiz-ruler-crest" style="color:${UPGRADE_TRACK_COLOR[row.crest]}">${row.crestAmt}x ${UPGRADE_TRACK_LABEL[row.crest]}</div>` : ''}
+        </div>`).join('')}
+    </div>
+    <button class="quiz-restart-btn" id="quizRestartBtn">${t('quizRestartBtn')}</button>`;
+  document.getElementById('quizRestartBtn').addEventListener('click', openQuizModal);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('.quiz-ruler-tick').forEach(el => el.classList.add('revealed'));
+  }));
+}
+document.getElementById('upgradesQuizBtn').addEventListener('click', openQuizModal);
+document.getElementById('quizModalClose').addEventListener('click', closeQuizModal);
+document.getElementById('upgradesQuizModal').addEventListener('click', (e) => { if(e.target.id === 'upgradesQuizModal') closeQuizModal(); });
 
 /* ---------------- Tabs ---------------- */
 function switchToTab(tabName){
