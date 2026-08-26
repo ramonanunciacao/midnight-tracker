@@ -4249,7 +4249,10 @@ function renderBisBrowseItems(){
     itemsWrap.innerHTML = items.map(itemRowHtml).join('');
   }
   itemsWrap.querySelectorAll('.bis-browse-item-row .bis-wh-link').forEach(link => {
-    link.addEventListener('click', (e) => e.stopPropagation());
+    // Keep the real Wowhead href so the hover tooltip still works, but don't let a
+    // click actually navigate away - in this overlay, clicking a row (name included)
+    // should only add the item to the list, not redirect to Wowhead.
+    link.addEventListener('click', (e) => e.preventDefault());
   });
   itemsWrap.querySelectorAll('.bis-browse-item-row').forEach(row => {
     if(row.classList.contains('added')) return;
