@@ -3452,9 +3452,9 @@ function renderCharacterPage(){
             <div class="dash-card recent-runs-side-card">
               <h3>${t('subtabRecent')}</h3>
               <div class="recent-runs-list recent-runs-list-compact" id="recentRunsList">
-                ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,4).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+                ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,3).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
               </div>
-              ${sortedRecentRuns.length > 4 ? `<button class="dash-viewall-link view-more-runs-btn" id="viewMoreRunsBtn" style="margin-top:8px;">${t('viewMoreRunsLabel')}</button>` : ''}
+              ${sortedRecentRuns.length > 3 ? `<button class="dash-viewall-link view-more-runs-btn" id="viewMoreRunsBtn" style="margin-top:8px;">${t('viewMoreRunsLabel')}</button>` : ''}
             </div>
           </div>
 
