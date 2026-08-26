@@ -133,14 +133,18 @@ export default {
         return new Response(JSON.stringify({ error: 'missing/invalid mode' }), { status: 400, headers: corsHeaders });
       }
       try{
-        // Murlok's own CDN edge was caught serving HTML up to an hour stale even though its
-        // origin sends "Cache-Control: no-store" (confirmed by inspecting real response
-        // headers: CF-Cache-Status HIT with Age in the thousands of seconds on that exact
-        // header) - a real page (e.g. a hero-talent nav, or a specific player's current gear)
-        // can silently be missing recent changes. A cache-busting query param forces every
-        // request to be treated as a fresh URL, sidestepping that regardless of whose cache
-        // is at fault.
-        const res = await fetch(`${murlokUrl}${murlokUrl.includes('?') ? '&' : '?'}_=${Date.now()}`, {
+        // Murlok's own CDN edge can serve a given page stale for a while (confirmed by
+        // inspecting real response headers: cf-cache-status HIT with Age in the thousands of
+        // seconds, even though the origin itself sends "Cache-Control: no-store" - their zone
+        // ignores it). Confirmed this can't be forced from our side either: a fresh, never-
+        // requested-before query string and explicit no-cache/Pragma request headers both still
+        // came back HIT, so their cache key ignores the query string and their zone doesn't
+        // honor client cache-bypass headers - there's no lever on our end to force a bypass.
+        // Different edge nodes end up with different ages for the same URL, so this is a
+        // transient, self-resolving inconsistency (that node's cache eventually expires and
+        // repopulates), not something a code change here can fix. cacheTtl:0 at least stops us
+        // from separately caching a stale copy of whatever we do get on our own zone.
+        const res = await fetch(murlokUrl, {
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36' },
           cf: { cacheTtl: 0, cacheEverything: false }
         });
