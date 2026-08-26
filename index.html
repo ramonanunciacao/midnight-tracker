@@ -487,6 +487,14 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   font-size:9px; font-weight:800; color: var(--ok); border:1px solid rgba(34,197,94,.4); background: rgba(34,197,94,.12);
   border-radius:5px; padding:1px 6px; white-space:nowrap;
 }
+.gear-bis-badge.must-have{ color: var(--cyan); border-color: rgba(34,211,238,.4); background: rgba(34,211,238,.12); }
+.bis-priority-toggle{
+  font-size:9px; font-weight:800; border-radius:5px; padding:1px 6px; white-space:nowrap; cursor:pointer;
+  flex-shrink:0; transition: opacity .15s;
+}
+.bis-priority-toggle:hover{ opacity:.75; }
+.bis-priority-toggle.bis-priority-bis{ color: var(--ok); border:1px solid rgba(34,197,94,.4); background: rgba(34,197,94,.12); }
+.bis-priority-toggle.bis-priority-secondary{ color: var(--cyan); border:1px solid rgba(34,211,238,.4); background: rgba(34,211,238,.12); }
 .gear-bis-progress-inline{ display:flex; align-items:baseline; gap:6px; }
 .gear-bis-progress-value{
   font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:800; line-height:1; color: var(--gold);
@@ -917,6 +925,26 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .murlok-modal{ width:640px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
 .murlok-import-trigger-btn{ border-color: rgba(163,53,238,.35); }
 .murlok-import-trigger-btn:hover{ border-color: var(--purple); color: var(--text); }
+.ksl-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
+.ksl-modal{ width:560px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
+.ksl-trigger-btn{ border-color: rgba(34,211,238,.35); }
+.ksl-trigger-btn:hover{ border-color: var(--cyan); color: var(--text); }
+.ksl-section{ margin-top:18px; padding-top:16px; border-top:1px solid var(--hairline); }
+.ksl-section:first-of-type{ margin-top:12px; padding-top:0; border-top:none; }
+.ksl-section-title{ font-size:13px; font-weight:800; color: var(--text); margin-bottom:4px; }
+.ksl-textarea{
+  width:100%; min-height:64px; margin:10px 0; padding:8px 10px; background: var(--bg-panel-raised);
+  border:1px solid var(--hairline); border-radius:8px; color: var(--text); font-size:11px;
+  font-family:'JetBrains Mono', monospace; resize:vertical;
+}
+.ksl-copy-btn{
+  font-size:12px; padding:6px 14px; border-radius:6px; cursor:pointer; margin-left:8px;
+  border:1px solid var(--hairline); background: var(--bg-panel); color: var(--text);
+}
+.ksl-copy-btn:hover{ border-color: var(--cyan); color: var(--cyan); }
+.ksl-status-note{ font-size:11.5px; color: var(--text-dim); margin-top:8px; line-height:1.5; }
+.ksl-status-note.ksl-status-error{ color: var(--danger); }
+.ksl-status-note.ksl-status-ok{ color: var(--ok); }
 .murlok-picker-label{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); margin-top:10px; }
 .murlok-hero-pills{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 14px; }
 .murlok-add-selected-btn{ margin-bottom:16px; }
@@ -1537,6 +1565,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
     <button class="bis-browse-trigger-btn" id="bisBrowseTriggerBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
     <button class="bis-browse-trigger-btn murlok-import-trigger-btn" id="murlokImportTriggerBtn" data-i18n="murlokImportTitle">Espelhar do Murlok</button>
+    <button class="bis-browse-trigger-btn ksl-trigger-btn" id="kslTriggerBtn" data-i18n="kslModalTitle">KeystoneLoot Import/Export</button>
 
     <div class="bis-list-head" data-i18n="yourBisListLabel">Sua lista BIS</div>
     <div class="bis-list" id="bisList"></div>
@@ -1644,6 +1673,33 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
     <button class="quiz-restart-btn murlok-add-selected-btn" id="murlokAddSelectedBtn" style="display:none;" data-i18n="murlokAddSelectedBtn">Adicionar selecionados à lista BIS</button>
     <div id="murlokResultWrap"></div>
+  </div>
+</div>
+
+<div class="modal-overlay ksl-modal-overlay" id="kslModal" style="display:none;">
+  <div class="modal recent-runs-modal ksl-modal">
+    <div class="bis-modal-head">
+      <h3 data-i18n="kslModalTitle">KeystoneLoot Import/Export</h3>
+      <button class="modal-close-btn" id="kslModalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="upgrades-sub" data-i18n="kslModalSub">Compartilhe sua lista BIS com o addon KeystoneLoot, ou importe a lista de outra pessoa</div>
+
+    <div class="ksl-section">
+      <div class="ksl-section-title" data-i18n="kslExportTitle">Exportar sua lista</div>
+      <div class="upgrades-sub" data-i18n="kslExportSub">Itens BIS viram "Best in Slot" no KeystoneLoot; itens marcados Must Have entram como "Must Have". Itens de craft/season anterior não entram (o KeystoneLoot só rastreia drops).</div>
+      <button class="quiz-restart-btn" id="kslExportBtn" data-i18n="kslExportBtn">Gerar string de export</button>
+      <textarea id="kslExportOutput" class="ksl-textarea" readonly style="display:none;"></textarea>
+      <button class="ksl-copy-btn" id="kslCopyBtn" style="display:none;" data-i18n="kslCopyBtn">Copiar</button>
+      <div class="ksl-status-note" id="kslExportStatus"></div>
+    </div>
+
+    <div class="ksl-section">
+      <div class="ksl-section-title" data-i18n="kslImportTitle">Importar uma lista</div>
+      <div class="upgrades-sub" data-i18n="kslImportSub">Cole abaixo o string de export gerado pelo addon (ou pela nossa própria exportação)</div>
+      <textarea id="kslImportInput" class="ksl-textarea" placeholder="KeystoneLoot:v3,..."></textarea>
+      <button class="quiz-restart-btn" id="kslImportBtn" data-i18n="kslImportBtn">Importar</button>
+      <div class="ksl-status-note" id="kslImportStatus"></div>
+    </div>
   </div>
 </div>
 
@@ -1869,6 +1925,9 @@ const I18N = {
     yourBisListsLabel: "Suas listas BIS (ex: Tank, DPS) — clique duas vezes no nome para renomear",
     yourBisListLabel: "Sua lista BIS", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "Esse item está na sua lista de BIS", tierUnsetLabel: "Tier não definido",
+    bisTag: "BIS", mustHaveTag: "Must Have",
+    bisPriorityToggleHint: "Clique para marcar como Must Have (item secundário, não é o BIS supremo)",
+    mustHaveMatchTooltip: "Esse item está na sua lista como Must Have (secundário)",
     bisProgressLabel: "BIS",
     alreadyAddedLabel: "Já adicionado à lista",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
@@ -1883,6 +1942,20 @@ const I18N = {
     murlokCatalystTag: "Catalyst", murlokCatalystTagTooltip: "Item farmável com stats parecidos ao de tier set - use o Catalyst pra transformá-lo em peça de tier depois",
     murlokDriftTitle: "A build recomendada do Murlok mudou desde que você importou",
     murlokDriftApplyBtn: "Atualizar lista", murlokDriftDismissBtn: "Ignorar",
+    kslModalTitle: "KeystoneLoot Import/Export",
+    kslModalSub: "Compartilhe sua lista BIS com o addon KeystoneLoot, ou importe a lista de outra pessoa",
+    kslExportTitle: "Exportar sua lista",
+    kslExportSub: "Itens BIS viram \"Best in Slot\" no KeystoneLoot; itens marcados Must Have entram como \"Must Have\". Itens de craft/season anterior não entram (o KeystoneLoot só rastreia drops).",
+    kslExportBtn: "Gerar string de export", kslCopyBtn: "Copiar", kslCopiedMsg: "Copiado!",
+    kslExportNoSpecMsg: "Sincronize o personagem pra saber a spec antes de exportar.",
+    kslExportEmptyMsg: "Nenhum item exportável na sua lista BIS (craft/season anterior não contam).",
+    kslExportSuccessMsg: (skipped) => skipped > 0 ? `String gerada. ${skipped} item(ns) de craft/season anterior não entraram.` : 'String gerada.',
+    kslImportTitle: "Importar uma lista",
+    kslImportSub: "Cole abaixo o string de export gerado pelo addon (ou pela nossa própria exportação)",
+    kslImportBtn: "Importar",
+    kslImportBadStringMsg: "Esse não parece ser um string válido do KeystoneLoot (deveria começar com \"KeystoneLoot:v3,\").",
+    kslImportNoMatchMsg: "Esse string não tem itens para a spec atual do personagem.",
+    kslImportSuccessMsg: (added, skipped) => skipped > 0 ? `${added} item(ns) importado(s) pra "KeystoneLoot List". ${skipped} não puderam ser identificados.` : `${added} item(ns) importado(s) pra "KeystoneLoot List".`,
     murlokBuildSpecLabel: (spec, cls) => `Build de ${spec} ${cls} (top jogadores)`,
     murlokNoSpecMsg: "Sincronize o personagem pra saber a spec antes de buscar a build.",
     murlokPlayerRealmPlaceholder: "Realm (ex: illidan)", murlokPlayerNamePlaceholder: "Nome do personagem",
@@ -2043,6 +2116,9 @@ const I18N = {
     yourBisListsLabel: "Your BIS lists (e.g. Tank, DPS) — double-click a name to rename it",
     yourBisListLabel: "Your BIS list", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "This item is on your BIS list", tierUnsetLabel: "Tier not set",
+    bisTag: "BIS", mustHaveTag: "Must Have",
+    bisPriorityToggleHint: "Click to mark as Must Have (secondary item, not the top BIS pick)",
+    mustHaveMatchTooltip: "This item is on your list as Must Have (secondary)",
     bisProgressLabel: "BIS",
     alreadyAddedLabel: "Already added to the list",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
@@ -2057,6 +2133,20 @@ const I18N = {
     murlokCatalystTag: "Catalyst", murlokCatalystTagTooltip: "Farmable item with a similar stat profile to the tier piece - use the Catalyst to turn it into tier gear later",
     murlokDriftTitle: "Murlok's recommended build has changed since you imported it",
     murlokDriftApplyBtn: "Update list", murlokDriftDismissBtn: "Dismiss",
+    kslModalTitle: "KeystoneLoot Import/Export",
+    kslModalSub: "Share your BIS list with the KeystoneLoot addon, or import someone else's list",
+    kslExportTitle: "Export your list",
+    kslExportSub: "BIS items become \"Best in Slot\" in KeystoneLoot; items marked Must Have come in as \"Must Have\". Craft/previous-season items aren't included (KeystoneLoot only tracks drops).",
+    kslExportBtn: "Generate export string", kslCopyBtn: "Copy", kslCopiedMsg: "Copied!",
+    kslExportNoSpecMsg: "Sync the character to know its spec before exporting.",
+    kslExportEmptyMsg: "No exportable items on your BIS list (craft/previous-season items don't count).",
+    kslExportSuccessMsg: (skipped) => skipped > 0 ? `String generated. ${skipped} craft/previous-season item(s) weren't included.` : 'String generated.',
+    kslImportTitle: "Import a list",
+    kslImportSub: "Paste the export string generated by the addon (or by our own export) below",
+    kslImportBtn: "Import",
+    kslImportBadStringMsg: "That doesn't look like a valid KeystoneLoot string (should start with \"KeystoneLoot:v3,\").",
+    kslImportNoMatchMsg: "That string has no items for the character's current spec.",
+    kslImportSuccessMsg: (added, skipped) => skipped > 0 ? `${added} item(s) imported into "KeystoneLoot List". ${skipped} couldn't be identified.` : `${added} item(s) imported into "KeystoneLoot List".`,
     murlokBuildSpecLabel: (spec, cls) => `${spec} ${cls} build (top players)`,
     murlokNoSpecMsg: "Sync the character to know its spec before fetching a build.",
     murlokPlayerRealmPlaceholder: "Realm (e.g. illidan)", murlokPlayerNamePlaceholder: "Character name",
@@ -3940,9 +4030,10 @@ function renderCharacterPage(){
       (b.whId && item.item_id && String(b.whId) === String(item.item_id)) ||
       (!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
     );
+    const isMustHave = bisMatch && bisMatch.priority === 'secondary';
     const bisInfo = bisMatch ? `
       <div class="gear-bis-info">
-        <span class="gear-bis-badge" title="${t('bisMatchTooltip')}">✓ BIS</span>
+        <span class="gear-bis-badge ${isMustHave ? 'must-have' : ''}" title="${isMustHave ? t('mustHaveMatchTooltip') : t('bisMatchTooltip')}">${isMustHave ? t('mustHaveTag') : '✓ ' + t('bisTag')}</span>
       </div>` : '';
     return `
     <div class="gear-row">
@@ -4990,6 +5081,7 @@ document.getElementById('bisModalClose').addEventListener('click', closeBisModal
 document.getElementById('bisModal').addEventListener('click', (e) => { if(e.target.id === 'bisModal') closeBisModal(); });
 document.addEventListener('keydown', (e) => {
   if(e.key !== 'Escape') return;
+  if(document.getElementById('kslModal').style.display !== 'none'){ closeKslModal(); return; }
   if(document.getElementById('murlokModal').style.display !== 'none'){ closeMurlokModal(); return; }
   if(document.getElementById('bisBrowseModal').style.display !== 'none'){ closeBisBrowseModal(); return; }
   if(document.getElementById('bisModal').style.display !== 'none'){ closeBisModal(); return; }
@@ -5269,6 +5361,7 @@ const bisRowHtml = b => {
   const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer" class="bname bis-wh-link"` : ' class="bname"';
   const statsStr = formatItemStatsShort(b.whId);
   const loc = (b.source && b.source !== '—') ? b.source : '';
+  const priority = b.priority === 'secondary' ? 'secondary' : 'bis';
   return `
   <div class="bis-row" data-id="${b.id}">
     <span class="bicon">${iconHtml}</span>
@@ -5278,6 +5371,8 @@ const bisRowHtml = b => {
     </div>
     ${statsStr ? `<span class="bis-row-stats">${escapeHtml(statsStr)}</span>` : ''}
     ${loc ? `<span class="bis-row-loc">${escapeHtml(loc)}</span>` : ''}
+    ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
+    <button class="bis-priority-toggle bis-priority-${priority}" data-id="${b.id}" title="${t('bisPriorityToggleHint')}">${priority === 'secondary' ? t('mustHaveTag') : t('bisTag')}</button>
     <button class="bdel">✕</button>
   </div>`;
 };
@@ -5291,6 +5386,16 @@ function bindBisRow(row){
     activeList.items = activeList.items.filter(b => b.id !== id);
     await saveChar(c);
     renderBisList();
+  });
+  row.querySelector('.bis-priority-toggle').addEventListener('click', async () => {
+    const c = state.characters.find(x => x.id === state.bisActiveChar);
+    if(!c) return;
+    const item = getActiveBisList(c).items.find(b => b.id === id);
+    if(!item) return;
+    item.priority = item.priority === 'secondary' ? 'bis' : 'secondary';
+    await saveChar(c);
+    renderBisList();
+    if(document.getElementById('characterPage')) renderCharacterPage();
   });
 }
 
@@ -5507,6 +5612,77 @@ function closeMurlokModal(){
 document.getElementById('murlokImportTriggerBtn').addEventListener('click', openMurlokModal);
 document.getElementById('murlokModalClose').addEventListener('click', closeMurlokModal);
 document.getElementById('murlokModal').addEventListener('click', (e) => { if(e.target.id === 'murlokModal') closeMurlokModal(); });
+
+function openKslModal(){
+  document.getElementById('kslExportOutput').style.display = 'none';
+  document.getElementById('kslExportOutput').value = '';
+  document.getElementById('kslCopyBtn').style.display = 'none';
+  document.getElementById('kslExportStatus').textContent = '';
+  document.getElementById('kslExportStatus').className = 'ksl-status-note';
+  document.getElementById('kslImportInput').value = '';
+  document.getElementById('kslImportStatus').textContent = '';
+  document.getElementById('kslImportStatus').className = 'ksl-status-note';
+  document.getElementById('kslModal').style.display = 'flex';
+}
+function closeKslModal(){
+  document.getElementById('kslModal').style.display = 'none';
+}
+document.getElementById('kslTriggerBtn').addEventListener('click', openKslModal);
+document.getElementById('kslModalClose').addEventListener('click', closeKslModal);
+document.getElementById('kslModal').addEventListener('click', (e) => { if(e.target.id === 'kslModal') closeKslModal(); });
+document.getElementById('kslExportBtn').addEventListener('click', async () => {
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  const statusEl = document.getElementById('kslExportStatus');
+  const outputEl = document.getElementById('kslExportOutput');
+  const copyBtn = document.getElementById('kslCopyBtn');
+  if(!c) return;
+  outputEl.style.display = 'none';
+  copyBtn.style.display = 'none';
+  statusEl.className = 'ksl-status-note';
+  statusEl.textContent = t('loading');
+  const result = await exportCharacterToKeystoneLoot(c);
+  if(result.error){
+    statusEl.className = 'ksl-status-note ksl-status-error';
+    statusEl.textContent = result.error;
+    return;
+  }
+  outputEl.value = result.str;
+  outputEl.style.display = '';
+  copyBtn.style.display = '';
+  statusEl.className = 'ksl-status-note ksl-status-ok';
+  statusEl.textContent = t('kslExportSuccessMsg', result.skipped);
+});
+document.getElementById('kslCopyBtn').addEventListener('click', async () => {
+  const outputEl = document.getElementById('kslExportOutput');
+  const statusEl = document.getElementById('kslExportStatus');
+  try{
+    await navigator.clipboard.writeText(outputEl.value);
+  } catch(e){
+    outputEl.select();
+    document.execCommand('copy');
+  }
+  statusEl.className = 'ksl-status-note ksl-status-ok';
+  statusEl.textContent = t('kslCopiedMsg');
+});
+document.getElementById('kslImportBtn').addEventListener('click', async () => {
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  const statusEl = document.getElementById('kslImportStatus');
+  const input = document.getElementById('kslImportInput').value;
+  if(!c || !input.trim()) return;
+  statusEl.className = 'ksl-status-note';
+  statusEl.textContent = t('loading');
+  const result = await importKeystoneLootString(c, input);
+  if(result.error){
+    statusEl.className = 'ksl-status-note ksl-status-error';
+    statusEl.textContent = result.error;
+    return;
+  }
+  statusEl.className = 'ksl-status-note ksl-status-ok';
+  statusEl.textContent = t('kslImportSuccessMsg', result.added, result.skipped);
+  renderBisListSelector();
+  renderBisList();
+  if(document.getElementById('characterPage')) renderCharacterPage();
+});
 
 function renderMurlokSpecPills(cls, activeSpec){
   const specs = WOW_CLASS_SPECS[cls] || [];
@@ -5862,6 +6038,161 @@ async function applyMurlokDrift(c){
   renderMurlokDriftBanner(c);
   renderBisListSelector();
   renderBisList();
+}
+
+/* ---------------- KeystoneLoot (KSL) addon interop ----------------
+   The KeystoneLoot WoW addon (curseforge.com/wow/addons/keystoneloot) lets players export
+   their in-game BIS favorites as a short string to share, and import someone else's. Format
+   confirmed by decoding a real string exported from the game and cross-checking every item
+   id against Wowhead's own tooltip data: "KeystoneLoot:v3," + base64(zlib(JSON)), where the
+   JSON is { "<specId>": [{ itemId, tier, ... }, ...], ... } - specId is WoW's own numeric
+   spec id, tier is 1=Nice to Have, 2=Must Have, 3=Best in Slot, 4=Transmog, 5=Catalyst
+   (verified by tagging 5 real items across all 5 tiers in-game, exporting, and matching
+   each decoded itemId+tier back to what was actually tagged). Both directions use the
+   browser's native CompressionStream/DecompressionStream('deflate'), which is exactly zlib
+   (RFC 1950, confirmed via the real string's "78 9C" header) - no external library needed. */
+const KSL_PREFIX = 'KeystoneLoot:v3,';
+const KSL_LIST_NAME = 'KeystoneLoot List';
+const KSL_TIER = { NICE: 1, MUST: 2, BIS: 3, TRANSMOG: 4, CATALYST: 5 };
+/* Real, stable WoW spec ids - unchanged since each spec's introduction, the same ones used
+   by Blizzard's own Game Data API, Raider.IO, SimC and Wowhead. */
+const SPEC_ID = {
+  "Death Knight": { "Blood":250, "Frost":251, "Unholy":252 },
+  "Demon Hunter": { "Havoc":577, "Vengeance":581 },
+  "Druid": { "Balance":102, "Feral":103, "Guardian":104, "Restoration":105 },
+  "Evoker": { "Devastation":1467, "Preservation":1468, "Augmentation":1473 },
+  "Hunter": { "Beast Mastery":253, "Marksmanship":254, "Survival":255 },
+  "Mage": { "Arcane":62, "Fire":63, "Frost":64 },
+  "Monk": { "Brewmaster":268, "Mistweaver":270, "Windwalker":269 },
+  "Paladin": { "Holy":65, "Protection":66, "Retribution":70 },
+  "Priest": { "Discipline":256, "Holy":257, "Shadow":258 },
+  "Rogue": { "Assassination":259, "Outlaw":260, "Subtlety":261 },
+  "Shaman": { "Elemental":262, "Enhancement":263, "Restoration":264 },
+  "Warlock": { "Affliction":265, "Demonology":266, "Destruction":267 },
+  "Warrior": { "Arms":71, "Fury":72, "Protection":73 }
+};
+const WOWHEAD_SLOT_TO_BIS = {
+  'Head':'Helm', 'Neck':'Neck', 'Shoulder':'Shoulder', 'Back':'Back', 'Chest':'Chest',
+  'Wrist':'Wrist', 'Hands':'Hands', 'Waist':'Waist', 'Legs':'Legs', 'Feet':'Feet',
+  'Finger':'Ring', 'Trinket':'Trinket', 'One-Hand':'Main Hand', 'Two-Hand':'Main Hand',
+  'Main Hand':'Main Hand', 'Off Hand':'Off-Hand', 'Held In Off-hand':'Off-Hand', 'Ranged':'Main Hand'
+};
+
+async function deflateCompress(text){
+  const bytes = new TextEncoder().encode(text);
+  const cs = new CompressionStream('deflate');
+  const writer = cs.writable.getWriter();
+  await writer.write(bytes);
+  await writer.close();
+  const buf = await new Response(cs.readable).arrayBuffer();
+  return new Uint8Array(buf);
+}
+async function deflateDecompress(bytes){
+  const ds = new DecompressionStream('deflate');
+  const writer = ds.writable.getWriter();
+  await writer.write(bytes);
+  await writer.close();
+  const buf = await new Response(ds.readable).arrayBuffer();
+  return new TextDecoder().decode(buf);
+}
+function bytesToBase64(bytes){
+  let bin = '';
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+function base64ToBytes(b64){
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+/* Craft/previous-season items aren't real drops KeystoneLoot's own database tracks, so they
+   can't round-trip through it - excluded from export rather than sent as junk data. Same
+   item appearing in more than one of our lists only exports once, keeping its highest tier. */
+function kslExportableItems(c){
+  const seen = new Map();
+  let skipped = 0;
+  c.bisLists.forEach(list => {
+    list.items.forEach(b => {
+      if(!b.whId || b.source === t('murlokCraftLabel') || b.source === t('murlokOldSeasonLabel')){ skipped++; return; }
+      const tier = b.catalyst ? KSL_TIER.CATALYST : (b.priority === 'secondary' ? KSL_TIER.MUST : KSL_TIER.BIS);
+      const existing = seen.get(b.whId);
+      if(!existing || tier > existing.tier) seen.set(b.whId, { whId: b.whId, tier });
+    });
+  });
+  return { items: [...seen.values()], skipped };
+}
+async function exportCharacterToKeystoneLoot(c){
+  const specs = SPEC_ID[c.class];
+  const specId = specs ? specs[c.spec] : null;
+  if(!specId) return { error: t('kslExportNoSpecMsg') };
+  const { items, skipped } = kslExportableItems(c);
+  if(!items.length) return { error: t('kslExportEmptyMsg') };
+  const payload = { [specId]: items.map(i => ({ itemId: Number(i.whId), tier: i.tier })) };
+  const compressed = await deflateCompress(JSON.stringify(payload));
+  return { str: KSL_PREFIX + bytesToBase64(compressed), skipped };
+}
+
+async function parseKeystoneLootString(str){
+  const trimmed = (str || '').trim();
+  if(!trimmed.startsWith(KSL_PREFIX)) throw new Error('bad-prefix');
+  const compressed = base64ToBytes(trimmed.slice(KSL_PREFIX.length));
+  return JSON.parse(await deflateDecompress(compressed));
+}
+function getOrCreateKeystoneLootBisList(c){
+  let list = c.bisLists.find(l => l.name === KSL_LIST_NAME);
+  if(!list){ list = { id: uid(), name: KSL_LIST_NAME, items: [] }; c.bisLists.push(list); }
+  return list;
+}
+/* Same real-Wowhead-tooltip classification pipeline built for Murlok import: an item not in
+   our own curated table gets its real slot parsed from the tooltip's item-type row, and if it
+   turns out to be a Tier Set piece with a real similarly-itemized match, we import that real,
+   farmable match (tagged Catalyst) instead of the unfarmable tier piece itself - same rule as
+   the Murlok flow, so a KeystoneLoot import behaves the same way. */
+async function resolveKeystoneLootItem(itemId){
+  const found = ITEM_LOOT_TABLE.find(row => String(row[3]) === String(itemId));
+  if(found) return { name: found[0], slot: found[1], source: found[2], icon: found[4], catalyst: false, whId: itemId };
+  const data = await fetchWowheadTooltip(itemId);
+  if(!data || !data.tooltip) return null;
+  const slotM = /<table width="100%"><tr><td>([^<]+)<\/td>/.exec(data.tooltip);
+  const rawSlot = slotM ? slotM[1].trim() : '';
+  const slot = WOWHEAD_SLOT_TO_BIS[rawSlot] || rawSlot;
+  const classified = await classifyUnknownMurlokItem(itemId, slot);
+  if(classified.category === 'tierset' && classified.suggestion){
+    return {
+      name: classified.suggestion.name, slot, source: classified.suggestion.loc || '—',
+      icon: classified.suggestion.icon || null, catalyst: true, whId: classified.suggestion.whId
+    };
+  }
+  return { name: data.name, slot, source: classified.label || '—', icon: zamIconUrl(data.icon, 'medium'), catalyst: false, whId: itemId };
+}
+async function importKeystoneLootString(c, str){
+  let data;
+  try{ data = await parseKeystoneLootString(str); }
+  catch(e){ return { error: t('kslImportBadStringMsg') }; }
+  const specs = SPEC_ID[c.class];
+  const specId = specs ? specs[c.spec] : null;
+  const bucket = specId && data[String(specId)] ? data[String(specId)] : null;
+  if(!bucket || !bucket.length) return { error: t('kslImportNoMatchMsg') };
+  const list = getOrCreateKeystoneLootBisList(c);
+  let added = 0, skipped = 0;
+  for(const entry of bucket){
+    if(entry.tier === KSL_TIER.TRANSMOG){ skipped++; continue; }
+    const resolved = await resolveKeystoneLootItem(entry.itemId);
+    if(!resolved){ skipped++; continue; }
+    if(list.items.some(b => String(b.whId) === String(resolved.whId))) continue;
+    const priority = entry.tier === KSL_TIER.BIS ? 'bis' : 'secondary';
+    const catalyst = resolved.catalyst || entry.tier === KSL_TIER.CATALYST;
+    list.items.push({
+      id: uid(), name: resolved.name, slot: resolved.slot, source: resolved.source || '—',
+      whId: resolved.whId, icon: resolved.icon || null, boss: null, priority, catalyst
+    });
+    added++;
+  }
+  c.activeBisListId = list.id;
+  await saveChar(c);
+  return { added, skipped };
 }
 
 function renderBisSearchResults(query){
