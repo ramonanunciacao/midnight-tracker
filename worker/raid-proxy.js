@@ -24,7 +24,21 @@
    a per-dungeon breakdown anywhere) count of completed keystone runs this season, bucketed by
    level (0 = Mythic 0, 2 = keystone 2-4, 5 = keystone 5-9, 10 = keystone 10+). No "timed vs
    depleted" distinction is exposed by this endpoint, so don't infer one. Also needs no
-   Blizzard token — just CORS headers on the same response. */
+   Blizzard token — just CORS headers on the same response.
+
+   Fourth, unrelated usage: GET <worker-url>/?type=wowhead-news
+   Wowhead's news page has no API/RSS feed and blocks direct fetches with a 403; this pulls
+   it through r.jina.ai's reader proxy (which renders the page and returns readable text/
+   markdown) and regex-extracts up to 5 {title, url} pairs from the "### [Title](url)"
+   headings. Uses ?type=1 on the Wowhead URL, which is their own Live/Retail filter (confirmed
+   by fetching it directly - every article it returns is tagged Live, none Classic/Hardcore/
+   Cataclysm), so Classic-only news never shows up here. Also adds &contentTag=312, Wowhead's
+   own "Hotfix" tag - confirmed by fetching it directly that this single tag is exactly class
+   buffs/nerfs + dungeon/raid tuning + bug-fix/maintenance notes bundled together; Wowhead has
+   no finer-grained tags to split those three apart, so this is the closest real filter to
+   "only the balance/maintenance news that matters for a tracker" without inventing a filter
+   that doesn't exist. No dates are available from this extraction. Also needs no Blizzard
+   token. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -75,6 +89,29 @@ export default {
         }
         const data = await res.json();
         return new Response(JSON.stringify(data), { headers: corsHeaders });
+      } catch(err){
+        return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
+      }
+    }
+
+    if(url.searchParams.get('type') === 'wowhead-news'){
+      try{
+        const res = await fetch('https://r.jina.ai/https://www.wowhead.com/news?type=1&contentTag=312');
+        if(!res.ok){
+          return new Response(JSON.stringify({ error: 'jina reader error', status: res.status }), { status: res.status, headers: corsHeaders });
+        }
+        const text = await res.text();
+        const seen = new Set();
+        const news = [];
+        const re = /###\s*\[([^\]]+)\]\((https:\/\/www\.wowhead\.com\/news\/[^)]+)\)/g;
+        let m;
+        while((m = re.exec(text)) && news.length < 5){
+          const link = m[2];
+          if(seen.has(link)) continue;
+          seen.add(link);
+          news.push({ title: m[1].trim(), url: link });
+        }
+        return new Response(JSON.stringify({ news }), { headers: corsHeaders });
       } catch(err){
         return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
       }
