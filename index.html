@@ -665,7 +665,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .todo-item{ display:grid; grid-template-columns: 16px 16px 1fr 20px; align-items:center; gap:10px; padding:10px 4px; border-bottom:1px solid var(--hairline); }
 .todo-item input[type=checkbox]{ accent-color: var(--gold); width:16px; height:16px; margin:0; justify-self:start; }
 .todo-item span{ font-size:14px; text-align:left; justify-self:start; width:100%; }
+.todo-item .todo-text{ cursor:text; }
 .todo-item.done span{ color: var(--text-dim); text-decoration: line-through; }
+.todo-text-input{
+  grid-column: 3; width:100%; background: var(--bg-panel); border:1px solid var(--purple); border-radius:6px;
+  color:var(--text); font-size:14px; padding:4px 8px;
+}
 .todo-item.done{ opacity:.7; }
 .drag-handle{ cursor:grab; color:var(--text-dim); font-size:13px; opacity:.4; flex-shrink:0; letter-spacing:-2px; }
 .drag-handle:hover{ opacity:.9; }
@@ -4270,9 +4275,32 @@ function renderTodos(){
     const row = document.createElement('div');
     row.className = 'todo-item' + (todo.done ? ' done' : '');
     const handle = draggable ? `<span class="drag-handle" title="${t('dragReorder')}">⠿</span>` : `<span class="drag-handle" style="visibility:hidden;">⠿</span>`;
-    row.innerHTML = `${handle}<input type="checkbox" ${todo.done?'checked':''}><span>${escapeHtml(todo.text)}</span><button class="del">✕</button>`;
+    row.innerHTML = `${handle}<input type="checkbox" ${todo.done?'checked':''}><span class="todo-text" title="${t('renameBisListHint')}">${escapeHtml(todo.text)}</span><button class="del">✕</button>`;
     row.querySelector('input').addEventListener('change', async (e) => { todo.done = e.target.checked; await saveChar(c); renderTodos(); });
     row.querySelector('.del').addEventListener('click', async () => { c.todos = c.todos.filter(x => x.id !== todo.id); await saveChar(c); renderTodos(); });
+    row.querySelector('.todo-text').addEventListener('dblclick', (e) => {
+      const span = e.currentTarget;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'todo-text-input';
+      input.value = todo.text;
+      span.replaceWith(input);
+      input.focus();
+      input.select();
+      let done = false;
+      const commit = async () => {
+        if(done) return;
+        done = true;
+        todo.text = input.value.trim() || todo.text;
+        await saveChar(c);
+        renderTodos();
+      };
+      input.addEventListener('blur', commit);
+      input.addEventListener('keydown', (ev) => {
+        if(ev.key === 'Enter') input.blur();
+        if(ev.key === 'Escape'){ done = true; renderTodos(); }
+      });
+    });
     if(draggable){
       enableDragReorder(row, todo.id, async (fromId, toId) => {
         const pending = c.todos.filter(x => !x.done);
