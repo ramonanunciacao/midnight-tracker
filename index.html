@@ -644,6 +644,24 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .bonusrolls-spend-form button#bonusRollLogBtn:disabled{ opacity:.4; cursor:default; }
 .bonusrolls-history{ display:flex; flex-direction:column; gap:6px; max-width:640px; }
+.vault-history-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
+.vault-history-add{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:16px 0 20px; }
+.vault-history-add select, .vault-history-add input{
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px;
+  padding:9px 12px; font-size:13px;
+}
+.vault-history-add select{ min-width:130px; }
+.vault-history-add button#vaultHistoryAddBtn{
+  background: var(--gold); border:none; color:#16141c; font-weight:800; padding:9px 18px; border-radius:8px; cursor:pointer;
+}
+.vault-hist-icon{ width:22px; height:22px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
+.weekly-rewards-mini-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.weekly-rewards-mini-head .weekly-rewards-mini-title{ margin-bottom:0; }
+.vault-history-btn{
+  background:none; border:1px solid var(--hairline); color:var(--text-dim); font-size:9.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.02em; padding:3px 8px; border-radius:6px; cursor:pointer;
+}
+.vault-history-btn:hover{ border-color: var(--gold-dim); color: var(--gold); }
 .bonusroll-log-row{
   display:flex; align-items:center; gap:12px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
   border-radius:8px; padding:9px 12px;
@@ -1443,6 +1461,37 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   </div>
 </div>
 
+<div class="modal-overlay vault-history-modal-overlay" id="vaultHistoryModal" style="display:none;">
+  <div class="modal recent-runs-modal">
+    <div class="bis-modal-head">
+      <h3 data-i18n="vaultHistoryTitle">Histórico do Vault</h3>
+      <button class="modal-close-btn" id="vaultHistoryModalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="upgrades-sub" data-i18n="vaultHistorySub">Registre o que você pegou no Great Vault a cada semana, pra ter um histórico</div>
+
+    <div class="vault-history-add">
+      <select id="vaultCategorySelect">
+        <option value="raid" data-i18n="raidsLabel">Raid</option>
+        <option value="mplus" data-i18n="mythicPlusLabel">Mythic+</option>
+        <option value="worldboss" data-i18n="worldBossLabel">World Boss</option>
+      </select>
+      <div class="filter-group" id="vaultTypeToggle">
+        <button data-type="item" class="active" data-i18n="vaultTypeItem">Item</button>
+        <button data-type="bonusroll" data-i18n="vaultTypeBonusRoll">Bonus Roll</button>
+      </div>
+      <div id="vaultItemFieldWrap" style="position:relative; flex:1; min-width:160px;">
+        <input type="hidden" id="vaultItemWhId" value="">
+        <input type="hidden" id="vaultItemIcon" value="">
+        <input type="text" id="vaultItemName" data-i18n-placeholder="vaultItemPlaceholder" placeholder="Nome do item" autocomplete="off" style="width:100%;">
+        <div class="bis-search-results" id="vaultItemSearchResults"></div>
+      </div>
+      <button id="vaultHistoryAddBtn" data-i18n="add">Adicionar</button>
+    </div>
+
+    <div class="bonusrolls-history" id="vaultHistoryList"></div>
+  </div>
+</div>
+
 
 <script>
 /* ============ FIREBASE SETUP ============
@@ -1541,6 +1590,10 @@ const I18N = {
     bonusRollDelve: "Bountiful Delve", bonusRollPreyHunt: "Nightmare Prey Hunt",
     bonusRollDeleteConfirm: "Remover esse registro? Isso vai devolver 1 bonus roll disponível.",
     bonusRollToggleResultHint: "Clique para alternar entre acerto e erro",
+    vaultHistoryTitle: "Histórico do Vault", vaultHistorySub: "Registre o que você pegou no Great Vault a cada semana, pra ter um histórico",
+    vaultHistoryBtnLabel: "Histórico", vaultTypeItem: "Item", vaultTypeBonusRoll: "Bonus Roll",
+    vaultItemPlaceholder: "Nome do item", vaultHistoryEmpty: "Nenhum registro ainda.",
+    vaultHistoryDeleteConfirm: "Remover esse registro do histórico do Vault?",
     raidUlatekNormalNote: "Ula'tek (último boss) dropa 20 Champion + 10 Hero, em vez do padrão da dificuldade Normal",
     raidUlatekHeroicNote: "Ula'tek (último boss) dropa 20 Hero + 10 Myth, em vez do padrão da dificuldade Heroica",
     loading: "Carregando...",
@@ -1687,6 +1740,10 @@ const I18N = {
     bonusRollDelve: "Bountiful Delve", bonusRollPreyHunt: "Nightmare Prey Hunt",
     bonusRollDeleteConfirm: "Remove this entry? This will give back 1 available bonus roll.",
     bonusRollToggleResultHint: "Click to toggle between hit and miss",
+    vaultHistoryTitle: "Vault History", vaultHistorySub: "Log what you picked from the Great Vault each week, to keep a history",
+    vaultHistoryBtnLabel: "History", vaultTypeItem: "Item", vaultTypeBonusRoll: "Bonus Roll",
+    vaultItemPlaceholder: "Item name", vaultHistoryEmpty: "No entries yet.",
+    vaultHistoryDeleteConfirm: "Remove this entry from the Vault history?",
     raidUlatekNormalNote: "Ula'tek (last boss) drops 20 Champion + 10 Hero, instead of Normal difficulty's usual amount",
     raidUlatekHeroicNote: "Ula'tek (last boss) drops 20 Hero + 10 Myth, instead of Heroic difficulty's usual amount",
     loading: "Loading...",
@@ -3472,6 +3529,7 @@ function normalizeChar(c){
   if(typeof c.bonusRolls.available !== 'number') c.bonusRolls.available = 0;
   if(!Array.isArray(c.bonusRolls.log)) c.bonusRolls.log = [];
   if(!Array.isArray(c.bonusRolls.wishlist)) c.bonusRolls.wishlist = [];
+  if(!Array.isArray(c.vaultHistory)) c.vaultHistory = [];
   return c;
 }
 
@@ -3498,7 +3556,7 @@ function makeCharObj(id, name, cls, realm, realmName, region){
     highestKey: 0, history: [], bisLists: [defaultBisList], activeBisListId: defaultBisList.id,
     gearItems: null, mplusBestRuns: [], mplusRecentRuns: [],
     avatarUrl: null, ioscoreSeason1: 0, lastSyncedAt: null, worldRank: null,
-    bonusRolls: { available: 0, log: [], wishlist: [] }
+    bonusRolls: { available: 0, log: [], wishlist: [] }, vaultHistory: []
   };
 }
 
@@ -3842,7 +3900,10 @@ function renderCharacterPage(){
               <div class="raid-diff-tooltip">${raidDiffTooltipHtml}</div>
 
               <div class="weekly-rewards-mini" id="section-weekly">
-                <h4 class="weekly-rewards-mini-title">${t('weeklyRewardsTitle')}</h4>
+                <div class="weekly-rewards-mini-head">
+                  <h4 class="weekly-rewards-mini-title">${t('weeklyRewardsTitle')}</h4>
+                  <button class="vault-history-btn" id="vaultHistoryBtn">${t('vaultHistoryBtnLabel')}</button>
+                </div>
                 ${vaultMiniLine('inv_misc_treasurechest03b', t('raidsLabel'), [2,4,6], raidCountThisWeek, n => t('raidMilestone', n))}
                 ${vaultMiniLine('inv_relics_hourglass', t('mythicPlusLabel'), [2,4,8], dCount, n => t('mplusMilestone', n))}
                 ${vaultMiniLine('inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n))}
@@ -4030,6 +4091,10 @@ function renderCharacterPage(){
   container.querySelector('#dashBonusRollsBtn').addEventListener('click', () => {
     switchToTab('bonusrolls');
     renderBonusRolls();
+  });
+
+  container.querySelector('#vaultHistoryBtn').addEventListener('click', () => {
+    openVaultHistoryModal();
   });
 
   container.querySelectorAll('.dash-bis-list-pill').forEach(pill => {
@@ -4558,7 +4623,8 @@ document.addEventListener('keydown', (e) => {
   if(document.getElementById('bisBrowseModal').style.display !== 'none'){ closeBisBrowseModal(); return; }
   if(document.getElementById('bisModal').style.display !== 'none'){ closeBisModal(); return; }
   if(document.getElementById('recentRunsModal').style.display !== 'none'){ closeRecentRunsModal(); return; }
-  if(document.getElementById('seasonBestModal').style.display !== 'none') closeSeasonBestModal();
+  if(document.getElementById('seasonBestModal').style.display !== 'none'){ closeSeasonBestModal(); return; }
+  if(document.getElementById('vaultHistoryModal').style.display !== 'none') closeVaultHistoryModal();
 });
 
 let bisBrowseMode = 'bis';
@@ -5538,6 +5604,123 @@ document.getElementById('bonusRollLogBtn').addEventListener('click', async () =>
   document.getElementById('bonusRollWhId').value = '';
   document.getElementById('bonusRollIconUrl').value = '';
   renderBonusRolls();
+});
+
+/* ---------------- Great Vault history (per character, manual log of what was
+   picked each week - item or, now that the vault can also grant one, a bonus
+   roll). Picking a bonus roll here feeds straight into the Bonus Rolls
+   available counter; removing that entry undoes the grant. ---------------- */
+const VAULT_CATEGORY_ICON = { raid: 'inv_misc_treasurechest03b', mplus: 'inv_relics_hourglass', worldboss: 'inv_misc_head_dragon_01' };
+function vaultCategoryLabel(cat){
+  return cat === 'raid' ? t('raidsLabel') : cat === 'mplus' ? t('mythicPlusLabel') : t('worldBossLabel');
+}
+let vaultEntryType = 'item';
+function openVaultHistoryModal(){
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  if(!c) return;
+  renderVaultHistory(c);
+  document.getElementById('vaultHistoryModal').style.display = 'flex';
+}
+function closeVaultHistoryModal(){
+  document.getElementById('vaultHistoryModal').style.display = 'none';
+}
+document.getElementById('vaultHistoryModalClose').addEventListener('click', closeVaultHistoryModal);
+document.getElementById('vaultHistoryModal').addEventListener('click', (e) => { if(e.target.id === 'vaultHistoryModal') closeVaultHistoryModal(); });
+document.getElementById('vaultTypeToggle').querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    vaultEntryType = btn.dataset.type;
+    document.getElementById('vaultTypeToggle').querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    document.getElementById('vaultItemFieldWrap').style.display = vaultEntryType === 'item' ? '' : 'none';
+  });
+});
+function renderVaultItemSearchResults(query){
+  const panel = document.getElementById('vaultItemSearchResults');
+  const q = query.trim().toLowerCase();
+  if(!q){ panel.classList.remove('open'); panel.innerHTML = ''; return; }
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  const matches = ITEM_LOOT_TABLE
+    .filter(([name]) => name.toLowerCase().includes(q))
+    .filter(([, slot]) => bisItemAllowedForChar(slot, c))
+    .slice(0, 40);
+  if(!matches.length){
+    panel.innerHTML = `<div class="bis-search-empty">${t('noItemMatch')}</div>`;
+    panel.classList.add('open');
+    return;
+  }
+  panel.innerHTML = `
+    <div class="bis-search-head"><span></span><span>${t('itemCol')}</span><span>${t('slotCol')}</span><span>${t('locationCol')}</span></div>
+    ${matches.map(([name, slot, loc, whId, icon]) => `
+      <div class="bis-search-row" data-name="${name}" data-whid="${whId || ''}" data-icon="${icon || ''}">
+        <span class="bsr-icon">${icon ? `<img class="bicon-img" src="${icon}" alt="">` : slotIcon(slot)}</span>
+        <span class="bsr-name">${name}</span>
+        <span class="bsr-slot">${slot.split(' (')[0]}</span>
+        <span class="bsr-loc">${loc}</span>
+      </div>`).join('')}
+  `;
+  panel.classList.add('open');
+  panel.querySelectorAll('.bis-search-row').forEach(row => {
+    row.addEventListener('click', () => {
+      document.getElementById('vaultItemName').value = row.dataset.name;
+      document.getElementById('vaultItemWhId').value = row.dataset.whid || '';
+      document.getElementById('vaultItemIcon').value = row.dataset.icon || '';
+      panel.classList.remove('open'); panel.innerHTML = '';
+    });
+  });
+}
+document.getElementById('vaultItemName').addEventListener('input', (e) => {
+  document.getElementById('vaultItemWhId').value = ''; document.getElementById('vaultItemIcon').value = '';
+  renderVaultItemSearchResults(e.target.value);
+});
+document.getElementById('vaultItemName').addEventListener('focus', (e) => { if(e.target.value) renderVaultItemSearchResults(e.target.value); });
+document.getElementById('vaultItemName').addEventListener('blur', () => {
+  setTimeout(() => { document.getElementById('vaultItemSearchResults').classList.remove('open'); }, 150);
+});
+function renderVaultHistory(c){
+  const wrap = document.getElementById('vaultHistoryList');
+  const log = [...c.vaultHistory].sort((a,b) => b.ts - a.ts);
+  if(!log.length){ wrap.innerHTML = `<div class="empty-note">${t('vaultHistoryEmpty')}</div>`; return; }
+  wrap.innerHTML = log.map(entry => `
+    <div class="bonusroll-log-row">
+      <img class="vault-hist-icon" src="${zamIconUrl(VAULT_CATEGORY_ICON[entry.category], 'small')}" alt="">
+      <div class="bonusroll-log-info">
+        <span class="bonusroll-log-loc">${escapeHtml(vaultCategoryLabel(entry.category))}</span>
+        <span class="bonusroll-log-item">${entry.type === 'item' ? escapeHtml(entry.name) : t('vaultTypeBonusRoll')}</span>
+      </div>
+      <span class="bonusroll-log-date">${new Date(entry.ts).toLocaleDateString(currentLang==='pt'?'pt-BR':'en-US')}</span>
+      <button class="bonusroll-log-del" data-id="${entry.id}">✕</button>
+    </div>`).join('');
+  wrap.querySelectorAll('.bonusroll-log-del').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const entry = c.vaultHistory.find(e => e.id === btn.dataset.id);
+      if(!entry) return;
+      const ok = await customConfirm(t('vaultHistoryDeleteConfirm'), t('vaultHistoryTitle'));
+      if(!ok) return;
+      c.vaultHistory = c.vaultHistory.filter(e => e.id !== entry.id);
+      if(entry.type === 'bonusroll') c.bonusRolls.available = Math.max(0, c.bonusRolls.available - 1);
+      await saveChar(c);
+      renderVaultHistory(c);
+    });
+  });
+}
+document.getElementById('vaultHistoryAddBtn').addEventListener('click', async () => {
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  if(!c) return;
+  const category = document.getElementById('vaultCategorySelect').value;
+  if(vaultEntryType === 'item'){
+    const name = document.getElementById('vaultItemName').value.trim();
+    if(!name) return;
+    const whId = document.getElementById('vaultItemWhId').value.trim();
+    const icon = document.getElementById('vaultItemIcon').value.trim();
+    c.vaultHistory.push({ id: uid(), ts: Date.now(), category, type: 'item', name, whId: whId || null, icon: icon || null });
+    document.getElementById('vaultItemName').value = '';
+    document.getElementById('vaultItemWhId').value = '';
+    document.getElementById('vaultItemIcon').value = '';
+  } else {
+    c.vaultHistory.push({ id: uid(), ts: Date.now(), category, type: 'bonusroll' });
+    c.bonusRolls.available += 1;
+  }
+  await saveChar(c);
+  renderVaultHistory(c);
 });
 
 /* ---------------- Tabs ---------------- */
