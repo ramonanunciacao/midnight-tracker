@@ -323,10 +323,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 @media(max-width:700px){ .sb-tile{ flex-basis:88px; height:118px; } }
 .chart-readout{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:28px; line-height:1; }
 .chart-readout-label{ font-size:10px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin:2px 0 10px; }
-.chart-delta-row{ display:flex; gap:14px; margin:-4px 0 12px; }
-.chart-delta-chip{ display:flex; flex-direction:column; gap:1px; font-size:10px; }
-.chart-delta-chip b{ font-size:13px; font-weight:800; }
-.chart-delta-period{ color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; font-size:9px; }
 .chart-tooltip{
   position:absolute; transform: translate(-50%,-100%); pointer-events:none; white-space:nowrap;
   background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:6px; padding:4px 8px;
@@ -527,7 +523,24 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .add-char-status.loading{ color:var(--gold-dim); }
 
 /* todo */
-.todo-panel, .mural-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
+.todo-panel, .mural-panel, .upgrades-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
+.upgrades-sub{ font-size:12px; color:var(--text-dim); margin-bottom:16px; }
+.upgrades-mode-filter{ margin-bottom:18px; }
+.upgrades-table{ width:100%; border-collapse:collapse; font-size:13px; }
+.upgrades-table th{
+  text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim);
+  font-weight:700; padding:8px 12px; border-bottom:1px solid var(--hairline);
+}
+.upgrades-table td{ padding:9px 12px; border-bottom:1px solid var(--hairline); color:var(--text); }
+.upgrades-table tr:last-child td{ border-bottom:none; }
+.upgrades-table tr:hover td{ background: var(--bg-panel-raised); }
+.upg-level{ font-weight:700; font-family:'Rajdhani',sans-serif; font-size:15px; }
+.upg-ilvl{ color: var(--gold-dim); font-weight:700; text-align:right; }
+.upg-crest-chip{ font-weight:700; font-size:12px; white-space:nowrap; }
+.upg-track-badge{
+  font-size:11px; font-weight:700; border:1px solid; border-radius:6px; padding:3px 8px; white-space:nowrap;
+}
+.upgrades-source-note{ font-size:11px; color:var(--text-dim); margin-top:14px; line-height:1.5; }
 .todo-add{ display:flex; gap:8px; margin-bottom:18px; }
 .todo-add input{ flex:1; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px; padding:10px 12px; font-size:14px; }
 .todo-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 18px; border-radius:8px; cursor:pointer; }
@@ -965,6 +978,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
       <button class="sidebar-link" data-tab="mural" title="Mural">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
       </button>
+      <button class="sidebar-link" data-tab="upgrades" title="Upgrade Chart">
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2 10l2-2 2 2M9 4l2-2 2 2M16 13l2-2 2 2"/></svg></span><span class="sidebar-label" data-i18n="navUpgrades">Upgrade Chart</span>
+      </button>
 
       <div class="sidebar-footer">
         <button class="sidebar-footer-btn" id="refreshDashboardBtn" title="Atualizar todos os personagens no Raider.IO">
@@ -1015,6 +1031,18 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
       </div>
 
       <div class="mural-grid" id="muralGrid"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-upgrades">
+    <div class="upgrades-panel">
+      <h2 data-i18n="upgradesTitle">Upgrade Chart</h2>
+      <div class="upgrades-sub" data-i18n="upgradesSub">Veja exatamente o que cada nível de Mythic+ e cada boss de raid dropa</div>
+      <div class="filter-group upgrades-mode-filter" id="upgradesModeFilter">
+        <button data-mode="mplus" class="active" data-i18n="upgradesMplusTab">Mythic+</button>
+        <button data-mode="raid" data-i18n="upgradesRaidTab">Raid</button>
+      </div>
+      <div id="upgradesTableWrap"></div>
     </div>
   </section>
     </div>
@@ -1272,6 +1300,12 @@ const I18N = {
     ariaGoHome: "Ir para o início",
     logout: "Sair",
     navDashboard: "Dashboard", navCharacters: "Personagens", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Mural",
+    navUpgrades: "Tabela de Upgrade",
+    upgradesTitle: "Tabela de Upgrade", upgradesSub: "Veja exatamente o que cada nível de Mythic+ e cada boss de raid dropa",
+    upgradesMplusTab: "Mythic+", upgradesRaidTab: "Raid",
+    upgradesLevelCol: "Nível", upgradesCrestCol: "Crest", upgradesItemCol: "Item", upgradesIlvlCol: "Item Level", upgradesBossCol: "Boss",
+    upgradesSourceNote: "Fonte: guias da Method.gg para Midnight Season 2. +11 e +12+ reaproveitam os valores reais de +10 (a fonte não detalhou níveis além de \"10 ou mais\").",
+    upgradesRaidSourceNote: "Fonte: guia da Method.gg para Midnight Season 2. Apenas a dificuldade Mítica tinha uma tabela publicada por boss — LFR/Normal/Heroico não foram detalhados na fonte.",
     loading: "Carregando...",
     todoPlaceholder: "Adicionar novo objetivo...", add: "Adicionar",
     muralTitle: "Mural", muralSub: "Espaço pra recado ou lembrete", character: "Personagem",
@@ -1317,7 +1351,6 @@ const I18N = {
     ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
     ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score", currentLabel: "Atual",
-    deltaDayLabel: "1 dia", deltaWeekLabel: "7 dias", deltaMonthLabel: "30 dias",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     newsPlaceholder1: "Hotfixes recentes", newsPlaceholder2: "Novidades da Season 2", newsPlaceholder3: "Rotação de Mythic+ da semana",
@@ -1383,6 +1416,12 @@ const I18N = {
     ariaGoHome: "Go to home",
     logout: "Log Out",
     navDashboard: "Dashboard", navCharacters: "Characters", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Board",
+    navUpgrades: "Upgrade Chart",
+    upgradesTitle: "Upgrade Chart", upgradesSub: "See exactly what each Mythic+ level and raid boss drops",
+    upgradesMplusTab: "Mythic+", upgradesRaidTab: "Raid",
+    upgradesLevelCol: "Level", upgradesCrestCol: "Crest", upgradesItemCol: "Item", upgradesIlvlCol: "Item Level", upgradesBossCol: "Boss",
+    upgradesSourceNote: "Source: Method.gg's Midnight Season 2 guides. +11 and +12+ reuse +10's real numbers (the source didn't break down levels past \"10 or higher\").",
+    upgradesRaidSourceNote: "Source: Method.gg's Midnight Season 2 guide. Only Mythic difficulty had a published per-boss table - LFR/Normal/Heroic weren't detailed in the source.",
     loading: "Loading...",
     todoPlaceholder: "Add a new goal...", add: "Add",
     muralTitle: "Board", muralSub: "Space for a note or reminder", character: "Character",
@@ -1428,7 +1467,6 @@ const I18N = {
     ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
     ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution", currentLabel: "Current",
-    deltaDayLabel: "1 day", deltaWeekLabel: "7 days", deltaMonthLabel: "30 days",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     newsPlaceholder1: "Recent hotfixes", newsPlaceholder2: "Season 2 highlights", newsPlaceholder3: "This week's Mythic+ rotation",
@@ -2237,6 +2275,46 @@ const WORLDBOSS_TIERS = ["World","Normal","Heroic","Mythic"];
    from the IO/ilvl evolution chart so the Season 1->2 score reset doesn't read as a regression. */
 const SEASON_2_START = new Date('2026-08-18T15:00:00Z');
 const CURRENT_SEASON_SLUG = 'season-mn-2';
+
+/* Real Midnight Season 2 keystone-level -> crest/item-track table, sourced from
+   Method.gg's dedicated Mistcrests and gear-item-level guides (fetched directly,
+   not paraphrased/guessed): "Mistcrests from Mythic Dungeons and Raid Bosses in
+   WoW Midnight Season 2" and "Gear Item Level from Raid Bosses and Mythic+
+   Dungeons in WoW Midnight Season 2". The item track is the BASE rank the
+   end-of-run loot drops at, separate from crest currency earned that run - the
+   loot can be upgraded further with crests up to its track's own ceiling.
+   +10 and above wasn't broken down further rank-by-rank in the source guide
+   (grouped as "10 or higher"), so +11/+12+ reuse the +10 row's real numbers
+   rather than guessing higher ones that weren't published. */
+const MPLUS_DROP_TABLE = [
+  { level:'M0',  crest:null,      crestAmt:null, track:'champion', rank:'1/6', ilvl:292 },
+  { level:'+2',  crest:'champion', crestAmt:12, track:'champion', rank:'2/6', ilvl:295 },
+  { level:'+3',  crest:'champion', crestAmt:14, track:'champion', rank:'2/6', ilvl:295 },
+  { level:'+4',  crest:'hero',     crestAmt:10, track:'champion', rank:'3/6', ilvl:298 },
+  { level:'+5',  crest:'hero',     crestAmt:12, track:'champion', rank:'4/6', ilvl:302 },
+  { level:'+6',  crest:'hero',     crestAmt:14, track:'hero',     rank:'1/6', ilvl:302 },
+  { level:'+7',  crest:'hero',     crestAmt:16, track:'hero',     rank:'1/6', ilvl:302 },
+  { level:'+8',  crest:'hero',     crestAmt:18, track:'hero',     rank:'2/6', ilvl:305 },
+  { level:'+9',  crest:'mythic',   crestAmt:10, track:'hero',     rank:'2/6', ilvl:305 },
+  { level:'+10', crest:'mythic',   crestAmt:12, track:'hero',     rank:'3/6', ilvl:308 },
+  { level:'+11', crest:'mythic',   crestAmt:14, track:'hero',     rank:'3/6', ilvl:308 },
+  { level:'+12+',crest:'mythic',   crestAmt:16, track:'hero',     rank:'3/6', ilvl:308 },
+];
+/* Only Mythic raid difficulty had a published per-boss item-track table in the
+   source guide - LFR/Normal/Heroic weren't broken down, so they're left out
+   here rather than invented. Boss order/names cross-checked against RAID_POOL. */
+const RAID_MYTHIC_DROP_TABLE = [
+  { boss:"Nek'zali the Soulcoiler", track:'mythic', rank:'1/6', ilvl:318 },
+  { boss:"Entombed Sentinels",      track:'mythic', rank:'2/6', ilvl:321 },
+  { boss:"The Lost Explorers",      track:'mythic', rank:'2/6', ilvl:321 },
+  { boss:"Vashnik the Malignant",   track:'mythic', rank:'3/6', ilvl:324 },
+  { boss:"Sszorak",                 track:'mythic', rank:'3/6', ilvl:324 },
+  { boss:"The Twin Fangs",          track:'mythic', rank:'3/6', ilvl:324 },
+  { boss:"The Coiled Altar",        track:'mythic', rank:'9/6', ilvl:344 },
+  { boss:"Ula'tek",                 track:'mythic', rank:'9/6', ilvl:344 },
+];
+const UPGRADE_TRACK_COLOR = { champion:'#e17b7b', hero:'#e0a458', mythic:'#f2d675' };
+const UPGRADE_TRACK_LABEL = { champion:'Champion', hero:'Hero', mythic:'Myth' };
 
 /* Gear tab: two-column paperdoll-ish split, matching the standard WoW character sheet layout */
 const GEAR_LEFT_SLOTS = ["head","neck","shoulder","back","chest","wrist"];
@@ -3342,27 +3420,6 @@ function renderCharacterPage(){
   const chartCutoff = new Date(); chartCutoff.setDate(chartCutoff.getDate() - state.dashChartRange);
   const chartHistory = sortedHistory.filter(h => new Date(h.date) >= chartCutoff);
 
-  /* Change over the last day/week/month, computed from real daily snapshots
-     (c.history) rather than just showing the current value - lets the player
-     see their actual rate of progress, not just where they stand right now.
-     Returns null when there's no snapshot old enough yet to compare against. */
-  const deltaOverDays = (valueKey, days) => {
-    if(!sortedHistory.length) return null;
-    const current = valueKey === 'ilvl' ? c.ilvl : c.ioscore;
-    const targetStr = new Date(Date.now() - days*86400000).toISOString().slice(0,10);
-    const past = [...sortedHistory].reverse().find(h => h.date <= targetStr);
-    if(!past || typeof past[valueKey] !== 'number' || typeof current !== 'number') return null;
-    return current - past[valueKey];
-  };
-  const formatDelta = d => (d === null || d === undefined) ? '—' : (d === 0 ? '±0' : (d > 0 ? '+' : '') + d);
-  const deltaColor = d => (d === null || d === undefined || d === 0) ? 'var(--text-dim)' : (d > 0 ? 'var(--ok)' : 'var(--danger)');
-  const deltaRowHtml = valueKey => `
-    <div class="chart-delta-row">
-      <span class="chart-delta-chip"><span class="chart-delta-period">${t('deltaDayLabel')}</span><b style="color:${deltaColor(deltaOverDays(valueKey,1))}">${formatDelta(deltaOverDays(valueKey,1))}</b></span>
-      <span class="chart-delta-chip"><span class="chart-delta-period">${t('deltaWeekLabel')}</span><b style="color:${deltaColor(deltaOverDays(valueKey,7))}">${formatDelta(deltaOverDays(valueKey,7))}</b></span>
-      <span class="chart-delta-chip"><span class="chart-delta-period">${t('deltaMonthLabel')}</span><b style="color:${deltaColor(deltaOverDays(valueKey,30))}">${formatDelta(deltaOverDays(valueKey,30))}</b></span>
-    </div>`;
-
   const chartRangeSelect = id => `
     <select class="chart-range-select" data-chart="${id}">
       <option value="7" ${state.dashChartRange===7?'selected':''}>7D</option>
@@ -3438,7 +3495,6 @@ function renderCharacterPage(){
               </div>
               <div class="chart-readout" style="color:${color}">${c.ilvl || '—'}</div>
               <div class="chart-readout-label">${t('currentLabel')} ${t('gearIlvlLabel')}</div>
-              ${deltaRowHtml('ilvl')}
               <div id="dashIlvlChart"></div>
             </div>
             <div class="dash-topgroup-item">
@@ -3448,7 +3504,6 @@ function renderCharacterPage(){
               </div>
               <div class="chart-readout" style="color:var(--danger)">${c.ioscore || '—'}</div>
               <div class="chart-readout-label">${t('currentLabel')} ${t('mRatingLabel')}</div>
-              ${deltaRowHtml('ioscore')}
               <div id="dashIoChart"></div>
             </div>
 
@@ -4607,6 +4662,62 @@ function bindChartHover(containerEl){
 }
 
 
+/* ---------------- Upgrade Chart (static, real Method.gg data) ---------------- */
+let upgradesMode = 'mplus';
+function trackBadgeHtml(track, rank){
+  const color = UPGRADE_TRACK_COLOR[track];
+  return `<span class="upg-track-badge" style="color:${color}; border-color:${color}66; background:${color}18;">${UPGRADE_TRACK_LABEL[track]} ${rank}</span>`;
+}
+function renderUpgradesTable(){
+  const wrap = document.getElementById('upgradesTableWrap');
+  if(upgradesMode === 'mplus'){
+    wrap.innerHTML = `
+      <table class="upgrades-table">
+        <thead><tr>
+          <th>${t('upgradesLevelCol')}</th>
+          <th>${t('upgradesCrestCol')}</th>
+          <th>${t('upgradesItemCol')}</th>
+          <th>${t('upgradesIlvlCol')}</th>
+        </tr></thead>
+        <tbody>
+          ${MPLUS_DROP_TABLE.map(row => `
+            <tr>
+              <td class="upg-level">${row.level}</td>
+              <td>${row.crest ? `<span class="upg-crest-chip" style="color:${UPGRADE_TRACK_COLOR[row.crest]}">${row.crestAmt}x ${UPGRADE_TRACK_LABEL[row.crest]}</span>` : '—'}</td>
+              <td>${trackBadgeHtml(row.track, row.rank)}</td>
+              <td class="upg-ilvl">${row.ilvl}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="upgrades-source-note">${t('upgradesSourceNote')}</div>`;
+  } else {
+    wrap.innerHTML = `
+      <table class="upgrades-table">
+        <thead><tr>
+          <th>${t('upgradesBossCol')}</th>
+          <th>${t('upgradesItemCol')}</th>
+          <th>${t('upgradesIlvlCol')}</th>
+        </tr></thead>
+        <tbody>
+          ${RAID_MYTHIC_DROP_TABLE.map(row => `
+            <tr>
+              <td class="upg-level">${escapeHtml(row.boss)}</td>
+              <td>${trackBadgeHtml(row.track, row.rank)}</td>
+              <td class="upg-ilvl">${row.ilvl}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="upgrades-source-note">${t('upgradesRaidSourceNote')}</div>`;
+  }
+}
+document.getElementById('upgradesModeFilter').querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    upgradesMode = btn.dataset.mode;
+    document.getElementById('upgradesModeFilter').querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    renderUpgradesTable();
+  });
+});
+
 /* ---------------- Tabs ---------------- */
 function switchToTab(tabName){
   document.querySelectorAll('.sidebar-link').forEach(b=>b.classList.remove('active'));
@@ -4638,6 +4749,7 @@ document.querySelectorAll('.sidebar-link').forEach(btn => {
     }
     if(btn.dataset.tab === 'dashboard'){ goToDashboard(); return; }
     if(btn.dataset.tab === 'bis'){ openBisModal(); return; }
+    if(btn.dataset.tab === 'upgrades'){ switchToTab('upgrades'); renderUpgradesTable(); return; }
     switchToTab(btn.dataset.tab);
   });
 });
