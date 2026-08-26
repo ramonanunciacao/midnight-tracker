@@ -610,6 +610,8 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   margin:24px 0 10px;
 }
 .upgrades-table-compact td, .upgrades-table-compact th{ padding:7px 14px; }
+.upg-exception-row{ background: linear-gradient(90deg, transparent, #b8863a18, transparent); border-top:1px dashed var(--gold-dim); }
+.upg-exception-row .upg-ilvl:not(.upg-nodata){ color: var(--gold); }
 .upgrades-source-note{ font-size:11px; color:var(--text-dim); margin-top:12px; line-height:1.5; }
 @media(max-width:900px){
   .upgrades-layout{ flex-direction:column; }
@@ -967,9 +969,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .murlok-loc-tierset{ color: var(--gold-dim); }
 .murlok-loc-oldseason{ color: var(--danger); }
 .murlok-loc-craft{ color: var(--cyan); }
-.murlok-suggestion-row{ margin-left:22px; padding-left:8px; border-left:2px solid var(--cyan); opacity:.92; }
-.murlok-suggestion-icon{ flex-shrink:0; }
-.murlok-suggestion-tag{ color: var(--cyan); font-size:10px; text-transform:uppercase; letter-spacing:.03em; flex-shrink:0; }
+.murlok-catalyst-tag{ color: var(--purple); border:1px solid var(--purple); border-radius:4px; padding:1px 6px; font-size:10px; text-transform:uppercase; letter-spacing:.03em; flex-shrink:0; }
 .murlok-drift-banner{
   display:flex; flex-direction:column; gap:10px; background: var(--bg-panel-raised);
   border:1px solid var(--gold-dim); border-left:4px solid var(--gold); border-radius:10px;
@@ -1003,6 +1003,15 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .bis-browse-boss-head:first-child{ border-top:none; margin-top:0; }
 .bis-browse-card-icon-empty{ background: var(--bg-panel); }
 .bis-browse-general-icon{ display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--text-dim); }
+/* Boss tiles are a drill-down inside a raid/dungeon card, not peers of it - shrink them
+   so the hierarchy (location > boss) reads clearly instead of looking like two rows of
+   the same-weight card. */
+.bis-browse-boss-grid{ gap:6px; }
+.bis-browse-boss-card{ padding:4px 9px 4px 4px; border-radius:6px; }
+.bis-browse-boss-card .bis-browse-card-icon{ width:20px; height:20px; }
+.bis-browse-boss-card .bis-browse-card-name{ font-size:11px; }
+.bis-browse-boss-card .bis-browse-card-count{ font-size:9px; }
+.bis-browse-boss-card.bis-browse-boss-general .bis-browse-general-icon{ font-size:11px; }
 .bis-browse-boss-back{
   display:block; background:none; border:none; color: var(--text-dim); font-size:11px; font-weight:600;
   cursor:pointer; padding:4px 8px 10px; text-align:left;
@@ -1756,6 +1765,7 @@ const I18N = {
     upgradesDifficultyCol: "Dificuldade", upgradesNoDataLabel: "Sem dados",
     upgradesRankIlvlTitle: "Item Level por rank de upgrade (todas as dificuldades)",
     upgradesRankCol: "Rank", upgradesMythicBossDetailNote: "Mapeamento real de boss → rank no Mítico:",
+    upgradesRaidExceptionNote: "Só The Coiled Altar e Ula'tek (os 2 últimos bosses), somente na dificuldade Mítica, dropam nesse rank — é o teto real de item level da season, não dá pra chegar lá fazendo upgrade de uma peça de rank menor.",
     quizTriggerBtn: "🎯 O que devo farmar?", quizTitle: "Encontre sua dungeon ideal",
     quizWantsQuestion: "O que você está procurando?", quizWantItem: "Item", quizWantCrest: "Crest",
     quizNextBtn: "Próximo →",
@@ -1864,7 +1874,7 @@ const I18N = {
     murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
     murlokTierSetLabel: "Tier Set", murlokOldSeasonLabel: "Season Anterior",
     murlokCraftLabel: "Craft", murlokSourceUnknown: "Fonte desconhecida",
-    murlokSuggestionTag: "Sugestão de stats similares",
+    murlokCatalystTag: "Catalyst", murlokCatalystTagTooltip: "Item farmável com stats parecidos ao de tier set - use o Catalyst pra transformá-lo em peça de tier depois",
     murlokDriftTitle: "A build recomendada do Murlok mudou desde que você importou",
     murlokDriftApplyBtn: "Atualizar lista", murlokDriftDismissBtn: "Ignorar",
     murlokBuildSpecLabel: (spec, cls) => `Build de ${spec} ${cls} (top jogadores)`,
@@ -1929,6 +1939,7 @@ const I18N = {
     upgradesDifficultyCol: "Difficulty", upgradesNoDataLabel: "No data",
     upgradesRankIlvlTitle: "Item Level by upgrade rank (all difficulties)",
     upgradesRankCol: "Rank", upgradesMythicBossDetailNote: "Real boss → rank mapping on Mythic:",
+    upgradesRaidExceptionNote: "Only The Coiled Altar and Ula'tek (the last 2 bosses), Mythic difficulty only, drop at this rank — it's the season's real item level ceiling, not reachable by upgrading a lower-rank piece.",
     quizTriggerBtn: "🎯 What should I farm?", quizTitle: "Find your ideal dungeon",
     quizWantsQuestion: "What are you looking for?", quizWantItem: "Item", quizWantCrest: "Crest",
     quizNextBtn: "Next →",
@@ -2037,7 +2048,7 @@ const I18N = {
     murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
     murlokTierSetLabel: "Tier Set", murlokOldSeasonLabel: "Previous Season",
     murlokCraftLabel: "Craft", murlokSourceUnknown: "Unknown source",
-    murlokSuggestionTag: "Similar-stat suggestion",
+    murlokCatalystTag: "Catalyst", murlokCatalystTagTooltip: "Farmable item with a similar stat profile to the tier piece - use the Catalyst to turn it into tier gear later",
     murlokDriftTitle: "Murlok's recommended build has changed since you imported it",
     murlokDriftApplyBtn: "Update list", murlokDriftDismissBtn: "Dismiss",
     murlokBuildSpecLabel: (spec, cls) => `${spec} ${cls} build (top players)`,
@@ -3986,6 +3997,7 @@ function renderCharacterPage(){
 
   const bisByLoc = new Map();
   sortedBis.forEach(b => {
+    if(b.source === t('murlokTierSetLabel')) return; // not a real farmable location, skip this card
     const loc = (b.source && b.source !== '—') ? b.source : t('bisNoLocation');
     if(!bisByLoc.has(loc)) bisByLoc.set(loc, []);
     bisByLoc.get(loc).push(b);
@@ -5380,14 +5392,21 @@ function extractSecondaryStatsFromTooltip(tooltip){
 }
 function findSimilarArmorItem(bisSlot, wantedStats){
   if(!bisSlot || !wantedStats.length) return null;
-  let best = null, bestScore = 0;
+  let best = null, bestScore = -1, bestIlvl = -1;
+  // Dungeon drops are listed before raid drops in ITEM_LOOT_TABLE, so picking the first
+  // item to reach the best score would always favor dungeons on a tie even when a raid
+  // item matches just as well (or better-itemized) - break ties by real item level instead,
+  // so a genuinely better-itemized raid piece can still win.
   ITEM_LOOT_TABLE.forEach(([name, slot, loc, whId, icon]) => {
     if((slot||'').split(' (')[0] !== bisSlot) return;
     const entry = ITEM_STATS[whId];
     if(!entry) return;
     const itemStatNames = entry.s.map(([n]) => n).filter(n => BIS_SECONDARY_STATS.includes(n));
     const score = itemStatNames.filter(n => wantedStats.includes(n)).length;
-    if(score > bestScore){ bestScore = score; best = { name, whId, icon, loc }; }
+    if(score === 0) return;
+    if(score > bestScore || (score === bestScore && entry.i > bestIlvl)){
+      bestScore = score; bestIlvl = entry.i; best = { name, whId, icon, loc };
+    }
   });
   return bestScore > 0 ? best : null;
 }
@@ -5588,6 +5607,37 @@ function renderMurlokResult(){
   // classified from Wowhead's real tooltip data in the background, patched in once resolved.
   rows.filter(r => !r.loc).forEach(r => {
     classifyUnknownMurlokItem(r.item.whId, r.bisSlot).then(({ label, category, suggestion }) => {
+      // A Tier Set piece itself has no real farm location - if we found a real, similarly
+      // itemized alternative, show only that (tagged as a Catalyst target) instead of the
+      // tier piece, rather than offering both as separate picks.
+      if(category === 'tierset' && suggestion){
+        const idx = murlokLastRows.findIndex(x => x.key === r.key);
+        if(idx !== -1) murlokLastRows.splice(idx, 1);
+        murlokSelected.delete(r.key);
+        const already = activeItems.some(b => String(b.whId) === String(suggestion.whId));
+        const catRow = {
+          bisSlot: r.bisSlot, key: `${r.key}-cat`, already, loc: suggestion.loc,
+          item: { whId: suggestion.whId, name: suggestion.name, icon: suggestion.icon, count: null }
+        };
+        if(!already) murlokSelected.add(catRow.key);
+        murlokLastRows.push(catRow);
+        const anchorRow = wrap.querySelector(`.murlok-item-row[data-row-key="${CSS.escape(r.key)}"]`);
+        if(anchorRow){
+          anchorRow.insertAdjacentHTML('beforebegin', murlokCatalystRowHtml(catRow));
+          anchorRow.remove();
+          const newEl = wrap.querySelector(`.murlok-item-row[data-row-key="${CSS.escape(catRow.key)}"]`);
+          if(newEl){
+            const link = newEl.querySelector('.bis-wh-link');
+            if(link) link.addEventListener('click', e => e.preventDefault());
+            const cb = newEl.querySelector('input[type=checkbox]:not(:disabled)');
+            if(cb) cb.addEventListener('change', () => {
+              if(cb.checked) murlokSelected.add(cb.dataset.key); else murlokSelected.delete(cb.dataset.key);
+            });
+          }
+        }
+        document.getElementById('murlokAddSelectedBtn').style.display = murlokLastRows.some(x => !x.already) ? '' : 'none';
+        return;
+      }
       r.locLabel = label;
       const el = wrap.querySelector(`.murlok-loc-loading[data-key="${CSS.escape(r.key)}"]`);
       if(el){
@@ -5595,41 +5645,22 @@ function renderMurlokResult(){
         el.classList.remove('murlok-loc-loading');
         el.classList.add(`murlok-loc-${category}`);
       }
-      if(suggestion){
-        const suggAlready = activeItems.some(b => String(b.whId) === String(suggestion.whId));
-        const suggRow = {
-          bisSlot: r.bisSlot, key: `${r.key}-sugg`, already: suggAlready, loc: suggestion.loc,
-          item: { whId: suggestion.whId, name: suggestion.name, icon: suggestion.icon, count: null }
-        };
-        murlokLastRows.push(suggRow);
-        const anchorRow = wrap.querySelector(`.murlok-item-row[data-row-key="${CSS.escape(r.key)}"]`);
-        if(anchorRow){
-          anchorRow.insertAdjacentHTML('afterend', murlokSuggestionRowHtml(suggRow));
-          const newRow = anchorRow.nextElementSibling;
-          const link = newRow.querySelector('.bis-wh-link');
-          if(link) link.addEventListener('click', e => e.preventDefault());
-          const cb = newRow.querySelector('input[type=checkbox]:not(:disabled)');
-          if(cb) cb.addEventListener('change', () => {
-            if(cb.checked) murlokSelected.add(cb.dataset.key); else murlokSelected.delete(cb.dataset.key);
-          });
-        }
-      }
     });
   });
 }
-function murlokSuggestionRowHtml(r){
+function murlokCatalystRowHtml(r){
   const statsStr = formatItemStatsShort(r.item.whId);
   return `
-    <div class="murlok-item-row murlok-suggestion-row" data-row-key="${escapeHtml(r.key)}">
-      <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : ''}>
-      <span class="murlok-suggestion-icon">💡</span>
+    <div class="murlok-item-row" data-row-key="${escapeHtml(r.key)}">
+      <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : (murlokSelected.has(r.key) ? 'checked' : '')}>
       ${r.item.icon ? `<img class="bicon-img" src="${r.item.icon}" alt="">` : slotIcon(r.bisSlot)}
       <span class="bis-browse-item-info" style="flex:1;">
         <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link">${escapeHtml(r.item.name)}</a>
         ${statsStr ? `<span class="bis-browse-item-stats">${escapeHtml(statsStr)}</span>` : ''}
       </span>
       <span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>
-      ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : `<span class="murlok-suggestion-tag">${t('murlokSuggestionTag')}</span>`}
+      <span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>
+      ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
     </div>`;
 }
 document.getElementById('murlokModeToggle').querySelectorAll('button').forEach(btn => {
@@ -6137,6 +6168,12 @@ function renderUpgradesTable(){
               <td class="upg-ilvl">${row.hero}</td>
               <td class="upg-ilvl">${row.mythic}</td>
             </tr>`).join('')}
+          <tr class="upg-exception-row">
+            <td class="upg-level">9/6 <span class="upg-note-hint" title="${t('upgradesRaidExceptionNote')}">ⓘ</span></td>
+            <td class="upg-ilvl upg-nodata">${t('upgradesNoDataLabel')}</td>
+            <td class="upg-ilvl upg-nodata">${t('upgradesNoDataLabel')}</td>
+            <td class="upg-ilvl" style="color:${UPGRADE_TRACK_COLOR.mythic}">344</td>
+          </tr>
         </tbody>
       </table>
       <div class="upgrades-source-note">${t('upgradesMythicBossDetailNote')} ${buildMythicBossRankNote()}</div>`;
