@@ -5549,9 +5549,13 @@ async function classifyUnknownMurlokItem(whId, bisSlot){
     const suggestion = findSimilarArmorItem(bisSlot, wantedStats);
     return { label: t('murlokTierSetLabel'), category: 'tierset', suggestion };
   }
+  // "Dropped by" is only ever present when a real boss/mob actually drops the item - no boss
+  // means no real drop source exists at all, i.e. it's crafted, regardless of its item level.
+  // Checking this before the ilvl-based old-season guess matters: a crafted item can have a
+  // low ilvl too, and used to get mislabeled "Season Anterior" just because of that.
+  if(!droppedBy) return { label: t('murlokCraftLabel'), category: 'craft', suggestion: null };
   if(ilvl !== null && ilvl < MURLOK_SEASON_MIN_ILVL) return { label: t('murlokOldSeasonLabel'), category: 'oldseason', suggestion: null };
-  if(droppedBy) return { label: droppedBy, category: 'other', suggestion: null };
-  return { label: t('murlokCraftLabel'), category: 'craft', suggestion: null };
+  return { label: droppedBy, category: 'other', suggestion: null };
 }
 function getOrCreateMurlokBisList(c){
   let list = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
