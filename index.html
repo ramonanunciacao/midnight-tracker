@@ -2168,13 +2168,18 @@ const BIS_TIERS = ['adventurer','veteran','champion','hero','mythic'];
 const BIS_TIER_LABEL = { adventurer:'Adventurer', veteran:'Veteran', champion:'Champion', hero:'Hero', mythic:'Mythic' };
 const BIS_TIER_COLOR = { adventurer:'#5dade2', veteran:'#a78bda', champion:'#e17b7b', hero:'#e0a458', mythic:'#f2d675' };
 /* Real Midnight Season 2 upgrade-track item level bands (Patch 12.1), sourced from
-   Method.gg's published Champion/Hero/Myth tables plus a community track-vs-ilvl chart -
-   not invented. Tracks overlap by a few ilvl at their edges (a known WoW quirk - the same
-   ilvl can come from either track depending on source), so classification below buckets by
-   each track's own starting ilvl, checked highest-first. */
+   Method.gg's published per-rank Champion/Hero/Myth tables plus a community
+   track-vs-ilvl chart - not invented. Method.gg's own numbers show the top two
+   ranks of Champion (305, 308) exactly match the bottom two ranks of Hero, and
+   the top two ranks of Hero (318, 321) exactly match the bottom two ranks of
+   Myth - the same ilvl legitimately comes from either track depending on the
+   item's real source, which can't be reconstructed from ilvl alone. To avoid
+   over-crediting (tagging something "Mythic" that's really a not-fully-upgraded
+   Hero piece), the cutoff for each tier is set just past the LOWER track's own
+   maximum rank, so an ambiguous ilvl is bucketed to the lower/safer tier. */
 const GEAR_TRACK_BANDS = [
-  { tier:'mythic', min:318 },
-  { tier:'hero', min:305 },
+  { tier:'mythic', min:324 },  // past Hero's own max (321); Myth 3/6+ is unambiguous
+  { tier:'hero', min:309 },    // past Champion's own max (308); Hero 3/6+ is unambiguous
   { tier:'champion', min:292 },
   { tier:'veteran', min:279 },
   { tier:'adventurer', min:266 },
@@ -3127,7 +3132,7 @@ function renderCharacterPage(){
     <div class="gear-row">
       ${iconUrl ? `<img class="gear-icon" src="${iconUrl}" alt="">` : ''}
       <div class="gear-info">
-        <a href="https://www.wowhead.com/item=${item.item_id}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(item.name)}</a>
+        <a href="https://www.wowhead.com/item=${item.item_id}${Array.isArray(item.bonuses) && item.bonuses.length ? '?bonus=' + item.bonuses.join(':') : ''}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(item.name)}</a>
         <div class="gear-meta">${item.item_level}${enchant ? ` · ${escapeHtml(enchant)}` : ''}</div>
       </div>
       ${bisInfo}
@@ -3196,7 +3201,6 @@ function renderCharacterPage(){
       <div class="bis-dchip-item" data-search="${escapeHtml(searchKey)}">
         ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
         <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
-        ${bisTierBadgeHtml(deriveBisItemTier(c, b))}
       </div>`;
     };
     return `
