@@ -72,16 +72,21 @@ body{
   background: var(--purple); box-shadow: 0 0 8px rgba(163,53,238,.85);
 }
 .sidebar-divider{ height:1px; width:80%; background: var(--hairline); margin:8px 0; }
-.sidebar-footer{ margin-top:auto; padding-top:14px; border-top:1px solid var(--hairline); width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; }
-.sidebar-footer-btn{
-  display:flex; flex-direction:column; align-items:center; gap:4px; width:100%; background:none; border:1px solid transparent; color: var(--text-dim);
-  font-weight:700; font-size:9px; text-transform:uppercase; letter-spacing:.03em; padding:8px 4px; border-radius:9px; cursor:pointer; transition: all .15s;
+.sidebar-char-flyout-wrap{ position:relative; width:100%; }
+.sidebar-char-flyout{
+  position:absolute; left:100%; top:0; margin-left:10px; z-index:60;
+  background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:14px;
+  width:max-content; max-width:min(560px, 70vw); max-height:80vh; overflow-y:auto;
+  opacity:0; visibility:hidden; transform:translateX(-6px);
+  transition: opacity .15s, transform .15s, visibility .15s;
+  box-shadow: 0 14px 32px -10px rgba(0,0,0,.7);
 }
-.sidebar-footer-btn:hover{ color: var(--gold); background: var(--bg-panel-raised); }
-.sidebar-footer-btn:disabled{ opacity:.6; cursor:default; }
-.sidebar-footer-btn .rdb-icon{ font-size:16px; }
-.sidebar-footer-btn .rdb-icon.spinning{ animation: char-refresh-spin .8s linear infinite; }
-.sidebar-lang{ display:flex; gap:6px; justify-content:center; }
+.sidebar-char-flyout-wrap:hover .sidebar-char-flyout,
+.sidebar-char-flyout-wrap:focus-within .sidebar-char-flyout{
+  opacity:1; visibility:visible; transform:translateX(0);
+}
+.sidebar-char-flyout .char-selector-row{ margin-bottom:0; }
+.sidebar-footer{ margin-top:auto; padding-top:14px; border-top:1px solid var(--hairline); width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; }
 .sidebar-user{ display:flex; flex-direction:column; gap:6px; align-items:center; font-size:10px; color:var(--text-dim); text-align:center; }
 .sidebar-user #userEmailLabel{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:86px; }
 .lang-flag{ background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px; padding:5px 8px; font-size:14px; cursor:pointer; opacity:.9; line-height:1; }
@@ -89,11 +94,12 @@ body{
 .lang-flag-text.active{ color: #16141c; }
 .lang-flag:hover{ opacity:1; border-color: var(--gold-dim); }
 .lang-flag.active{ opacity:1; border-color: var(--gold); background: var(--gold); box-shadow: 0 0 12px -2px rgba(242,181,61,.6); }
+.cpage-lang-switch{ position:absolute; top:16px; right:18px; z-index:2; display:flex; gap:6px; }
 .app-main{ flex:1; min-width:0; }
 @media(max-width:820px){
   .sidebar{ width:56px; }
-  .sidebar-label, .sidebar-user, .sidebar-footer-btn .sidebar-label{ display:none; }
-  .sidebar-link, .sidebar-footer-btn{ justify-content:center; }
+  .sidebar-label, .sidebar-user{ display:none; }
+  .sidebar-link{ justify-content:center; }
 }
 .new-badge{
   position:absolute; top:6px; right:8px; background:var(--danger); color:#fff;
@@ -186,31 +192,24 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .stat-tile-outline{ background:rgba(10,8,18,.35); border:1px dashed rgba(163,53,238,.4); }
 .cpage-identity{ flex-direction:row; align-items:center; gap:14px; background:none; border:none; padding:0; }
 .cpage-identity h2{ font-family:'Rajdhani',sans-serif; font-size:30px; line-height:1.1; }
+.cpage-name-row{ display:flex; align-items:center; gap:8px; }
+.cpage-faction-icon{ width:22px; height:22px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
 .cpage-sub{ font-size:13px; color: var(--text-dim); margin-top:2px; }
-.cpage-faction{ font-size:11px; font-weight:700; font-style:italic; margin-top:2px; color: var(--text-dim); }
-.cpage-faction.faction-alliance{ color:#5eb3f0; }
-.cpage-faction.faction-horde{ color:#e0554f; }
-.cpage-badges{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.cpage-badge{
-  font-size:10px; text-transform:uppercase; letter-spacing:.03em; font-weight:700; color: var(--text-dim);
-  background: var(--bg-panel); border:1px solid var(--hairline); padding:3px 8px; border-radius:6px;
-}
-.cpage-badge-pill{ color: var(--gold); border-color: rgba(242,181,61,.35); background: rgba(242,181,61,.08); }
 .stat-tile-label{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
 .stat-tile-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:27px; line-height:1.1; }
 .stat-tile-value-sm{ font-size:15px; font-weight:600; color:var(--text); }
 .stat-tile-sub{ font-size:10px; color:var(--text-dim); margin-top:3px; }
 .stat-tile-sub2{ font-size:9px; color:var(--text-dim); margin-top:3px; opacity:.8; }
-.cpage-links{ display:flex; align-items:center; gap:10px; margin-top:6px; }
-.cpage-links a{ font-size:18px; text-decoration:none; opacity:.75; transition:opacity .15s; }
-.cpage-links a:hover{ opacity:1; }
-.cpage-lastsync{ font-size:10px; color: var(--text-dim); margin-left:auto; }
+.cpage-sync-row{ display:flex; align-items:center; gap:10px; margin-top:10px; }
+.cpage-lastsync{ font-size:11px; color: var(--text-dim); font-weight:600; }
 .cpage-refresh-btn{
-  background:none; border:none; color:var(--text-dim);
-  cursor:pointer; font-size:14px; opacity:.7; transition: all .15s;
+  display:flex; align-items:center; gap:6px; background: rgba(242,181,61,.1); border:1px solid rgba(242,181,61,.35);
+  color: var(--gold); cursor:pointer; font-size:12px; font-weight:700; padding:7px 14px; border-radius:8px;
+  transition: all .15s;
 }
-.cpage-refresh-btn:hover{ opacity:1; color: var(--gold); }
-.cpage-refresh-btn.spinning{ animation: char-refresh-spin .8s linear infinite; }
+.cpage-refresh-btn:hover{ background: rgba(242,181,61,.2); border-color: var(--gold); }
+.cpage-refresh-btn.spinning{ opacity:.7; cursor:default; }
+.cpage-refresh-btn.spinning .cpage-refresh-icon{ display:inline-block; animation: char-refresh-spin .8s linear infinite; }
 .refresh-dashboard-btn{
   display:inline-flex; align-items:center; justify-content:center; gap:6px; background:none; border:1px solid var(--hairline);
   color: var(--text-dim); font-size:11px; font-weight:600; padding:0 10px; height:32px; border-radius:8px;
@@ -319,15 +318,19 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .mplus-season-total-label{ font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.03em; text-align:right; line-height:1.3; }
 .mplus-season-stats-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
 .mplus-season-stat{
-  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:3px;
-  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px; padding:10px 6px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:5px;
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-top:3px solid transparent; border-radius:8px; padding:12px 6px;
 }
-.mss-value{ font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:800; line-height:1; }
-.mss-label{ font-size:9.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.02em; }
-.mss-m0 .mss-value{ color:#8792ad; }
-.mss-low .mss-value{ color: var(--ok); text-shadow: 0 0 10px rgba(34,197,94,.35); }
-.mss-mid .mss-value{ color: var(--cyan); text-shadow: 0 0 10px rgba(34,211,238,.35); }
-.mss-high .mss-value{ color: var(--danger); text-shadow: 0 0 10px rgba(239,68,68,.4); }
+.mss-label{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; }
+.mss-value{ font-family:'Rajdhani',sans-serif; font-size:32px; font-weight:800; line-height:1; color: var(--text); }
+.mss-m0{ border-top-color:#8792ad; }
+.mss-m0 .mss-label{ color:#a7b0c8; }
+.mss-low{ border-top-color: var(--ok); }
+.mss-low .mss-label{ color: var(--ok); text-shadow: 0 0 8px rgba(34,197,94,.5); }
+.mss-mid{ border-top-color: var(--cyan); }
+.mss-mid .mss-label{ color: var(--cyan); text-shadow: 0 0 8px rgba(34,211,238,.5); }
+.mss-high{ border-top-color: var(--danger); }
+.mss-high .mss-label{ color: var(--danger); text-shadow: 0 0 8px rgba(239,68,68,.55); }
 .sb-tile{
   position:relative; flex:0 0 84px; height:112px; border-radius:9px; overflow:hidden; cursor:default;
   background-size:cover; background-position:center; border:1px solid var(--hairline);
@@ -558,6 +561,12 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 /* todo */
 .todo-panel, .mural-panel, .upgrades-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
 .upgrades-sub{ font-size:13px; color:var(--text-dim); margin-bottom:18px; }
+.back-to-dashboard-btn{
+  display:inline-flex; align-items:center; gap:6px; background:none; border:1px solid var(--hairline);
+  color:var(--text-dim); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+  padding:7px 14px; border-radius:8px; cursor:pointer; margin-bottom:16px; transition: border-color .15s, color .15s;
+}
+.back-to-dashboard-btn:hover{ border-color: var(--gold-dim); color: var(--gold); }
 .upgrades-layout{ display:flex; gap:24px; align-items:flex-start; }
 .upgrades-quiz-col{
   flex:0 0 360px; background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:12px; padding:18px;
@@ -880,6 +889,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .bis-list-head{
   font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700; margin:16px 0 8px;
 }
+.bonusrolls-right-col-second-head{ margin-top:28px; padding-top:16px; border-top:1px solid var(--hairline); }
 .bis-browse-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
 .bis-browse-modal{ width:720px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
 .recent-runs-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
@@ -1183,6 +1193,14 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <button class="sidebar-link active" data-tab="dashboard" title="Dashboard">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></span><span class="sidebar-label" data-i18n="navDashboard">Dashboard</span>
       </button>
+      <div class="sidebar-char-flyout-wrap">
+        <button class="sidebar-link" title="Characters">
+          <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20.5c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="sidebar-label" data-i18n="navCharacters">Characters</span>
+        </button>
+        <div class="sidebar-char-flyout">
+          <div class="char-selector-row" id="charSelector"><div class="loading" data-i18n="loading">Carregando...</div></div>
+        </div>
+      </div>
       <button class="sidebar-link sidebar-jump" data-jump="section-gear" title="Gear">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3.2v4.8c0 5-3 8.6-7 10-4-1.4-7-5-7-10V6.2L12 3z"/></svg></span><span class="sidebar-label" data-i18n="navGear">Gear</span>
       </button>
@@ -1201,13 +1219,6 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       </button>
 
       <div class="sidebar-footer">
-        <button class="sidebar-footer-btn" id="refreshDashboardBtn" title="Atualizar todos os personagens no Raider.IO">
-          <span class="rdb-icon">↻</span><span class="sidebar-label" data-i18n="refreshDashboard">Atualizar</span>
-        </button>
-        <div class="sidebar-lang">
-          <button class="lang-flag" data-lang="pt" title="Português">🇧🇷</button>
-          <button class="lang-flag lang-flag-text" data-lang="en" title="English">EN</button>
-        </div>
         <div class="sidebar-user">
           <span id="userEmailLabel"></span>
           <button class="logout-btn" id="logoutBtn" data-i18n="logout">Sair</button>
@@ -1217,12 +1228,12 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
     <div class="app-main">
       <section class="tab active" id="tab-dashboard">
-        <div class="char-selector-row" id="charSelector"><div class="loading" data-i18n="loading">Carregando...</div></div>
         <div id="characterPage"></div>
       </section>
 
   <section class="tab" id="tab-mural">
     <div class="mural-panel">
+      <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
       <h2 data-i18n="muralTitle">Mural</h2>
       <div class="mural-sub" data-i18n="muralSub">Espaço pra recado ou lembrete</div>
 
@@ -1251,6 +1262,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
   <section class="tab" id="tab-upgrades">
     <div class="upgrades-panel">
+      <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
       <h2 data-i18n="upgradesTitle">Upgrade Chart</h2>
       <div class="upgrades-sub" data-i18n="upgradesSub">Veja exatamente o que cada nível de Mythic+ e cada boss de raid dropa</div>
       <div class="upgrades-layout">
@@ -1271,27 +1283,28 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
   <section class="tab" id="tab-bonusrolls">
     <div class="bonusrolls-panel">
+      <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
       <h2 data-i18n="bonusRollsTitle">Bonus Rolls</h2>
       <div class="upgrades-sub" data-i18n="bonusRollsSub">Acompanhe seus bonus rolls: quantos você tem, onde gastou, e se acertou o item</div>
 
-      <div class="bonusrolls-available-row">
-        <div>
-          <div class="bonusrolls-available-label" data-i18n="bonusRollsAvailableLabel">Bonus Rolls disponíveis</div>
-          <div class="bonusrolls-available-sub" data-i18n="bonusRollsAvailableSub">Ajuste manualmente conforme você ganha ou gasta</div>
-        </div>
-        <div class="bonusrolls-stepper">
-          <button id="bonusRollDecBtn">−</button>
-          <span id="bonusRollAvailableVal">0</span>
-          <button id="bonusRollIncBtn">+</button>
-        </div>
-      </div>
-
-      <div class="bonusrolls-summary" id="bonusRollsSummary"></div>
-
-      <h3 class="upgrades-subtitle" data-i18n="bonusRollsWishlistTitle">Bonus Roll BIS</h3>
-      <div class="upgrades-sub" data-i18n="bonusRollsWishlistSub">Adicione os itens que você quer pegar de bonus roll - por nome ou por dungeon/raid</div>
       <div class="upgrades-layout">
-        <div class="upgrades-quiz-col">
+        <div class="upgrades-quiz-col bonusrolls-left-col">
+          <div class="bonusrolls-available-row">
+            <div>
+              <div class="bonusrolls-available-label" data-i18n="bonusRollsAvailableLabel">Bonus Rolls disponíveis</div>
+              <div class="bonusrolls-available-sub" data-i18n="bonusRollsAvailableSub">Ajuste manualmente conforme você ganha ou gasta</div>
+            </div>
+            <div class="bonusrolls-stepper">
+              <button id="bonusRollDecBtn">−</button>
+              <span id="bonusRollAvailableVal">0</span>
+              <button id="bonusRollIncBtn">+</button>
+            </div>
+          </div>
+
+          <div class="bonusrolls-summary" id="bonusRollsSummary"></div>
+
+          <h3 class="upgrades-subtitle" data-i18n="bonusRollsWishlistTitle">Bonus Roll BIS</h3>
+          <div class="upgrades-sub" data-i18n="bonusRollsWishlistSub">Adicione os itens que você quer pegar de bonus roll - por nome ou por dungeon/raid</div>
           <div class="bis-add" style="position:relative;">
             <input type="hidden" id="bonusWishWhId" value="">
             <input type="hidden" id="bonusWishIconUrl" value="">
@@ -1303,15 +1316,8 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
             <div class="bis-search-results" id="bonusWishSearchResults"></div>
           </div>
           <button class="bis-browse-trigger-btn" id="bonusWishBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
-        </div>
-        <div class="upgrades-table-col">
-          <div class="bis-dungeon-grid" id="bonusWishGrid"></div>
-        </div>
-      </div>
 
-      <h3 class="upgrades-subtitle" data-i18n="bonusRollsLogSpendTitle">Registrar item recebido</h3>
-      <div class="upgrades-layout">
-        <div class="upgrades-quiz-col">
+          <h3 class="upgrades-subtitle" data-i18n="bonusRollsLogSpendTitle">Registrar item recebido</h3>
           <div class="bonusrolls-spend-form">
             <select id="bonusRollLocationSelect"></select>
             <input type="hidden" id="bonusRollWhId" value="">
@@ -1323,11 +1329,16 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
             <button class="bis-browse-trigger-btn bonusrolls-spend-browse-btn" id="bonusLogBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
             <button id="bonusRollLogBtn" data-i18n="bonusRollLogBtn">Registrar</button>
           </div>
+
           <div class="bis-list-head" data-i18n="bonusRollsHistoryTitle">Histórico</div>
           <div class="bonusrolls-history" id="bonusRollsHistory"></div>
         </div>
-        <div class="upgrades-table-col">
-          <div class="bis-list-head" data-i18n="bonusRollsByLocationTitle">Recebidos por local</div>
+
+        <div class="upgrades-table-col bonusrolls-right-col">
+          <div class="bis-list-head" data-i18n="bonusRollsWishlistTitle">Bonus Roll BIS</div>
+          <div class="bis-dungeon-grid" id="bonusWishGrid"></div>
+
+          <div class="bis-list-head bonusrolls-right-col-second-head" data-i18n="bonusRollsByLocationTitle">Recebidos por local</div>
           <div class="bis-dungeon-grid" id="bonusReceivedGrid"></div>
         </div>
       </div>
@@ -1628,7 +1639,7 @@ const I18N = {
     authGenericError: "Não foi possível entrar. Tente de novo.",
     ariaGoHome: "Ir para o início",
     logout: "Sair",
-    navDashboard: "Dashboard", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Mural",
+    navDashboard: "Dashboard", navCharacters: "Personagens", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Mural",
     navUpgrades: "Tabela de Upgrade",
     upgradesTitle: "Tabela de Upgrade", upgradesSub: "Veja exatamente o que cada nível de Mythic+ e cada boss de raid dropa",
     upgradesMplusTab: "Mythic+", upgradesRaidTab: "Raid",
@@ -1677,15 +1688,14 @@ const I18N = {
     raidUlatekHeroicNote: "Ula'tek (último boss) dropa 20 Hero + 10 Myth, em vez do padrão da dificuldade Heroica",
     loading: "Carregando...",
     todoPlaceholder: "Adicionar novo objetivo...", add: "Adicionar",
+    backToDashboard: "← Voltar ao Dashboard",
     muralTitle: "Mural", muralSub: "Espaço pra recado ou lembrete", character: "Personagem",
     muralWritePlaceholder: "Escreva aqui...", muralSendNote: "Enviar Recado", muralSendPrint: "Enviar print",
     sortNewest: "Mais novos", sortOldest: "Mais antigos",
     newCharTitle: "Novo Personagem", name: "Nome", class: "Classe", cancel: "Cancelar", create: "Criar", close: "Fechar",
     realmLabel: "Reino", searchAndAdd: "Buscar e Adicionar", charSearching: "Buscando personagem no Raider.IO...",
     charNotFound: "Personagem não encontrado. Confira o nome e o reino.", selectRealmFirst: "Escolha um reino da lista.",
-    refreshFromRaiderIO: "Atualizar do Raider.IO", refreshDashboard: "Atualizar",
-    refreshConfirmTitle: "Update character data?",
-    refreshConfirmMsg: "Updating information directly from Raider.IO. The update may take a moment — Raider.IO itself can take a while to reflect your most recent activity.",
+    refreshFromRaiderIO: "Atualizar do Raider.IO",
     confirmActionTitle: "Confirmar ação", confirm: "Confirmar",
     addCharacterBtn: "+ Adicionar Personagem",
     removeCharTitle: "Remover personagem?",
@@ -1717,7 +1727,7 @@ const I18N = {
     daysAgo: (n) => n===1 ? "1 dia atrás" : `${n} dias atrás`,
     lastUpdatedLabel: "Atualizado",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", mythicPlusShortLabel: "M+", worldBossLabel: "World",
-    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
+    ioScoreLabel: "IO Score", resetAtPrefix: "Reset",
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
     ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score", currentLabel: "Atual",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
@@ -1786,7 +1796,7 @@ const I18N = {
     authGenericError: "Couldn't sign in. Please try again.",
     ariaGoHome: "Go to home",
     logout: "Log Out",
-    navDashboard: "Dashboard", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Board",
+    navDashboard: "Dashboard", navCharacters: "Characters", navGear: "Gear", navMplus: "Mythic+", navRaid: "Raid", navWeekly: "Weekly", navBis: "BIS Gear", navMural: "Board",
     navUpgrades: "Upgrade Chart",
     upgradesTitle: "Upgrade Chart", upgradesSub: "See exactly what each Mythic+ level and raid boss drops",
     upgradesMplusTab: "Mythic+", upgradesRaidTab: "Raid",
@@ -1835,15 +1845,14 @@ const I18N = {
     raidUlatekHeroicNote: "Ula'tek (last boss) drops 20 Hero + 10 Myth, instead of Heroic difficulty's usual amount",
     loading: "Loading...",
     todoPlaceholder: "Add a new goal...", add: "Add",
+    backToDashboard: "← Back to Dashboard",
     muralTitle: "Board", muralSub: "Space for a note or reminder", character: "Character",
     muralWritePlaceholder: "Write here...", muralSendNote: "Send Note", muralSendPrint: "Send Screenshot",
     sortNewest: "Newest", sortOldest: "Oldest",
     newCharTitle: "New Character", name: "Name", class: "Class", cancel: "Cancel", create: "Create", close: "Close",
     realmLabel: "Realm", searchAndAdd: "Search and Add", charSearching: "Searching character on Raider.IO...",
     charNotFound: "Character not found. Check the name and realm.", selectRealmFirst: "Pick a realm from the list.",
-    refreshFromRaiderIO: "Refresh from Raider.IO", refreshDashboard: "Refresh",
-    refreshConfirmTitle: "Update character data?",
-    refreshConfirmMsg: "Updating information directly from Raider.IO. The update may take a moment — Raider.IO itself can take a while to reflect your most recent activity.",
+    refreshFromRaiderIO: "Refresh from Raider.IO",
     confirmActionTitle: "Confirm action", confirm: "Confirm",
     addCharacterBtn: "+ Add Character",
     removeCharTitle: "Remove character?",
@@ -1875,7 +1884,7 @@ const I18N = {
     daysAgo: (n) => n===1 ? "1 day ago" : `${n} days ago`,
     lastUpdatedLabel: "Updated",
     mRatingLabel: "Mythic+ Score", gearIlvlLabel: "Gear Item Level", raidsLabel: "Raids", mythicPlusLabel: "Mythic+", mythicPlusShortLabel: "M+", worldBossLabel: "World",
-    ioScoreLabel: "IO Score", itemLevelBadge: "Item Level", resetAtPrefix: "Reset",
+    ioScoreLabel: "IO Score", resetAtPrefix: "Reset",
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
     ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution", currentLabel: "Current",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
@@ -1936,13 +1945,14 @@ function setLanguage(lang){
   currentLang = lang;
   localStorage.setItem('mt_lang', lang);
   applyStaticTranslations();
-  updateLangFlagsUI();
   refreshDynamicUI();
+  updateLangFlagsUI();
 }
 applyStaticTranslations();
 updateLangFlagsUI();
-document.querySelectorAll('.lang-flag').forEach(btn => {
-  btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+document.addEventListener('click', (e) => {
+  const flag = e.target.closest('.lang-flag');
+  if(flag) setLanguage(flag.dataset.lang);
 });
 
 async function storageGet(key){
@@ -2099,6 +2109,7 @@ function classIconUrl(cls){
   const slug = CLASS_ICON_SLUG[cls];
   return slug ? `https://wow.zamimg.com/images/wow/icons/medium/classicon_${slug}.jpg` : '';
 }
+const FACTION_ICON = { Alliance: 'achievement_pvp_a_01', Horde: 'achievement_pvp_h_01' };
 /* Standard WoW class -> armor type, used to filter the BIS item browser so a
    Death Knight (plate) doesn't see cloth/leather/mail armor pieces etc. Slots
    without an armor type (weapons, trinkets, rings, neck, back, ...) aren't
@@ -3657,8 +3668,13 @@ function countDone(obj){ return Object.values(obj).filter(Boolean).length; }
 /* ---------------- Dashboard: character selector cards + single-page character view ---------------- */
 function renderCharacters(){
   if(!state.dashboardActiveChar || !state.characters.some(c => c.id === state.dashboardActiveChar)){
-    state.dashboardActiveChar = state.characters[0] ? state.characters[0].id : null;
+    let saved = null;
+    try{ saved = localStorage.getItem('mt_active_char'); }catch(e){}
+    state.dashboardActiveChar = (saved && state.characters.some(c => c.id === saved))
+      ? saved
+      : (state.characters[0] ? state.characters[0].id : null);
   }
+  try{ if(state.dashboardActiveChar) localStorage.setItem('mt_active_char', state.dashboardActiveChar); }catch(e){}
   const wrap = document.getElementById('charSelector');
   wrap.innerHTML = '';
   state.characters.forEach(c => {
@@ -3858,8 +3874,6 @@ function renderCharacterPage(){
     </div>`;
   };
 
-  const wowheadArmoryUrl = c.realm && c.region ? `https://www.wowhead.com/character/${c.region}/${c.realm}/${encodeURIComponent(c.name.toLowerCase())}` : null;
-  const raiderIoUrl = c.realm && c.region ? `https://raider.io/characters/${c.region}/${c.realm}/${encodeURIComponent(c.name)}` : null;
 
   const nextReset = new Date(weeklyResetBoundary + 7*24*60*60*1000);
   const daysLeft = Math.max(0, Math.ceil((nextReset.getTime() - Date.now()) / 86400000));
@@ -3917,17 +3931,14 @@ function renderCharacterPage(){
             <img src="${c.avatarUrl || classIconUrl(c.class)}" alt="${c.class}">
           </div>
           <div>
-            <h2 style="color:${color}">${c.name}</h2>
-            <div class="cpage-sub">${c.class}${c.spec ? ` – ${escapeHtml(c.spec)}` : ''}</div>
-            ${c.faction ? `<div class="cpage-faction faction-${c.faction.toLowerCase()}">&lt;${escapeHtml(c.faction)}&gt;</div>` : ''}
-            <div class="cpage-badges">
-              <span class="cpage-badge cpage-badge-pill">🛡️ ${c.ilvl || '—'} ${t('itemLevelBadge')}</span>
+            <div class="cpage-name-row">
+              <h2 style="color:${color}">${c.name}</h2>
+              ${c.faction && FACTION_ICON[c.faction] ? `<img class="cpage-faction-icon" src="${zamIconUrl(FACTION_ICON[c.faction], 'small')}" alt="${escapeHtml(c.faction)}" title="${escapeHtml(c.faction)}">` : ''}
             </div>
-            <div class="cpage-links">
-              ${wowheadArmoryUrl ? `<a href="${wowheadArmoryUrl}" target="_blank" rel="noopener noreferrer" title="Wowhead">🅆</a>` : ''}
-              ${raiderIoUrl ? `<a href="${raiderIoUrl}" target="_blank" rel="noopener noreferrer" title="Raider.IO">Ⓡ</a>` : ''}
+            <div class="cpage-sub">${c.class}${c.spec ? ` – ${escapeHtml(c.spec)}` : ''}</div>
+            <div class="cpage-sync-row">
               <span class="cpage-lastsync">${t('lastUpdatedLabel')}: ${formatRelativeTime(c.lastSyncedAt)}</span>
-              <button class="cpage-refresh-btn" id="cpageRefreshBtn" title="${t('refreshFromRaiderIO')}">↻</button>
+              <button class="cpage-refresh-btn" id="cpageRefreshBtn" title="${t('refreshFromRaiderIO')}"><span class="cpage-refresh-icon">↻</span> ${t('refreshFromRaiderIO')}</button>
             </div>
           </div>
         </div>
@@ -3963,6 +3974,10 @@ function renderCharacterPage(){
           <div class="stat-tile-sub">${t('daysLeftLabel')}</div>
           <div class="stat-tile-sub2">${t('resetAtPrefix')}: ${resetAtStr}</div>
         </div>
+        <div class="cpage-lang-switch">
+          <button class="lang-flag" data-lang="pt" title="Português">🇧🇷</button>
+          <button class="lang-flag lang-flag-text" data-lang="en" title="English">EN</button>
+        </div>
       </div>
 
       <div class="dash-layout">
@@ -3995,10 +4010,10 @@ function renderCharacterPage(){
                 <span class="mplus-season-total-label">${t('mplusSeasonTotalLabel')}</span>
               </div>
               <div class="mplus-season-stats-grid">
-                <div class="mplus-season-stat mss-m0"><span class="mss-value">${c.mplusKeystoneStats.m0}</span><span class="mss-label">${t('mplusSeasonM0Label')}</span></div>
-                <div class="mplus-season-stat mss-low"><span class="mss-value">${c.mplusKeystoneStats.low}</span><span class="mss-label">${t('mplusSeasonLowLabel')}</span></div>
-                <div class="mplus-season-stat mss-mid"><span class="mss-value">${c.mplusKeystoneStats.mid}</span><span class="mss-label">${t('mplusSeasonMidLabel')}</span></div>
-                <div class="mplus-season-stat mss-high"><span class="mss-value">${c.mplusKeystoneStats.high}</span><span class="mss-label">${t('mplusSeasonHighLabel')}</span></div>
+                <div class="mplus-season-stat mss-m0"><span class="mss-label">${t('mplusSeasonM0Label')}</span><span class="mss-value">${c.mplusKeystoneStats.m0}</span></div>
+                <div class="mplus-season-stat mss-low"><span class="mss-label">${t('mplusSeasonLowLabel')}</span><span class="mss-value">${c.mplusKeystoneStats.low}</span></div>
+                <div class="mplus-season-stat mss-mid"><span class="mss-label">${t('mplusSeasonMidLabel')}</span><span class="mss-value">${c.mplusKeystoneStats.mid}</span></div>
+                <div class="mplus-season-stat mss-high"><span class="mss-label">${t('mplusSeasonHighLabel')}</span><span class="mss-value">${c.mplusKeystoneStats.high}</span></div>
               </div>
               ` : `<div class="empty-note">${t('mplusSeasonNoData')}</div>`}
             </div>
@@ -4148,6 +4163,10 @@ function renderCharacterPage(){
       const data = await fetchRaiderIoProfile(c.name, c.realm, c.region);
       applyRaiderIoData(c, data);
       try{
+        const rwData = await fetchRaidWorldBossProgress(c.realm, c.region, c.name);
+        applyRaidWorldBossData(c, rwData);
+      } catch(e){ /* worker unavailable, keep manual raid/world-boss entries as-is */ }
+      try{
         const summaryData = await fetchMplusSeasonSummary(c.realm, c.region, c.name);
         applyMplusSeasonSummary(c, summaryData);
       } catch(e){ /* worker unavailable, keep last known stats */ }
@@ -4158,6 +4177,7 @@ function renderCharacterPage(){
       btn.classList.remove('spinning');
     }
   });
+  updateLangFlagsUI();
 
   function bindRecentRunRows(root){
     (root || container).querySelectorAll('.recent-run-row').forEach(row => {
@@ -4513,11 +4533,9 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
   }
 });
 
-document.getElementById('refreshDashboardBtn').addEventListener('click', async () => {
-  const ok = await customConfirm(t('refreshConfirmMsg'), t('refreshConfirmTitle'));
-  if(!ok) return;
-  refreshAllCharacters();
-});
+/* The sidebar-wide "refresh all" button was removed - the per-character refresh
+   button in the banner covers the manual case, and refreshAllCharacters() still
+   runs automatically on app load. */
 
 function clearWeeklyProgress(c){
   DUNGEON_POOL.forEach(d => c.dungeons[d] = false);
@@ -6090,6 +6108,9 @@ function goToDashboard(){
   renderCharacters();
 }
 document.getElementById('homeLink').addEventListener('click', (e) => { e.preventDefault(); goToDashboard(); });
+document.querySelectorAll('[data-back-to-dashboard]').forEach(btn => {
+  btn.addEventListener('click', () => goToDashboard());
+});
 
 document.querySelectorAll('.sidebar-link').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -6106,6 +6127,7 @@ document.querySelectorAll('.sidebar-link').forEach(btn => {
       }));
       return;
     }
+    if(!btn.dataset.tab) return; // e.g. the Characters flyout anchor - hover-only, no click navigation
     if(btn.dataset.tab === 'dashboard'){ goToDashboard(); return; }
     if(btn.dataset.tab === 'bis'){ openBisModal(); return; }
     if(btn.dataset.tab === 'upgrades'){ switchToTab('upgrades'); renderUpgradesTable(); resetQuiz(); return; }
@@ -6113,6 +6135,13 @@ document.querySelectorAll('.sidebar-link').forEach(btn => {
     switchToTab(btn.dataset.tab);
   });
 });
+
+/* Periodic background sync so Recent Runs / scores / vault progress catch up on their
+   own instead of needing a manual F5 - only while the app is actually visible/loaded. */
+setInterval(() => {
+  const app = document.getElementById('mainApp');
+  if(app && app.style.display !== 'none' && state.characters.length) refreshAllCharacters();
+}, 5 * 60 * 1000);
 
 /* loadAll() is now triggered by auth.onAuthStateChanged once a user is signed in */
 </script>
