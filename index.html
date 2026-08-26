@@ -108,14 +108,14 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .class-icon-lg{ width:54px; height:54px; }
 
 /* character selector: League-loading-screen-style cards, collapsed by default, expand on hover/active */
-.char-selector-row{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:24px; align-items:flex-start; }
+.char-selector-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; align-items:flex-start; }
 .champ-card{
-  position:relative; width:64px; height:92px; border-radius:10px; overflow:hidden; cursor:pointer;
+  position:relative; width:52px; height:74px; border-radius:9px; overflow:hidden; cursor:pointer;
   border:2px solid var(--hairline); background: var(--bg-panel-raised); flex-shrink:0;
   transition: width .3s cubic-bezier(.22,.8,.24,1), border-color .2s, box-shadow .2s;
 }
 .champ-card:hover, .champ-card.active{
-  width:200px; border-color: var(--class-color, var(--gold));
+  width:128px; border-color: var(--class-color, var(--gold));
   box-shadow: 0 8px 24px -8px rgba(0,0,0,.6), 0 0 0 1px var(--class-color, var(--gold)) inset;
 }
 .champ-card-portrait{ position:absolute; inset:0; background: var(--bg-panel); }
@@ -298,23 +298,32 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .bis-dchip-item-name:hover{ text-decoration:underline; }
 .bis-dchip-item-slot{ font-size:10px; color:var(--text-dim); flex-shrink:0; }
+.bis-dchip-result-badge{ width:16px; height:16px; font-size:9px; flex-shrink:0; cursor:default; }
+.bis-dchip-result-badge:hover{ transform:none; }
 .bis-dchip-item.bonus-wish-obtained .bis-dchip-item-name{ text-decoration:line-through; opacity:.6; }
 .bonus-wish-check{ color: var(--ok); font-weight:800; font-size:11px; flex-shrink:0; }
 .bonus-wish-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:11px; flex-shrink:0; }
 .bonus-wish-del:hover{ opacity:1; color:var(--danger); }
 .season-best-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
-.dash-topgroup-mplus{ display:flex; flex-direction:column; flex:1 1 210px; max-width:240px; }
-.dash-topgroup-mplus h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
-.mplus-season-total{ display:flex; align-items:baseline; gap:7px; margin-bottom:14px; }
-.mplus-season-total-value{
-  font-family:'Rajdhani',sans-serif; font-size:38px; font-weight:800; line-height:1; color: var(--gold);
-  text-shadow: 0 0 16px rgba(242,181,61,.4);
+.dash-topgroup-mplus{ display:flex; flex-direction:column; flex:1 1 260px; max-width:300px; }
+.dash-topgroup-mplus h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:14px; }
+.mplus-season-total{
+  display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px;
+  background: linear-gradient(135deg, rgba(242,181,61,.14), rgba(242,181,61,.02)); border:1px solid rgba(242,181,61,.3);
+  border-radius:10px; padding:12px 16px;
 }
-.mplus-season-total-label{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.03em; }
-.mplus-season-stats-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px 16px; }
-.mplus-season-stat{ display:flex; flex-direction:column; }
-.mss-value{ font-family:'Rajdhani',sans-serif; font-size:21px; font-weight:800; line-height:1; }
-.mss-label{ font-size:9px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.02em; margin-top:3px; }
+.mplus-season-total-value{
+  font-family:'Rajdhani',sans-serif; font-size:46px; font-weight:800; line-height:1; color: var(--gold);
+  text-shadow: 0 0 18px rgba(242,181,61,.45);
+}
+.mplus-season-total-label{ font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.03em; text-align:right; line-height:1.3; }
+.mplus-season-stats-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+.mplus-season-stat{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:3px;
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:8px; padding:10px 6px;
+}
+.mss-value{ font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:800; line-height:1; }
+.mss-label{ font-size:9.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.02em; }
 .mss-m0 .mss-value{ color:#8792ad; }
 .mss-low .mss-value{ color: var(--ok); text-shadow: 0 0 10px rgba(34,197,94,.35); }
 .mss-mid .mss-value{ color: var(--cyan); text-shadow: 0 0 10px rgba(34,211,238,.35); }
@@ -619,10 +628,10 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .quiz-result-explain{ font-size:13px; color:var(--text-dim); }
 .quiz-result-raid-note{ font-size:12px; color: var(--purple); text-align:center; margin-top:8px; font-weight:600; }
 .quiz-result-empty{ font-size:14px; color:var(--text-dim); text-align:center; padding:20px 10px; line-height:1.5; }
-.quiz-ruler{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:18px; }
+.quiz-ruler{ display:flex; gap:6px; margin-bottom:18px; }
 .quiz-ruler-tick{
-  flex:0 0 auto; min-width:78px; background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:10px;
-  padding:10px 8px; text-align:center; opacity:0; transform:translateY(10px) scale(.9); transition: opacity .3s, transform .3s;
+  flex:1 1 0; min-width:0; background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:10px;
+  padding:10px 4px; text-align:center; opacity:0; transform:translateY(10px) scale(.9); transition: opacity .3s, transform .3s;
 }
 .quiz-ruler-tick.revealed{ opacity:1; transform:translateY(0) scale(1); }
 .quiz-ruler-tick.target{ border-color: var(--gold); background: rgba(242,181,61,.12); }
@@ -1060,8 +1069,8 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   .bonusrolls-summary{ flex-wrap:wrap; row-gap:10px; }
   .dash-topgroup-mplus{ max-width:none; }
   .modal{ max-width:92vw; }
-  .champ-card{ width:54px; height:78px; }
-  .champ-card:hover, .champ-card.active{ width:150px; }
+  .champ-card{ width:46px; height:64px; }
+  .champ-card:hover, .champ-card.active{ width:108px; }
   #upgradesTableWrap{ overflow-x:auto; }
   .upgrades-table{ min-width:420px; }
   .vault-history-add, .bonusrolls-spend-form, .bis-add{ flex-direction:column; align-items:stretch; }
@@ -1301,20 +1310,27 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       </div>
 
       <h3 class="upgrades-subtitle" data-i18n="bonusRollsLogSpendTitle">Registrar item recebido</h3>
-      <div class="bonusrolls-spend-form">
-        <select id="bonusRollLocationSelect"></select>
-        <input type="hidden" id="bonusRollWhId" value="">
-        <input type="hidden" id="bonusRollIconUrl" value="">
-        <div style="position:relative; flex:1; min-width:160px;">
-          <input type="text" id="bonusRollItemInput" data-i18n-placeholder="bonusRollItemPlaceholder" placeholder="Item recebido" autocomplete="off" style="width:100%;">
-          <div class="bis-search-results" id="bonusRollItemSearchResults"></div>
+      <div class="upgrades-layout">
+        <div class="upgrades-quiz-col">
+          <div class="bonusrolls-spend-form">
+            <select id="bonusRollLocationSelect"></select>
+            <input type="hidden" id="bonusRollWhId" value="">
+            <input type="hidden" id="bonusRollIconUrl" value="">
+            <div style="position:relative; flex:1; min-width:160px;">
+              <input type="text" id="bonusRollItemInput" data-i18n-placeholder="bonusRollItemPlaceholder" placeholder="Item recebido" autocomplete="off" style="width:100%;">
+              <div class="bis-search-results" id="bonusRollItemSearchResults"></div>
+            </div>
+            <button class="bis-browse-trigger-btn bonusrolls-spend-browse-btn" id="bonusLogBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
+            <button id="bonusRollLogBtn" data-i18n="bonusRollLogBtn">Registrar</button>
+          </div>
+          <div class="bis-list-head" data-i18n="bonusRollsHistoryTitle">Histórico</div>
+          <div class="bonusrolls-history" id="bonusRollsHistory"></div>
         </div>
-        <button class="bis-browse-trigger-btn bonusrolls-spend-browse-btn" id="bonusLogBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
-        <button id="bonusRollLogBtn" data-i18n="bonusRollLogBtn">Registrar</button>
+        <div class="upgrades-table-col">
+          <div class="bis-list-head" data-i18n="bonusRollsByLocationTitle">Recebidos por local</div>
+          <div class="bis-dungeon-grid" id="bonusReceivedGrid"></div>
+        </div>
       </div>
-
-      <h3 class="upgrades-subtitle" data-i18n="bonusRollsHistoryTitle">Histórico</h3>
-      <div class="bonusrolls-history" id="bonusRollsHistory"></div>
     </div>
   </section>
     </div>
@@ -1627,7 +1643,7 @@ const I18N = {
     quizNextBtn: "Próximo →",
     quizItemTierQuestion: "Qual tier de item você quer?", quizCrestTierQuestion: "Qual tier de crest você quer?",
     quizNoMatchMsg: "Nenhum nível de keystone dá as duas coisas ao mesmo tempo — tente escolher só uma opção, ou tiers mais próximos um do outro.",
-    quizRestartBtn: "Recomeçar", quizResultLabel: "Sua dungeon alvo é",
+    quizRestartBtn: "Recomeçar", quizResultLabel: "Sua dungeon alvo é", quizResultRaidLabel: "Seu conteúdo alvo é",
     quizResultExplain: (track, rank) => `Dropa item ${track} ${rank}`,
     quizResultCrestPart: (amt, crest) => ` e ${amt}x crest ${crest} — o maior número de crests possível nesse tier.`,
     quizResultRaidAlsoNote: (diff) => `🏆 ${diff} da raid também dropa essa combinação.`,
@@ -1642,6 +1658,7 @@ const I18N = {
     bonusRollsLogSpendTitle: "Registrar item recebido", bonusRollItemPlaceholder: "Item recebido",
     bonusRollLogBtn: "Registrar",
     bonusRollsHistoryTitle: "Histórico", bonusRollsNoHistory: "Nenhum gasto registrado ainda.",
+    bonusRollsByLocationTitle: "Recebidos por local",
     bonusRollsNoneAvailable: "Você não tem bonus rolls disponíveis - ajuste o contador acima primeiro.",
     bonusRollsSummaryText: (hits, total, pct) => total ? `${hits}/${total} acertos (${pct}%)` : "Nenhum gasto registrado ainda",
     bonusRollOptGroupRaid: "Raid", bonusRollOptGroupMplus: "Mythic+", bonusRollOptGroupOther: "Outros",
@@ -1784,7 +1801,7 @@ const I18N = {
     quizNextBtn: "Next →",
     quizItemTierQuestion: "Which item tier do you want?", quizCrestTierQuestion: "Which crest tier do you want?",
     quizNoMatchMsg: "No keystone level gives both at once — try picking just one, or tiers closer to each other.",
-    quizRestartBtn: "Start over", quizResultLabel: "Your target dungeon is",
+    quizRestartBtn: "Start over", quizResultLabel: "Your target dungeon is", quizResultRaidLabel: "Your target content is",
     quizResultExplain: (track, rank) => `Drops ${track} ${rank} gear`,
     quizResultCrestPart: (amt, crest) => ` and ${amt}x ${crest} crests - the highest crest yield at that tier.`,
     quizResultRaidAlsoNote: (diff) => `🏆 Raid ${diff} also drops this combination.`,
@@ -1799,6 +1816,7 @@ const I18N = {
     bonusRollsLogSpendTitle: "Log an item received", bonusRollItemPlaceholder: "Item received",
     bonusRollLogBtn: "Log it",
     bonusRollsHistoryTitle: "History", bonusRollsNoHistory: "No spends logged yet.",
+    bonusRollsByLocationTitle: "Received by location",
     bonusRollsNoneAvailable: "You don't have any bonus rolls available - adjust the counter above first.",
     bonusRollsSummaryText: (hits, total, pct) => total ? `${hits}/${total} hits (${pct}%)` : "No spends logged yet",
     bonusRollOptGroupRaid: "Raid", bonusRollOptGroupMplus: "Mythic+", bonusRollOptGroupOther: "Other",
@@ -5579,8 +5597,8 @@ function renderQuizResult(){
     // target instead, with a small ruler across all 4 raid difficulties for context.
     targetHtml = `
       <div class="quiz-result-target">
-        <div class="quiz-result-label">${t('quizResultLabel')}</div>
-        <div class="quiz-result-level">${bestRaid.difficulty}</div>
+        <div class="quiz-result-label">${t('quizResultRaidLabel')}</div>
+        <div class="quiz-result-level">${t('upgradesRaidTab')} — ${bestRaid.difficulty}</div>
         <div class="quiz-result-explain">${t('quizResultRaidExplain', RAID_NAME, bestRaid.difficulty, UPGRADE_TRACK_LABEL[bestRaid.track])}</div>
       </div>`;
     rulerHtml = `
@@ -5825,6 +5843,32 @@ function renderBonusRollsHistory(c){
     });
   });
 }
+function bonusReceivedChip([loc, entries]){
+  const itemRow = entry => `
+    <div class="bis-dchip-item">
+      ${entry.icon ? `<img class="bis-dchip-item-icon" src="${entry.icon}" alt="">` : ''}
+      <span class="bis-dchip-item-name">${escapeHtml(entry.item || t('vaultTypeBonusRoll'))}</span>
+      <span class="bonusroll-log-result bis-dchip-result-badge ${entry.result}">${entry.result === 'hit' ? '✓' : '✕'}</span>
+    </div>`;
+  return `
+  <div class="bis-dchip">
+    <div class="bis-dchip-header">
+      <span class="bis-dchip-loc">${escapeHtml(loc)}</span>
+      <span class="bis-dchip-count">${entries.length}</span>
+    </div>
+    <div class="bis-dchip-items">${entries.map(itemRow).join('')}</div>
+  </div>`;
+}
+function renderBonusReceivedByLocation(c){
+  const grid = document.getElementById('bonusReceivedGrid');
+  const byLoc = new Map();
+  [...c.bonusRolls.log].sort((a,b) => b.ts - a.ts).forEach(entry => {
+    const loc = entry.location || t('bisNoLocation');
+    if(!byLoc.has(loc)) byLoc.set(loc, []);
+    byLoc.get(loc).push(entry);
+  });
+  grid.innerHTML = byLoc.size ? [...byLoc.entries()].map(bonusReceivedChip).join('') : `<div class="empty-note">${t('bonusRollsNoHistory')}</div>`;
+}
 function renderBonusRollsSummaryProgress(c){
   const hits = c.bonusRolls.log.filter(e => e.result === 'hit').length;
   const total = c.bonusRolls.log.length;
@@ -5850,6 +5894,7 @@ function renderBonusRolls(){
   logBtn.disabled = c.bonusRolls.available <= 0;
   logBtn.title = c.bonusRolls.available <= 0 ? t('bonusRollsNoneAvailable') : '';
   renderBonusRollsHistory(c);
+  renderBonusReceivedByLocation(c);
   renderBonusWishlist(c);
 }
 document.getElementById('bonusRollIncBtn').addEventListener('click', async () => {
