@@ -315,8 +315,10 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bis-dchip-item-icon{ width:18px; height:18px; border-radius:4px; border:1px solid var(--hairline); flex-shrink:0; }
 .bis-dchip-item-name{
   font-size:11px; color: var(--purple); text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;
+  flex:1;
 }
 .bis-dchip-item-name:hover{ text-decoration:underline; }
+.bis-dchip-item-slot{ font-size:10px; color:var(--text-dim); flex-shrink:0; }
 .season-best-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
 .sb-tile{
   position:relative; flex:0 0 84px; height:112px; border-radius:9px; overflow:hidden; cursor:default;
@@ -443,20 +445,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   font-size:9px; font-weight:800; color: var(--ok); border:1px solid rgba(34,197,94,.4); background: rgba(34,197,94,.12);
   border-radius:5px; padding:1px 6px; white-space:nowrap;
 }
-.gear-tier-legend-hint{
-  display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%;
-  border:1px solid var(--hairline); color:var(--text-dim); font-size:10px; cursor:help; margin-left:4px; vertical-align:middle;
-  position:relative;
-}
-.tier-legend-tooltip{
-  position:absolute; left:50%; top:100%; margin-top:8px; transform:translateX(-50%) translateY(-4px); z-index:6; min-width:150px;
-  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:10px; padding:10px 12px;
-  font-size:11px; color:var(--text-dim); line-height:1.9; opacity:0; visibility:hidden; pointer-events:none; text-align:left;
-  transition: opacity .15s, transform .15s; box-shadow:0 10px 24px rgba(0,0,0,.55);
-}
-.gear-tier-legend-hint:hover .tier-legend-tooltip{ opacity:1; visibility:visible; transform:translateX(-50%) translateY(0); }
-.tier-legend-line{ display:flex; align-items:center; gap:6px; white-space:nowrap; }
-.tier-legend-swatch{ width:9px; height:9px; border-radius:3px; flex-shrink:0; }
 
 .best-run-item{ border-bottom:1px solid var(--hairline); }
 .best-run-item:last-child{ border-bottom:none; }
@@ -636,12 +624,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bis-row .bslot{ font-size:10px; color:var(--text-dim); }
 .bis-row-stats{ font-size:10px; color:var(--gold-dim); flex-shrink:0; white-space:nowrap; max-width:160px; overflow:hidden; text-overflow:ellipsis; }
 .bis-row-loc{ font-size:10px; color:var(--text-dim); flex-shrink:0; max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.bis-row .bis-tier-badge{ flex-shrink:0; }
 .bis-row .bdel{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:12px; flex-shrink:0; }
 .bis-row .bdel:hover{ opacity:1; color:var(--danger); }
-.bis-tier-badge{
-  font-size:9px; font-weight:700; border:1px solid; border-radius:5px; padding:1px 6px; flex-shrink:0; white-space:nowrap;
-}
 .empty-note{ color:var(--text-dim); font-size:12px; }
 
 .bis-list-selector{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:16px; }
@@ -1291,7 +1275,7 @@ const I18N = {
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
     bisNoLocation: "Sem local definido", bisItemCount: (n) => n === 1 ? "1 item" : `${n} itens`,
-    browseByLocationLabel: "Ou escolha por dungeon/raid", tierLegendLabel: "Tiers:",
+    browseByLocationLabel: "Ou escolha por dungeon/raid",
     difficulty: "Dificuldade",
     todoCreateCharFirst: "Crie um personagem pra começar a lista de objetivos dele.",
     todoNoGoalsYet: "Nenhum objetivo ainda. Adicione um acima.",
@@ -1397,7 +1381,7 @@ const I18N = {
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
     bisNoLocation: "No location set", bisItemCount: (n) => n === 1 ? "1 item" : `${n} items`,
-    browseByLocationLabel: "Or pick by dungeon/raid", tierLegendLabel: "Tiers:",
+    browseByLocationLabel: "Or pick by dungeon/raid",
     difficulty: "Difficulty",
     todoCreateCharFirst: "Create a character to start their goal list.",
     todoNoGoalsYet: "No goals yet. Add one above.",
@@ -2198,30 +2182,26 @@ const GEAR_SLOT_LABEL_KEYS = {
   trinket1:"gearSlotTrinket1", trinket2:"gearSlotTrinket2", mainhand:"gearSlotMainHand", offhand:"gearSlotOffHand"
 };
 const ITEM_QUALITY_COLOR = { 0:"#9d9d9d", 1:"#ffffff", 2:"#1eff00", 3:"#0070dd", 4:"#a335ee", 5:"#ff8000" };
-const BIS_TIERS = ['adventurer','veteran','champion','hero','mythic'];
-const BIS_TIER_LABEL = { adventurer:'Adventurer', veteran:'Veteran', champion:'Champion', hero:'Hero', mythic:'Mythic' };
-const BIS_TIER_COLOR = { adventurer:'#5dade2', veteran:'#a78bda', champion:'#e17b7b', hero:'#e0a458', mythic:'#f2d675' };
 /* Real Midnight Season 2 (Mistcrests) upgrade-track item level bands, Patch 12.1.
-   Wowhead's own "Item Level Upgrade System for Midnight: Mistcrests" guide
-   (wowhead.com/guide/midnight/item-level-gear-upgrades-dawncrests) confirms the
-   five tracks used here (Adventurer/Veteran/Champion/Hero/Myth, one Mistcrest
-   type each) but its own breakdown table is an embedded image we can't read
-   programmatically. The actual numbers below are Method.gg's published per-rank
-   Champion/Hero/Myth tables (fetched directly, not paraphrased) plus a
-   community track-vs-ilvl reference chart for Adventurer/Veteran - not invented.
-   Method.gg's own numbers show the top two ranks of Champion (305, 308) exactly
-   match the bottom two ranks of Hero, and the top two ranks of Hero (318, 321)
-   exactly match the bottom two ranks of Myth - the same ilvl legitimately comes
-   from either track depending on the item's real source, which genuinely can't
-   be reconstructed from ilvl alone (a real WoW itemization quirk, not a gap in
-   our data). Rather than guess a side and risk a confidently wrong tag, those
-   two ilvl pairs are left unclassified (tier:null) here - the real tier for
-   those still gets filled in by fetchRealItemTier() below when it can reach
-   Wowhead's live tooltip data, which reads the item's actual "Upgrade Level"
-   line instead of inferring one. Adventurer/Veteran are far below any ilvl a
-   BIS-tracking endgame character would realistically be at, so their exact
-   boundaries matter little in practice; they're included for legend
-   completeness rather than expected to ever classify real equipped gear. */
+   Used only internally to decide when a BIS want-list item is fully satisfied
+   (equipped at Mythic track) and can drop off the list - there's no longer any
+   visible tier tag/color anywhere in the UI, just a plain "match/no match" BIS
+   badge on Gear rows, per explicit request (tier display kept being wrong in
+   the genuinely ambiguous ilvl zones between adjacent tracks - see below).
+   Sourced from Method.gg's published per-rank Champion/Hero/Myth tables
+   (fetched directly, not paraphrased) plus a community track-vs-ilvl reference
+   chart for Adventurer/Veteran, cross-checked against Wowhead's own "Item Level
+   Upgrade System for Midnight: Mistcrests" guide (which confirms the same five
+   tracks and naming but keeps its own numeric table as an unreadable embedded
+   image) - not invented. Method.gg's own numbers show the top two ranks of
+   Champion (305, 308) exactly match the bottom two ranks of Hero, and the top
+   two ranks of Hero (318, 321) exactly match the bottom two ranks of Myth - the
+   same ilvl legitimately comes from either track depending on the item's real
+   source, which can't be reconstructed from ilvl alone (a real WoW itemization
+   quirk). Those two ilvl pairs are left unclassified (tier:null) rather than
+   guessing a side, which only matters here in that an item sitting exactly at
+   one of those four ilvls won't get auto-removed from the want-list until it's
+   pushed past the ambiguous zone. */
 const GEAR_TRACK_BANDS = [
   { tier:'mythic', min:322 },    // unambiguous: past Hero's own max (321)
   { tier:null, min:318 },        // ambiguous: Hero 5-6/6 or Myth 1-2/6
@@ -2235,28 +2215,6 @@ function deriveGearTierFromIlvl(ilvl){
   if(!ilvl) return null;
   const band = GEAR_TRACK_BANDS.find(b => ilvl >= b.min);
   return band ? band.tier : null;
-}
-const WOWHEAD_TRACK_TO_TIER = { champion:'champion', hero:'hero', myth:'mythic' };
-function parseTierFromTooltipHtml(tooltip){
-  const m = /Upgrade Level:\s*([A-Za-z]+)\s*(?:<!--uindex-->)?\d+\/\d+/.exec(tooltip || '');
-  return m ? (WOWHEAD_TRACK_TO_TIER[m[1].toLowerCase()] || null) : null;
-}
-async function fetchRealItemTier(itemId, bonuses){
-  if(!itemId || !Array.isArray(bonuses) || !bonuses.length) return null;
-  const hosts = ['nether.wowhead.com', 'www.wowhead.com'];
-  for(const host of hosts){
-    try{
-      const url = `https://${host}/tooltip/item/${itemId}?bonus=${bonuses.join(':')}&dataEnv=1&locale=0`;
-      const res = await fetch(url);
-      if(!res.ok) continue;
-      const data = await res.json();
-      const tier = parseTierFromTooltipHtml(data && data.tooltip);
-      if(tier) return tier;
-    } catch(e){
-      // try next host
-    }
-  }
-  return null;
 }
 function findEquippedMatchForBis(c, b){
   if(!c || !c.gearItems) return null;
@@ -2951,11 +2909,6 @@ const SLOT_ICON = {
   Bow:'🏹', Crossbow:'🏹', Gun:'🏹', Wand:'🪄', Shield:'🛡️', 'Off-Hand':'🛡️'
 };
 function slotIcon(slot){ return SLOT_ICON[slot.split(' (')[0]] || '❔'; }
-function bisTierBadgeHtml(tier){
-  if(!tier) return '';
-  const color = BIS_TIER_COLOR[tier];
-  return `<span class="bis-tier-badge" style="color:${color}; border-color:${color}55; background:${color}18;">${BIS_TIER_LABEL[tier]}</span>`;
-}
 const DEFAULT_TODOS_I18N = {
   pt: ["Pegar quests semanais", "Eventos ao redor do mundo", "World Boss", "M0", "Nemesis(?) Delve Boss"],
   en: ["Pick up weekly quests", "World events", "World Boss", "M0", "Nemesis(?) Delve Boss"]
@@ -3191,12 +3144,9 @@ function renderCharacterPage(){
       (b.whId && item.item_id && String(b.whId) === String(item.item_id)) ||
       (!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
     );
-    const gearTier = bisMatch ? deriveGearTierFromIlvl(item.item_level) : null;
-    const bisBadgeColor = gearTier ? BIS_TIER_COLOR[gearTier] : '#8792ad';
-    const bonusesAttr = Array.isArray(item.bonuses) && item.bonuses.length ? item.bonuses.join(':') : '';
     const bisInfo = bisMatch ? `
       <div class="gear-bis-info">
-        <span class="gear-bis-badge" data-item-id="${item.item_id||''}" data-bonuses="${bonusesAttr}" style="color:${bisBadgeColor}; border-color:${bisBadgeColor}66; background:${bisBadgeColor}18;" title="${t('bisMatchTooltip')}">✓ BIS${gearTier ? ' · ' + BIS_TIER_LABEL[gearTier] : ''}</span>
+        <span class="gear-bis-badge" title="${t('bisMatchTooltip')}">✓ BIS</span>
       </div>` : '';
     return `
     <div class="gear-row">
@@ -3271,6 +3221,7 @@ function renderCharacterPage(){
       <div class="bis-dchip-item" data-search="${escapeHtml(searchKey)}">
         ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
         <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
+        <span class="bis-dchip-item-slot">${escapeHtml((b.slot||'').split(' (')[0])}</span>
       </div>`;
     };
     return `
@@ -3458,7 +3409,7 @@ function renderCharacterPage(){
           </div>
 
           <div class="dash-card dash-card-wide" id="section-gear">
-            <h3>${t('subtabGear')} (${c.ilvl || '—'}) <span class="gear-tier-legend-hint">ⓘ<div class="tier-legend-tooltip"><div class="raid-diff-title">${t('tierLegendLabel')}</div>${BIS_TIERS.map(tr => `<div class="tier-legend-line"><span class="tier-legend-swatch" style="background:${BIS_TIER_COLOR[tr]}"></span>${BIS_TIER_LABEL[tr]}</div>`).join('')}</div></span></h3>
+            <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
             ${c.gearItems ? `
             <div class="gear-columns">
               <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
@@ -3570,19 +3521,6 @@ function renderCharacterPage(){
       bindRecentRunRows();
     });
   }
-
-  container.querySelectorAll('.gear-bis-badge[data-bonuses]').forEach(badge => {
-    const bonuses = badge.dataset.bonuses ? badge.dataset.bonuses.split(':').map(Number) : [];
-    if(!bonuses.length) return;
-    fetchRealItemTier(badge.dataset.itemId, bonuses).then(realTier => {
-      if(!realTier) return;
-      const color = BIS_TIER_COLOR[realTier];
-      badge.style.color = color;
-      badge.style.borderColor = color + '66';
-      badge.style.background = color + '18';
-      badge.textContent = `✓ BIS · ${BIS_TIER_LABEL[realTier]}`;
-    });
-  });
 
   container.querySelector('#dashBisEditBtn').addEventListener('click', () => {
     openBisModal(c.id);
