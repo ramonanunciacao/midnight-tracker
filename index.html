@@ -967,6 +967,9 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .murlok-loc-tierset{ color: var(--gold-dim); }
 .murlok-loc-oldseason{ color: var(--danger); }
 .murlok-loc-craft{ color: var(--cyan); }
+.murlok-suggestion-row{ margin-left:22px; padding-left:8px; border-left:2px solid var(--cyan); opacity:.92; }
+.murlok-suggestion-icon{ flex-shrink:0; }
+.murlok-suggestion-tag{ color: var(--cyan); font-size:10px; text-transform:uppercase; letter-spacing:.03em; flex-shrink:0; }
 .bis-browse-item-slot{ color:var(--text-dim); font-size:11px; margin-left:auto; flex-shrink:0; }
 .bis-browse-item-added-badge{
   color: var(--ok); font-size:11px; font-weight:700; flex-shrink:0; margin-left:auto; white-space:nowrap;
@@ -1839,6 +1842,7 @@ const I18N = {
     murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
     murlokTierSetLabel: "Tier Set", murlokOldSeasonLabel: "Season Anterior",
     murlokCraftLabel: "Craft", murlokSourceUnknown: "Fonte desconhecida",
+    murlokSuggestionTag: "Sugestão de stats similares",
     murlokBuildSpecLabel: (spec, cls) => `Build de ${spec} ${cls} (top jogadores)`,
     murlokNoSpecMsg: "Sincronize o personagem pra saber a spec antes de buscar a build.",
     murlokPlayerRealmPlaceholder: "Realm (ex: illidan)", murlokPlayerNamePlaceholder: "Nome do personagem",
@@ -2009,6 +2013,7 @@ const I18N = {
     murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
     murlokTierSetLabel: "Tier Set", murlokOldSeasonLabel: "Previous Season",
     murlokCraftLabel: "Craft", murlokSourceUnknown: "Unknown source",
+    murlokSuggestionTag: "Similar-stat suggestion",
     murlokBuildSpecLabel: (spec, cls) => `${spec} ${cls} build (top players)`,
     murlokNoSpecMsg: "Sync the character to know its spec before fetching a build.",
     murlokPlayerRealmPlaceholder: "Realm (e.g. illidan)", murlokPlayerNamePlaceholder: "Character name",
@@ -5328,19 +5333,51 @@ async function fetchWowheadTooltip(whId){
   wowheadTooltipCache.set(whId, promise);
   return promise;
 }
-async function classifyUnknownMurlokItem(whId){
+/* For a Tier Set item, we already have its real tooltip in hand - parse its secondary
+   stats straight out of it (same "<!--rtgNN-->" markup Wowhead uses, confirmed against a
+   real tier piece's tooltip) and look for a real ITEM_LOOT_TABLE item of the same slot
+   whose own (already-catalogued) secondary stats overlap, so the suggestion is grounded in
+   actual stat data on both sides rather than a guess. */
+function extractSecondaryStatsFromTooltip(tooltip){
+  const names = [];
+  const re = /class="q2">\+<!--rtg\d+-->[\d,]+ ([A-Za-z ]+)<\/span>/g;
+  let m;
+  while((m = re.exec(tooltip))){
+    const name = m[1].trim();
+    if(BIS_SECONDARY_STATS.includes(name)) names.push(name);
+  }
+  return names;
+}
+function findSimilarArmorItem(bisSlot, wantedStats){
+  if(!bisSlot || !wantedStats.length) return null;
+  let best = null, bestScore = 0;
+  ITEM_LOOT_TABLE.forEach(([name, slot, loc, whId, icon]) => {
+    if((slot||'').split(' (')[0] !== bisSlot) return;
+    const entry = ITEM_STATS[whId];
+    if(!entry) return;
+    const itemStatNames = entry.s.map(([n]) => n).filter(n => BIS_SECONDARY_STATS.includes(n));
+    const score = itemStatNames.filter(n => wantedStats.includes(n)).length;
+    if(score > bestScore){ bestScore = score; best = { name, whId, icon, loc }; }
+  });
+  return bestScore > 0 ? best : null;
+}
+async function classifyUnknownMurlokItem(whId, bisSlot){
   const data = await fetchWowheadTooltip(whId);
-  if(!data || !data.tooltip) return { label: t('murlokSourceUnknown'), category: 'unknown' };
+  if(!data || !data.tooltip) return { label: t('murlokSourceUnknown'), category: 'unknown', suggestion: null };
   const tooltip = data.tooltip;
   const ilvlM = /Item Level <!--ilvl-->(\d+)/.exec(tooltip);
   const ilvl = ilvlM ? Number(ilvlM[1]) : null;
   const hasItemSet = /\/item-set=/.test(tooltip);
   const droppedByM = /Dropped by:\s*([^<]+)</.exec(tooltip);
   const droppedBy = droppedByM ? droppedByM[1].trim() : null;
-  if(hasItemSet) return { label: t('murlokTierSetLabel'), category: 'tierset' };
-  if(ilvl !== null && ilvl < MURLOK_SEASON_MIN_ILVL) return { label: t('murlokOldSeasonLabel'), category: 'oldseason' };
-  if(droppedBy) return { label: droppedBy, category: 'other' };
-  return { label: t('murlokCraftLabel'), category: 'craft' };
+  if(hasItemSet){
+    const wantedStats = extractSecondaryStatsFromTooltip(tooltip);
+    const suggestion = findSimilarArmorItem(bisSlot, wantedStats);
+    return { label: t('murlokTierSetLabel'), category: 'tierset', suggestion };
+  }
+  if(ilvl !== null && ilvl < MURLOK_SEASON_MIN_ILVL) return { label: t('murlokOldSeasonLabel'), category: 'oldseason', suggestion: null };
+  if(droppedBy) return { label: droppedBy, category: 'other', suggestion: null };
+  return { label: t('murlokCraftLabel'), category: 'craft', suggestion: null };
 }
 function getOrCreateMurlokBisList(c){
   let list = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
@@ -5497,7 +5534,7 @@ function renderMurlokResult(){
     <div class="murlok-slot-group">
       <div class="murlok-slot-group-head">${BIS_SLOT_GROUP_LABEL[key] || key}</div>
       ${byGroup.get(key).map(r => `
-        <div class="murlok-item-row">
+        <div class="murlok-item-row" data-row-key="${escapeHtml(r.key)}">
           <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : (murlokSelected.has(r.key) ? 'checked' : '')}>
           ${r.item.icon ? `<img class="bicon-img" src="${r.item.icon}" alt="">` : slotIcon(r.bisSlot)}
           <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link" style="flex:1;">${escapeHtml(r.item.name)}</a>
@@ -5520,15 +5557,50 @@ function renderMurlokResult(){
   // Real location is known instantly for items in our own table; anything else gets
   // classified from Wowhead's real tooltip data in the background, patched in once resolved.
   rows.filter(r => !r.loc).forEach(r => {
-    classifyUnknownMurlokItem(r.item.whId).then(({ label, category }) => {
+    classifyUnknownMurlokItem(r.item.whId, r.bisSlot).then(({ label, category, suggestion }) => {
       r.locLabel = label;
       const el = wrap.querySelector(`.murlok-loc-loading[data-key="${CSS.escape(r.key)}"]`);
-      if(!el) return;
-      el.textContent = label;
-      el.classList.remove('murlok-loc-loading');
-      el.classList.add(`murlok-loc-${category}`);
+      if(el){
+        el.textContent = label;
+        el.classList.remove('murlok-loc-loading');
+        el.classList.add(`murlok-loc-${category}`);
+      }
+      if(suggestion){
+        const suggAlready = activeItems.some(b => String(b.whId) === String(suggestion.whId));
+        const suggRow = {
+          bisSlot: r.bisSlot, key: `${r.key}-sugg`, already: suggAlready, loc: suggestion.loc,
+          item: { whId: suggestion.whId, name: suggestion.name, icon: suggestion.icon, count: null }
+        };
+        murlokLastRows.push(suggRow);
+        const anchorRow = wrap.querySelector(`.murlok-item-row[data-row-key="${CSS.escape(r.key)}"]`);
+        if(anchorRow){
+          anchorRow.insertAdjacentHTML('afterend', murlokSuggestionRowHtml(suggRow));
+          const newRow = anchorRow.nextElementSibling;
+          const link = newRow.querySelector('.bis-wh-link');
+          if(link) link.addEventListener('click', e => e.preventDefault());
+          const cb = newRow.querySelector('input[type=checkbox]:not(:disabled)');
+          if(cb) cb.addEventListener('change', () => {
+            if(cb.checked) murlokSelected.add(cb.dataset.key); else murlokSelected.delete(cb.dataset.key);
+          });
+        }
+      }
     });
   });
+}
+function murlokSuggestionRowHtml(r){
+  const statsStr = formatItemStatsShort(r.item.whId);
+  return `
+    <div class="murlok-item-row murlok-suggestion-row" data-row-key="${escapeHtml(r.key)}">
+      <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : ''}>
+      <span class="murlok-suggestion-icon">💡</span>
+      ${r.item.icon ? `<img class="bicon-img" src="${r.item.icon}" alt="">` : slotIcon(r.bisSlot)}
+      <span class="bis-browse-item-info" style="flex:1;">
+        <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link">${escapeHtml(r.item.name)}</a>
+        ${statsStr ? `<span class="bis-browse-item-stats">${escapeHtml(statsStr)}</span>` : ''}
+      </span>
+      <span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>
+      ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : `<span class="murlok-suggestion-tag">${t('murlokSuggestionTag')}</span>`}
+    </div>`;
 }
 document.getElementById('murlokModeToggle').querySelectorAll('button').forEach(btn => {
   btn.addEventListener('click', () => {
