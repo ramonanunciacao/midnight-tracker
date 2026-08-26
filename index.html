@@ -264,29 +264,10 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   .dash-topgroup-item:last-child{ border-bottom:none; }
   .dash-topgroup-narrow{ max-width:none; }
 }
-/* Weekly Rewards: obsi.gg-style — a category banner (real WoW icon on a
-   colored gradient) beside a row of reward cards, one per vault threshold.
-   No item-level number shown: we don't have Blizzard's season reward-ilvl
+/* Weekly Rewards mini section (see .weekly-rewards-mini / .vault-mini-* below,
+   next to Raid Progression) is the only place vault-slot info renders now -
+   no item-level number shown: we don't have Blizzard's season reward-ilvl
    table, so a specific ilvl there would just be a guess. */
-.vault-obsi-row{ display:flex; align-items:stretch; gap:12px; margin-bottom:12px; }
-.vault-obsi-row:last-child{ margin-bottom:0; }
-.vault-obsi-banner{
-  width:150px; flex-shrink:0; border-radius:10px; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; gap:8px; background: linear-gradient(160deg, var(--purple-dim), #1a0f2e);
-}
-.vault-obsi-banner.raids{ background: linear-gradient(160deg, #9a4a1e, #2a0f08); }
-.vault-obsi-banner.worldboss{ background: linear-gradient(160deg, #15825a, #06251a); }
-.vault-obsi-icon{ width:44px; height:44px; border-radius:8px; border:1px solid rgba(255,255,255,.25); }
-.vault-obsi-label{ font-size:13px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:.03em; }
-.vault-obsi-cards{ flex:1; display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:8px; min-width:0; }
-.vault-obsi-card{
-  display:flex; align-items:center; gap:10px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
-  border-radius:8px; padding:10px 12px;
-}
-.vault-obsi-card.done{ border-color: rgba(34,197,94,.4); }
-.vault-obsi-check{ font-size:14px; color: var(--text-dim); flex-shrink:0; }
-.vault-obsi-card.done .vault-obsi-check{ color: var(--ok); }
-.vault-obsi-desc{ font-size:12px; color: var(--text); line-height:1.35; }
 .bis-summary-search{
   width:100%; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text);
   border-radius:8px; padding:8px 12px; font-size:12px; margin-bottom:12px;
@@ -295,20 +276,19 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bis-dchip.search-dim{ opacity:.25; transition: opacity .15s; }
 .bis-dchip-item.search-dim{ opacity:.3; transition: opacity .15s; }
 .bis-dchip{
-  display:flex; align-items:flex-start; gap:10px; background:var(--bg-panel-raised); border:1px solid var(--hairline);
+  display:flex; flex-direction:column; gap:8px; background:var(--bg-panel-raised); border:1px solid var(--hairline);
   border-radius:10px; padding:10px 12px; transition: border-color .15s;
 }
 .bis-dchip:hover{ border-color: rgba(163,53,238,.4); }
-.bis-dchip-icon-wrap{ position:relative; flex-shrink:0; }
-.bis-dchip-icon{ width:38px; height:38px; border-radius:8px; border:1px solid var(--hairline); object-fit:cover; display:block; }
+.bis-dchip-header{ display:flex; align-items:center; gap:8px; }
+.bis-dchip-icon{ width:24px; height:24px; border-radius:6px; border:1px solid var(--hairline); object-fit:cover; display:block; flex-shrink:0; }
 .bis-dchip-icon-empty{ background: var(--bg-panel); }
 .bis-dchip-count{
-  position:absolute; bottom:-4px; right:-4px; background: var(--purple); color:#fff; font-size:10px; font-weight:800;
+  background: var(--purple); color:#fff; font-size:10px; font-weight:800;
   min-width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  padding:0 3px; border:1.5px solid var(--bg-panel-raised);
+  padding:0 3px; flex-shrink:0;
 }
-.bis-dchip-info{ min-width:0; flex:1; padding-top:1px; }
-.bis-dchip-loc{ font-size:12px; font-weight:700; color:var(--text); margin-bottom:5px; }
+.bis-dchip-loc{ font-size:12px; font-weight:700; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .bis-dchip-items{ display:flex; flex-direction:column; gap:4px; }
 .bis-dchip-item{ display:flex; align-items:center; gap:6px; }
 .bis-dchip-item-icon{ width:18px; height:18px; border-radius:4px; border:1px solid var(--hairline); flex-shrink:0; }
@@ -413,16 +393,20 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .weekly-rewards-mini-title{
   font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700; margin-bottom:10px;
 }
-.weekly-rewards-mini .vault-obsi-row{ flex-direction:column; align-items:stretch; gap:4px; margin-bottom:10px; }
-.weekly-rewards-mini .vault-obsi-banner{
-  width:auto; flex-direction:row; justify-content:flex-start; padding:4px 8px; gap:6px; border-radius:6px;
+.vault-mini-row{ display:flex; gap:8px; }
+.vault-mini-col{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center; }
+.vault-mini-icon{ width:26px; height:26px; border-radius:6px; border:1px solid var(--hairline); }
+.vault-mini-label{
+  font-size:8.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:.02em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;
 }
-.weekly-rewards-mini .vault-obsi-icon{ width:16px; height:16px; border-radius:4px; }
-.weekly-rewards-mini .vault-obsi-label{ font-size:10px; }
-.weekly-rewards-mini .vault-obsi-cards{ display:flex; flex-direction:column; grid-template-columns:none; gap:3px; }
-.weekly-rewards-mini .vault-obsi-card{ padding:4px 8px; gap:6px; border-radius:6px; }
-.weekly-rewards-mini .vault-obsi-check{ font-size:11px; }
-.weekly-rewards-mini .vault-obsi-desc{ font-size:10px; line-height:1.25; }
+.vault-mini-pips{ display:flex; gap:3px; }
+.vault-mini-pip{
+  width:18px; height:18px; border-radius:50%; border:1px solid var(--hairline); background:var(--bg-panel-raised);
+  color:var(--text-dim); font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center;
+  cursor:default;
+}
+.vault-mini-pip.done{ border-color: var(--ok); background: rgba(34,197,94,.15); color: var(--ok); }
 .char-power-row{ display:flex; gap:20px; }
 .char-power-stat{ flex:1; }
 
@@ -3274,18 +3258,17 @@ function renderCharacterPage(){
     </div>`;
   };
 
-  const vaultObsiRow = (cls, iconId, label, thresholds, count, descFn) => `
-    <div class="vault-obsi-row">
-      <div class="vault-obsi-banner ${cls}">
-        <img class="vault-obsi-icon" src="${zamIconUrl(iconId,'medium')}" alt="">
-        <span class="vault-obsi-label">${label}</span>
-      </div>
-      <div class="vault-obsi-cards">
+  /* WoW's own Great Vault UI shows the 3 reward categories side by side, each
+     with an icon and a row of pip slots that light up as thresholds are met -
+     this mirrors that instead of the stacked description-card layout, so it
+     fits horizontally in the narrow Raid Progression column. */
+  const vaultMiniCol = (iconId, label, thresholds, count, descFn) => `
+    <div class="vault-mini-col">
+      <img class="vault-mini-icon" src="${zamIconUrl(iconId,'medium')}" alt="">
+      <div class="vault-mini-label">${label}</div>
+      <div class="vault-mini-pips">
         ${thresholds.map(th => `
-          <div class="vault-obsi-card ${count>=th?'done':''}">
-            <span class="vault-obsi-check">${count>=th?'✓':'○'}</span>
-            <span class="vault-obsi-desc">${escapeHtml(descFn(th))}</span>
-          </div>`).join('')}
+          <span class="vault-mini-pip ${count>=th?'done':''}" title="${escapeHtml(descFn(th))}">${th}</span>`).join('')}
       </div>
     </div>`;
 
@@ -3311,14 +3294,12 @@ function renderCharacterPage(){
     };
     return `
     <div class="bis-dchip">
-      <div class="bis-dchip-icon-wrap">
+      <div class="bis-dchip-header">
         ${iconUrl ? `<img class="bis-dchip-icon" src="${iconUrl}" alt="">` : `<div class="bis-dchip-icon bis-dchip-icon-empty"></div>`}
+        <span class="bis-dchip-loc">${escapeHtml(loc)}</span>
         <span class="bis-dchip-count">${items.length}</span>
       </div>
-      <div class="bis-dchip-info">
-        <div class="bis-dchip-loc">${escapeHtml(loc)}</div>
-        <div class="bis-dchip-items">${items.map(itemRow).join('')}</div>
-      </div>
+      <div class="bis-dchip-items">${items.map(itemRow).join('')}</div>
     </div>`;
   };
 
@@ -3451,9 +3432,11 @@ function renderCharacterPage(){
 
               <div class="weekly-rewards-mini" id="section-weekly">
                 <h4 class="weekly-rewards-mini-title">${t('weeklyRewardsTitle')}</h4>
-                ${vaultObsiRow('raids', 'inv_misc_treasurechest03b', t('raidsLabel'), [2,4,6], raidCountThisWeek, n => t('raidMilestone', n))}
-                ${vaultObsiRow('mplus', 'inv_relics_hourglass', t('mythicPlusLabel'), [2,4,8], dCount, n => t('mplusMilestone', n))}
-                ${vaultObsiRow('worldboss', 'inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n))}
+                <div class="vault-mini-row">
+                  ${vaultMiniCol('inv_misc_treasurechest03b', t('raidsLabel'), [2,4,6], raidCountThisWeek, n => t('raidMilestone', n))}
+                  ${vaultMiniCol('inv_relics_hourglass', t('mythicPlusLabel'), [2,4,8], dCount, n => t('mplusMilestone', n))}
+                  ${vaultMiniCol('inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n))}
+                </div>
               </div>
             </div>
           </div>
