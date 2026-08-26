@@ -240,7 +240,6 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .recent-runs-list-compact .recent-run-row{ padding:5px 4px; }
 .recent-runs-list-compact .recent-run-icon{ width:26px; height:26px; }
 .recent-runs-list-compact .recent-run-name{ font-size:11px; }
-.recent-runs-scroll{ max-height:320px; overflow-y:auto; padding-right:4px; }
 @media(max-width:1150px){
   .dash-layout{ grid-template-columns: 1fr; }
   .dash-row-3col{ grid-template-columns: 1fr 1fr; }
@@ -700,6 +699,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .bis-browse-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
 .bis-browse-modal{ width:720px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
+.recent-runs-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
+.recent-runs-modal{ width:640px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
+.recent-runs-modal .recent-runs-list{ display:flex; flex-direction:column; gap:2px; }
 .bis-browse-filters-row{ display:flex; gap:16px; margin:16px 0; }
 .bis-filter-group{ display:flex; flex-direction:column; gap:4px; }
 .bis-filter-label{
@@ -1206,6 +1208,16 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   </div>
 </div>
 
+<div class="modal-overlay recent-runs-modal-overlay" id="recentRunsModal" style="display:none;">
+  <div class="modal recent-runs-modal">
+    <div class="bis-modal-head">
+      <h3 data-i18n="subtabRecent">Recent Runs</h3>
+      <button class="modal-close-btn" id="recentRunsModalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="recent-runs-list" id="recentRunsModalList"></div>
+  </div>
+</div>
+
 <script>
 /* ============ FIREBASE SETUP ============
    1. Crie um projeto em https://console.firebase.google.com
@@ -1300,7 +1312,7 @@ const I18N = {
     noRecentRunsYet: "Nenhuma run de Mítico+ recente ainda.",
     scoreCol: "Pontuação",
     clearTimeLabel: "Tempo de conclusão",
-    viewMoreRunsLabel: "Ver mais runs", viewLessRunsLabel: "Ver menos runs",
+    viewMoreRunsLabel: "Ver mais runs",
     gearSlotHead: "Cabeça", gearSlotNeck: "Pescoço", gearSlotShoulder: "Ombro", gearSlotBack: "Costas",
     gearSlotChest: "Peito", gearSlotWrist: "Pulso", gearSlotHands: "Mãos", gearSlotWaist: "Cintura",
     gearSlotLegs: "Pernas", gearSlotFeet: "Pés", gearSlotRing1: "Anel 1", gearSlotRing2: "Anel 2",
@@ -1409,7 +1421,7 @@ const I18N = {
     noRecentRunsYet: "No recent Mythic+ runs yet.",
     scoreCol: "Score",
     clearTimeLabel: "Clear time",
-    viewMoreRunsLabel: "View more runs", viewLessRunsLabel: "View less runs",
+    viewMoreRunsLabel: "View more runs",
     gearSlotHead: "Head", gearSlotNeck: "Neck", gearSlotShoulder: "Shoulder", gearSlotBack: "Back",
     gearSlotChest: "Chest", gearSlotWrist: "Wrist", gearSlotHands: "Hands", gearSlotWaist: "Waist",
     gearSlotLegs: "Legs", gearSlotFeet: "Feet", gearSlotRing1: "Ring 1", gearSlotRing2: "Ring 2",
@@ -3553,8 +3565,8 @@ function renderCharacterPage(){
     }
   });
 
-  function bindRecentRunRows(){
-    container.querySelectorAll('.recent-run-row').forEach(row => {
+  function bindRecentRunRows(root){
+    (root || container).querySelectorAll('.recent-run-row').forEach(row => {
       row.addEventListener('click', async () => {
         const runId = row.dataset.runId;
         const detailEl = document.getElementById('run-detail-' + row.dataset.detailId);
@@ -3577,14 +3589,12 @@ function renderCharacterPage(){
 
   const viewMoreRunsBtn = container.querySelector('#viewMoreRunsBtn');
   if(viewMoreRunsBtn){
-    let recentRunsExpanded = false;
     viewMoreRunsBtn.addEventListener('click', () => {
-      recentRunsExpanded = !recentRunsExpanded;
-      const list = container.querySelector('#recentRunsList');
-      list.innerHTML = (recentRunsExpanded ? sortedRecentRuns : sortedRecentRuns.slice(0,4)).map(recentRunRow).join('');
-      list.classList.toggle('recent-runs-scroll', recentRunsExpanded);
-      viewMoreRunsBtn.textContent = recentRunsExpanded ? t('viewLessRunsLabel') : t('viewMoreRunsLabel');
-      bindRecentRunRows();
+      const recentRunModalRow = (run, idx) => runRow(run, 'rrm', idx);
+      const modalList = document.getElementById('recentRunsModalList');
+      modalList.innerHTML = sortedRecentRuns.map(recentRunModalRow).join('');
+      bindRecentRunRows(modalList);
+      document.getElementById('recentRunsModal').style.display = 'flex';
     });
   }
 
@@ -4093,7 +4103,8 @@ document.getElementById('bisModal').addEventListener('click', (e) => { if(e.targ
 document.addEventListener('keydown', (e) => {
   if(e.key !== 'Escape') return;
   if(document.getElementById('bisBrowseModal').style.display !== 'none'){ closeBisBrowseModal(); return; }
-  if(document.getElementById('bisModal').style.display !== 'none') closeBisModal();
+  if(document.getElementById('bisModal').style.display !== 'none'){ closeBisModal(); return; }
+  if(document.getElementById('recentRunsModal').style.display !== 'none') closeRecentRunsModal();
 });
 
 function openBisBrowseModal(){
@@ -4106,6 +4117,12 @@ function closeBisBrowseModal(){
 document.getElementById('bisBrowseTriggerBtn').addEventListener('click', openBisBrowseModal);
 document.getElementById('bisBrowseModalClose').addEventListener('click', closeBisBrowseModal);
 document.getElementById('bisBrowseModal').addEventListener('click', (e) => { if(e.target.id === 'bisBrowseModal') closeBisBrowseModal(); });
+
+function closeRecentRunsModal(){
+  document.getElementById('recentRunsModal').style.display = 'none';
+}
+document.getElementById('recentRunsModalClose').addEventListener('click', closeRecentRunsModal);
+document.getElementById('recentRunsModal').addEventListener('click', (e) => { if(e.target.id === 'recentRunsModal') closeRecentRunsModal(); });
 
 async function addBisItem(data){
   const c = state.characters.find(x => x.id === state.bisActiveChar);
