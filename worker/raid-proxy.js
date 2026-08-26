@@ -38,7 +38,23 @@
    no finer-grained tags to split those three apart, so this is the closest real filter to
    "only the balance/maintenance news that matters for a tracker" without inventing a filter
    that doesn't exist. No dates are available from this extraction. Also needs no Blizzard
-   token. */
+   token.
+
+   Fifth, unrelated usage: GET <worker-url>/?type=murlok-gear&mode=build&class=death-knight&spec=unholy&hero=san'layn
+   or GET <worker-url>/?type=murlok-gear&mode=player&region=eu&realm=garona&name=ashproof
+   Murlok.io serves real per-slot gear data directly in its HTML (no anti-bot block, no
+   reader-proxy needed) - "build" mode hits their aggregate top-50-players build guide
+   (murlok.io/{class}/{spec}/{hero?}/m+, hero omitted = "Overall"), "player" mode hits a
+   specific character's own equipped gear (murlok.io/character/{region}/{realm}/{name}/pve).
+   Both pages share the same <section id="gear"> markup, parsed here into
+   { slots: { "Head": [{whId,name,icon,count}, ...], ... }, heroTalents: [{label,slug}, ...] } -
+   build mode's items are ranked by real usage count among the sampled top players (count is
+   null for player mode, which only ever has 1-2 items per slot - the player's actual gear).
+   heroTalents is the real list of hero-talent build variants Murlok itself links to for that
+   class/spec (including "" for the no-hero "Overall" page), scraped fresh rather than
+   hardcoded, since hero talent names/slugs differ per spec and this way never goes stale.
+   Verified against real saved pages for Unholy DK (Overall/San'layn/Rider of the Apocalypse)
+   before shipping. No Blizzard token needed. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -89,6 +105,82 @@ export default {
         }
         const data = await res.json();
         return new Response(JSON.stringify(data), { headers: corsHeaders });
+      } catch(err){
+        return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
+      }
+    }
+
+    if(url.searchParams.get('type') === 'murlok-gear'){
+      const mode = url.searchParams.get('mode');
+      let murlokUrl;
+      if(mode === 'build'){
+        const cls = url.searchParams.get('class');
+        const spec = url.searchParams.get('spec');
+        const hero = url.searchParams.get('hero') || '';
+        if(!cls || !spec){
+          return new Response(JSON.stringify({ error: 'missing class/spec' }), { status: 400, headers: corsHeaders });
+        }
+        murlokUrl = `https://murlok.io/${cls}/${spec}/${hero ? hero + '/' : ''}m+`;
+      } else if(mode === 'player'){
+        const region = url.searchParams.get('region');
+        const realm = url.searchParams.get('realm');
+        const name = url.searchParams.get('name');
+        if(!region || !realm || !name){
+          return new Response(JSON.stringify({ error: 'missing region/realm/name' }), { status: 400, headers: corsHeaders });
+        }
+        murlokUrl = `https://murlok.io/character/${encodeURIComponent(region)}/${encodeURIComponent(realm)}/${encodeURIComponent(name.toLowerCase())}/pve`;
+      } else {
+        return new Response(JSON.stringify({ error: 'missing/invalid mode' }), { status: 400, headers: corsHeaders });
+      }
+      try{
+        const res = await fetch(murlokUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36' } });
+        if(!res.ok){
+          return new Response(JSON.stringify({ error: 'murlok.io error', status: res.status }), { status: res.status, headers: corsHeaders });
+        }
+        const html = await res.text();
+        const decodeEntities = s => s.replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+
+        const gearStart = html.indexOf('<section id="gear"');
+        if(gearStart === -1){
+          return new Response(JSON.stringify({ error: 'gear section not found - character or build may not exist' }), { status: 404, headers: corsHeaders });
+        }
+        const gearRest = html.slice(gearStart);
+        const nextSectionRel = gearRest.indexOf('<section id=', 10);
+        const gearHtml = nextSectionRel === -1 ? gearRest : gearRest.slice(0, nextSectionRel);
+
+        const MURLOK_SLOTS = ['Head','Neck','Shoulders','Back','Chest','Wrist','Hands','Waist','Legs','Feet','Rings','Trinkets','Main Hand','Off Hand'];
+        const slots = {};
+        for(const slotName of MURLOK_SLOTS){
+          const h3re = new RegExp(`<h3>${slotName}</h3>([\\s\\S]*?)</ol>`);
+          const m = h3re.exec(gearHtml);
+          if(!m) continue;
+          const chunks = m[1].split('<li class="vi-poppable">').slice(1);
+          const items = [];
+          for(const chunk of chunks){
+            const idM = /wowhead\.com\/item=(\d+)/.exec(chunk);
+            const nameM = /<h4 class="h3">([^<]+)<\/h4>/.exec(chunk);
+            const iconM = /<img[^>]*src="([^"]+)"/.exec(chunk);
+            if(!idM || !nameM) continue;
+            const countMs = [...chunk.matchAll(/vi-media-object-with-media-small">[\s\S]*?<\/svg>\s*(\d+)\s*<\/li>/g)];
+            const count = countMs.length ? Number(countMs[countMs.length - 1][1]) : null;
+            items.push({ whId: idM[1], name: decodeEntities(nameM[1]), icon: iconM ? iconM[1] : null, count });
+          }
+          if(items.length) slots[slotName] = items;
+        }
+
+        const heroTalents = [];
+        const heroM = /<h2 class="h3">Hero Talents<\/h2>\s*<ul>([\s\S]*?)<\/ul>/.exec(html);
+        if(heroM){
+          const linkRe = /<a[^>]*href="([^"]+)">[\s\S]*?<img[^>]*>\s*([^<]+?)\s*<\/a>/g;
+          let lm;
+          while((lm = linkRe.exec(heroM[1]))){
+            const parts = lm[1].split('/').filter(Boolean);
+            const slug = parts.length === 4 ? parts[2] : '';
+            heroTalents.push({ label: decodeEntities(lm[2].trim()), slug });
+          }
+        }
+
+        return new Response(JSON.stringify({ slots, heroTalents }), { headers: corsHeaders });
       } catch(err){
         return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
       }

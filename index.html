@@ -195,13 +195,14 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .cpage-identity h2{ font-family:'Rajdhani',sans-serif; font-size:30px; line-height:1.1; }
 .cpage-name-row{ display:flex; align-items:center; gap:8px; }
 .cpage-faction-icon{ width:22px; height:22px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
-.cpage-sub{ font-size:13px; color: var(--text-dim); margin-top:2px; }
+.cpage-race{ font-size:11px; color: var(--text-dim); margin-top:2px; opacity:.85; }
+.cpage-sub{ font-size:13px; color: var(--text-dim); margin-top:1px; }
 .stat-tile-label{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
 .stat-tile-value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:27px; line-height:1.1; }
 .stat-tile-value-sm{ font-size:15px; font-weight:600; color:var(--text); }
 .stat-tile-sub{ font-size:10px; color:var(--text-dim); margin-top:3px; }
 .stat-tile-sub2{ font-size:9px; color:var(--text-dim); margin-top:3px; opacity:.8; }
-.cpage-sync-row{ display:flex; align-items:center; gap:10px; margin-top:10px; }
+.cpage-sync-row{ display:flex; align-items:center; gap:10px; margin-top:6px; }
 .cpage-lastsync{ font-size:11px; color: var(--text-dim); font-weight:600; }
 .cpage-refresh-btn{
   display:inline-flex; align-items:center; gap:5px; background: rgba(242,181,61,.1); border:1px solid rgba(242,181,61,.35);
@@ -234,8 +235,10 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-row-2col{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; align-items:start; }
 .dash-row-3col{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px; align-items:start; }
 .dash-row-uneven{ display:grid; grid-template-columns: 0.8fr 1.2fr; gap:16px; align-items:start; }
-.dash-row-strip{ display:grid; grid-template-columns: 1.7fr 1fr; gap:16px; align-items:start; }
+.dash-row-strip{ display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; align-items:stretch; }
 .recent-runs-side-card{ display:flex; flex-direction:column; min-height:0; }
+.season-best-strip-card{ display:flex; flex-direction:column; }
+.season-best-strip-card .season-best-strip{ flex:1; align-content:flex-start; }
 .recent-runs-list-compact{ overflow-y:auto; }
 .recent-runs-list-compact .recent-run-row{ padding:5px 4px; }
 .recent-runs-list-compact .recent-run-icon{ width:26px; height:26px; }
@@ -317,7 +320,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   text-shadow: 0 0 14px rgba(242,181,61,.45);
 }
 .mplus-season-total-label{ font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.03em; text-align:right; line-height:1.2; }
-.mplus-season-stats-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:6px; }
+.mplus-season-stats-grid{ display:grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap:8px; flex:1; }
 .mplus-season-stat{
   display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:2px;
   background: var(--bg-panel-raised); border:1px solid var(--hairline); border-top:3px solid transparent; border-radius:7px; padding:6px 6px;
@@ -470,7 +473,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .gear-info{ min-width:0; flex:1; }
 .gear-slot-label{ font-size:12px; color: var(--text-dim); }
 .gear-empty-note{ font-size:12px; color: var(--text-dim); margin-left:auto; }
-.gear-name{ font-size:13px; font-weight:600; text-decoration:none; display:block; }
+.gear-name{ font-size:13px; font-weight:600; text-decoration:none; display:inline-block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:top; }
 .gear-name:hover{ text-decoration:underline; }
 .gear-meta{ font-size:11px; color: var(--text-dim); margin-top:2px; }
 .gear-bis-info{ display:flex; flex-direction:column; align-items:flex-end; gap:3px; flex-shrink:0; }
@@ -478,7 +481,12 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   font-size:9px; font-weight:800; color: var(--ok); border:1px solid rgba(34,197,94,.4); background: rgba(34,197,94,.12);
   border-radius:5px; padding:1px 6px; white-space:nowrap;
 }
-.gear-bis-progress{ font-size:11px; font-weight:700; color: var(--gold-dim); vertical-align:middle; }
+.gear-bis-progress-center{ display:flex; align-items:baseline; justify-content:center; gap:7px; margin-bottom:14px; }
+.gear-bis-progress-value{
+  font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:800; line-height:1; color: var(--gold);
+  text-shadow: 0 0 14px rgba(242,181,61,.45);
+}
+.gear-bis-progress-label{ font-size:11px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; }
 
 .best-run-item{ border-bottom:1px solid var(--hairline); }
 .best-run-item:last-child{ border-bottom:none; }
@@ -896,6 +904,28 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .recent-runs-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
 .recent-runs-modal{ width:640px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
 .season-best-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
+.murlok-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
+.murlok-modal{ width:640px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
+.murlok-import-trigger-btn{ border-color: rgba(163,53,238,.35); }
+.murlok-import-trigger-btn:hover{ border-color: var(--purple); color: var(--text); }
+.murlok-hero-pills{ display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 18px; }
+.murlok-hero-pill{
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); color: var(--text-dim);
+  font-size:12px; font-weight:700; padding:8px 14px; border-radius:20px; cursor:pointer; transition: all .15s;
+}
+.murlok-hero-pill:hover{ border-color: var(--purple); color: var(--text); }
+.murlok-hero-pill.active{ background: var(--purple); border-color: var(--purple); color:#fff; }
+.murlok-slot-group{ margin-bottom:14px; }
+.murlok-slot-group-head{
+  font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color: var(--gold-dim); margin-bottom:6px;
+}
+.murlok-item-row{ display:flex; align-items:center; gap:10px; padding:6px 4px; border-radius:6px; font-size:12px; }
+.murlok-item-row:hover{ background: var(--bg-panel-raised); }
+.murlok-item-row input[type=checkbox]{ accent-color: var(--gold); width:15px; height:15px; flex-shrink:0; }
+.murlok-item-count{ font-size:10px; color: var(--text-dim); flex-shrink:0; white-space:nowrap; }
+.murlok-item-added-badge{ color: var(--ok); font-size:11px; font-weight:700; flex-shrink:0; white-space:nowrap; }
+.murlok-error-note{ font-size:12px; color: var(--danger); padding:14px 0; }
+.murlok-loading-note{ font-size:12px; color: var(--text-dim); padding:14px 0; }
 .recent-runs-modal .recent-runs-list{ display:flex; flex-direction:column; gap:2px; }
 .bis-browse-filters-row{ display:flex; gap:16px; margin:16px 0; }
 .bis-filter-group{ display:flex; flex-direction:column; gap:4px; }
@@ -1459,6 +1489,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
     </div>
 
     <button class="bis-browse-trigger-btn" id="bisBrowseTriggerBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
+    <button class="bis-browse-trigger-btn murlok-import-trigger-btn" id="murlokImportTriggerBtn" data-i18n="murlokImportTitle">Espelhar do Murlok</button>
 
     <div class="bis-list-head" data-i18n="yourBisListLabel">Sua lista BIS</div>
     <div class="bis-list" id="bisList"></div>
@@ -1527,6 +1558,42 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
     <div class="bis-browse-grid" id="bisBrowseGrid"></div>
     <div class="bis-browse-items" id="bisBrowseItems"></div>
+  </div>
+</div>
+
+<div class="modal-overlay murlok-modal-overlay" id="murlokModal" style="display:none;">
+  <div class="modal recent-runs-modal murlok-modal">
+    <div class="bis-modal-head">
+      <h3 data-i18n="murlokImportTitle">Espelhar do Murlok</h3>
+      <button class="modal-close-btn" id="murlokModalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="upgrades-sub" data-i18n="murlokImportSub">Baseado em dados reais de murlok.io - a build dos top jogadores ou o gear de um jogador específico</div>
+
+    <div class="filter-group" id="murlokModeToggle">
+      <button data-mode="build" class="active" data-i18n="murlokModeBuild">Build recomendada</button>
+      <button data-mode="player" data-i18n="murlokModePlayer">Jogador específico</button>
+    </div>
+
+    <div id="murlokBuildControls">
+      <div class="upgrades-sub" id="murlokBuildSpecLabel"></div>
+      <div class="murlok-hero-pills" id="murlokHeroPills"></div>
+    </div>
+    <div id="murlokPlayerControls" style="display:none;">
+      <div class="vault-history-add">
+        <select id="murlokPlayerRegion">
+          <option value="us">US</option>
+          <option value="eu">EU</option>
+          <option value="kr">KR</option>
+          <option value="tw">TW</option>
+        </select>
+        <input type="text" id="murlokPlayerRealm" data-i18n-placeholder="murlokPlayerRealmPlaceholder" placeholder="Realm (ex: illidan)">
+        <input type="text" id="murlokPlayerName" data-i18n-placeholder="murlokPlayerNamePlaceholder" placeholder="Nome do personagem">
+        <button id="murlokPlayerFetchBtn" data-i18n="murlokFetchBtn">Buscar</button>
+      </div>
+    </div>
+
+    <div id="murlokResultWrap"></div>
+    <button class="quiz-restart-btn murlok-add-selected-btn" id="murlokAddSelectedBtn" style="display:none;" data-i18n="murlokAddSelectedBtn">Adicionar selecionados à lista BIS</button>
   </div>
 </div>
 
@@ -1756,6 +1823,15 @@ const I18N = {
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
     bisNoLocation: "Sem local definido", bisItemCount: (n) => n === 1 ? "1 item" : `${n} itens`,
     bisBrowseGeneralLabel: "Geral", bisBrowseBackToBosses: "Voltar aos bosses",
+    murlokImportTitle: "Espelhar do Murlok", murlokImportSub: "Baseado em dados reais de murlok.io - a build dos top jogadores ou o gear de um jogador específico",
+    murlokModeBuild: "Build recomendada", murlokModePlayer: "Jogador específico",
+    murlokBuildSpecLabel: (spec, cls) => `Build de ${spec} ${cls} (top jogadores)`,
+    murlokNoSpecMsg: "Sincronize o personagem pra saber a spec antes de buscar a build.",
+    murlokPlayerRealmPlaceholder: "Realm (ex: illidan)", murlokPlayerNamePlaceholder: "Nome do personagem",
+    murlokFetchBtn: "Buscar", murlokAddSelectedBtn: "Adicionar selecionados à lista BIS",
+    murlokLoadingMsg: "Buscando no Murlok…", murlokErrorMsg: "Não foi possível buscar esses dados no Murlok. Confira o nome/realm/região, ou tente de novo.",
+    murlokNoDataMsg: "Nenhum item encontrado.",
+    murlokPlayersLabel: (n) => n === 1 ? "1 jogador" : `${n} jogadores`,
     browseByLocationLabel: "Ou escolha por dungeon/raid",
     difficulty: "Dificuldade",
     todoCreateCharFirst: "Crie um personagem pra começar a lista de objetivos dele.",
@@ -1913,6 +1989,15 @@ const I18N = {
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
     bisNoLocation: "No location set", bisItemCount: (n) => n === 1 ? "1 item" : `${n} items`,
     bisBrowseGeneralLabel: "General", bisBrowseBackToBosses: "Back to bosses",
+    murlokImportTitle: "Mirror from Murlok", murlokImportSub: "Based on real data from murlok.io - the top players' build or a specific player's gear",
+    murlokModeBuild: "Recommended build", murlokModePlayer: "Specific player",
+    murlokBuildSpecLabel: (spec, cls) => `${spec} ${cls} build (top players)`,
+    murlokNoSpecMsg: "Sync the character to know its spec before fetching a build.",
+    murlokPlayerRealmPlaceholder: "Realm (e.g. illidan)", murlokPlayerNamePlaceholder: "Character name",
+    murlokFetchBtn: "Fetch", murlokAddSelectedBtn: "Add selected to BIS list",
+    murlokLoadingMsg: "Fetching from Murlok…", murlokErrorMsg: "Couldn't fetch that from Murlok. Check the name/realm/region, or try again.",
+    murlokNoDataMsg: "No items found.",
+    murlokPlayersLabel: (n) => n === 1 ? "1 player" : `${n} players`,
     browseByLocationLabel: "Or pick by dungeon/raid",
     difficulty: "Difficulty",
     todoCreateCharFirst: "Create a character to start their goal list.",
@@ -2114,7 +2199,9 @@ function classIconUrl(cls){
   const slug = CLASS_ICON_SLUG[cls];
   return slug ? `https://wow.zamimg.com/images/wow/icons/medium/classicon_${slug}.jpg` : '';
 }
-const FACTION_ICON = { Alliance: 'achievement_pvp_a_01', Horde: 'achievement_pvp_h_01' };
+/* Raider.io's `faction` field comes through lowercase ("alliance"/"horde"), not
+   title-cased - confirmed by fetching a real profile directly. */
+const FACTION_ICON = { alliance: 'achievement_pvp_a_01', horde: 'achievement_pvp_h_01' };
 /* Standard WoW class -> armor type, used to filter the BIS item browser so a
    Death Knight (plate) doesn't see cloth/leather/mail armor pieces etc. Slots
    without an armor type (weapons, trinkets, rings, neck, back, ...) aren't
@@ -3533,7 +3620,7 @@ const SLOT_ICON = {
   Neck:'📿', Ring:'💍', Back:'🧣', Helm:'🪖', Shoulder:'🎽', Chest:'👕',
   Wrist:'🧤', Hands:'🧤', Waist:'🪢', Legs:'👖', Feet:'🥾', Trinket:'🔮',
   Axe:'⚔️', Dagger:'⚔️', Sword:'⚔️', Mace:'⚔️', Polearm:'⚔️', 'Fist Weapon':'⚔️', Warglaive:'⚔️', Warglaives:'⚔️', Staff:'🦯',
-  Bow:'🏹', Crossbow:'🏹', Gun:'🏹', Wand:'🪄', Shield:'🛡️', 'Off-Hand':'🛡️'
+  Bow:'🏹', Crossbow:'🏹', Gun:'🏹', Wand:'🪄', Shield:'🛡️', 'Off-Hand':'🛡️', 'Main Hand':'⚔️'
 };
 function slotIcon(slot){ return SLOT_ICON[slot.split(' (')[0]] || '❔'; }
 const DEFAULT_TODOS_I18N = {
@@ -3938,9 +4025,10 @@ function renderCharacterPage(){
           <div>
             <div class="cpage-name-row">
               <h2 style="color:${color}">${c.name}</h2>
-              ${c.faction && FACTION_ICON[c.faction] ? `<img class="cpage-faction-icon" src="${zamIconUrl(FACTION_ICON[c.faction], 'small')}" alt="${escapeHtml(c.faction)}" title="${escapeHtml(c.faction)}">` : ''}
+              ${c.faction && FACTION_ICON[c.faction.toLowerCase()] ? `<img class="cpage-faction-icon" src="${zamIconUrl(FACTION_ICON[c.faction.toLowerCase()], 'small')}" alt="${escapeHtml(c.faction)}" title="${escapeHtml(c.faction)}">` : ''}
             </div>
-            <div class="cpage-sub">${c.race ? `${escapeHtml(c.race)} ` : ''}${c.class}${c.spec ? ` – ${escapeHtml(c.spec)}` : ''}</div>
+            ${c.race ? `<div class="cpage-race">${escapeHtml(c.race)}</div>` : ''}
+            <div class="cpage-sub">${c.class}${c.spec ? ` – ${escapeHtml(c.spec)}` : ''}</div>
             <div class="cpage-sync-row">
               <span class="cpage-lastsync">${t('lastUpdatedLabel')}: ${formatRelativeTime(c.lastSyncedAt)}</span>
               <button class="cpage-refresh-btn" id="cpageRefreshBtn" title="${t('refreshFromRaiderIO')}"><span class="cpage-refresh-icon">↻</span> ${t('refreshBtnLabel')}</button>
@@ -4049,9 +4137,9 @@ function renderCharacterPage(){
             <div class="dash-card recent-runs-side-card">
               <h3>${t('subtabRecent')}</h3>
               <div class="recent-runs-list recent-runs-list-compact" id="recentRunsList">
-                ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,3).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
+                ${sortedRecentRuns.length ? sortedRecentRuns.slice(0,5).map(recentRunRow).join('') : `<div class="empty-note">${t('noRecentRunsYet')}</div>`}
               </div>
-              ${sortedRecentRuns.length > 3 ? `<button class="dash-viewall-link view-more-runs-btn" id="viewMoreRunsBtn" style="margin-top:8px;">${t('viewMoreRunsLabel')}</button>` : ''}
+              ${sortedRecentRuns.length > 5 ? `<button class="dash-viewall-link view-more-runs-btn" id="viewMoreRunsBtn" style="margin-top:8px;">${t('viewMoreRunsLabel')}</button>` : ''}
             </div>
           </div>
 
@@ -4072,7 +4160,8 @@ function renderCharacterPage(){
           </div>
 
           <div class="dash-card dash-card-wide" id="section-gear">
-            <h3>${t('subtabGear')} (${c.ilvl || '—'}) <span class="gear-bis-progress">${(() => { const p = bisSlotProgress(c); return `${p.matched}/${p.total} ${t('bisProgressLabel')}`; })()}</span></h3>
+            <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
+            <div class="gear-bis-progress-center">${(() => { const p = bisSlotProgress(c); return `<span class="gear-bis-progress-value">${p.matched}/${p.total}</span><span class="gear-bis-progress-label">${t('bisProgressLabel')}</span>`; })()}</div>
             ${c.gearItems ? `
             <div class="gear-columns">
               <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
@@ -4800,6 +4889,7 @@ document.getElementById('bisModalClose').addEventListener('click', closeBisModal
 document.getElementById('bisModal').addEventListener('click', (e) => { if(e.target.id === 'bisModal') closeBisModal(); });
 document.addEventListener('keydown', (e) => {
   if(e.key !== 'Escape') return;
+  if(document.getElementById('murlokModal').style.display !== 'none'){ closeMurlokModal(); return; }
   if(document.getElementById('bisBrowseModal').style.display !== 'none'){ closeBisBrowseModal(); return; }
   if(document.getElementById('bisModal').style.display !== 'none'){ closeBisModal(); return; }
   if(document.getElementById('recentRunsModal').style.display !== 'none'){ closeRecentRunsModal(); return; }
@@ -5116,6 +5206,7 @@ function bisSlotGroupKey(rawSlot){
   const base = (rawSlot||'').split(' (')[0];
   if(base === 'Ring') return 'Ring';
   if(base === 'Shield') return 'Off-Hand';
+  if(base === 'Main Hand') return 'Weapon';
   if(WEAPON_ITEM_TYPES.includes(base)) return 'Weapon';
   return base || 'Other';
 }
@@ -5139,6 +5230,205 @@ function renderBisList(){
     </div>`).join('');
   list.querySelectorAll('.bis-row').forEach(bindBisRow);
 }
+
+/* ---------------- "Mirror from Murlok" - murlok.io serves real per-slot gear data
+   directly in its HTML (verified by fetching real pages before building this): the
+   aggregate build guide (top ~50 players per class/spec/hero-talent, items ranked by
+   usage count) for "recommended build" mode, and an individual character's own real
+   equipped gear for "specific player" mode. Hero talent names/slugs are scraped fresh
+   from the page itself rather than hardcoded, since they differ per spec and Murlok
+   is the source of truth for them. ---------------- */
+const MURLOK_CLASS_SLUG = {
+  "Death Knight":"death-knight", "Demon Hunter":"demon-hunter", "Druid":"druid", "Evoker":"evoker",
+  "Hunter":"hunter", "Mage":"mage", "Monk":"monk", "Paladin":"paladin", "Priest":"priest",
+  "Rogue":"rogue", "Shaman":"shaman", "Warlock":"warlock", "Warrior":"warrior"
+};
+function murlokSlugify(s){ return (s||'').toLowerCase().trim().replace(/\s+/g,'-'); }
+const MURLOK_SLOT_ORDER = ['Head','Neck','Shoulders','Back','Chest','Wrist','Hands','Waist','Legs','Feet','Rings','Trinkets','Main Hand','Off Hand'];
+const MURLOK_SLOT_TO_BIS = {
+  'Head':'Helm', 'Neck':'Neck', 'Shoulders':'Shoulder', 'Back':'Back', 'Chest':'Chest',
+  'Wrist':'Wrist', 'Hands':'Hands', 'Waist':'Waist', 'Legs':'Legs', 'Feet':'Feet',
+  'Rings':'Ring', 'Trinkets':'Trinket', 'Main Hand':'Main Hand', 'Off Hand':'Off-Hand'
+};
+async function fetchMurlokGear(params){
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`${RAID_PROXY_URL}/?type=murlok-gear&${qs}`);
+  if(!res.ok) throw new Error('murlok proxy error');
+  return res.json();
+}
+
+let murlokImportMode = 'build';
+let murlokHeroSlug = '';
+let murlokHeroTalents = [];
+let murlokResult = null;
+let murlokSelected = new Set();
+let murlokLastRows = [];
+
+function openMurlokModal(){
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  if(!c) return;
+  murlokImportMode = 'build';
+  murlokHeroSlug = '';
+  murlokHeroTalents = [];
+  murlokResult = null;
+  murlokSelected = new Set();
+  murlokLastRows = [];
+  document.getElementById('murlokModeToggle').querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.mode === 'build'));
+  document.getElementById('murlokBuildControls').style.display = '';
+  document.getElementById('murlokPlayerControls').style.display = 'none';
+  document.getElementById('murlokAddSelectedBtn').style.display = 'none';
+  document.getElementById('murlokHeroPills').innerHTML = '';
+  document.getElementById('murlokResultWrap').innerHTML = '';
+  const clsSlug = MURLOK_CLASS_SLUG[c.class];
+  const specSlug = murlokSlugify(c.spec);
+  const specLabel = document.getElementById('murlokBuildSpecLabel');
+  if(clsSlug && specSlug){
+    specLabel.textContent = t('murlokBuildSpecLabel', c.spec, c.class);
+    loadMurlokBuild(clsSlug, specSlug, '');
+  } else {
+    specLabel.textContent = t('murlokNoSpecMsg');
+  }
+  document.getElementById('murlokModal').style.display = 'flex';
+}
+function closeMurlokModal(){
+  document.getElementById('murlokModal').style.display = 'none';
+}
+document.getElementById('murlokImportTriggerBtn').addEventListener('click', openMurlokModal);
+document.getElementById('murlokModalClose').addEventListener('click', closeMurlokModal);
+document.getElementById('murlokModal').addEventListener('click', (e) => { if(e.target.id === 'murlokModal') closeMurlokModal(); });
+
+async function loadMurlokBuild(clsSlug, specSlug, heroSlug){
+  const wrap = document.getElementById('murlokResultWrap');
+  wrap.innerHTML = `<div class="murlok-loading-note">${t('murlokLoadingMsg')}</div>`;
+  document.getElementById('murlokAddSelectedBtn').style.display = 'none';
+  try{
+    const data = await fetchMurlokGear({ mode:'build', class: clsSlug, spec: specSlug, hero: heroSlug });
+    murlokResult = data;
+    murlokHeroSlug = heroSlug;
+    if(Array.isArray(data.heroTalents) && data.heroTalents.length){
+      murlokHeroTalents = data.heroTalents;
+      renderMurlokHeroPills(clsSlug, specSlug);
+    }
+    murlokSelected = new Set();
+    renderMurlokResult();
+  } catch(err){
+    wrap.innerHTML = `<div class="murlok-error-note">${t('murlokErrorMsg')}</div>`;
+  }
+}
+function renderMurlokHeroPills(clsSlug, specSlug){
+  const wrap = document.getElementById('murlokHeroPills');
+  wrap.innerHTML = murlokHeroTalents.map(h => `
+    <button class="murlok-hero-pill ${h.slug === murlokHeroSlug ? 'active' : ''}" data-slug="${escapeHtml(h.slug)}">${escapeHtml(h.label)}</button>
+  `).join('');
+  wrap.querySelectorAll('.murlok-hero-pill').forEach(btn => {
+    btn.addEventListener('click', () => loadMurlokBuild(clsSlug, specSlug, btn.dataset.slug));
+  });
+}
+function renderMurlokResult(){
+  const wrap = document.getElementById('murlokResultWrap');
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  if(!murlokResult || !murlokResult.slots || !Object.keys(murlokResult.slots).length){
+    wrap.innerHTML = `<div class="murlok-error-note">${t('murlokNoDataMsg')}</div>`;
+    document.getElementById('murlokAddSelectedBtn').style.display = 'none';
+    return;
+  }
+  const activeItems = c ? getActiveBisList(c).items : [];
+  const rows = [];
+  MURLOK_SLOT_ORDER.forEach(murlokSlot => {
+    const raw = murlokResult.slots[murlokSlot];
+    if(!raw || !raw.length) return;
+    const bisSlot = MURLOK_SLOT_TO_BIS[murlokSlot];
+    const isMulti = murlokSlot === 'Rings' || murlokSlot === 'Trinkets';
+    let picks;
+    if(murlokImportMode === 'build'){
+      if(isMulti){
+        const seen = new Set(); picks = [];
+        for(const it of raw){ if(seen.has(it.whId)) continue; seen.add(it.whId); picks.push(it); if(picks.length === 2) break; }
+      } else {
+        picks = [raw[0]];
+      }
+    } else {
+      picks = raw;
+    }
+    picks.forEach((item, i) => {
+      const key = `${murlokSlot}-${i}-${item.whId}`;
+      const already = activeItems.some(b => (item.whId && String(b.whId) === String(item.whId)) || b.name.toLowerCase() === item.name.toLowerCase());
+      rows.push({ bisSlot, key, item, already });
+    });
+  });
+  rows.forEach(r => { if(!r.already) murlokSelected.add(r.key); });
+  murlokLastRows = rows;
+
+  const byGroup = new Map();
+  rows.forEach(r => {
+    const group = bisSlotGroupKey(r.bisSlot);
+    if(!byGroup.has(group)) byGroup.set(group, []);
+    byGroup.get(group).push(r);
+  });
+  const orderedKeys = [...BIS_SLOT_GROUP_ORDER.filter(k => byGroup.has(k)), ...[...byGroup.keys()].filter(k => !BIS_SLOT_GROUP_ORDER.includes(k))];
+  wrap.innerHTML = orderedKeys.map(key => `
+    <div class="murlok-slot-group">
+      <div class="murlok-slot-group-head">${BIS_SLOT_GROUP_LABEL[key] || key}</div>
+      ${byGroup.get(key).map(r => `
+        <div class="murlok-item-row">
+          <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : (murlokSelected.has(r.key) ? 'checked' : '')}>
+          ${r.item.icon ? `<img class="bicon-img" src="${r.item.icon}" alt="">` : slotIcon(r.bisSlot)}
+          <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link" style="flex:1;">${escapeHtml(r.item.name)}</a>
+          ${(r.item.count !== null && r.item.count !== undefined) ? `<span class="murlok-item-count">${t('murlokPlayersLabel', r.item.count)}</span>` : ''}
+          ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
+        </div>`).join('')}
+    </div>`).join('');
+
+  wrap.querySelectorAll('.bis-wh-link').forEach(link => link.addEventListener('click', e => e.preventDefault()));
+  wrap.querySelectorAll('input[type=checkbox]:not(:disabled)').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if(cb.checked) murlokSelected.add(cb.dataset.key); else murlokSelected.delete(cb.dataset.key);
+    });
+  });
+  document.getElementById('murlokAddSelectedBtn').style.display = rows.some(r => !r.already) ? '' : 'none';
+}
+document.getElementById('murlokModeToggle').querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    murlokImportMode = btn.dataset.mode;
+    document.getElementById('murlokModeToggle').querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    document.getElementById('murlokBuildControls').style.display = murlokImportMode === 'build' ? '' : 'none';
+    document.getElementById('murlokPlayerControls').style.display = murlokImportMode === 'player' ? '' : 'none';
+    document.getElementById('murlokResultWrap').innerHTML = '';
+    document.getElementById('murlokAddSelectedBtn').style.display = 'none';
+    murlokResult = null; murlokSelected = new Set();
+    if(murlokImportMode === 'build'){
+      const c = state.characters.find(x => x.id === state.bisActiveChar);
+      const clsSlug = c ? MURLOK_CLASS_SLUG[c.class] : null;
+      const specSlug = c ? murlokSlugify(c.spec) : null;
+      if(clsSlug && specSlug) loadMurlokBuild(clsSlug, specSlug, murlokHeroSlug);
+    }
+  });
+});
+document.getElementById('murlokPlayerFetchBtn').addEventListener('click', async () => {
+  const region = document.getElementById('murlokPlayerRegion').value;
+  const realm = document.getElementById('murlokPlayerRealm').value.trim();
+  const name = document.getElementById('murlokPlayerName').value.trim();
+  if(!realm || !name) return;
+  const wrap = document.getElementById('murlokResultWrap');
+  wrap.innerHTML = `<div class="murlok-loading-note">${t('murlokLoadingMsg')}</div>`;
+  document.getElementById('murlokAddSelectedBtn').style.display = 'none';
+  try{
+    const data = await fetchMurlokGear({ mode:'player', region, realm: murlokSlugify(realm), name });
+    murlokResult = data;
+    murlokSelected = new Set();
+    renderMurlokResult();
+  } catch(err){
+    wrap.innerHTML = `<div class="murlok-error-note">${t('murlokErrorMsg')}</div>`;
+  }
+});
+document.getElementById('murlokAddSelectedBtn').addEventListener('click', async () => {
+  const toAdd = murlokLastRows.filter(r => murlokSelected.has(r.key) && !r.already);
+  for(const r of toAdd){
+    await addBisItem({ name: r.item.name, slot: r.bisSlot, source: '—', whId: r.item.whId, icon: r.item.icon });
+  }
+  murlokSelected = new Set();
+  renderMurlokResult();
+});
 
 function renderBisSearchResults(query){
   const panel = document.getElementById('bisSearchResults');
