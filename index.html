@@ -194,7 +194,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .cpage-identity{ flex-direction:row; align-items:center; gap:14px; background:none; border:none; padding:0; }
 .cpage-identity h2{ font-family:'Rajdhani',sans-serif; font-size:30px; line-height:1.1; }
 .cpage-name-row{ display:flex; align-items:center; gap:8px; }
-.cpage-faction-icon{ width:22px; height:22px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
+.cpage-faction-icon{ width:24px; height:24px; object-fit:contain; flex-shrink:0; }
 .cpage-race{ font-size:11px; color: var(--text-dim); margin-top:2px; opacity:.85; }
 .cpage-sub{ font-size:13px; color: var(--text-dim); margin-top:1px; }
 .stat-tile-label{ font-size:10px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); font-weight:700; margin-bottom:4px; }
@@ -481,12 +481,12 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   font-size:9px; font-weight:800; color: var(--ok); border:1px solid rgba(34,197,94,.4); background: rgba(34,197,94,.12);
   border-radius:5px; padding:1px 6px; white-space:nowrap;
 }
-.gear-bis-progress-center{ display:flex; align-items:baseline; justify-content:center; gap:7px; margin-bottom:14px; }
+.gear-bis-progress-inline{ display:flex; align-items:baseline; gap:6px; }
 .gear-bis-progress-value{
-  font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:800; line-height:1; color: var(--gold);
-  text-shadow: 0 0 14px rgba(242,181,61,.45);
+  font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:800; line-height:1; color: var(--gold);
+  text-shadow: 0 0 10px rgba(242,181,61,.4);
 }
-.gear-bis-progress-label{ font-size:11px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; }
+.gear-bis-progress-label{ font-size:13px; font-weight:800; color: var(--gold-dim); text-transform:uppercase; letter-spacing:.03em; }
 
 .best-run-item{ border-bottom:1px solid var(--hairline); }
 .best-run-item:last-child{ border-bottom:none; }
@@ -867,6 +867,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .bis-list-pill-name{ cursor: text; }
 .bis-list-pill-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:11px; }
 .bis-list-pill-del:hover{ opacity:1; color:var(--danger); }
+.bis-list-priority-star{ color: var(--gold); font-size:12px; }
 .bis-list-pill-input{
   background: var(--bg-panel); border:1px solid var(--purple); border-radius:6px; color:var(--text); font-size:12px;
   font-weight:600; padding:2px 6px; width:110px;
@@ -908,7 +909,9 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .murlok-modal{ width:640px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
 .murlok-import-trigger-btn{ border-color: rgba(163,53,238,.35); }
 .murlok-import-trigger-btn:hover{ border-color: var(--purple); color: var(--text); }
-.murlok-hero-pills{ display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 18px; }
+.murlok-picker-label{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); margin-top:10px; }
+.murlok-hero-pills{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 14px; }
+.murlok-add-selected-btn{ margin-bottom:16px; }
 .murlok-hero-pill{
   background: var(--bg-panel-raised); border:1px solid var(--hairline); color: var(--text-dim);
   font-size:12px; font-weight:700; padding:8px 14px; border-radius:20px; cursor:pointer; transition: all .15s;
@@ -1576,6 +1579,9 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
     <div id="murlokBuildControls">
       <div class="upgrades-sub" id="murlokBuildSpecLabel"></div>
+      <div class="murlok-picker-label" data-i18n="murlokSpecLabel">Spec</div>
+      <div class="murlok-hero-pills" id="murlokSpecPills"></div>
+      <div class="murlok-picker-label" data-i18n="murlokHeroTalentLabel">Hero Talent</div>
       <div class="murlok-hero-pills" id="murlokHeroPills"></div>
     </div>
     <div id="murlokPlayerControls" style="display:none;">
@@ -1592,8 +1598,8 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       </div>
     </div>
 
-    <div id="murlokResultWrap"></div>
     <button class="quiz-restart-btn murlok-add-selected-btn" id="murlokAddSelectedBtn" style="display:none;" data-i18n="murlokAddSelectedBtn">Adicionar selecionados à lista BIS</button>
+    <div id="murlokResultWrap"></div>
   </div>
 </div>
 
@@ -1814,6 +1820,7 @@ const I18N = {
     switchBisListConfirmTitle: "Trocar de lista BIS?",
     switchBisListConfirmMsg: (name) => `Isso vai ressincronizar as tags de BIS no seu gear de acordo com a lista "${name}". Itens que batem com essa lista mostrarão a tag; os que não batem, não.`,
     renameBisListHint: "Clique duas vezes para renomear",
+    bisListPriorityHint: "Lista prioritária - sincroniza com o Gear. Arraste outra lista pra cá pra trocar.",
     yourBisListsLabel: "Suas listas BIS (ex: Tank, DPS) — clique duas vezes no nome para renomear",
     yourBisListLabel: "Sua lista BIS", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "Esse item está na sua lista de BIS", tierUnsetLabel: "Tier não definido",
@@ -1825,6 +1832,7 @@ const I18N = {
     bisBrowseGeneralLabel: "Geral", bisBrowseBackToBosses: "Voltar aos bosses",
     murlokImportTitle: "Espelhar do Murlok", murlokImportSub: "Baseado em dados reais de murlok.io - a build dos top jogadores ou o gear de um jogador específico",
     murlokModeBuild: "Build recomendada", murlokModePlayer: "Jogador específico",
+    murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
     murlokBuildSpecLabel: (spec, cls) => `Build de ${spec} ${cls} (top jogadores)`,
     murlokNoSpecMsg: "Sincronize o personagem pra saber a spec antes de buscar a build.",
     murlokPlayerRealmPlaceholder: "Realm (ex: illidan)", murlokPlayerNamePlaceholder: "Nome do personagem",
@@ -1980,6 +1988,7 @@ const I18N = {
     switchBisListConfirmTitle: "Switch BIS list?",
     switchBisListConfirmMsg: (name) => `This will resync the BIS tags on your gear according to the "${name}" list. Items that match it will show the tag; items that don't, won't.`,
     renameBisListHint: "Double-click to rename",
+    bisListPriorityHint: "Priority list - syncs with Gear. Drag another list here to swap.",
     yourBisListsLabel: "Your BIS lists (e.g. Tank, DPS) — double-click a name to rename it",
     yourBisListLabel: "Your BIS list", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "This item is on your BIS list", tierUnsetLabel: "Tier not set",
@@ -1991,6 +2000,7 @@ const I18N = {
     bisBrowseGeneralLabel: "General", bisBrowseBackToBosses: "Back to bosses",
     murlokImportTitle: "Mirror from Murlok", murlokImportSub: "Based on real data from murlok.io - the top players' build or a specific player's gear",
     murlokModeBuild: "Recommended build", murlokModePlayer: "Specific player",
+    murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
     murlokBuildSpecLabel: (spec, cls) => `${spec} ${cls} build (top players)`,
     murlokNoSpecMsg: "Sync the character to know its spec before fetching a build.",
     murlokPlayerRealmPlaceholder: "Realm (e.g. illidan)", murlokPlayerNamePlaceholder: "Character name",
@@ -2201,7 +2211,7 @@ function classIconUrl(cls){
 }
 /* Raider.io's `faction` field comes through lowercase ("alliance"/"horde"), not
    title-cased - confirmed by fetching a real profile directly. */
-const FACTION_ICON = { alliance: 'achievement_pvp_a_01', horde: 'achievement_pvp_h_01' };
+const FACTION_ICON = { alliance: 'assets/alliance-logo.png', horde: 'assets/horde-logo.png' };
 /* Standard WoW class -> armor type, used to filter the BIS item browser so a
    Death Knight (plate) doesn't see cloth/leather/mail armor pieces etc. Slots
    without an armor type (weapons, trinkets, rings, neck, back, ...) aren't
@@ -4025,7 +4035,7 @@ function renderCharacterPage(){
           <div>
             <div class="cpage-name-row">
               <h2 style="color:${color}">${c.name}</h2>
-              ${c.faction && FACTION_ICON[c.faction.toLowerCase()] ? `<img class="cpage-faction-icon" src="${zamIconUrl(FACTION_ICON[c.faction.toLowerCase()], 'small')}" alt="${escapeHtml(c.faction)}" title="${escapeHtml(c.faction)}">` : ''}
+              ${c.faction && FACTION_ICON[c.faction.toLowerCase()] ? `<img class="cpage-faction-icon" src="${FACTION_ICON[c.faction.toLowerCase()]}" alt="${escapeHtml(c.faction)}" title="${escapeHtml(c.faction)}">` : ''}
             </div>
             ${c.race ? `<div class="cpage-race">${escapeHtml(c.race)}</div>` : ''}
             <div class="cpage-sub">${c.class}${c.spec ? ` – ${escapeHtml(c.spec)}` : ''}</div>
@@ -4160,8 +4170,10 @@ function renderCharacterPage(){
           </div>
 
           <div class="dash-card dash-card-wide" id="section-gear">
-            <h3>${t('subtabGear')} (${c.ilvl || '—'})</h3>
-            <div class="gear-bis-progress-center">${(() => { const p = bisSlotProgress(c); return `<span class="gear-bis-progress-value">${p.matched}/${p.total}</span><span class="gear-bis-progress-label">${t('bisProgressLabel')}</span>`; })()}</div>
+            <div class="dash-card-head-inline">
+              <h3 style="margin-bottom:0;">${t('subtabGear')} (${c.ilvl || '—'})</h3>
+              <div class="gear-bis-progress-inline">${(() => { const p = bisSlotProgress(c); return `<span class="gear-bis-progress-value">${p.matched}/${p.total}</span><span class="gear-bis-progress-label">${t('bisProgressLabel')}</span>`; })()}</div>
+            </div>
             ${c.gearItems ? `
             <div class="gear-columns">
               <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
@@ -4814,8 +4826,9 @@ function renderBisListSelector(){
   const c = state.characters.find(x => x.id === state.bisActiveChar);
   if(!c){ wrap.innerHTML = ''; return; }
   const lists = c.bisLists;
-  wrap.innerHTML = lists.map(l => `
-    <div class="bis-list-pill ${l.id === c.activeBisListId ? 'active' : ''}" data-id="${l.id}">
+  wrap.innerHTML = lists.map((l, i) => `
+    <div class="bis-list-pill ${l.id === c.activeBisListId ? 'active' : ''}" data-id="${l.id}" title="${i === 0 ? t('bisListPriorityHint') : t('dragReorder')}">
+      ${i === 0 ? `<span class="bis-list-priority-star">★</span>` : ''}
       <span class="bis-list-pill-name" data-id="${l.id}" title="${t('renameBisListHint')}">${escapeHtml(l.name)}</span>
       ${lists.length > 1 ? `<button class="bis-list-pill-del" data-id="${l.id}" title="${t('remove')}">✕</button>` : ''}
     </div>
@@ -4825,6 +4838,19 @@ function renderBisListSelector(){
     pill.addEventListener('click', (e) => {
       if(e.target.closest('.bis-list-pill-del') || e.target.tagName === 'INPUT') return;
       switchActiveBisList(c, pill.dataset.id);
+    });
+    enableDragReorder(pill, pill.dataset.id, async (fromId, toId) => {
+      const fromIdx = c.bisLists.findIndex(x => x.id === fromId);
+      const toIdx = c.bisLists.findIndex(x => x.id === toId);
+      if(fromIdx === -1 || toIdx === -1) return;
+      const [moved] = c.bisLists.splice(fromIdx, 1);
+      c.bisLists.splice(toIdx, 0, moved);
+      c.activeBisListId = c.bisLists[0].id;
+      await saveChar(c);
+      renderBisListSelector();
+      renderBisBrowseGrid();
+      renderBisList();
+      if(document.getElementById('characterPage')) renderCharacterPage();
     });
   });
   wrap.querySelectorAll('.bis-list-pill-name').forEach(nameEl => {
@@ -5237,12 +5263,32 @@ function renderBisList(){
    usage count) for "recommended build" mode, and an individual character's own real
    equipped gear for "specific player" mode. Hero talent names/slugs are scraped fresh
    from the page itself rather than hardcoded, since they differ per spec and Murlok
-   is the source of truth for them. ---------------- */
+   is the source of truth for them. Imported items land in their own "Murlok.IO List"
+   (auto-created, never merged into the player's manual list) so the two stay separate. ---------------- */
 const MURLOK_CLASS_SLUG = {
   "Death Knight":"death-knight", "Demon Hunter":"demon-hunter", "Druid":"druid", "Evoker":"evoker",
   "Hunter":"hunter", "Mage":"mage", "Monk":"monk", "Paladin":"paladin", "Priest":"priest",
   "Rogue":"rogue", "Shaman":"shaman", "Warlock":"warlock", "Warrior":"warrior"
 };
+/* Real WoW class -> spec list, stable game design (not derived from any fetch) - the
+   character's own live spec is just the default selection, not a hard lock, since the
+   player may want to check a build for a spec they're not currently playing. */
+const WOW_CLASS_SPECS = {
+  "Death Knight": ["Blood","Frost","Unholy"],
+  "Demon Hunter": ["Havoc","Vengeance"],
+  "Druid": ["Balance","Feral","Guardian","Restoration"],
+  "Evoker": ["Devastation","Preservation","Augmentation"],
+  "Hunter": ["Beast Mastery","Marksmanship","Survival"],
+  "Mage": ["Arcane","Fire","Frost"],
+  "Monk": ["Brewmaster","Mistweaver","Windwalker"],
+  "Paladin": ["Holy","Protection","Retribution"],
+  "Priest": ["Discipline","Holy","Shadow"],
+  "Rogue": ["Assassination","Outlaw","Subtlety"],
+  "Shaman": ["Elemental","Enhancement","Restoration"],
+  "Warlock": ["Affliction","Demonology","Destruction"],
+  "Warrior": ["Arms","Fury","Protection"]
+};
+const MURLOK_LIST_NAME = 'Murlok.IO List';
 function murlokSlugify(s){ return (s||'').toLowerCase().trim().replace(/\s+/g,'-'); }
 const MURLOK_SLOT_ORDER = ['Head','Neck','Shoulders','Back','Chest','Wrist','Hands','Waist','Legs','Feet','Rings','Trinkets','Main Hand','Off Hand'];
 const MURLOK_SLOT_TO_BIS = {
@@ -5250,6 +5296,18 @@ const MURLOK_SLOT_TO_BIS = {
   'Wrist':'Wrist', 'Hands':'Hands', 'Waist':'Waist', 'Legs':'Legs', 'Feet':'Feet',
   'Rings':'Ring', 'Trinkets':'Trinket', 'Main Hand':'Main Hand', 'Off Hand':'Off-Hand'
 };
+function findMurlokItemLocation(whId){
+  const found = ITEM_LOOT_TABLE.find(row => String(row[3]) === String(whId));
+  return found ? found[2] : null;
+}
+function getOrCreateMurlokBisList(c){
+  let list = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
+  if(!list){
+    list = { id: uid(), name: MURLOK_LIST_NAME, items: [] };
+    c.bisLists.push(list);
+  }
+  return list;
+}
 async function fetchMurlokGear(params){
   const qs = new URLSearchParams(params).toString();
   const res = await fetch(`${RAID_PROXY_URL}/?type=murlok-gear&${qs}`);
@@ -5258,6 +5316,7 @@ async function fetchMurlokGear(params){
 }
 
 let murlokImportMode = 'build';
+let murlokSpecSlug = '';
 let murlokHeroSlug = '';
 let murlokHeroTalents = [];
 let murlokResult = null;
@@ -5278,13 +5337,17 @@ function openMurlokModal(){
   document.getElementById('murlokPlayerControls').style.display = 'none';
   document.getElementById('murlokAddSelectedBtn').style.display = 'none';
   document.getElementById('murlokHeroPills').innerHTML = '';
+  document.getElementById('murlokSpecPills').innerHTML = '';
   document.getElementById('murlokResultWrap').innerHTML = '';
   const clsSlug = MURLOK_CLASS_SLUG[c.class];
-  const specSlug = murlokSlugify(c.spec);
+  const specs = WOW_CLASS_SPECS[c.class] || [];
   const specLabel = document.getElementById('murlokBuildSpecLabel');
-  if(clsSlug && specSlug){
-    specLabel.textContent = t('murlokBuildSpecLabel', c.spec, c.class);
-    loadMurlokBuild(clsSlug, specSlug, '');
+  if(clsSlug && specs.length){
+    const defaultSpec = specs.includes(c.spec) ? c.spec : specs[0];
+    murlokSpecSlug = murlokSlugify(defaultSpec);
+    renderMurlokSpecPills(c.class, defaultSpec);
+    specLabel.textContent = t('murlokBuildSpecLabel', defaultSpec, c.class);
+    loadMurlokBuild(clsSlug, murlokSpecSlug, '');
   } else {
     specLabel.textContent = t('murlokNoSpecMsg');
   }
@@ -5296,6 +5359,24 @@ function closeMurlokModal(){
 document.getElementById('murlokImportTriggerBtn').addEventListener('click', openMurlokModal);
 document.getElementById('murlokModalClose').addEventListener('click', closeMurlokModal);
 document.getElementById('murlokModal').addEventListener('click', (e) => { if(e.target.id === 'murlokModal') closeMurlokModal(); });
+
+function renderMurlokSpecPills(cls, activeSpec){
+  const specs = WOW_CLASS_SPECS[cls] || [];
+  const wrap = document.getElementById('murlokSpecPills');
+  wrap.innerHTML = specs.map(spec => `
+    <button class="murlok-hero-pill ${spec === activeSpec ? 'active' : ''}" data-spec="${escapeHtml(spec)}">${escapeHtml(spec)}</button>
+  `).join('');
+  wrap.querySelectorAll('.murlok-hero-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const clsSlug = MURLOK_CLASS_SLUG[cls];
+      const spec = btn.dataset.spec;
+      murlokSpecSlug = murlokSlugify(spec);
+      wrap.querySelectorAll('.murlok-hero-pill').forEach(b => b.classList.toggle('active', b === btn));
+      document.getElementById('murlokBuildSpecLabel').textContent = t('murlokBuildSpecLabel', spec, cls);
+      loadMurlokBuild(clsSlug, murlokSpecSlug, '');
+    });
+  });
+}
 
 async function loadMurlokBuild(clsSlug, specSlug, heroSlug){
   const wrap = document.getElementById('murlokResultWrap');
@@ -5332,7 +5413,10 @@ function renderMurlokResult(){
     document.getElementById('murlokAddSelectedBtn').style.display = 'none';
     return;
   }
-  const activeItems = c ? getActiveBisList(c).items : [];
+  // "already added" is checked against the Murlok.IO List specifically (where new items
+  // will actually land), not whatever list the player happens to be editing manually.
+  const murlokList = c ? c.bisLists.find(l => l.name === MURLOK_LIST_NAME) : null;
+  const activeItems = murlokList ? murlokList.items : [];
   const rows = [];
   MURLOK_SLOT_ORDER.forEach(murlokSlot => {
     const raw = murlokResult.slots[murlokSlot];
@@ -5353,7 +5437,8 @@ function renderMurlokResult(){
     picks.forEach((item, i) => {
       const key = `${murlokSlot}-${i}-${item.whId}`;
       const already = activeItems.some(b => (item.whId && String(b.whId) === String(item.whId)) || b.name.toLowerCase() === item.name.toLowerCase());
-      rows.push({ bisSlot, key, item, already });
+      const loc = findMurlokItemLocation(item.whId);
+      rows.push({ bisSlot, key, item, already, loc });
     });
   });
   rows.forEach(r => { if(!r.already) murlokSelected.add(r.key); });
@@ -5374,6 +5459,7 @@ function renderMurlokResult(){
           <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : (murlokSelected.has(r.key) ? 'checked' : '')}>
           ${r.item.icon ? `<img class="bicon-img" src="${r.item.icon}" alt="">` : slotIcon(r.bisSlot)}
           <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link" style="flex:1;">${escapeHtml(r.item.name)}</a>
+          ${r.loc ? `<span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>` : ''}
           ${(r.item.count !== null && r.item.count !== undefined) ? `<span class="murlok-item-count">${t('murlokPlayersLabel', r.item.count)}</span>` : ''}
           ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
         </div>`).join('')}
@@ -5399,8 +5485,7 @@ document.getElementById('murlokModeToggle').querySelectorAll('button').forEach(b
     if(murlokImportMode === 'build'){
       const c = state.characters.find(x => x.id === state.bisActiveChar);
       const clsSlug = c ? MURLOK_CLASS_SLUG[c.class] : null;
-      const specSlug = c ? murlokSlugify(c.spec) : null;
-      if(clsSlug && specSlug) loadMurlokBuild(clsSlug, specSlug, murlokHeroSlug);
+      if(clsSlug && murlokSpecSlug) loadMurlokBuild(clsSlug, murlokSpecSlug, murlokHeroSlug);
     }
   });
 });
@@ -5422,10 +5507,21 @@ document.getElementById('murlokPlayerFetchBtn').addEventListener('click', async 
   }
 });
 document.getElementById('murlokAddSelectedBtn').addEventListener('click', async () => {
+  const c = state.characters.find(x => x.id === state.bisActiveChar);
+  if(!c) return;
   const toAdd = murlokLastRows.filter(r => murlokSelected.has(r.key) && !r.already);
-  for(const r of toAdd){
-    await addBisItem({ name: r.item.name, slot: r.bisSlot, source: '—', whId: r.item.whId, icon: r.item.icon });
-  }
+  if(!toAdd.length) return;
+  const murlokList = getOrCreateMurlokBisList(c);
+  toAdd.forEach(r => {
+    murlokList.items.push({
+      id: uid(), name: r.item.name, slot: r.bisSlot, source: r.loc || '—',
+      whId: r.item.whId || null, icon: r.item.icon || null, boss: null
+    });
+  });
+  c.activeBisListId = murlokList.id;
+  await saveChar(c);
+  renderBisListSelector();
+  renderBisList();
   murlokSelected = new Set();
   renderMurlokResult();
 });
