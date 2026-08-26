@@ -303,6 +303,13 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bonus-wish-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:11px; flex-shrink:0; }
 .bonus-wish-del:hover{ opacity:1; color:var(--danger); }
 .season-best-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
+.mplus-season-stats{
+  display:flex; gap:18px; margin-top:14px; padding-top:12px; border-top:1px solid var(--hairline);
+}
+.mplus-season-stat{ text-align:center; }
+.mplus-season-stat-value{ font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:800; color:var(--text); }
+.mplus-season-stat-label{ font-size:9.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.02em; margin-top:1px; }
+.mplus-season-stats-note{ font-size:10.5px; color:var(--text-dim); margin-top:8px; line-height:1.5; }
 .sb-tile{
   position:relative; flex:0 0 84px; height:112px; border-radius:9px; overflow:hidden; cursor:default;
   background-size:cover; background-position:center; border:1px solid var(--hairline);
@@ -1594,6 +1601,9 @@ const I18N = {
     vaultHistoryBtnLabel: "Histórico", vaultTypeItem: "Item", vaultTypeBonusRoll: "Bonus Roll",
     vaultItemPlaceholder: "Nome do item", vaultHistoryEmpty: "Nenhum registro ainda.",
     vaultHistoryDeleteConfirm: "Remover esse registro do histórico do Vault?",
+    mplusSeasonTotalLabel: "Total na season", mplusSeasonM0Label: "M0",
+    mplusSeasonLowLabel: "+2 a +4", mplusSeasonMidLabel: "+5 a +9", mplusSeasonHighLabel: "+10 ou mais",
+    mplusSeasonStatsNote: "Runs completadas nesta season, somando todas as dungeons (o Raider.IO não expõe esse dado por dungeon nem separa timed de depletada).",
     raidUlatekNormalNote: "Ula'tek (último boss) dropa 20 Champion + 10 Hero, em vez do padrão da dificuldade Normal",
     raidUlatekHeroicNote: "Ula'tek (último boss) dropa 20 Hero + 10 Myth, em vez do padrão da dificuldade Heroica",
     loading: "Carregando...",
@@ -1744,6 +1754,9 @@ const I18N = {
     vaultHistoryBtnLabel: "History", vaultTypeItem: "Item", vaultTypeBonusRoll: "Bonus Roll",
     vaultItemPlaceholder: "Item name", vaultHistoryEmpty: "No entries yet.",
     vaultHistoryDeleteConfirm: "Remove this entry from the Vault history?",
+    mplusSeasonTotalLabel: "Total this season", mplusSeasonM0Label: "M0",
+    mplusSeasonLowLabel: "+2 to +4", mplusSeasonMidLabel: "+5 to +9", mplusSeasonHighLabel: "+10 or higher",
+    mplusSeasonStatsNote: "Runs completed this season across every dungeon combined (Raider.IO doesn't expose this per dungeon, and doesn't separate timed from depleted).",
     raidUlatekNormalNote: "Ula'tek (last boss) drops 20 Champion + 10 Hero, instead of Normal difficulty's usual amount",
     raidUlatekHeroicNote: "Ula'tek (last boss) drops 20 Hero + 10 Myth, instead of Heroic difficulty's usual amount",
     loading: "Loading...",
@@ -3530,6 +3543,7 @@ function normalizeChar(c){
   if(!Array.isArray(c.bonusRolls.log)) c.bonusRolls.log = [];
   if(!Array.isArray(c.bonusRolls.wishlist)) c.bonusRolls.wishlist = [];
   if(!Array.isArray(c.vaultHistory)) c.vaultHistory = [];
+  if(!c.mplusKeystoneStats || typeof c.mplusKeystoneStats !== 'object') c.mplusKeystoneStats = null;
   return c;
 }
 
@@ -3556,7 +3570,7 @@ function makeCharObj(id, name, cls, realm, realmName, region){
     highestKey: 0, history: [], bisLists: [defaultBisList], activeBisListId: defaultBisList.id,
     gearItems: null, mplusBestRuns: [], mplusRecentRuns: [],
     avatarUrl: null, ioscoreSeason1: 0, lastSyncedAt: null, worldRank: null,
-    bonusRolls: { available: 0, log: [], wishlist: [] }, vaultHistory: []
+    bonusRolls: { available: 0, log: [], wishlist: [] }, vaultHistory: [], mplusKeystoneStats: null
   };
 }
 
@@ -3794,6 +3808,9 @@ function renderCharacterPage(){
   const bonusHitTotal = c.bonusRolls.log.length;
   const bonusHitPct = bonusHitTotal ? Math.round(bonusHits/bonusHitTotal*100) : 0;
   const bonusWishProgress = bonusRollProgress(c);
+  const mplusStatsTotal = c.mplusKeystoneStats
+    ? c.mplusKeystoneStats.m0 + c.mplusKeystoneStats.low + c.mplusKeystoneStats.mid + c.mplusKeystoneStats.high
+    : 0;
 
   const NEWS_PLACEHOLDER = [
     { title: t('newsPlaceholder1'), date: t('comingSoon') },
@@ -3916,6 +3933,16 @@ function renderCharacterPage(){
             <div class="dash-card season-best-strip-card" id="section-mplus">
               <h3>${t('seasonBestDungeonsTitle')}</h3>
               <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
+              ${c.mplusKeystoneStats ? `
+              <div class="mplus-season-stats">
+                <div class="mplus-season-stat"><div class="mplus-season-stat-value">${mplusStatsTotal}</div><div class="mplus-season-stat-label">${t('mplusSeasonTotalLabel')}</div></div>
+                <div class="mplus-season-stat"><div class="mplus-season-stat-value">${c.mplusKeystoneStats.m0}</div><div class="mplus-season-stat-label">${t('mplusSeasonM0Label')}</div></div>
+                <div class="mplus-season-stat"><div class="mplus-season-stat-value">${c.mplusKeystoneStats.low}</div><div class="mplus-season-stat-label">${t('mplusSeasonLowLabel')}</div></div>
+                <div class="mplus-season-stat"><div class="mplus-season-stat-value">${c.mplusKeystoneStats.mid}</div><div class="mplus-season-stat-label">${t('mplusSeasonMidLabel')}</div></div>
+                <div class="mplus-season-stat"><div class="mplus-season-stat-value">${c.mplusKeystoneStats.high}</div><div class="mplus-season-stat-label">${t('mplusSeasonHighLabel')}</div></div>
+              </div>
+              <div class="mplus-season-stats-note">${t('mplusSeasonStatsNote')}</div>
+              ` : ''}
             </div>
             ` : `<div id="section-mplus"></div>`}
 
@@ -4036,6 +4063,10 @@ function renderCharacterPage(){
     try{
       const data = await fetchRaiderIoProfile(c.name, c.realm, c.region);
       applyRaiderIoData(c, data);
+      try{
+        const summaryData = await fetchMplusSeasonSummary(c.realm, c.region, c.name);
+        applyMplusSeasonSummary(c, summaryData);
+      } catch(e){ /* worker unavailable, keep last known stats */ }
       await saveChar(c);
       renderCharacterPage();
     } catch(err){
@@ -4206,6 +4237,25 @@ function applyRaidWorldBossData(c, data){
   });
 }
 
+/* Raider.IO's public API has no per-dungeon run-count/timed breakdown anywhere (checked
+   thoroughly - not in the documented v1 API, not in the character page's own undocumented
+   internal API, not rendered on the page itself). The closest real data is this internal
+   endpoint's keystoneAggregateStats: a SEASON-WIDE (all dungeons combined) count of
+   completed keystone runs bucketed by level - not per dungeon, and with no timed-vs-depleted
+   distinction exposed, so don't present it as either of those. Same Worker, same
+   no-CORS-of-its-own reasoning as the rio-run branch. */
+async function fetchMplusSeasonSummary(realmSlug, region, name){
+  const url = `${RAID_PROXY_URL}/?type=rio-mplus-summary&region=${region}&realm=${encodeURIComponent(realmSlug)}&name=${encodeURIComponent(name)}&season=${encodeURIComponent(CURRENT_SEASON_SLUG)}`;
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('mplus summary proxy error');
+  return res.json();
+}
+function applyMplusSeasonSummary(c, data){
+  const stats = Array.isArray(data.keystoneAggregateStats) ? data.keystoneAggregateStats : [];
+  const byLevel = Object.fromEntries(stats.map(s => [s.level, s.count]));
+  c.mplusKeystoneStats = { m0: byLevel[0] || 0, low: byLevel[2] || 0, mid: byLevel[5] || 0, high: byLevel[10] || 0 };
+}
+
 /* Raider.IO's run-composition detail also has no CORS headers of its own — same Worker,
    different query shape (?type=rio-run), see worker/raid-proxy.js. Cached in-memory per
    session so re-expanding an already-viewed run doesn't refetch. */
@@ -4235,6 +4285,10 @@ async function refreshAllCharacters(){
       const rwData = await fetchRaidWorldBossProgress(c.realm, c.region, c.name);
       applyRaidWorldBossData(c, rwData);
     } catch(e){ /* worker unavailable, keep manual raid/world-boss entries as-is */ }
+    try{
+      const summaryData = await fetchMplusSeasonSummary(c.realm, c.region, c.name);
+      applyMplusSeasonSummary(c, summaryData);
+    } catch(e){ /* worker unavailable, keep last known stats */ }
     await saveChar(c);
   }));
   renderCharacters();
@@ -4340,6 +4394,10 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
       const rwData = await fetchRaidWorldBossProgress(realmSlug, region, data.name);
       applyRaidWorldBossData(c, rwData);
     } catch(e){ /* worker unavailable, character still gets added with M+/ilvl data */ }
+    try{
+      const summaryData = await fetchMplusSeasonSummary(realmSlug, region, data.name);
+      applyMplusSeasonSummary(c, summaryData);
+    } catch(e){ /* worker unavailable, character still gets added without season stats */ }
     state.characters.push(c);
     await saveChar(c); await saveRoster();
     document.getElementById('addCharModal').style.display = 'none';

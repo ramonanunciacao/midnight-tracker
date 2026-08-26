@@ -15,7 +15,16 @@
    Plain passthrough of Raider.IO's public mythic-plus/run-details endpoint (full party
    composition, deaths, per-encounter timing) — that endpoint has no CORS headers of its
    own, so the browser can't call it directly; this branch needs no Blizzard token, it just
-   adds CORS headers to the same response. */
+   adds CORS headers to the same response.
+
+   Third, unrelated usage: GET <worker-url>/?type=rio-mplus-summary&region=us&realm=illidan&name=Rawthedk&season=season-mn-2
+   Passthrough of Raider.IO's undocumented internal character-page endpoint
+   (raider.io/api/characters/...), trimmed down to just characterMythicPlusProgress.
+   keystoneAggregateStats — the only season-wide (not per-dungeon; Raider.IO doesn't expose
+   a per-dungeon breakdown anywhere) count of completed keystone runs this season, bucketed by
+   level (0 = Mythic 0, 2 = keystone 2-4, 5 = keystone 5-9, 10 = keystone 10+). No "timed vs
+   depleted" distinction is exposed by this endpoint, so don't infer one. Also needs no
+   Blizzard token — just CORS headers on the same response. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -76,6 +85,25 @@ export default {
     const name = url.searchParams.get('name');
     if(!region || !realm || !name){
       return new Response(JSON.stringify({ error: 'missing region/realm/name' }), { status: 400, headers: corsHeaders });
+    }
+
+    if(url.searchParams.get('type') === 'rio-mplus-summary'){
+      const season = url.searchParams.get('season');
+      if(!season){
+        return new Response(JSON.stringify({ error: 'missing season' }), { status: 400, headers: corsHeaders });
+      }
+      try{
+        const rioUrl = `https://raider.io/api/characters/${encodeURIComponent(region)}/${encodeURIComponent(realm)}/${encodeURIComponent(name)}?season=${encodeURIComponent(season)}`;
+        const res = await fetch(rioUrl);
+        if(!res.ok){
+          return new Response(JSON.stringify({ error: 'raider.io api error', status: res.status }), { status: res.status, headers: corsHeaders });
+        }
+        const data = await res.json();
+        const stats = (data.characterMythicPlusProgress && data.characterMythicPlusProgress.keystoneAggregateStats) || [];
+        return new Response(JSON.stringify({ keystoneAggregateStats: stats }), { headers: corsHeaders });
+      } catch(err){
+        return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
+      }
     }
 
     try{
