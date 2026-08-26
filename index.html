@@ -667,16 +667,25 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   cursor:pointer; font-size:13px; flex-shrink:0; transition: all .15s;
 }
 .modal-close-btn:hover{ color:var(--text); border-color: var(--gold-dim); }
-.bis-browse-section{ margin:16px 0; }
-.bis-browse-section h4{
-  font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700; margin-bottom:8px;
+.bis-browse-trigger-btn{
+  display:block; width:100%; margin:14px 0; background: var(--bg-panel-raised); border:1px dashed var(--hairline);
+  border-radius:10px; padding:12px; color: var(--text-dim); font-size:12px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.03em; cursor:pointer; transition: border-color .15s, color .15s;
 }
-.bis-browse-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
-.bis-browse-head h4{ margin-bottom:0; }
-.bis-browse-filters{ display:flex; gap:8px; }
+.bis-browse-trigger-btn:hover{ border-color: var(--purple); color: var(--text); }
+.bis-list-head{
+  font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700; margin:16px 0 8px;
+}
+.bis-browse-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
+.bis-browse-modal{ width:720px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
+.bis-browse-filters-row{ display:flex; gap:16px; margin:16px 0; }
+.bis-filter-group{ display:flex; flex-direction:column; gap:4px; }
+.bis-filter-label{
+  font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); font-weight:700;
+}
 .bis-slot-filter, .bis-stat-filter{
   background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:7px;
-  padding:5px 8px; font-size:11px; cursor:pointer;
+  padding:6px 10px; font-size:12px; cursor:pointer;
 }
 .bis-browse-grid{ display:flex; flex-wrap:wrap; gap:8px; }
 .bis-browse-card{
@@ -1103,10 +1112,23 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
       <div class="bis-search-results" id="bisSearchResults"></div>
     </div>
 
-    <div class="bis-browse-section">
-      <div class="bis-browse-head">
-        <h4 data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</h4>
-        <div class="bis-browse-filters">
+    <button class="bis-browse-trigger-btn" id="bisBrowseTriggerBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
+
+    <div class="bis-list-head" data-i18n="yourBisListLabel">Sua lista BIS</div>
+    <div class="bis-list" id="bisList"></div>
+  </div>
+</div>
+
+<div class="modal-overlay bis-browse-modal-overlay" id="bisBrowseModal" style="display:none;">
+  <div class="modal bis-browse-modal">
+    <div class="bis-modal-head">
+      <h3 data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</h3>
+      <button class="modal-close-btn" id="bisBrowseModalClose" aria-label="Close">✕</button>
+    </div>
+
+    <div class="bis-browse-filters-row">
+      <div class="bis-filter-group">
+        <label class="bis-filter-label" data-i18n="slotFilterLabel">Slot</label>
         <select class="bis-slot-filter" id="bisSlotFilter">
           <option value="" data-i18n="allSlotsLabel">Todos os slots</option>
           <optgroup label="Armor" data-i18n-label="slotGroupArmor">
@@ -1142,6 +1164,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
             <option value="Warglaives">Warglaives</option>
           </optgroup>
         </select>
+      </div>
+      <div class="bis-filter-group">
+        <label class="bis-filter-label" data-i18n="statFilterLabel">Stat</label>
         <select class="bis-stat-filter" id="bisStatFilter">
           <option value="" data-i18n="allStatsLabel">Todos os stats</option>
           <option value="Critical Strike/Haste">Critical Strike / Haste</option>
@@ -1151,13 +1176,11 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
           <option value="Haste/Versatility">Haste / Versatility</option>
           <option value="Mastery/Versatility">Mastery / Versatility</option>
         </select>
-        </div>
       </div>
-      <div class="bis-browse-grid" id="bisBrowseGrid"></div>
-      <div class="bis-browse-items" id="bisBrowseItems"></div>
     </div>
 
-    <div class="bis-list" id="bisList"></div>
+    <div class="bis-browse-grid" id="bisBrowseGrid"></div>
+    <div class="bis-browse-items" id="bisBrowseItems"></div>
   </div>
 </div>
 
@@ -1282,6 +1305,7 @@ const I18N = {
     switchBisListConfirmMsg: (name) => `Isso vai ressincronizar as tags de BIS no seu gear de acordo com a lista "${name}". Itens que batem com essa lista mostrarão a tag; os que não batem, não.`,
     renameBisListHint: "Clique duas vezes para renomear",
     yourBisListsLabel: "Suas listas BIS (ex: Tank, DPS) — clique duas vezes no nome para renomear",
+    yourBisListLabel: "Sua lista BIS", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "Esse item está na sua lista de BIS", tierUnsetLabel: "Tier não definido",
     itemCol: "Item", slotCol: "Slot", locationCol: "Localização", noItemMatch: "Nenhum item encontrado nessa busca.",
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
@@ -1389,6 +1413,7 @@ const I18N = {
     switchBisListConfirmMsg: (name) => `This will resync the BIS tags on your gear according to the "${name}" list. Items that match it will show the tag; items that don't, won't.`,
     renameBisListHint: "Double-click to rename",
     yourBisListsLabel: "Your BIS lists (e.g. Tank, DPS) — double-click a name to rename it",
+    yourBisListLabel: "Your BIS list", slotFilterLabel: "Slot", statFilterLabel: "Stat",
     bisMatchTooltip: "This item is on your BIS list", tierUnsetLabel: "Tier not set",
     itemCol: "Item", slotCol: "Slot", locationCol: "Location", noItemMatch: "No items matched that search.",
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
@@ -4024,7 +4049,6 @@ function openBisModal(charId){
   document.getElementById('bisSlotFilter').value = '';
   document.getElementById('bisStatFilter').value = '';
   renderBisListSelector();
-  renderBisBrowseGrid();
   renderBisList();
   document.getElementById('bisModal').style.display = 'flex';
 }
@@ -4035,7 +4059,22 @@ function closeBisModal(){
 }
 document.getElementById('bisModalClose').addEventListener('click', closeBisModal);
 document.getElementById('bisModal').addEventListener('click', (e) => { if(e.target.id === 'bisModal') closeBisModal(); });
-document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && document.getElementById('bisModal').style.display !== 'none') closeBisModal(); });
+document.addEventListener('keydown', (e) => {
+  if(e.key !== 'Escape') return;
+  if(document.getElementById('bisBrowseModal').style.display !== 'none'){ closeBisBrowseModal(); return; }
+  if(document.getElementById('bisModal').style.display !== 'none') closeBisModal();
+});
+
+function openBisBrowseModal(){
+  renderBisBrowseGrid();
+  document.getElementById('bisBrowseModal').style.display = 'flex';
+}
+function closeBisBrowseModal(){
+  document.getElementById('bisBrowseModal').style.display = 'none';
+}
+document.getElementById('bisBrowseTriggerBtn').addEventListener('click', openBisBrowseModal);
+document.getElementById('bisBrowseModalClose').addEventListener('click', closeBisBrowseModal);
+document.getElementById('bisBrowseModal').addEventListener('click', (e) => { if(e.target.id === 'bisBrowseModal') closeBisBrowseModal(); });
 
 async function addBisItem(data){
   const c = state.characters.find(x => x.id === state.bisActiveChar);
