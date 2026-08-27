@@ -67,7 +67,19 @@
    Raider.IO's own real dungeon abbreviation (e.g. "KR" for Kings' Rest), taken straight from
    their dungeon object, not derived; roster is pre-sorted tank/healer/dps; url is the real
    per-run Raider.IO page (confirmed by constructing one from keystone_run_id/mythic_level/
-   dungeon.slug and fetching it directly - resolves to a real 200). No Blizzard token needed. */
+   dungeon.slug and fetching it directly - resolves to a real 200). No Blizzard token needed.
+
+   Seventh, unrelated usage: GET <worker-url>/?type=rio-class-meta&season=season-mn-2
+   Same real Raider.IO runs endpoint as rio-world-top, but sampling the world's top 200 runs
+   (10 pages x 20/page, confirmed the real page size directly) across all dungeons combined
+   and aggregating every roster slot by class/spec - powers the "Meta Check" feature (how
+   represented is a spec among the world's best players right now, and what's its own highest
+   run in that sample). Returns { totalRuns, totalPlayers, specs: [{class, spec, role, count,
+   highestLevel, topRun: {level, dungeon, shortName, url}, topRuns: [{runId, level, dungeon,
+   shortName, url}, ...]}, ...] } - topRuns is that spec's own top 5 real runs in the sample
+   (by level, deduped by run id), used by the frontend to lazily fetch real death data for
+   just those runs via the existing rio-run branch instead of pulling details for all 200
+   runs up front. No Blizzard token needed. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -164,6 +176,84 @@ export default {
           };
         }));
         return new Response(JSON.stringify({ topRuns: results.filter(Boolean) }), { headers: corsHeaders });
+      } catch(err){
+        return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
+      }
+    }
+
+    if(url.searchParams.get('type') === 'rio-class-meta'){
+      const season = url.searchParams.get('season');
+      if(!season) return new Response(JSON.stringify({ error: 'missing season' }), { status: 400, headers: corsHeaders });
+      // Same real Raider.IO endpoint as rio-world-top, but sampling the world's top 200 runs
+      // (10 pages x 20 runs/page, confirmed the real page size by fetching page 0 directly)
+      // across all dungeons combined, to get a real representativity snapshot: how many of
+      // those ~1000 roster slots are each class/spec, and each spec's own highest run within
+      // that sample. This is genuinely what the top of the world is playing right now, not a
+      // guess - the "meta check" feature is built entirely on this real data.
+      const PAGES = 10;
+      try{
+        const pages = await Promise.all(Array.from({ length: PAGES }, (_, i) =>
+          fetch(`https://raider.io/api/v1/mythic-plus/runs?season=${encodeURIComponent(season)}&region=world&dungeon=all&affixes=all&page=${i}`)
+            .then(res => res.ok ? res.json() : null)
+            .catch(() => null)
+        ));
+        const specMap = new Map();
+        const seenRunIds = new Set();
+        let totalRuns = 0;
+        let totalPlayers = 0;
+        for(const page of pages){
+          if(!page || !Array.isArray(page.rankings)) continue;
+          for(const r of page.rankings){
+            const run = r.run;
+            if(!run || seenRunIds.has(run.keystone_run_id)) continue;
+            seenRunIds.add(run.keystone_run_id);
+            totalRuns++;
+            for(const m of (run.roster || [])){
+              const cls = m.character.class && m.character.class.name;
+              const spec = m.character.spec && m.character.spec.name;
+              if(!cls || !spec) continue;
+              totalPlayers++;
+              const key = `${cls}|${spec}`;
+              if(!specMap.has(key)){
+                specMap.set(key, { class: cls, spec, role: m.role, count: 0, highestLevel: 0, topRun: null, runs: [] });
+              }
+              const entry = specMap.get(key);
+              entry.count++;
+              // Keep every run this spec appeared in (deduped/trimmed to the top 5 by level
+              // below) - the frontend uses these run ids to lazily pull real death data for
+              // just that spec's own highest runs, instead of fetching details for all 200
+              // runs up front (which would be far too many subrequests for one invocation).
+              entry.runs.push({
+                runId: run.keystone_run_id, level: run.mythic_level, dungeon: run.dungeon.name,
+                shortName: run.dungeon.short_name || null, dungeonSlug: run.dungeon.slug
+              });
+              if(run.mythic_level > entry.highestLevel){
+                entry.highestLevel = run.mythic_level;
+                entry.topRun = {
+                  level: run.mythic_level,
+                  dungeon: run.dungeon.name,
+                  shortName: run.dungeon.short_name || null,
+                  url: `https://raider.io/mythic-plus-runs/${encodeURIComponent(season)}/${run.keystone_run_id}-${run.mythic_level}-${run.dungeon.slug}`
+                };
+              }
+            }
+          }
+        }
+        const specs = [...specMap.values()].map(entry => {
+          const uniqueRuns = new Map();
+          entry.runs.forEach(r => {
+            if(!uniqueRuns.has(r.runId) || r.level > uniqueRuns.get(r.runId).level) uniqueRuns.set(r.runId, r);
+          });
+          const topRuns = [...uniqueRuns.values()]
+            .sort((a, b) => b.level - a.level)
+            .slice(0, 5)
+            .map(r => ({
+              runId: r.runId, level: r.level, dungeon: r.dungeon, shortName: r.shortName,
+              url: `https://raider.io/mythic-plus-runs/${encodeURIComponent(season)}/${r.runId}-${r.level}-${r.dungeonSlug}`
+            }));
+          return { class: entry.class, spec: entry.spec, role: entry.role, count: entry.count, highestLevel: entry.highestLevel, topRun: entry.topRun, topRuns };
+        });
+        return new Response(JSON.stringify({ totalRuns, totalPlayers, specs }), { headers: corsHeaders });
       } catch(err){
         return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
       }
