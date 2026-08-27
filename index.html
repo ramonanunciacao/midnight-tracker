@@ -354,6 +354,25 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bonus-wish-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:11px; flex-shrink:0; }
 .bonus-wish-del:hover{ opacity:1; color:var(--danger); }
 .season-best-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
+/* Dashboard's discreet "where to farm" strip - a mini mirror of the BIS Gear page's BIS by
+   Location cards, condensed into scannable pills instead of full item lists. Read-only and
+   click-through only (real editing stays on the BIS Gear page), so it's kept visually quiet:
+   no bright colors besides the gold count badge, same pill language dash-bis-list-pill
+   already uses elsewhere on this page. */
+.bis-farm-card h3{ margin-bottom:10px; }
+.bis-farm-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
+.bis-farm-chip{
+  display:flex; align-items:center; gap:8px; flex:0 0 auto; background: var(--bg-panel-raised); border:1px solid var(--hairline);
+  border-radius:20px; padding:5px 12px 5px 6px; cursor:pointer; font-family:inherit; color:var(--text);
+  transition: border-color .15s, background .15s;
+}
+.bis-farm-chip:hover{ border-color: var(--gold-dim); background: rgba(242,181,61,.08); }
+.bis-farm-chip-icon{ width:24px; height:24px; border-radius:6px; object-fit:cover; flex-shrink:0; }
+.bis-farm-chip-name{ font-size:12px; font-weight:700; white-space:nowrap; }
+.bis-farm-chip-count{
+  font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:800; color:var(--gold); background: rgba(242,181,61,.14);
+  border-radius:10px; padding:1px 8px; line-height:1.5; flex-shrink:0;
+}
 .dash-topgroup-mplus{ display:flex; flex-direction:column; flex:1 1 260px; max-width:300px; }
 .dash-topgroup-mplus h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; }
 .mplus-season-total{
@@ -2325,6 +2344,7 @@ const I18N = {
     viewAllLabel: "Ver Tudo", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     bisSummaryTitle: "BIS por Local", editBisLabel: "Editar Lista", searchBisPlaceholder: "Buscar por nome ou slot (ex: trinket)...",
+    bisFarmTitle: "Onde Farmar",
     bisAlreadyEquippedTooltip: "Já equipado neste personagem",
     bisRankTag: (rank) => rank <= 1 ? "BIS" : `${rank}${rank === 2 ? "ND" : rank === 3 ? "RD" : "TH"} BIS`,
     bisRankTagTooltip: "Uma entre várias opções reais com uso muito próximo entre os top players (dados do Murlok.io) — não é a única escolha certa.",
@@ -2571,6 +2591,7 @@ const I18N = {
     viewAllLabel: "View All", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     bisSummaryTitle: "BIS by Location", editBisLabel: "Edit List", searchBisPlaceholder: "Search by name or slot (e.g. trinket)...",
+    bisFarmTitle: "Where to Farm",
     bisAlreadyEquippedTooltip: "Already equipped on this character",
     bisRankTag: (rank) => rank <= 1 ? "BIS" : `${rank}${rank === 2 ? "ND" : rank === 3 ? "RD" : "TH"} BIS`,
     bisRankTagTooltip: "One of several real options with very close usage among top players (Murlok.io data) — not the single correct pick.",
@@ -4898,6 +4919,45 @@ function renderCharacters(){
   if(document.getElementById('bisGearPage')) renderBisGearPage();
 }
 
+/* Discreet "where to farm" summary for the Dashboard - a much lighter mirror of the BIS Gear
+   page's "BIS by Location" card, reduced to just a real location name + how many items are
+   still missing there, sorted by what's most outstanding first (that's the actual "where's
+   it worth going" signal, not the fixed dungeon-then-raid order the full page uses). Craft,
+   Tier Set, Season Anterior, and "no location" are excluded entirely - they're not real game
+   content you can go run this week, so they don't belong in a farm-target list. Editing still
+   only happens on the real BIS Gear page; this is read-only, click-through navigation. */
+function bisFarmSummary(c){
+  const bestByDungeon = new Map();
+  c.mplusBestRuns.forEach(r => {
+    const prev = bestByDungeon.get(r.dungeon);
+    const better = !prev || r.mythic_level > prev.mythic_level ||
+      (r.mythic_level === prev.mythic_level && (r.num_keystone_upgrades||0) > (prev.num_keystone_upgrades||0));
+    if(better) bestByDungeon.set(r.dungeon, r);
+  });
+  const sortedBis = [...getActiveBisList(c).items].filter(b => deriveBisItemTier(c, b) !== 'mythic');
+  const excluded = new Set([t('murlokCraftLabel'), t('murlokTierSetLabel'), t('murlokOldSeasonLabel'), t('bisNoLocation')]);
+  const byLoc = new Map();
+  sortedBis.forEach(b => {
+    const loc = (b.source && b.source !== '—') ? b.source : t('bisNoLocation');
+    if(excluded.has(loc)) return;
+    if(!byLoc.has(loc)) byLoc.set(loc, []);
+    byLoc.get(loc).push(b);
+  });
+  return [...byLoc.entries()].map(([loc, items]) => {
+    const remaining = items.filter(b => !findEquippedMatchForBis(c, b)).length;
+    const dungeonMatch = bestByDungeon.get(loc);
+    const icon = dungeonMatch ? (dungeonMatch.icon_url || dungeonMatch.background_image_url) : (items.find(i => i.icon) || {}).icon || '';
+    return { loc, icon, remaining, total: items.length };
+  }).filter(entry => entry.remaining > 0).sort((a, b) => b.remaining - a.remaining);
+}
+function bisFarmChip(entry){
+  return `
+  <button class="bis-farm-chip" data-farm-loc="${escapeHtml(entry.loc)}">
+    ${entry.icon ? `<img class="bis-farm-chip-icon" src="${entry.icon}" alt="">` : ''}
+    <span class="bis-farm-chip-name">${escapeHtml(gn(entry.loc))}</span>
+    <span class="bis-farm-chip-count" title="${escapeHtml(t('bisRemainingCountTooltip', entry.remaining, entry.total))}">${entry.remaining}</span>
+  </button>`;
+}
 /* Shared character identity header - avatar, name, class/spec, Mythic+ Score, best run,
    weekly reset countdown. Used at the top of both the Dashboard and the BIS Gear page (moved
    out to its own function specifically so BIS Gear always shows which character its BIS/gear
@@ -5189,6 +5249,8 @@ function renderCharacterPage(){
       <option value="90" ${state.dashChartRange===90?'selected':''}>90D</option>
     </select>`;
 
+  const bisFarmEntries = bisFarmSummary(c);
+
   container.innerHTML = `
     <div class="cpage" style="--class-color:${color}">
       ${renderCharHeaderHtml(c)}
@@ -5249,6 +5311,15 @@ function renderCharacterPage(){
               </div>
             </div>
           </div>
+
+          ${bisFarmEntries.length ? `
+          <div class="dash-card bis-farm-card">
+            <div class="dash-card-head-inline">
+              <h3>${t('bisFarmTitle')}</h3>
+            </div>
+            <div class="bis-farm-strip">${bisFarmEntries.map(bisFarmChip).join('')}</div>
+          </div>
+          ` : ''}
 
           <div class="dash-row-strip">
             ${dungeonBestRuns.length ? `
@@ -5392,6 +5463,13 @@ function renderCharacterPage(){
 
   container.querySelector('#dashBonusRollsBtn').addEventListener('click', () => {
     openBonusRollsModal();
+  });
+
+  container.querySelectorAll('.bis-farm-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      switchToTab('bis');
+      renderBisGearPage();
+    });
   });
 
   container.querySelector('#vaultHistoryBtn').addEventListener('click', () => {
