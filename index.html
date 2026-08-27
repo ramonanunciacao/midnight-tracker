@@ -275,37 +275,39 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   width:100%; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text);
   border-radius:8px; padding:8px 12px; font-size:12px; margin-bottom:12px;
 }
-.bis-dungeon-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap:10px; }
+.bis-dungeon-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:14px; }
 .bis-dchip.search-dim{ opacity:.25; transition: opacity .15s; }
 .bis-dchip-item.search-dim{ opacity:.3; transition: opacity .15s; }
 .bis-dchip{
-  display:flex; flex-direction:column; gap:8px; background:var(--bg-panel-raised); border:1px solid var(--hairline);
-  border-radius:10px; padding:10px 12px; transition: border-color .15s;
+  display:flex; flex-direction:column; gap:11px; background:var(--bg-panel-raised); border:1px solid var(--hairline);
+  border-radius:12px; padding:14px 16px; transition: border-color .15s;
 }
 .bis-dchip:hover{ border-color: rgba(163,53,238,.4); }
-.bis-dchip-header{ display:flex; align-items:center; gap:8px; }
-.bis-dchip-icon{ width:24px; height:24px; border-radius:6px; border:1px solid var(--hairline); object-fit:cover; display:block; flex-shrink:0; }
+.bis-dchip-header{ display:flex; align-items:center; gap:10px; }
+.bis-dchip-icon{ width:30px; height:30px; border-radius:7px; border:1px solid var(--hairline); object-fit:cover; display:block; flex-shrink:0; }
 .bis-dchip-icon-empty{ background: var(--bg-panel); }
 .bis-dchip-count{
-  background: var(--purple); color:#fff; font-size:10px; font-weight:800;
-  min-width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  padding:0 3px; flex-shrink:0;
+  background: var(--purple); color:#fff; font-size:11px; font-weight:800;
+  min-width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  padding:0 4px; flex-shrink:0;
 }
-.bis-dchip-loc{ font-size:12px; font-weight:700; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.bis-dchip-items{ display:flex; flex-direction:column; gap:4px; }
-.bis-dchip-item{ display:flex; align-items:center; gap:6px; }
-.bis-dchip-item-icon{ width:18px; height:18px; border-radius:4px; border:1px solid var(--hairline); flex-shrink:0; }
+.bis-dchip-count.all-collected{ background: var(--ok); }
+.bis-dchip-loc{ font-size:14px; font-weight:700; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bis-dchip-items{ display:flex; flex-direction:column; gap:8px; }
+.bis-dchip-item{ display:flex; align-items:center; gap:8px; }
+.bis-dchip-item-icon{ width:24px; height:24px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
+.bis-dchip-item-info{ display:flex; flex-direction:column; gap:1px; min-width:0; flex:1; }
 .bis-dchip-item-name{
-  font-size:11px; color: var(--purple); text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;
-  flex:1;
+  font-size:13px; color: var(--purple); text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;
 }
 .bis-dchip-item-name:hover{ text-decoration:underline; }
-.bis-dchip-item-slot{ font-size:10px; color:var(--text-dim); flex-shrink:0; }
+.bis-dchip-item-boss{ font-size:11px; color: var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bis-dchip-item-slot{ font-size:11px; color:var(--text-dim); flex-shrink:0; }
 .bis-dchip-result-badge{ width:16px; height:16px; font-size:9px; flex-shrink:0; cursor:default; }
 .bis-dchip-result-badge:hover{ transform:none; }
 .bis-dchip-item.bonus-wish-obtained .bis-dchip-item-name{ text-decoration:line-through; opacity:.6; }
 .bis-dchip-item.equipped-collected .bis-dchip-item-name{ text-decoration:line-through; opacity:.6; }
-.bis-dchip-check{ color: var(--ok); font-weight:800; font-size:11px; flex-shrink:0; }
+.bis-dchip-check{ color: var(--ok); font-weight:800; font-size:13px; flex-shrink:0; }
 .bonus-wish-check{ color: var(--ok); font-weight:800; font-size:11px; flex-shrink:0; }
 .bonus-wish-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:11px; flex-shrink:0; }
 .bonus-wish-del:hover{ opacity:1; color:var(--danger); }
@@ -527,6 +529,11 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   border-radius:5px; padding:1px 6px; white-space:nowrap;
 }
 .gear-bis-badge.must-have{ color: var(--cyan); border-color: rgba(34,211,238,.4); background: rgba(34,211,238,.12); }
+.gear-bis-badge.alt-rank{ color: var(--gold); border-color: var(--gold-dim); background: rgba(242,181,61,.12); }
+.bis-rank-tag{
+  font-size:9.5px; font-weight:800; color: var(--gold); border:1px solid var(--gold-dim); background: rgba(242,181,61,.12);
+  border-radius:5px; padding:1px 6px; white-space:nowrap; flex-shrink:0; text-transform:uppercase; letter-spacing:.02em;
+}
 .bis-priority-toggle{
   font-size:9px; font-weight:800; border-radius:5px; padding:1px 6px; white-space:nowrap; cursor:pointer;
   flex-shrink:0; transition: opacity .15s;
@@ -2167,6 +2174,10 @@ const I18N = {
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     bisSummaryTitle: "BIS por Local", editBisLabel: "Editar Lista", searchBisPlaceholder: "Buscar por nome ou slot (ex: trinket)...",
     bisAlreadyEquippedTooltip: "Já equipado neste personagem",
+    bisRankTag: (rank) => rank <= 1 ? "BIS" : `${rank}${rank === 2 ? "ND" : rank === 3 ? "RD" : "TH"} BIS`,
+    bisRankTagTooltip: "Uma entre várias opções reais com uso muito próximo entre os top players (dados do Murlok.io) — não é a única escolha certa.",
+    bisRemainingCountTooltip: (remaining, total) => `${remaining} de ${total} itens ainda faltando coletar`,
+    bisAllCollectedTooltip: "Todos os itens dessa lista já estão equipados",
     defaultBisListName: "BIS", newBisListLabel: "Nova lista", deleteBisListConfirm: "Remover essa lista e todos os itens dela?",
     activeBisListLabel: "Lista ativa",
     switchBisListConfirmTitle: "Trocar de lista BIS?",
@@ -2397,6 +2408,10 @@ const I18N = {
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     bisSummaryTitle: "BIS by Location", editBisLabel: "Edit List", searchBisPlaceholder: "Search by name or slot (e.g. trinket)...",
     bisAlreadyEquippedTooltip: "Already equipped on this character",
+    bisRankTag: (rank) => rank <= 1 ? "BIS" : `${rank}${rank === 2 ? "ND" : rank === 3 ? "RD" : "TH"} BIS`,
+    bisRankTagTooltip: "One of several real options with very close usage among top players (Murlok.io data) — not the single correct pick.",
+    bisRemainingCountTooltip: (remaining, total) => `${remaining} of ${total} items still left to collect`,
+    bisAllCollectedTooltip: "Every item on this card is already equipped",
     defaultBisListName: "BIS", newBisListLabel: "New list", deleteBisListConfirm: "Remove this list and all its items?",
     activeBisListLabel: "Active list",
     switchBisListConfirmTitle: "Switch BIS list?",
@@ -4391,9 +4406,15 @@ function renderCharacterPage(){
       (!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
     );
     const isMustHave = bisMatch && bisMatch.priority === 'secondary';
+    // A match against a "2nd BIS"/"3rd BIS" alternate (see the Murlok import's close-usage
+    // ranking) is still worth flagging on the Gear tab, but as that specific rank rather than
+    // a flat "✓ BIS" - so equipping the real #2 pick doesn't read identically to the #1 pick.
+    const isAltRank = bisMatch && bisMatch.altRank > 1;
+    const badgeText = isAltRank ? t('bisRankTag', bisMatch.altRank) : (isMustHave ? t('mustHaveTag') : '✓ ' + t('bisTag'));
+    const badgeTooltip = isAltRank ? t('bisRankTagTooltip') : (isMustHave ? t('mustHaveMatchTooltip') : t('bisMatchTooltip'));
     const bisInfo = bisMatch ? `
       <div class="gear-bis-info">
-        <span class="gear-bis-badge ${isMustHave ? 'must-have' : ''}" title="${isMustHave ? t('mustHaveMatchTooltip') : t('bisMatchTooltip')}">${isMustHave ? t('mustHaveTag') : '✓ ' + t('bisTag')}</span>
+        <span class="gear-bis-badge ${isMustHave ? 'must-have' : ''} ${isAltRank ? 'alt-rank' : ''}" title="${badgeTooltip}">${badgeText}</span>
       </div>` : '';
     return `
     <div class="gear-row">
@@ -4516,21 +4537,29 @@ function renderCharacterPage(){
   const bisDungeonChip = ([loc, items]) => {
     const dungeonMatch = bestByDungeon.get(loc);
     const iconUrl = dungeonMatch ? (dungeonMatch.icon_url || dungeonMatch.background_image_url) : (items[0].icon || '');
+    // The header badge counts what's still left to collect, not the card's full BIS list -
+    // an item already equipped shouldn't keep inflating "how many do I still need here".
+    const remaining = items.filter(b => !findEquippedMatchForBis(c, b)).length;
     const itemRow = b => {
       // Cross-reference against the character's actual equipped gear (same match logic used
       // on the Gear tab's BIS badges: exact item id first, name fallback for entries with no
       // whId) so an item already worn shows as collected here instead of sitting forever in
       // the "still need to get this" list.
       const isEquipped = !!findEquippedMatchForBis(c, b);
+      const boss = findItemBoss(b.whId);
       const linkTag = b.whId ? 'a' : 'span';
       const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer"` : '';
-      const searchKey = `${b.name} ${b.slot||''}`.toLowerCase();
+      const searchKey = `${b.name} ${b.slot||''} ${boss||''}`.toLowerCase();
       return `
       <div class="bis-dchip-item ${isEquipped ? 'equipped-collected' : ''}" data-search="${escapeHtml(searchKey)}">
         ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
-        <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
+        <span class="bis-dchip-item-info">
+          <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
+          ${boss ? `<span class="bis-dchip-item-boss">${escapeHtml(boss)}</span>` : ''}
+        </span>
         ${isEquipped ? `<span class="bis-dchip-check" title="${escapeHtml(t('bisAlreadyEquippedTooltip'))}">✓</span>` : ''}
         ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
+        ${b.altRank ? `<span class="bis-rank-tag" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', b.altRank)}</span>` : ''}
         <span class="bis-dchip-item-slot">${escapeHtml((b.slot||'').split(' (')[0])}</span>
       </div>`;
     };
@@ -4539,7 +4568,7 @@ function renderCharacterPage(){
       <div class="bis-dchip-header">
         ${iconUrl ? `<img class="bis-dchip-icon" src="${iconUrl}" alt="">` : `<div class="bis-dchip-icon bis-dchip-icon-empty"></div>`}
         <span class="bis-dchip-loc">${escapeHtml(loc)}</span>
-        <span class="bis-dchip-count">${items.length}</span>
+        <span class="bis-dchip-count ${remaining === 0 ? 'all-collected' : ''}" title="${escapeHtml(remaining === 0 ? t('bisAllCollectedTooltip') : t('bisRemainingCountTooltip', remaining, items.length))}">${remaining === 0 ? '✓' : remaining}</span>
       </div>
       <div class="bis-dchip-items">${items.map(itemRow).join('')}</div>
     </div>`;
@@ -4723,7 +4752,7 @@ function renderCharacterPage(){
             </div>
           </div>
 
-          <div class="dash-card">
+          <div class="dash-card dash-card-wide">
             <div class="dash-card-head-inline">
               <h3>${t('bisSummaryTitle')}</h3>
               <button class="dash-viewall-link" id="dashBisEditBtn">${t('editBisLabel')}</button>
@@ -6332,6 +6361,15 @@ function findMurlokItemLocation(whId){
   const found = ITEM_LOOT_TABLE.find(row => String(row[3]) === String(whId));
   return found ? found[2] : null;
 }
+/* ITEM_LOOT_TABLE's 6th field is the real boss that drops the item - populated for every
+   raid item, always null for dungeon items (Mythic+ loot isn't boss-specific the way raid
+   BIS planning usually needs, so there was never a reason to track it there). Looked up at
+   render time instead of stored per BIS entry, so it works for every item already saved
+   before this existed too, not just newly-added ones. */
+function findItemBoss(whId){
+  const found = ITEM_LOOT_TABLE.find(row => String(row[3]) === String(whId));
+  return found ? (found[5] || null) : null;
+}
 /* Items Murlok returns that aren't in our own curated ITEM_LOOT_TABLE (crafted gear,
    Catalyst/tier-set pieces, world-boss drops, or leftover previous-season items Murlok's
    sample hasn't fully rotated out yet) used to just show as "no location set". Wowhead's
@@ -6352,62 +6390,33 @@ async function fetchWowheadTooltip(whId){
   wowheadTooltipCache.set(whId, promise);
   return promise;
 }
-/* For a Tier Set item, we already have its real tooltip in hand - parse its secondary
-   stats straight out of it (same "<!--rtgNN-->" markup Wowhead uses, confirmed against a
-   real tier piece's tooltip) and look for a real ITEM_LOOT_TABLE item of the same slot
-   whose own (already-catalogued) secondary stats overlap, so the suggestion is grounded in
-   actual stat data on both sides rather than a guess. */
-function extractSecondaryStatsFromTooltip(tooltip){
-  const names = [];
-  const re = /class="q2">\+<!--rtg\d+-->[\d,]+ ([A-Za-z ]+)<\/span>/g;
-  let m;
-  while((m = re.exec(tooltip))){
-    const name = m[1].trim();
-    if(BIS_SECONDARY_STATS.includes(name)) names.push(name);
-  }
-  return names;
-}
-function findSimilarArmorItem(bisSlot, wantedStats){
-  if(!bisSlot || !wantedStats.length) return null;
-  let best = null, bestScore = -1, bestIlvl = -1;
-  // Dungeon drops are listed before raid drops in ITEM_LOOT_TABLE, so picking the first
-  // item to reach the best score would always favor dungeons on a tie even when a raid
-  // item matches just as well (or better-itemized) - break ties by real item level instead,
-  // so a genuinely better-itemized raid piece can still win.
-  ITEM_LOOT_TABLE.forEach(([name, slot, loc, whId, icon]) => {
-    if((slot||'').split(' (')[0] !== bisSlot) return;
-    const entry = ITEM_STATS[whId];
-    if(!entry) return;
-    const itemStatNames = entry.s.map(([n]) => n).filter(n => BIS_SECONDARY_STATS.includes(n));
-    const score = itemStatNames.filter(n => wantedStats.includes(n)).length;
-    if(score === 0) return;
-    if(score > bestScore || (score === bestScore && entry.i > bestIlvl)){
-      bestScore = score; bestIlvl = entry.i; best = { name, whId, icon, loc };
-    }
-  });
-  return bestScore > 0 ? best : null;
-}
-async function classifyUnknownMurlokItem(whId, bisSlot){
+async function classifyUnknownMurlokItem(whId){
   const data = await fetchWowheadTooltip(whId);
-  if(!data || !data.tooltip) return { label: t('murlokSourceUnknown'), category: 'unknown', suggestion: null };
+  if(!data || !data.tooltip) return { label: t('murlokSourceUnknown'), category: 'unknown' };
   const tooltip = data.tooltip;
   const ilvlM = /Item Level <!--ilvl-->(\d+)/.exec(tooltip);
   const ilvl = ilvlM ? Number(ilvlM[1]) : null;
   const hasItemSet = /\/item-set=/.test(tooltip);
   const droppedByM = /Dropped by:\s*([^<]+)</.exec(tooltip);
   const droppedBy = droppedByM ? droppedByM[1].trim() : null;
-  if(hasItemSet){
-    const wantedStats = extractSecondaryStatsFromTooltip(tooltip);
-    const suggestion = findSimilarArmorItem(bisSlot, wantedStats);
-    return { label: t('murlokTierSetLabel'), category: 'tierset', suggestion };
-  }
+  // A Tier Set piece has no real farm location (it's crafted via the Catalyst, not dropped
+  // by a boss) - but the item itself, exactly as Murlok reported it, is still the real thing
+  // top players are actually wearing, stat roll included. This used to try to find a
+  // "similarly itemized" dropped item as a stand-in, matching secondary stats parsed out of
+  // the tier piece's own Wowhead tooltip - but that tooltip only shows ONE example bonus-id
+  // roll, not necessarily the one real players actually pick, so the substitute could end up
+  // with the wrong stats entirely (confirmed in practice: it suggested a crit/mastery leg
+  // piece when the real popular pick - matching what the player already had equipped - was
+  // crit/versatility). Showing the real item Murlok found, just labeled honestly as a
+  // Catalyst piece instead of swapped for a guess, fixes that at the root.
+  if(hasItemSet) return { label: t('murlokTierSetLabel'), category: 'tierset' };
   // "Dropped by" is only ever present when a real boss/mob actually drops the item - no boss
   // means no real drop source exists at all, i.e. it's crafted, regardless of its item level.
   // Checking this before the ilvl-based old-season guess matters: a crafted item can have a
   // low ilvl too, and used to get mislabeled "Season Anterior" just because of that.
-  if(!droppedBy) return { label: t('murlokCraftLabel'), category: 'craft', suggestion: null };
-  if(ilvl !== null && ilvl < MURLOK_SEASON_MIN_ILVL) return { label: t('murlokOldSeasonLabel'), category: 'oldseason', suggestion: null };
-  return { label: droppedBy, category: 'other', suggestion: null };
+  if(!droppedBy) return { label: t('murlokCraftLabel'), category: 'craft' };
+  if(ilvl !== null && ilvl < MURLOK_SEASON_MIN_ILVL) return { label: t('murlokOldSeasonLabel'), category: 'oldseason' };
+  return { label: droppedBy, category: 'other' };
 }
 function getOrCreateMurlokBisList(c){
   let list = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
@@ -6620,6 +6629,36 @@ function renderMurlokHeroPills(clsSlug, specSlug){
     btn.addEventListener('click', () => loadMurlokBuild(clsSlug, specSlug, btn.dataset.slug));
   });
 }
+/* Picking only the single #1-used item per slot (or top 2 for Rings/Trinkets, since 2 are
+   worn at once) hid real near-ties from the player - reported directly: crit/mastery legs
+   got suggested when the real most-worn pick was crit/versatility, because the two were
+   close enough that which one Murlok's raw order put first barely meant anything. Once a
+   slot's "extra" equip count is filled, any further item still within 75% of the last
+   guaranteed pick's usage is a real enough alternative to show too (capped at 2 extra, so a
+   slot with many barely-used stragglers doesn't turn into a wall of near-noise options).
+   Every item in the array keeps its own altRank (1 = BIS, 2 = 2nd BIS, ...) ONLY when there
+   really is more than one option for that slot - a normal single-pick slot stays unranked,
+   unchanged from before. */
+const MURLOK_CLOSE_ALT_THRESHOLD = 0.75;
+const MURLOK_MAX_ALTS_PER_SLOT = 2;
+function murlokRankedPicks(raw, equipCount){
+  if(!raw || !raw.length) return [];
+  const guaranteed = raw.slice(0, equipCount);
+  const lastCount = guaranteed[guaranteed.length - 1].count;
+  const extra = (typeof lastCount === 'number' && lastCount > 0)
+    ? raw.slice(equipCount).filter(it => typeof it.count === 'number' && it.count >= lastCount * MURLOK_CLOSE_ALT_THRESHOLD).slice(0, MURLOK_MAX_ALTS_PER_SLOT)
+    : [];
+  const hasAlts = extra.length > 0;
+  return [
+    ...guaranteed.map(item => ({ item, altRank: hasAlts ? 1 : undefined })),
+    ...extra.map((item, i) => ({ item, altRank: i + 2 }))
+  ];
+}
+function murlokDedupByWhId(raw){
+  const seen = new Set(), out = [];
+  for(const it of raw){ if(seen.has(it.whId)) continue; seen.add(it.whId); out.push(it); }
+  return out;
+}
 function renderMurlokResult(){
   const wrap = document.getElementById('murlokResultWrap');
   const c = state.characters.find(x => x.id === state.bisActiveChar);
@@ -6638,22 +6677,17 @@ function renderMurlokResult(){
     if(!raw || !raw.length) return;
     const bisSlot = MURLOK_SLOT_TO_BIS[murlokSlot];
     const isMulti = murlokSlot === 'Rings' || murlokSlot === 'Trinkets';
-    let picks;
+    let ranked;
     if(murlokImportMode === 'build'){
-      if(isMulti){
-        const seen = new Set(); picks = [];
-        for(const it of raw){ if(seen.has(it.whId)) continue; seen.add(it.whId); picks.push(it); if(picks.length === 2) break; }
-      } else {
-        picks = [raw[0]];
-      }
+      ranked = murlokRankedPicks(murlokDedupByWhId(raw), isMulti ? 2 : 1);
     } else {
-      picks = raw;
+      ranked = raw.map(item => ({ item, altRank: undefined }));
     }
-    picks.forEach((item, i) => {
+    ranked.forEach(({ item, altRank }, i) => {
       const key = `${murlokSlot}-${i}-${item.whId}`;
       const already = activeItems.some(b => (item.whId && String(b.whId) === String(item.whId)) || b.name.toLowerCase() === item.name.toLowerCase());
       const loc = findMurlokItemLocation(item.whId);
-      rows.push({ bisSlot, key, item, already, loc });
+      rows.push({ bisSlot, key, item, already, loc, altRank });
     });
   });
   rows.forEach(r => { if(!r.already) murlokSelected.add(r.key); });
@@ -6678,6 +6712,7 @@ function renderMurlokResult(){
             ? `<span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>`
             : `<span class="bis-browse-item-loc murlok-loc-loading" data-key="${escapeHtml(r.key)}">…</span>`}
           ${(r.item.count !== null && r.item.count !== undefined) ? `<span class="murlok-item-count">${t('murlokPlayersLabel', r.item.count)}</span>` : ''}
+          ${r.altRank ? `<span class="bis-rank-tag" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', r.altRank)}</span>` : ''}
           ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
         </div>`).join('')}
     </div>`).join('');
@@ -6693,26 +6728,19 @@ function renderMurlokResult(){
   // Real location is known instantly for items in our own table; anything else gets
   // classified from Wowhead's real tooltip data in the background, patched in once resolved.
   rows.filter(r => !r.loc).forEach(r => {
-    classifyUnknownMurlokItem(r.item.whId, r.bisSlot).then(({ label, category, suggestion }) => {
-      // A Tier Set piece itself has no real farm location - if we found a real, similarly
-      // itemized alternative, show only that (tagged as a Catalyst target) instead of the
-      // tier piece, rather than offering both as separate picks.
-      if(category === 'tierset' && suggestion){
-        const idx = murlokLastRows.findIndex(x => x.key === r.key);
-        if(idx !== -1) murlokLastRows.splice(idx, 1);
-        murlokSelected.delete(r.key);
-        const already = activeItems.some(b => String(b.whId) === String(suggestion.whId));
-        const catRow = {
-          bisSlot: r.bisSlot, key: `${r.key}-cat`, already, loc: suggestion.loc, isCatalyst: true,
-          item: { whId: suggestion.whId, name: suggestion.name, icon: suggestion.icon, count: null }
-        };
-        if(!already) murlokSelected.add(catRow.key);
-        murlokLastRows.push(catRow);
+    classifyUnknownMurlokItem(r.item.whId).then(({ label, category }) => {
+      // A Tier Set piece has no real farm location (crafted via the Catalyst, not dropped) -
+      // but it's still the real item Murlok's sampled top players are actually wearing, stat
+      // roll included, so keep it as-is and just relabel it as a Catalyst piece instead of
+      // swapping in a different, guessed-at "similarly itemized" item (see the comment on
+      // classifyUnknownMurlokItem for why that guess could end up with the wrong stats).
+      if(category === 'tierset'){
+        r.loc = label;
+        r.isCatalyst = true;
         const anchorRow = wrap.querySelector(`.murlok-item-row[data-row-key="${CSS.escape(r.key)}"]`);
         if(anchorRow){
-          anchorRow.insertAdjacentHTML('beforebegin', murlokCatalystRowHtml(catRow));
-          anchorRow.remove();
-          const newEl = wrap.querySelector(`.murlok-item-row[data-row-key="${CSS.escape(catRow.key)}"]`);
+          anchorRow.outerHTML = murlokCatalystRowHtml(r);
+          const newEl = wrap.querySelector(`.murlok-item-row[data-row-key="${CSS.escape(r.key)}"]`);
           if(newEl){
             const link = newEl.querySelector('.bis-wh-link');
             if(link) link.addEventListener('click', e => e.preventDefault());
@@ -6722,7 +6750,6 @@ function renderMurlokResult(){
             });
           }
         }
-        document.getElementById('murlokAddSelectedBtn').style.display = murlokLastRows.some(x => !x.already) ? '' : 'none';
         return;
       }
       r.locLabel = label;
@@ -6747,6 +6774,7 @@ function murlokCatalystRowHtml(r){
       </span>
       <span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>
       <span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>
+      ${r.altRank ? `<span class="bis-rank-tag" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', r.altRank)}</span>` : ''}
       ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
     </div>`;
 }
@@ -6793,7 +6821,7 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
     murlokList.items.push({
       id: uid(), name: r.item.name, slot: r.bisSlot, source: r.loc || r.locLabel || '—',
       whId: r.item.whId || null, icon: r.item.icon || null, boss: null,
-      catalyst: !!r.isCatalyst
+      catalyst: !!r.isCatalyst, altRank: r.altRank || undefined
     });
   });
   if(murlokImportMode === 'build'){
@@ -6835,17 +6863,16 @@ async function checkMurlokDrift(c){
     if(!raw || !raw.length) return;
     const bisSlot = MURLOK_SLOT_TO_BIS[murlokSlot];
     const isMulti = murlokSlot === 'Rings' || murlokSlot === 'Trinkets';
-    const seen = new Set(); const livePicks = [];
-    for(const it of raw){
-      if(seen.has(it.whId)) continue;
-      seen.add(it.whId); livePicks.push(it);
-      if(livePicks.length === (isMulti ? 2 : 1)) break;
-    }
+    // Same ranked-picks rule used on import (see murlokRankedPicks), so drift detection
+    // compares against the same real set that was actually saved - otherwise an alternate
+    // that was legitimately imported as "2nd BIS" would look like unexplained drift here.
+    const liveRanked = murlokRankedPicks(murlokDedupByWhId(raw), isMulti ? 2 : 1);
+    const livePicks = liveRanked.map(r => r.item);
     const storedItems = murlokList.items.filter(b => b.slot === bisSlot && b.whId);
     if(!storedItems.length) return;
     const storedIds = new Set(storedItems.map(b => String(b.whId)));
     const liveIds = new Set(livePicks.map(it => String(it.whId)));
-    const added = livePicks.filter(it => !storedIds.has(String(it.whId)));
+    const added = liveRanked.filter(r => !storedIds.has(String(r.item.whId))).map(r => ({ ...r.item, altRank: r.altRank }));
     const removed = storedItems.filter(b => !liveIds.has(String(b.whId)));
     if(added.length || removed.length) changes.push({ bisSlot, added, removed });
   });
@@ -6907,22 +6934,16 @@ async function applyMurlokDrift(c){
       if(loc){
         murlokList.items.push({
           id: uid(), name: item.name, slot: ch.bisSlot, source: loc,
-          whId: item.whId || null, icon: item.icon || null, boss: null
+          whId: item.whId || null, icon: item.icon || null, boss: null, altRank: item.altRank || undefined
         });
         continue;
       }
-      const result = await classifyUnknownMurlokItem(item.whId, ch.bisSlot);
-      if(result.category === 'tierset' && result.suggestion){
-        murlokList.items.push({
-          id: uid(), name: result.suggestion.name, slot: ch.bisSlot, source: result.suggestion.loc || '—',
-          whId: result.suggestion.whId || null, icon: result.suggestion.icon || null, boss: null, catalyst: true
-        });
-      } else {
-        murlokList.items.push({
-          id: uid(), name: item.name, slot: ch.bisSlot, source: result.label || '—',
-          whId: item.whId || null, icon: item.icon || null, boss: null
-        });
-      }
+      const result = await classifyUnknownMurlokItem(item.whId);
+      murlokList.items.push({
+        id: uid(), name: item.name, slot: ch.bisSlot, source: result.label || '—',
+        whId: item.whId || null, icon: item.icon || null, boss: null,
+        catalyst: result.category === 'tierset', altRank: item.altRank || undefined
+      });
     }
   }
   c.murlokPendingChanges = [];
@@ -7078,10 +7099,10 @@ function getOrCreateKeystoneLootBisList(c){
   return list;
 }
 /* Same real-Wowhead-tooltip classification pipeline built for Murlok import: an item not in
-   our own curated table gets its real slot parsed from the tooltip's item-type row, and if it
-   turns out to be a Tier Set piece with a real similarly-itemized match, we import that real,
-   farmable match (tagged Catalyst) instead of the unfarmable tier piece itself - same rule as
-   the Murlok flow, so a KeystoneLoot import behaves the same way. */
+   our own curated table gets its real slot parsed from the tooltip's item-type row, and if
+   it's a Tier Set piece it's imported as itself (tagged Catalyst) rather than swapped for a
+   guessed-at stand-in - same rule as the Murlok flow, so a KeystoneLoot import behaves the
+   same way. */
 async function resolveKeystoneLootItem(itemId){
   const found = ITEM_LOOT_TABLE.find(row => String(row[3]) === String(itemId));
   if(found) return { name: found[0], slot: found[1], source: found[2], icon: found[4], catalyst: false, whId: itemId };
@@ -7090,14 +7111,11 @@ async function resolveKeystoneLootItem(itemId){
   const slotM = /<table width="100%"><tr><td>([^<]+)<\/td>/.exec(data.tooltip);
   const rawSlot = slotM ? slotM[1].trim() : '';
   const slot = WOWHEAD_SLOT_TO_BIS[rawSlot] || rawSlot;
-  const classified = await classifyUnknownMurlokItem(itemId, slot);
-  if(classified.category === 'tierset' && classified.suggestion){
-    return {
-      name: classified.suggestion.name, slot, source: classified.suggestion.loc || '—',
-      icon: classified.suggestion.icon || null, catalyst: true, whId: classified.suggestion.whId
-    };
-  }
-  return { name: data.name, slot, source: classified.label || '—', icon: zamIconUrl(data.icon, 'medium'), catalyst: false, whId: itemId };
+  const classified = await classifyUnknownMurlokItem(itemId);
+  return {
+    name: data.name, slot, source: classified.label || '—', icon: zamIconUrl(data.icon, 'medium'),
+    catalyst: classified.category === 'tierset', whId: itemId
+  };
 }
 async function importKeystoneLootString(c, str){
   let data;
