@@ -453,8 +453,9 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 }
 .vault-mini-bars{ display:flex; gap:4px; flex:1; }
 .vault-mini-bar{
-  flex:1; height:8px; border-radius:4px; border:1px solid var(--hairline); background:var(--bg-panel-raised);
-  cursor:default;
+  flex:1; height:15px; border-radius:4px; border:1px solid var(--hairline); background:var(--bg-panel-raised);
+  cursor:default; display:flex; align-items:center; justify-content:center;
+  font-size:8.5px; font-weight:800; color:#0f2a17; line-height:1;
 }
 .vault-mini-bar.done{ border-color: var(--ok); background: var(--ok); }
 .char-power-row{ display:flex; gap:20px; }
@@ -3902,6 +3903,7 @@ function normalizeChar(c){
   if(typeof c.worldboss !== 'object' || c.worldboss === null){
     c.worldboss = Object.fromEntries(WORLDBOSS_TIERS.map(t=>[t,false]));
   }
+  if(typeof c.dungeonLevels !== 'object' || c.dungeonLevels === null) c.dungeonLevels = {};
   if(c.gearItems === undefined) c.gearItems = null;
   if(!Array.isArray(c.mplusBestRuns)) c.mplusBestRuns = [];
   if(!Array.isArray(c.mplusRecentRuns)) c.mplusRecentRuns = [];
@@ -3941,6 +3943,7 @@ function makeCharObj(id, name, cls, realm, realmName, region){
     realm: realm || null, realmName: realmName || null, region: region || null,
     race: null, faction: null, spec: null, lastWeeklyReset: null,
     dungeons: Object.fromEntries(DUNGEON_POOL.map(d=>[d,false])),
+    dungeonLevels: {},
     events: [],
     raidBosses: Object.fromEntries(RAID_POOL.map(b=>[b, makeRaidBossEntry()])),
     worldboss: Object.fromEntries(WORLDBOSS_TIERS.map(t=>[t,false])),
@@ -4034,6 +4037,30 @@ function renderCharacterPage(){
   const mplusSlots = [2,4,8].filter(n => dCount >= n).length;
   const worldSlots = [1,2,4].filter(n => wbCount >= n).length;
 
+  /* Real best-this-week difficulty/level per vault category, shown inside completed bars -
+     a slot's reward item level depends on the difficulty/key level cleared, not just the
+     count, so a higher difficulty this week should visibly override a lower one everywhere.
+     World Boss is the only "World" row source we actually track (no Delve/Prey data synced
+     yet), so that row's label only ever reflects a real World Boss kill. */
+  const RAID_DIFF_RANK_HL = ['Mythic','Heroic','Normal','LFR'];
+  const raidBestDiff = RAID_DIFF_RANK_HL.find(diff =>
+    RAID_POOL.some(boss => {
+      const v = c.raidBosses[boss] && c.raidBosses[boss][diff];
+      return typeof v === 'number' && v >= weeklyResetBoundary;
+    })
+  ) || null;
+  const mplusBestLevel = Object.keys(c.dungeons).reduce((max, name) => {
+    if(!c.dungeons[name]) return max;
+    const lvl = c.dungeonLevels[name];
+    return (typeof lvl === 'number' && lvl > max) ? lvl : max;
+  }, 0) || null;
+  const wbBestTier = [...WORLDBOSS_TIERS].reverse().find(tr => c.worldboss[tr]) || null;
+  const RAID_DIFF_SHORT = { Mythic:'M', Heroic:'H', Normal:'N', LFR:'L' };
+  const WORLDBOSS_TIER_SHORT = { Mythic:'M', Heroic:'H', Normal:'N', World:'W' };
+  const raidBestLabel = raidBestDiff ? RAID_DIFF_SHORT[raidBestDiff] : '';
+  const mplusBestLabel = mplusBestLevel ? `+${mplusBestLevel}` : '';
+  const wbBestLabel = wbBestTier ? WORLDBOSS_TIER_SHORT[wbBestTier] : '';
+
   const RUN_ICON_PALETTE = ['var(--cyan)', 'var(--purple)', 'var(--blue)', 'var(--danger)', '#8792ad'];
   const runRow = (run, prefix, idx) => {
     const chests = '+'.repeat(run.num_keystone_upgrades || 0);
@@ -4125,13 +4152,13 @@ function renderCharacterPage(){
      a small bar per vault threshold on the right that fills in as it's met -
      compact enough to fit under Raid Progression while still reading at a
      glance which slots are unlocked. */
-  const vaultMiniLine = (iconId, label, thresholds, count, descFn) => `
+  const vaultMiniLine = (iconId, label, thresholds, count, descFn, bestLabel) => `
     <div class="vault-mini-line">
       <img class="vault-mini-icon" src="${zamIconUrl(iconId,'medium')}" alt="">
       <span class="vault-mini-label">${label}</span>
       <div class="vault-mini-bars">
         ${thresholds.map(th => `
-          <span class="vault-mini-bar ${count>=th?'done':''}" title="${escapeHtml(descFn(th))}"></span>`).join('')}
+          <span class="vault-mini-bar ${count>=th?'done':''}" title="${escapeHtml(descFn(th))}">${(count>=th && bestLabel) ? escapeHtml(bestLabel) : ''}</span>`).join('')}
       </div>
     </div>`;
 
@@ -4327,9 +4354,9 @@ function renderCharacterPage(){
                   <h4 class="weekly-rewards-mini-title">${t('weeklyRewardsTitle')}</h4>
                   <button class="vault-history-btn" id="vaultHistoryBtn">${t('vaultHistoryBtnLabel')}</button>
                 </div>
-                ${vaultMiniLine('inv_misc_treasurechest03b', t('raidsLabel'), [2,4,6], raidCountThisWeek, n => t('raidMilestone', n))}
-                ${vaultMiniLine('inv_relics_hourglass', t('mythicPlusShortLabel'), [2,4,8], dCount, n => t('mplusMilestone', n))}
-                ${vaultMiniLine('inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n))}
+                ${vaultMiniLine('inv_misc_treasurechest03b', t('raidsLabel'), [2,4,6], raidCountThisWeek, n => t('raidMilestone', n), raidBestLabel)}
+                ${vaultMiniLine('inv_relics_hourglass', t('mythicPlusShortLabel'), [2,4,8], dCount, n => t('mplusMilestone', n), mplusBestLabel)}
+                ${vaultMiniLine('inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n), wbBestLabel)}
               </div>
             </div>
           </div>
@@ -4617,7 +4644,10 @@ function applyRaiderIoData(c, data){
   if(Array.isArray(data.mythic_plus_weekly_highest_level_runs)){
     data.mythic_plus_weekly_highest_level_runs.forEach(run => {
       const poolName = DUNGEON_NAME_ALIASES[run.dungeon] || run.dungeon;
-      if(Object.prototype.hasOwnProperty.call(c.dungeons, poolName)) c.dungeons[poolName] = true;
+      if(Object.prototype.hasOwnProperty.call(c.dungeons, poolName)){
+        c.dungeons[poolName] = true;
+        c.dungeonLevels[poolName] = run.mythic_level;
+      }
     });
   }
   c.gearItems = (data.gear && data.gear.items) || null;
@@ -4858,6 +4888,7 @@ document.getElementById('confirmAddChar').addEventListener('click', async () => 
 
 function clearWeeklyProgress(c){
   DUNGEON_POOL.forEach(d => c.dungeons[d] = false);
+  c.dungeonLevels = {};
   // Raid boss kills are intentionally NOT cleared here: c.raidBosses now stores real
   // kill timestamps, so "killed this week" (for the Vault) is derived by comparing
   // those timestamps against the current reset boundary at render time, while the
