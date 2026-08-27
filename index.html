@@ -1705,6 +1705,14 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
     <div class="upgrades-sub" data-i18n="kslModalSub">Compartilhe sua lista BIS com outro jogador da nossa plataforma, ou com o addon KeystoneLoot</div>
 
     <div class="ksl-section">
+      <div class="ksl-section-title ksl-section-title-big" data-i18n="kslImportTitle">IMPORT</div>
+      <div class="upgrades-sub" data-i18n="kslImportSubAuto">Cole abaixo o string (nosso ou do KeystoneLoot) - identificamos o formato automaticamente.</div>
+      <textarea id="kslImportInput" class="ksl-textarea" placeholder="KeystoneHUB:v1,... ou KeystoneLoot:v3,..."></textarea>
+      <button class="quiz-restart-btn" id="kslImportBtn" data-i18n="kslImportBtn">Importar</button>
+      <div class="ksl-status-note" id="kslImportStatus"></div>
+    </div>
+
+    <div class="ksl-section">
       <div class="ksl-section-title ksl-section-title-big" data-i18n="kslExportTitle">EXPORT</div>
       <div class="ksl-picker-label" data-i18n="kslExportListLabel">Qual lista exportar</div>
       <select id="kslExportListSelect" class="ksl-list-select"></select>
@@ -1719,14 +1727,6 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <textarea id="kslExportOutput" class="ksl-textarea" readonly style="display:none;"></textarea>
       <button class="ksl-copy-btn" id="kslCopyBtn" style="display:none;" data-i18n="kslCopyBtn">Copiar</button>
       <div class="ksl-status-note" id="kslExportStatus"></div>
-    </div>
-
-    <div class="ksl-section">
-      <div class="ksl-section-title ksl-section-title-big" data-i18n="kslImportTitle">IMPORT</div>
-      <div class="upgrades-sub" data-i18n="kslImportSubAuto">Cole abaixo o string (nosso ou do KeystoneLoot) - identificamos o formato automaticamente.</div>
-      <textarea id="kslImportInput" class="ksl-textarea" placeholder="KeystoneHUB:v1,... ou KeystoneLoot:v3,..."></textarea>
-      <button class="quiz-restart-btn" id="kslImportBtn" data-i18n="kslImportBtn">Importar</button>
-      <div class="ksl-status-note" id="kslImportStatus"></div>
     </div>
   </div>
 </div>
