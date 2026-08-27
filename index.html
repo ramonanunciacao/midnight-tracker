@@ -418,9 +418,30 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .news-date{ color: var(--text-dim); font-size:10px; flex-shrink:0; }
 .world-top-list{ display:flex; flex-direction:column; gap:8px; }
 .wtr-row{
-  display:flex; align-items:center; flex-wrap:nowrap; gap:8px; padding:6px 0; border-bottom:1px solid var(--hairline);
-  text-decoration:none; color:inherit; border-radius:6px; transition: background .15s;
+  position:relative; display:flex; align-items:center; flex-wrap:nowrap; gap:8px; padding:6px 0;
+  border-bottom:1px solid var(--hairline); text-decoration:none; color:inherit; border-radius:6px;
+  transition: background .15s;
 }
+.wtr-tooltip{
+  position:absolute; left:0; top:100%; margin-top:6px; z-index:20; min-width:260px; max-width:320px;
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:10px; padding:12px 14px;
+  opacity:0; visibility:hidden; pointer-events:none; transform:translateY(-4px); text-align:left;
+  transition: opacity .15s, transform .15s; box-shadow:0 10px 24px rgba(0,0,0,.55);
+}
+.wtr-row:hover .wtr-tooltip{ opacity:1; visibility:visible; transform:translateY(0); }
+.wtr-tooltip-head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:8px;
+  padding-bottom:8px; border-bottom:1px solid var(--hairline);
+}
+.wtr-tooltip-dungeon{ font-size:12.5px; font-weight:700; color: var(--text); }
+.wtr-tooltip-level{ color: var(--gold); font-weight:800; }
+.wtr-tooltip-time{ font-size:11px; color: var(--text-dim); white-space:nowrap; }
+.wtr-tooltip-roster{ display:flex; flex-direction:column; gap:5px; }
+.wtr-tooltip-row{ display:flex; align-items:center; gap:7px; font-size:11.5px; }
+.wtr-tooltip-role{ text-align:center; font-size:11px; flex-shrink:0; width:14px; }
+.wtr-tooltip-class-icon{ width:18px; height:18px; border-radius:4px; border:1px solid var(--hairline); flex-shrink:0; }
+.wtr-tooltip-name{ font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex-shrink:1; }
+.wtr-tooltip-spec{ color: var(--text-dim); font-size:10.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .wtr-row:hover{ background: var(--bg-panel-raised); }
 .wtr-row:last-child{ border-bottom:none; padding-bottom:0; }
 .wtr-dungeon-icon{ width:26px; height:26px; border-radius:6px; border:1px solid var(--hairline); flex-shrink:0; }
@@ -4165,14 +4186,24 @@ function renderCharacterPage(){
   /* World Top Runs: the real #1 world run per current-season dungeon, from Raider.IO's own
      public leaderboard - dungeon + level on one line, a row of class icons (one per roster
      member, pre-sorted tank/healer/dps by the Worker) underneath. The whole row links to
-     that run's real Raider.IO page and carries a full tooltip (dungeon/level/clear time +
-     every roster member); hovering a specific class icon shows just that member instead. */
+     that run's real Raider.IO page; hovering it reveals a custom-styled tooltip (dungeon,
+     level, real clear time, full roster with real class colors) instead of a plain native
+     title tooltip - same visual language as the run-detail composition rows elsewhere. */
   const worldTopRunRow = run => {
     const clearStr = run.clearTimeMs ? formatClearTime(run.clearTimeMs) : '';
-    const rosterLines = run.roster.map(m => `${m.role}: ${m.name} - ${m.spec || ''} ${m.class || ''}`).join('\n');
-    const runTip = `${run.dungeon} +${run.level}${clearStr ? ` — ${clearStr}` : ''}\n${rosterLines}`;
+    const tooltipRoster = run.roster.map(m => {
+      const clsColor = CLASS_HEX[m.class] || '#fff';
+      const iconUrl = classIconUrl(m.class);
+      return `
+      <div class="wtr-tooltip-row">
+        <span class="wtr-tooltip-role">${ROLE_ICON[m.role] || ''}</span>
+        ${iconUrl ? `<img class="wtr-tooltip-class-icon" src="${iconUrl}" alt="">` : ''}
+        <span class="wtr-tooltip-name" style="color:${clsColor}">${escapeHtml(m.name)}</span>
+        <span class="wtr-tooltip-spec">${escapeHtml(m.spec || '')} ${escapeHtml(m.class || '')}</span>
+      </div>`;
+    }).join('');
     return `
-    <a class="wtr-row" href="${run.url ? escapeHtml(run.url) : '#'}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(runTip)}">
+    <a class="wtr-row" href="${run.url ? escapeHtml(run.url) : '#'}" target="_blank" rel="noopener noreferrer">
       ${run.icon ? `<img class="wtr-dungeon-icon" src="${run.icon}" alt="">` : ''}
       <div class="wtr-info">
         <span class="wtr-dungeon-name">${escapeHtml(run.shortName || run.dungeon)}</span>
@@ -4181,11 +4212,17 @@ function renderCharacterPage(){
       <div class="wtr-roster">
         ${run.roster.map(m => {
           const iconUrl = classIconUrl(m.class);
-          const tip = `${m.name} — ${m.spec || ''} ${m.class || ''} (${m.role})`;
           return iconUrl
-            ? `<img class="wtr-member-icon" src="${iconUrl}" title="${escapeHtml(tip)}" alt="">`
-            : `<span class="wtr-member-icon wtr-member-fallback" title="${escapeHtml(tip)}">${ROLE_ICON[m.role] || '•'}</span>`;
+            ? `<img class="wtr-member-icon" src="${iconUrl}" alt="">`
+            : `<span class="wtr-member-icon wtr-member-fallback">${ROLE_ICON[m.role] || '•'}</span>`;
         }).join('')}
+      </div>
+      <div class="wtr-tooltip">
+        <div class="wtr-tooltip-head">
+          <span class="wtr-tooltip-dungeon">${escapeHtml(run.dungeon)} <span class="wtr-tooltip-level">+${run.level}</span></span>
+          ${clearStr ? `<span class="wtr-tooltip-time">⏱ ${escapeHtml(clearStr)}</span>` : ''}
+        </div>
+        <div class="wtr-tooltip-roster">${tooltipRoster}</div>
       </div>
     </a>`;
   };
