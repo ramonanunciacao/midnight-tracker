@@ -1415,8 +1415,8 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .login-box h1{ font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 26px; color: var(--text); margin-bottom: 6px; text-shadow: 0 0 24px rgba(163,53,238,.5), 0 0 48px rgba(163,53,238,.25); letter-spacing: .04em; text-transform:uppercase; }
 .brand-tagline{ font-size:11px; color:var(--text-dim); letter-spacing:.03em; margin-bottom:20px; }
 .login-logo{
-  width:96px; height:96px; object-fit:cover; object-position:50% 20%; border-radius:50%; display:block; margin:0 auto 18px;
-  border:2px solid rgba(163,53,238,.55); box-shadow: 0 0 24px -2px rgba(163,53,238,.7);
+  width:96px; height:96px; object-fit:contain; display:block; margin:0 auto 18px;
+  filter: drop-shadow(0 0 20px rgba(163,53,238,.55)) drop-shadow(0 0 10px rgba(242,181,61,.25));
 }
 .login-box{ box-shadow: 0 0 70px -20px rgba(163,53,238,.25); }
 .app-footer{ margin-top:40px; padding-top:20px; border-top:1px solid var(--hairline); text-align:center; font-size:11px; color:var(--text-dim); letter-spacing:.03em; }
@@ -1446,11 +1446,23 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 }
 .landing-login-btn:hover{ box-shadow:0 0 24px -4px rgba(163,53,238,.7); transform: translateY(-1px); }
 .landing-hero{
+  position:relative; overflow:hidden;
   display:flex; align-items:center; gap:40px; margin-bottom:64px; padding:36px 30px; border-radius:20px;
   border:1px solid var(--hairline);
-  background: radial-gradient(ellipse 70% 120% at 85% 20%, rgba(163,53,238,.28), transparent 65%),
-              radial-gradient(ellipse 50% 90% at 15% 90%, rgba(34,211,238,.14), transparent 70%),
-              linear-gradient(160deg, var(--bg-panel), var(--bg));
+  /* Real banner art underneath, with the same real-texture-banner recipe .cpage-topgrid
+     already uses in the app itself (diagonal dark-to-clear fade for text legibility, purple/
+     cyan accent glows on top) plus an extra soft radial vignette so the rectangular photo
+     melts into the panel color at its own edges instead of reading as a floating image block
+     dropped inside a rounded card. */
+  background:
+    radial-gradient(ellipse 70% 120% at 85% 20%, rgba(163,53,238,.32), transparent 65%),
+    radial-gradient(ellipse 50% 90% at 15% 90%, rgba(34,211,238,.16), transparent 70%),
+    radial-gradient(ellipse 95% 140% at 50% 50%, transparent 38%, var(--bg-panel) 100%),
+    linear-gradient(100deg, rgba(6,5,12,.92) 12%, rgba(10,7,18,.68) 48%, rgba(14,7,22,.4) 100%),
+    url('assets/hub-banner.jpg');
+  background-size: auto, auto, cover, cover, cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .landing-hero-text{ flex:1.2; min-width:280px; }
 .landing-hero-title{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:clamp(36px,6vw,64px); line-height:1.05; color:var(--text); text-transform:uppercase; letter-spacing:.02em; text-shadow: 0 0 30px rgba(163,53,238,.5), 0 0 60px rgba(163,53,238,.25); margin-top:4px; }
@@ -1461,9 +1473,19 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 }
 .landing-cta-btn:hover{ box-shadow:0 0 36px -4px rgba(163,53,238,.55), 0 0 20px -2px rgba(242,181,61,.5); transform: translateY(-2px); }
 .landing-hero-art{ flex:1; min-width:220px; max-width:340px; display:flex; justify-content:center; }
-.landing-hero-art img{ width:100%; max-width:300px; border-radius:50%; filter: drop-shadow(0 0 40px rgba(163,53,238,.4)); }
+.landing-hero-art img{
+  width:100%; max-width:300px;
+  filter: drop-shadow(0 0 40px rgba(163,53,238,.45)) drop-shadow(0 0 18px rgba(242,181,61,.25));
+}
 .landing-panels{
-  background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
+  position:relative; overflow:hidden;
+  /* Same purple/cyan accent glows as the hero banner, much fainter - carries the same mood
+     down the rest of the page instead of the hero being the only "designed" section. */
+  background:
+    radial-gradient(ellipse 60% 80% at 90% 0%, rgba(163,53,238,.1), transparent 60%),
+    radial-gradient(ellipse 50% 70% at 5% 100%, rgba(34,211,238,.06), transparent 65%),
+    linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel));
+  border:1px solid var(--hairline);
   border-radius:16px; padding:36px; margin-bottom:24px;
 }
 .landing-panel{ display:none; }
@@ -1585,7 +1607,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 <div id="landingScreen">
   <nav class="landing-nav">
     <div class="landing-brand">
-      <img class="brand-mark" src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight">
+      <img class="brand-mark" src="assets/hub-logo.png" alt="Keystone Hub">
       <span class="landing-wordmark" data-i18n="brandTitle">Keystone Hub</span>
     </div>
     <div class="landing-nav-links">
@@ -1608,7 +1630,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <button class="landing-cta-btn" id="landingHeroCta" data-i18n="landingHeroCtaLabel">Get Started →</button>
     </div>
     <div class="landing-hero-art">
-      <img src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight">
+      <img src="assets/hub-logo.png" alt="Keystone Hub">
     </div>
   </div>
 
@@ -1647,7 +1669,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 <div id="loginScreen" style="display:none;">
   <div class="login-box">
     <a href="#" id="loginBackLink" class="login-back-link" data-i18n="landingBackLink">← Back</a>
-    <img class="login-logo" src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight">
+    <img class="login-logo" src="assets/hub-logo.png" alt="Keystone Hub">
     <div class="eyebrow" data-i18n="brandEyebrow">Midnight · Season 2</div>
     <h1 data-i18n="brandTitle">Keystone Hub</h1>
     <div class="brand-tagline" data-i18n="brandTagline">Season Command Center • Powered by Rawmohn</div>
