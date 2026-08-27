@@ -238,7 +238,11 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .dash-row-strip{ display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; align-items:stretch; }
 .recent-runs-side-card{ display:flex; flex-direction:column; min-height:0; }
 .season-best-strip-card{ display:flex; flex-direction:column; }
-.season-best-strip-card .season-best-strip{ flex:1; align-content:flex-start; }
+.season-best-strip-card .season-best-strip{ align-content:flex-start; }
+.sb-extra-stats{ display:flex; gap:24px; margin-top:auto; padding-top:14px; border-top:1px solid var(--hairline); }
+.sb-extra-stat{ display:flex; flex-direction:column; gap:2px; }
+.sb-extra-stat-value{ font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:800; color: var(--gold); line-height:1; }
+.sb-extra-stat-label{ font-size:10px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; }
 .recent-runs-list-compact{ overflow-y:auto; }
 .recent-runs-list-compact .recent-run-row{ padding:5px 4px; }
 .recent-runs-list-compact .recent-run-icon{ width:26px; height:26px; }
@@ -2171,6 +2175,8 @@ const I18N = {
     newsPlaceholder1: "Hotfixes recentes", newsPlaceholder2: "Novidades da Season 2", newsPlaceholder3: "Rotação de Mythic+ da semana",
     comingSoon: "em breve", weeklyRewardsTitle: "Weekly Vault", progressionTitle: "Raid Progression",
     viewAllLabel: "Ver Tudo", seasonBestDungeonsTitle: "Season Best",
+    sbThreeChestLabel: "3 chests", sbThreeChestTooltip: "Quantas das suas melhores runs por dungeon (as mostradas aqui em cima) fecharam com 3 chests — não é um total da season, só desses melhores resultados.",
+    sbLevelRangeLabel: "Faixa de nível", sbLevelRangeTooltip: "Do nível mais baixo ao mais alto entre suas melhores runs por dungeon mostradas aqui em cima.",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     bisSummaryTitle: "BIS por Local", editBisLabel: "Editar Lista", searchBisPlaceholder: "Buscar por nome ou slot (ex: trinket)...",
     bisAlreadyEquippedTooltip: "Já equipado neste personagem",
@@ -2405,6 +2411,8 @@ const I18N = {
     newsPlaceholder1: "Recent hotfixes", newsPlaceholder2: "Season 2 highlights", newsPlaceholder3: "This week's Mythic+ rotation",
     comingSoon: "coming soon", weeklyRewardsTitle: "Weekly Vault", progressionTitle: "Raid Progression",
     viewAllLabel: "View All", seasonBestDungeonsTitle: "Season Best",
+    sbThreeChestLabel: "3 chests", sbThreeChestTooltip: "How many of your season-best runs per dungeon (shown above) closed out at 3 chests — not a season total, just among these best results.",
+    sbLevelRangeLabel: "Level spread", sbLevelRangeTooltip: "Lowest to highest level among your season-best runs per dungeon shown above.",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     bisSummaryTitle: "BIS by Location", editBisLabel: "Edit List", searchBisPlaceholder: "Search by name or slot (e.g. trinket)...",
     bisAlreadyEquippedTooltip: "Already equipped on this character",
@@ -4496,6 +4504,18 @@ function renderCharacterPage(){
     if(better) bestByDungeon.set(r.dungeon, r);
   });
   const dungeonBestRuns = [...bestByDungeon.values()].sort((a,b) => b.mythic_level - a.mythic_level);
+  /* Real stats about the season-best runs actually shown in the tiles above - NOT a
+     season-wide total. Raider.IO has no per-dungeon run-count or timed-vs-depleted total
+     anywhere (checked thoroughly - see fetchMplusSeasonSummary's doc comment), so "ran this
+     dungeon N times" / "timed X of Y keys this season" can't be shown honestly. What IS real
+     and already sitting right here: each season-best entry already carries its own real
+     num_keystone_upgrades (0 = that best run was depleted, 1-3 = timed with that many
+     chests), so a real chest-tier breakdown and level spread across the dungeons already
+     displayed costs nothing extra to compute and fabricates nothing. */
+  const sbThreeChestCount = dungeonBestRuns.filter(r => (r.num_keystone_upgrades||0) >= 3).length;
+  const sbLevels = dungeonBestRuns.map(r => r.mythic_level);
+  const sbMinLevel = sbLevels.length ? Math.min(...sbLevels) : null;
+  const sbMaxLevel = sbLevels.length ? Math.max(...sbLevels) : null;
   const dungeonTile = run => {
     const chests = '+'.repeat(run.num_keystone_upgrades || 0);
     return `
@@ -4740,6 +4760,16 @@ function renderCharacterPage(){
             <div class="dash-card season-best-strip-card" id="section-mplus">
               <h3>${t('seasonBestDungeonsTitle')}</h3>
               <div class="season-best-strip">${dungeonBestRuns.map(dungeonTile).join('')}</div>
+              <div class="sb-extra-stats">
+                <div class="sb-extra-stat" title="${escapeHtml(t('sbThreeChestTooltip'))}">
+                  <span class="sb-extra-stat-value">${sbThreeChestCount}/${dungeonBestRuns.length}</span>
+                  <span class="sb-extra-stat-label">${t('sbThreeChestLabel')}</span>
+                </div>
+                <div class="sb-extra-stat" title="${escapeHtml(t('sbLevelRangeTooltip'))}">
+                  <span class="sb-extra-stat-value">+${sbMinLevel}–+${sbMaxLevel}</span>
+                  <span class="sb-extra-stat-label">${t('sbLevelRangeLabel')}</span>
+                </div>
+              </div>
             </div>
             ` : `<div id="section-mplus"></div>`}
 
