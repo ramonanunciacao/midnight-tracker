@@ -394,6 +394,13 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   text-transform:uppercase; letter-spacing:.03em; cursor:pointer; transition: opacity .15s;
 }
 .dash-viewall-link:hover{ opacity:.75; }
+.dash-ksl-actions{ display:flex; gap:6px; margin-left:auto; }
+.dash-ksl-btn{
+  background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text-dim);
+  border-radius:6px; padding:4px 10px; font-size:10.5px; font-weight:700; cursor:pointer;
+  text-transform:uppercase; letter-spacing:.02em; transition: border-color .15s, color .15s; white-space:nowrap;
+}
+.dash-ksl-btn:hover{ border-color: var(--cyan); color: var(--text); }
 .view-more-runs-btn{ display:block; text-align:left; padding:0; }
 .news-card-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
 .news-card-head h3{ margin-bottom:0; }
@@ -1565,7 +1572,6 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
     <button class="bis-browse-trigger-btn" id="bisBrowseTriggerBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
     <button class="bis-browse-trigger-btn murlok-import-trigger-btn" id="murlokImportTriggerBtn" data-i18n="murlokImportTitle">Espelhar do Murlok</button>
-    <button class="bis-browse-trigger-btn ksl-trigger-btn" id="kslTriggerBtn" data-i18n="kslModalTitle">KeystoneLoot Import/Export</button>
 
     <div class="bis-list-head" data-i18n="yourBisListLabel">Sua lista BIS</div>
     <div class="bis-list" id="bisList"></div>
@@ -1682,11 +1688,17 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <h3 data-i18n="kslModalTitle">KeystoneLoot Import/Export</h3>
       <button class="modal-close-btn" id="kslModalClose" aria-label="Close">✕</button>
     </div>
-    <div class="upgrades-sub" data-i18n="kslModalSub">Compartilhe sua lista BIS com o addon KeystoneLoot, ou importe a lista de outra pessoa</div>
+    <div class="upgrades-sub" data-i18n="kslModalSub">Compartilhe sua lista BIS com outro jogador da nossa plataforma, ou com o addon KeystoneLoot</div>
+
+    <div class="filter-group" id="kslFormatToggle">
+      <button data-format="platform" class="active" data-i18n="kslFormatPlatform">Nossa Plataforma</button>
+      <button data-format="ksl" data-i18n="kslFormatKsl">KeystoneLoot</button>
+    </div>
 
     <div class="ksl-section">
       <div class="ksl-section-title" data-i18n="kslExportTitle">Exportar sua lista</div>
-      <div class="upgrades-sub" data-i18n="kslExportSub">Itens BIS viram "Best in Slot" no KeystoneLoot; itens marcados Must Have entram como "Must Have". Itens de craft/season anterior não entram (o KeystoneLoot só rastreia drops).</div>
+      <div class="upgrades-sub" id="kslExportSubPlatform" data-i18n="kslExportSubPlatform">Gera um string com sua lista BIS completa (nomes, slots, prioridade, Catalyst) pra outro jogador colar aqui e importar direto na conta dele.</div>
+      <div class="upgrades-sub" id="kslExportSubKsl" style="display:none;" data-i18n="kslExportSub">Itens BIS viram "Best in Slot" no KeystoneLoot; itens marcados Must Have entram como "Must Have". Itens de craft/season anterior não entram (o KeystoneLoot só rastreia drops).</div>
       <button class="quiz-restart-btn" id="kslExportBtn" data-i18n="kslExportBtn">Gerar string de export</button>
       <textarea id="kslExportOutput" class="ksl-textarea" readonly style="display:none;"></textarea>
       <button class="ksl-copy-btn" id="kslCopyBtn" style="display:none;" data-i18n="kslCopyBtn">Copiar</button>
@@ -1695,8 +1707,9 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
     <div class="ksl-section">
       <div class="ksl-section-title" data-i18n="kslImportTitle">Importar uma lista</div>
-      <div class="upgrades-sub" data-i18n="kslImportSub">Cole abaixo o string de export gerado pelo addon (ou pela nossa própria exportação)</div>
-      <textarea id="kslImportInput" class="ksl-textarea" placeholder="KeystoneLoot:v3,..."></textarea>
+      <div class="upgrades-sub" id="kslImportSubPlatform" data-i18n="kslImportSubPlatform">Cole abaixo um string exportado por outro jogador da nossa plataforma.</div>
+      <div class="upgrades-sub" id="kslImportSubKsl" style="display:none;" data-i18n="kslImportSub">Cole abaixo o string de export gerado pelo addon KeystoneLoot.</div>
+      <textarea id="kslImportInput" class="ksl-textarea" placeholder="MidnightBIS:v1,..."></textarea>
       <button class="quiz-restart-btn" id="kslImportBtn" data-i18n="kslImportBtn">Importar</button>
       <div class="ksl-status-note" id="kslImportStatus"></div>
     </div>
@@ -1943,7 +1956,11 @@ const I18N = {
     murlokDriftTitle: "A build recomendada do Murlok mudou desde que você importou",
     murlokDriftApplyBtn: "Atualizar lista", murlokDriftDismissBtn: "Ignorar",
     kslModalTitle: "KeystoneLoot Import/Export",
-    kslModalSub: "Compartilhe sua lista BIS com o addon KeystoneLoot, ou importe a lista de outra pessoa",
+    kslModalSub: "Compartilhe sua lista BIS com outro jogador da nossa plataforma, ou com o addon KeystoneLoot",
+    kslDashImportBtn: "Importar", kslDashExportBtn: "Exportar",
+    kslFormatPlatform: "Nossa Plataforma", kslFormatKsl: "KeystoneLoot",
+    kslExportSubPlatform: "Gera um string com sua lista BIS completa (nomes, slots, prioridade, Catalyst) pra outro jogador colar aqui e importar direto na conta dele.",
+    kslImportSubPlatform: "Cole abaixo um string exportado por outro jogador da nossa plataforma.",
     kslExportTitle: "Exportar sua lista",
     kslExportSub: "Itens BIS viram \"Best in Slot\" no KeystoneLoot; itens marcados Must Have entram como \"Must Have\". Itens de craft/season anterior não entram (o KeystoneLoot só rastreia drops).",
     kslExportBtn: "Gerar string de export", kslCopyBtn: "Copiar", kslCopiedMsg: "Copiado!",
@@ -2134,7 +2151,11 @@ const I18N = {
     murlokDriftTitle: "Murlok's recommended build has changed since you imported it",
     murlokDriftApplyBtn: "Update list", murlokDriftDismissBtn: "Dismiss",
     kslModalTitle: "KeystoneLoot Import/Export",
-    kslModalSub: "Share your BIS list with the KeystoneLoot addon, or import someone else's list",
+    kslModalSub: "Share your BIS list with another player on our platform, or with the KeystoneLoot addon",
+    kslDashImportBtn: "Import", kslDashExportBtn: "Export",
+    kslFormatPlatform: "Our Platform", kslFormatKsl: "KeystoneLoot",
+    kslExportSubPlatform: "Generates a string with your full BIS list (names, slots, priority, Catalyst) for another player to paste here and import straight into their own account.",
+    kslImportSubPlatform: "Paste a string exported by another player on our platform below.",
     kslExportTitle: "Export your list",
     kslExportSub: "BIS items become \"Best in Slot\" in KeystoneLoot; items marked Must Have come in as \"Must Have\". Craft/previous-season items aren't included (KeystoneLoot only tracks drops).",
     kslExportBtn: "Generate export string", kslCopyBtn: "Copy", kslCopiedMsg: "Copied!",
@@ -4316,6 +4337,10 @@ function renderCharacterPage(){
                 </div>`).join('')}
               </div>
               ` : ''}
+              <div class="dash-ksl-actions">
+                <button class="dash-ksl-btn" id="dashKslImportBtn" data-i18n="kslDashImportBtn">Importar</button>
+                <button class="dash-ksl-btn" id="dashKslExportBtn" data-i18n="kslDashExportBtn">Exportar</button>
+              </div>
             </div>
             ${bisByLoc.size ? `
             <input type="text" class="bis-summary-search" id="bisSummarySearch" placeholder="${t('searchBisPlaceholder')}">
@@ -4477,6 +4502,15 @@ function renderCharacterPage(){
 
   container.querySelector('#dashBisEditBtn').addEventListener('click', () => {
     openBisModal(c.id);
+  });
+
+  container.querySelector('#dashKslImportBtn').addEventListener('click', () => {
+    openKslModal(c.id);
+    document.getElementById('kslImportInput').focus();
+  });
+  container.querySelector('#dashKslExportBtn').addEventListener('click', () => {
+    openKslModal(c.id);
+    document.getElementById('kslExportBtn').focus();
   });
 
   container.querySelector('#dashBonusRollsBtn').addEventListener('click', () => {
@@ -5617,7 +5651,9 @@ document.getElementById('murlokImportTriggerBtn').addEventListener('click', open
 document.getElementById('murlokModalClose').addEventListener('click', closeMurlokModal);
 document.getElementById('murlokModal').addEventListener('click', (e) => { if(e.target.id === 'murlokModal') closeMurlokModal(); });
 
-function openKslModal(){
+let kslFormat = 'platform';
+function openKslModal(charId){
+  if(charId) state.bisActiveChar = charId;
   document.getElementById('kslExportOutput').style.display = 'none';
   document.getElementById('kslExportOutput').value = '';
   document.getElementById('kslCopyBtn').style.display = 'none';
@@ -5631,9 +5667,27 @@ function openKslModal(){
 function closeKslModal(){
   document.getElementById('kslModal').style.display = 'none';
 }
-document.getElementById('kslTriggerBtn').addEventListener('click', openKslModal);
+function setKslFormat(format){
+  kslFormat = format;
+  document.getElementById('kslFormatToggle').querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.format === format));
+  document.getElementById('kslExportSubPlatform').style.display = format === 'platform' ? '' : 'none';
+  document.getElementById('kslExportSubKsl').style.display = format === 'ksl' ? '' : 'none';
+  document.getElementById('kslImportSubPlatform').style.display = format === 'platform' ? '' : 'none';
+  document.getElementById('kslImportSubKsl').style.display = format === 'ksl' ? '' : 'none';
+  document.getElementById('kslImportInput').placeholder = format === 'ksl' ? 'KeystoneLoot:v3,...' : 'MidnightBIS:v1,...';
+}
+document.getElementById('kslFormatToggle').querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => setKslFormat(btn.dataset.format));
+});
 document.getElementById('kslModalClose').addEventListener('click', closeKslModal);
 document.getElementById('kslModal').addEventListener('click', (e) => { if(e.target.id === 'kslModal') closeKslModal(); });
+document.getElementById('kslImportInput').addEventListener('input', (e) => {
+  // Auto-switch format if a recognizably-prefixed string gets pasted in, so the player
+  // doesn't have to remember to flip the toggle themselves first.
+  const val = e.target.value.trim();
+  if(val.startsWith(KSL_PREFIX) && kslFormat !== 'ksl') setKslFormat('ksl');
+  else if(val.startsWith(NATIVE_PREFIX) && kslFormat !== 'platform') setKslFormat('platform');
+});
 document.getElementById('kslExportBtn').addEventListener('click', async () => {
   const c = state.characters.find(x => x.id === state.bisActiveChar);
   const statusEl = document.getElementById('kslExportStatus');
@@ -5645,7 +5699,7 @@ document.getElementById('kslExportBtn').addEventListener('click', async () => {
   statusEl.className = 'ksl-status-note';
   statusEl.textContent = t('loading');
   try{
-    const result = await exportCharacterToKeystoneLoot(c);
+    const result = kslFormat === 'ksl' ? await exportCharacterToKeystoneLoot(c) : await exportCharacterNative(c);
     if(result.error){
       statusEl.className = 'ksl-status-note ksl-status-error';
       statusEl.textContent = result.error;
@@ -5655,7 +5709,7 @@ document.getElementById('kslExportBtn').addEventListener('click', async () => {
     outputEl.style.display = '';
     copyBtn.style.display = '';
     statusEl.className = 'ksl-status-note ksl-status-ok';
-    statusEl.textContent = t('kslExportSuccessMsg', result.skipped);
+    statusEl.textContent = kslFormat === 'ksl' ? t('kslExportSuccessMsg', result.skipped) : t('kslExportSuccessMsg', 0);
   } catch(err){
     statusEl.className = 'ksl-status-note ksl-status-error';
     statusEl.textContent = 'Erro: ' + (err && err.message || err);
@@ -5682,7 +5736,7 @@ document.getElementById('kslImportBtn').addEventListener('click', async () => {
   statusEl.className = 'ksl-status-note';
   statusEl.textContent = t('loading');
   try{
-    const result = await importKeystoneLootString(c, input);
+    const result = kslFormat === 'ksl' ? await importKeystoneLootString(c, input) : await importCharacterNative(c, input);
     if(result.error){
       statusEl.className = 'ksl-status-note ksl-status-error';
       statusEl.textContent = result.error;
@@ -6070,6 +6124,48 @@ async function applyMurlokDrift(c){
 const KSL_PREFIX = 'KeystoneLoot:v3,';
 const KSL_LIST_NAME = 'KeystoneLoot List';
 const KSL_TIER = { NICE: 1, MUST: 2, BIS: 3, TRANSMOG: 4, CATALYST: 5 };
+/* Our own native sharing format - not tied to KeystoneLoot's tier/spec-id scheme at all,
+   just a lossless dump of one BIS list's items (name, slot, source, whId, icon, boss,
+   priority, catalyst) so another player on this same platform can import it back verbatim.
+   Same deflate+base64 machinery as the KeystoneLoot format, different prefix so an import
+   can tell the two apart (or auto-detect, see the input listener below). */
+const NATIVE_PREFIX = 'MidnightBIS:v1,';
+const IMPORTED_LIST_NAME = 'Imported List';
+async function exportCharacterNative(c){
+  const list = getActiveBisList(c);
+  if(!list.items.length) return { error: t('kslExportEmptyMsg') };
+  const payload = { items: list.items.map(b => ({
+    name: b.name, slot: b.slot, source: b.source, whId: b.whId, icon: b.icon, boss: b.boss,
+    priority: b.priority || 'bis', catalyst: !!b.catalyst
+  })) };
+  const compressed = await deflateCompress(JSON.stringify(payload));
+  return { str: NATIVE_PREFIX + bytesToBase64(compressed) };
+}
+async function importCharacterNative(c, str){
+  const trimmed = (str || '').trim();
+  if(!trimmed.startsWith(NATIVE_PREFIX)) return { error: t('kslImportBadStringMsg') };
+  let payload;
+  try{
+    const compressed = base64ToBytes(trimmed.slice(NATIVE_PREFIX.length));
+    payload = JSON.parse(await deflateDecompress(compressed));
+  } catch(e){ return { error: t('kslImportBadStringMsg') }; }
+  if(!payload.items || !payload.items.length) return { error: t('kslExportEmptyMsg') };
+  let list = c.bisLists.find(l => l.name === IMPORTED_LIST_NAME);
+  if(!list){ list = { id: uid(), name: IMPORTED_LIST_NAME, items: [] }; c.bisLists.push(list); }
+  let added = 0;
+  payload.items.forEach(it => {
+    if(it.whId && list.items.some(b => String(b.whId) === String(it.whId))) return;
+    list.items.push({
+      id: uid(), name: it.name, slot: it.slot, source: it.source || '—',
+      whId: it.whId || null, icon: it.icon || null, boss: it.boss || null,
+      priority: it.priority || 'bis', catalyst: !!it.catalyst
+    });
+    added++;
+  });
+  c.activeBisListId = list.id;
+  await saveChar(c);
+  return { added, skipped: payload.items.length - added };
+}
 /* Real, stable WoW spec ids - unchanged since each spec's introduction, the same ones used
    by Blizzard's own Game Data API, Raider.IO, SimC and Wowhead. */
 const SPEC_ID = {
