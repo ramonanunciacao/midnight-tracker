@@ -4238,7 +4238,10 @@ function renderCharacterPage(){
   // pushed to the end (Craft second-to-last, Season Anterior last) so the real dungeon/raid
   // cards read first. Array.sort is stable, so every other card keeps its existing order.
   const bisLocOrderRank = loc => loc === t('murlokCraftLabel') ? 1 : (loc === t('murlokOldSeasonLabel') ? 2 : 0);
-  const bisLocEntries = [...bisByLoc.entries()].sort((a, b) => bisLocOrderRank(a[0]) - bisLocOrderRank(b[0]));
+  const bisLocEntries = [...bisByLoc.entries()].sort((a, b) => {
+    const rankDiff = bisLocOrderRank(a[0]) - bisLocOrderRank(b[0]);
+    return rankDiff !== 0 ? rankDiff : a[0].localeCompare(b[0]);
+  });
   const bisDungeonChip = ([loc, items]) => {
     const dungeonMatch = bestByDungeon.get(loc);
     const iconUrl = dungeonMatch ? (dungeonMatch.icon_url || dungeonMatch.background_image_url) : (items[0].icon || '');
