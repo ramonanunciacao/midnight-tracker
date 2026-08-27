@@ -38,6 +38,7 @@ html{ scroll-padding-top: 200px; }
 body{
   background: var(--bg);
   color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 0;
+  overflow-x: hidden;
 }
 .wrap{ max-width: none; margin: 0; }
 .app-body{ display:flex; align-items:stretch; gap:0; min-height:100vh; }
@@ -99,6 +100,43 @@ body{
   .sidebar{ width:56px; }
   .sidebar-label, .sidebar-user{ display:none; }
   .sidebar-link{ justify-content:center; }
+}
+/* True phone width: a left icon rail is a tablet/desktop pattern, not how a phone app
+   navigates - becomes a real bottom tab bar instead (fixed, icon-only, safe-area aware),
+   the pattern this is actually supposed to feel like on a phone. The Characters flyout
+   (built for a left rail - opens to the right) gets repositioned to open upward and
+   centered instead, since there's no room to its right down here. */
+@media(max-width:600px){
+  .app-body{ flex-direction:column; }
+  .sidebar{
+    position:fixed; left:0; right:0; bottom:0; top:auto; width:100%; height:auto;
+    flex-direction:row; align-items:center; justify-content:space-around; gap:0;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); border-right:none; border-top:1px solid var(--hairline);
+    overflow-x:auto; z-index:50;
+  }
+  .sidebar-brand{ display:none; }
+  .sidebar-divider{ display:none; }
+  .sidebar-link{ flex-direction:row; padding:8px 6px; flex-shrink:0; }
+  .sidebar-char-flyout-wrap{ width:auto; }
+  .sidebar-char-flyout{
+    left:50%; right:auto; top:auto; bottom:100%; margin-left:0; margin-bottom:10px;
+    transform:translate(-50%,6px); max-width:90vw;
+  }
+  .sidebar-char-flyout-wrap:hover .sidebar-char-flyout,
+  .sidebar-char-flyout-wrap:focus-within .sidebar-char-flyout{ transform:translate(-50%,0); }
+  .sidebar-footer{ flex-direction:row; margin-top:0; padding-top:0; border-top:none; width:auto; gap:6px; flex-shrink:0; }
+  #userEmailLabel{ display:none; }
+  .logout-btn{ padding:8px; font-size:0; }
+  .logout-btn::before{ content:'⏻'; font-size:14px; }
+  .app-main{ padding-bottom: 88px; }
+  /* Density/polish pass: desktop-tuned padding and a couple of nowrap rows that only ever
+     got tested down to tablet width read as genuinely cramped/overflowing at real phone
+     widths, not just "could be tighter". */
+  .dash-card{ padding:14px; border-radius:12px; }
+  .dash-card-head-inline{ flex-wrap:wrap; row-gap:8px; }
+  .bis-dungeon-grid{ grid-template-columns: 1fr; }
+  .world-top-list{ overflow-x:auto; }
+  .wtr-row{ padding-right:2px; }
 }
 .new-badge{
   position:absolute; top:6px; right:8px; background:var(--danger); color:#fff;
