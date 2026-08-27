@@ -54,7 +54,16 @@
    class/spec (including "" for the no-hero "Overall" page), scraped fresh rather than
    hardcoded, since hero talent names/slugs differ per spec and this way never goes stale.
    Verified against real saved pages for Unholy DK (Overall/San'layn/Rider of the Apocalypse)
-   before shipping. No Blizzard token needed. */
+   before shipping. No Blizzard token needed.
+
+   Sixth, unrelated usage: GET <worker-url>/?type=rio-world-top&season=season-mn-2
+   Same real, documented Raider.IO endpoint that backs their own public world M+ leaderboard
+   page (raider.io/api/v1/mythic-plus/runs) - no CORS header of its own either, same proxying
+   need as rio-run. Queried once per current-season dungeon (real slugs confirmed by paging
+   the "all dungeons" world leaderboard directly) to get each dungeon's own #1 world run - the
+   single best run overall would just be whichever dungeon happens to be easiest to push that
+   week, not one result per dungeon. Returns { topRuns: [{dungeon, icon, level, roster:
+   [{name, class, spec, role}, ...]}, ...] }. No Blizzard token needed. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -105,6 +114,43 @@ export default {
         }
         const data = await res.json();
         return new Response(JSON.stringify(data), { headers: corsHeaders });
+      } catch(err){
+        return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
+      }
+    }
+
+    if(url.searchParams.get('type') === 'rio-world-top'){
+      const season = url.searchParams.get('season');
+      if(!season) return new Response(JSON.stringify({ error: 'missing season' }), { status: 400, headers: corsHeaders });
+      // Real, documented Raider.IO endpoint (raider.io/api/v1/mythic-plus/runs) - same one
+      // that backs their own public leaderboards page - but it has no CORS header of its
+      // own, so it needs the same proxying as every other Raider.IO call here. Queried once
+      // per current-season dungeon (real slugs, confirmed by paging the "all dungeons"
+      // world leaderboard directly and recording every distinct slug/name that came back)
+      // to get each dungeon's own #1 world run, not just the single best run overall.
+      const DUNGEON_SLUGS = ['voidscar-arena','kings-rest','den-of-nalorakk','temple-of-sethraliss','murder-row','the-blinding-vale','ruby-life-pools','altar-of-fangs'];
+      try{
+        const results = await Promise.all(DUNGEON_SLUGS.map(async slug => {
+          const rioUrl = `https://raider.io/api/v1/mythic-plus/runs?season=${encodeURIComponent(season)}&region=world&dungeon=${slug}&affixes=all&page=0`;
+          const res = await fetch(rioUrl);
+          if(!res.ok) return null;
+          const data = await res.json();
+          const top = data.rankings && data.rankings[0];
+          if(!top || !top.run) return null;
+          const run = top.run;
+          return {
+            dungeon: run.dungeon.name,
+            icon: run.dungeon.icon_url ? `https://cdn.raiderio.net${run.dungeon.icon_url}` : null,
+            level: run.mythic_level,
+            roster: (run.roster || []).map(m => ({
+              name: m.character.name,
+              class: m.character.class && m.character.class.name,
+              spec: m.character.spec && m.character.spec.name,
+              role: m.role
+            }))
+          };
+        }));
+        return new Response(JSON.stringify({ topRuns: results.filter(Boolean) }), { headers: corsHeaders });
       } catch(err){
         return new Response(JSON.stringify({ error: String(err && err.message || err) }), { status: 500, headers: corsHeaders });
       }
