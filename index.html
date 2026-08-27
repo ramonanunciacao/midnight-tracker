@@ -1204,6 +1204,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   padding:12px 16px; margin-bottom:14px;
 }
 .murlok-drift-head{ font-weight:700; color: var(--gold); font-size:13px; }
+.murlok-drift-list-name{ font-weight:600; color: var(--text-dim); }
 .murlok-drift-list{ display:flex; flex-direction:column; gap:6px; }
 .murlok-drift-row{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; }
 .murlok-drift-slot{ color: var(--text-dim); font-weight:700; margin-right:2px; }
@@ -2211,6 +2212,7 @@ const I18N = {
     murlokCraftLabel: "Craft", murlokSourceUnknown: "Fonte desconhecida",
     murlokCatalystTag: "Catalyst", murlokCatalystTagTooltip: "Item farmável com stats parecidos ao de tier set - use o Catalyst pra transformá-lo em peça de tier depois",
     murlokDriftTitle: "A build recomendada do Murlok mudou desde que você importou",
+    murlokOverallLabel: "Overall",
     murlokDriftApplyBtn: "Atualizar lista", murlokDriftDismissBtn: "Ignorar",
     kslModalTitle: "KeystoneLoot Import/Export",
     kslModalSub: "Compartilhe sua lista BIS com outro jogador da nossa plataforma, ou com o addon KeystoneLoot",
@@ -2447,6 +2449,7 @@ const I18N = {
     murlokCraftLabel: "Craft", murlokSourceUnknown: "Unknown source",
     murlokCatalystTag: "Catalyst", murlokCatalystTagTooltip: "Farmable item with a similar stat profile to the tier piece - use the Catalyst to turn it into tier gear later",
     murlokDriftTitle: "Murlok's recommended build has changed since you imported it",
+    murlokOverallLabel: "Overall",
     murlokDriftApplyBtn: "Update list", murlokDriftDismissBtn: "Dismiss",
     kslModalTitle: "KeystoneLoot Import/Export",
     kslModalSub: "Share your BIS list with another player on our platform, or with the KeystoneLoot addon",
@@ -4237,6 +4240,22 @@ function normalizeChar(c){
   if(!Array.isArray(c.bonusRolls.wishlist)) c.bonusRolls.wishlist = [];
   if(!Array.isArray(c.vaultHistory)) c.vaultHistory = [];
   if(!c.mplusKeystoneStats || typeof c.mplusKeystoneStats !== 'object') c.mplusKeystoneStats = null;
+  // Murlok drift-tracking used to be a single set of fields per character, meaning a second
+  // mirrored build (a different hero talent, or a different player) had nowhere of its own to
+  // track drift against - keyed by list id now, one independent tracking state per mirrored
+  // list. Migrate any old single-list save forward once, then drop the old fields for good.
+  if(!c.murlokListStates || typeof c.murlokListStates !== 'object') c.murlokListStates = {};
+  if(c.murlokBuildContext){
+    const legacyList = c.bisLists.find(l => l.name === 'Murlok.IO List');
+    if(legacyList && !c.murlokListStates[legacyList.id]){
+      c.murlokListStates[legacyList.id] = {
+        buildContext: c.murlokBuildContext, lastChecked: c.murlokLastChecked || 0, pendingChanges: c.murlokPendingChanges || []
+      };
+    }
+  }
+  delete c.murlokBuildContext;
+  delete c.murlokLastChecked;
+  delete c.murlokPendingChanges;
   return c;
 }
 
@@ -6026,11 +6045,21 @@ document.getElementById('seasonBestModal').addEventListener('click', (e) => { if
 async function addBisItem(data){
   const c = state.characters.find(x => x.id === state.bisActiveChar);
   if(!c || !data.name) return null;
+  const list = getActiveBisList(c);
+  // Real item id is the reliable match (name alone can collide, e.g. Normal vs Heroic
+  // versions sharing a display name); only fall back to name+slot for manual entries that
+  // never got a whId in the first place. Silently no-ops on a duplicate rather than erroring,
+  // same as the existing "empty name" no-op the caller already handles.
+  const isDup = list.items.some(existing =>
+    (data.whId && existing.whId && String(existing.whId) === String(data.whId)) ||
+    (!data.whId && !existing.whId && existing.name.trim().toLowerCase() === data.name.trim().toLowerCase() && (existing.slot||'') === (data.slot||''))
+  );
+  if(isDup) return null;
   const b = {
     id: uid(), name: data.name, slot: data.slot || '', source: data.source || '—',
     whId: data.whId || null, icon: data.icon || null, boss: data.boss || null
   };
-  getActiveBisList(c).items.push(b);
+  list.items.push(b);
   await saveChar(c);
   renderBisList();
   return b;
@@ -6354,8 +6383,11 @@ function renderBisList(){
    usage count) for "recommended build" mode, and an individual character's own real
    equipped gear for "specific player" mode. Hero talent names/slugs are scraped fresh
    from the page itself rather than hardcoded, since they differ per spec and Murlok
-   is the source of truth for them. Imported items land in their own "Murlok.IO List"
-   (auto-created, never merged into the player's manual list) so the two stay separate. ---------------- */
+   is the source of truth for them. Imported items land in their own list, auto-created and
+   named after what was actually imported (e.g. "Murlok.IO Deathbringer List", "Murlok.IO
+   Overall List", or "Murlok.IO <player name> List") - never merged into the player's manual
+   list, and never merged into a DIFFERENT mirrored build's list either, so importing a
+   second build creates its own separately-tracked list instead of overwriting the first. ---------------- */
 const MURLOK_CLASS_SLUG = {
   "Death Knight":"death-knight", "Demon Hunter":"demon-hunter", "Druid":"druid", "Evoker":"evoker",
   "Hunter":"hunter", "Mage":"mage", "Monk":"monk", "Paladin":"paladin", "Priest":"priest",
@@ -6379,7 +6411,22 @@ const WOW_CLASS_SPECS = {
   "Warlock": ["Affliction","Demonology","Destruction"],
   "Warrior": ["Arms","Fury","Protection"]
 };
-const MURLOK_LIST_NAME = 'Murlok.IO List';
+/* Every mirrored Murlok list is named after what it actually mirrors - a hero-talent build
+   ("Murlok.IO Deathbringer List"), the generic no-hero build ("Murlok.IO Overall List"), or
+   a specific player's own gear ("Murlok.IO <Name> List") - so importing a different build no
+   longer silently overwrites/merges into whatever the last import happened to create; each
+   distinct build gets its own real, separately drift-tracked list. */
+function murlokMirrorListName(qualifier){
+  return `Murlok.IO ${qualifier} List`;
+}
+function currentMurlokQualifierLabel(){
+  if(murlokImportMode === 'player'){
+    const name = document.getElementById('murlokPlayerName').value.trim();
+    return name || t('murlokOverallLabel');
+  }
+  const hero = murlokHeroTalents.find(h => h.slug === murlokHeroSlug);
+  return (hero && hero.label) ? hero.label : t('murlokOverallLabel');
+}
 function murlokSlugify(s){ return (s||'').toLowerCase().trim().replace(/\s+/g,'-'); }
 const MURLOK_SLOT_ORDER = ['Head','Neck','Shoulders','Back','Chest','Wrist','Hands','Waist','Legs','Feet','Rings','Trinkets','Main Hand','Off Hand'];
 const MURLOK_SLOT_TO_BIS = {
@@ -6448,10 +6495,11 @@ async function classifyUnknownMurlokItem(whId){
   if(ilvl !== null && ilvl < MURLOK_SEASON_MIN_ILVL) return { label: t('murlokOldSeasonLabel'), category: 'oldseason' };
   return { label: droppedBy, category: 'other' };
 }
-function getOrCreateMurlokBisList(c){
-  let list = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
+function getOrCreateMurlokBisList(c, qualifier){
+  const name = murlokMirrorListName(qualifier);
+  let list = c.bisLists.find(l => l.name === name);
   if(!list){
-    list = { id: uid(), name: MURLOK_LIST_NAME, items: [] };
+    list = { id: uid(), name, items: [] };
     c.bisLists.push(list);
   }
   return list;
@@ -6697,9 +6745,10 @@ function renderMurlokResult(){
     document.getElementById('murlokAddSelectedBtn').style.display = 'none';
     return;
   }
-  // "already added" is checked against the Murlok.IO List specifically (where new items
-  // will actually land), not whatever list the player happens to be editing manually.
-  const murlokList = c ? c.bisLists.find(l => l.name === MURLOK_LIST_NAME) : null;
+  // "already added" is checked against the specific mirrored list this build/player would
+  // actually land in (named after the current hero/build/player selection), not whatever
+  // list the player happens to be editing manually, and not some OTHER build's mirror list.
+  const murlokList = c ? c.bisLists.find(l => l.name === murlokMirrorListName(currentMurlokQualifierLabel())) : null;
   const activeItems = murlokList ? murlokList.items : [];
   const rows = [];
   MURLOK_SLOT_ORDER.forEach(murlokSlot => {
@@ -6846,7 +6895,8 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
   if(!c) return;
   const toAdd = murlokLastRows.filter(r => murlokSelected.has(r.key) && !r.already);
   if(!toAdd.length) return;
-  const murlokList = getOrCreateMurlokBisList(c);
+  const qualifier = currentMurlokQualifierLabel();
+  const murlokList = getOrCreateMurlokBisList(c, qualifier);
   toAdd.forEach(r => {
     murlokList.items.push({
       id: uid(), name: r.item.name, slot: r.bisSlot, source: r.loc || r.locLabel || '—',
@@ -6855,11 +6905,14 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
     });
   });
   if(murlokImportMode === 'build'){
-    // Remember which build this list mirrors so we can quietly re-check it later and
-    // flag it if the top players' picks move on to something else.
-    c.murlokBuildContext = { class: MURLOK_CLASS_SLUG[c.class], spec: murlokSpecSlug, hero: murlokHeroSlug || '' };
-    c.murlokLastChecked = Date.now();
-    c.murlokPendingChanges = [];
+    // Remember which build THIS specific list mirrors so we can quietly re-check it later
+    // and flag it if the top players' picks move on to something else - keyed by list id so
+    // a second mirrored build (different hero talent) tracks its own drift independently
+    // instead of clobbering this one's tracking state.
+    c.murlokListStates[murlokList.id] = {
+      buildContext: { class: MURLOK_CLASS_SLUG[c.class], spec: murlokSpecSlug, hero: murlokHeroSlug || '' },
+      lastChecked: Date.now(), pendingChanges: []
+    };
   }
   c.activeBisListId = murlokList.id;
   await saveChar(c);
@@ -6870,22 +6923,24 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
   renderMurlokResult();
 });
 
-/* The imported "Murlok.IO List" is a snapshot of the top-players build at import time,
-   and that build drifts as the sample changes what it uses (a new trending trinket, etc.).
-   Once a day per character we quietly re-fetch the same live build and diff it slot by
-   slot against what's stored; if anything real changed, a dismissible banner shows up on
+/* Each imported "Murlok.IO ... List" is a snapshot of that top-players build at import time,
+   and the build drifts as the sample changes what it uses (a new trending trinket, etc.).
+   Once a day per mirrored list (a character can have several going at once - see
+   murlokListStates) we quietly re-fetch that same live build and diff it slot by slot
+   against what's stored; if anything real changed, a dismissible banner shows up on
    the dashboard with the actual before/after items - nothing gets swapped automatically. */
 const MURLOK_DRIFT_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
-async function checkMurlokDrift(c){
-  if(!c.murlokBuildContext) return;
-  const murlokList = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
+async function checkMurlokDrift(c, listId){
+  const listState = c.murlokListStates[listId];
+  if(!listState || !listState.buildContext) return;
+  const murlokList = c.bisLists.find(l => l.id === listId);
   if(!murlokList || !murlokList.items.length) return;
-  const { class: clsSlug, spec: specSlug, hero: heroSlug } = c.murlokBuildContext;
+  const { class: clsSlug, spec: specSlug, hero: heroSlug } = listState.buildContext;
   if(!clsSlug || !specSlug) return;
   let data;
   try{ data = await fetchMurlokGear({ mode: 'build', class: clsSlug, spec: specSlug, hero: heroSlug || '' }); }
   catch(e){ return; }
-  c.murlokLastChecked = Date.now();
+  listState.lastChecked = Date.now();
   if(!data || !data.slots){ await saveChar(c); return; }
   const changes = [];
   MURLOK_SLOT_ORDER.forEach(murlokSlot => {
@@ -6906,15 +6961,23 @@ async function checkMurlokDrift(c){
     const removed = storedItems.filter(b => !liveIds.has(String(b.whId)));
     if(added.length || removed.length) changes.push({ bisSlot, added, removed });
   });
-  c.murlokPendingChanges = changes;
+  listState.pendingChanges = changes;
   await saveChar(c);
 }
+/* One independent tracking state per mirrored list (see murlokListStates in normalizeChar) -
+   a character can have several Murlok mirrors going (different hero talents, or a friend's
+   gear vs. a class build), and each needs its own daily re-check instead of only ever
+   watching whichever one happened to be imported most recently. */
 function maybeCheckMurlokDrift(c){
-  if(!c.murlokBuildContext) return;
-  const last = c.murlokLastChecked || 0;
-  if(Date.now() - last < MURLOK_DRIFT_CHECK_INTERVAL_MS) return;
-  checkMurlokDrift(c).then(() => {
-    if(state.dashboardActiveChar === c.id) renderMurlokDriftBanner(c);
+  if(!c.murlokListStates) return;
+  Object.keys(c.murlokListStates).forEach(listId => {
+    const listState = c.murlokListStates[listId];
+    if(!listState || !listState.buildContext) return;
+    const last = listState.lastChecked || 0;
+    if(Date.now() - last < MURLOK_DRIFT_CHECK_INTERVAL_MS) return;
+    checkMurlokDrift(c, listId).then(() => {
+      if(state.dashboardActiveChar === c.id) renderMurlokDriftBanner(c);
+    });
   });
 }
 function murlokDriftItemChip(item, cls){
@@ -6924,11 +6987,15 @@ function murlokDriftItemChip(item, cls){
 function renderMurlokDriftBanner(c){
   const wrap = document.getElementById('murlokDriftBanner');
   if(!wrap) return;
-  const changes = c.murlokPendingChanges || [];
-  if(!changes.length){ wrap.innerHTML = ''; return; }
-  wrap.innerHTML = `
+  const states = c.murlokListStates || {};
+  const pendingListIds = Object.keys(states).filter(id => (states[id].pendingChanges||[]).length && c.bisLists.some(l => l.id === id));
+  if(!pendingListIds.length){ wrap.innerHTML = ''; return; }
+  wrap.innerHTML = pendingListIds.map(listId => {
+    const list = c.bisLists.find(l => l.id === listId);
+    const changes = states[listId].pendingChanges || [];
+    return `
     <div class="murlok-drift-banner">
-      <div class="murlok-drift-head">⚠️ ${t('murlokDriftTitle')}</div>
+      <div class="murlok-drift-head">⚠️ ${t('murlokDriftTitle')} <span class="murlok-drift-list-name">— ${escapeHtml(list.name)}</span></div>
       <div class="murlok-drift-list">
         ${changes.map(ch => `
           <div class="murlok-drift-row">
@@ -6939,21 +7006,28 @@ function renderMurlokDriftBanner(c){
           </div>`).join('')}
       </div>
       <div class="murlok-drift-actions">
-        <button class="murlok-drift-apply-btn" id="murlokDriftApplyBtn">${t('murlokDriftApplyBtn')}</button>
-        <button class="murlok-drift-dismiss-btn" id="murlokDriftDismissBtn">${t('murlokDriftDismissBtn')}</button>
+        <button class="murlok-drift-apply-btn" data-list-id="${escapeHtml(listId)}">${t('murlokDriftApplyBtn')}</button>
+        <button class="murlok-drift-dismiss-btn" data-list-id="${escapeHtml(listId)}">${t('murlokDriftDismissBtn')}</button>
       </div>
     </div>`;
-  document.getElementById('murlokDriftApplyBtn').addEventListener('click', () => applyMurlokDrift(c));
-  document.getElementById('murlokDriftDismissBtn').addEventListener('click', async () => {
-    c.murlokPendingChanges = [];
-    await saveChar(c);
-    renderMurlokDriftBanner(c);
+  }).join('');
+  wrap.querySelectorAll('.murlok-drift-apply-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyMurlokDrift(c, btn.dataset.listId));
+  });
+  wrap.querySelectorAll('.murlok-drift-dismiss-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const listState = c.murlokListStates[btn.dataset.listId];
+      if(listState) listState.pendingChanges = [];
+      await saveChar(c);
+      renderMurlokDriftBanner(c);
+    });
   });
 }
-async function applyMurlokDrift(c){
-  const murlokList = c.bisLists.find(l => l.name === MURLOK_LIST_NAME);
-  if(!murlokList) return;
-  const changes = c.murlokPendingChanges || [];
+async function applyMurlokDrift(c, listId){
+  const murlokList = c.bisLists.find(l => l.id === listId);
+  const listState = c.murlokListStates[listId];
+  if(!murlokList || !listState) return;
+  const changes = listState.pendingChanges || [];
   for(const ch of changes){
     ch.removed.forEach(old => {
       const idx = murlokList.items.findIndex(b => String(b.whId) === String(old.whId));
@@ -6976,7 +7050,7 @@ async function applyMurlokDrift(c){
       });
     }
   }
-  c.murlokPendingChanges = [];
+  listState.pendingChanges = [];
   await saveChar(c);
   renderMurlokDriftBanner(c);
   renderBisListSelector();
