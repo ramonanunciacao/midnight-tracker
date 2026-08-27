@@ -3961,6 +3961,384 @@ const ITEM_LOOT_TABLE = [
   ["Void Execution Mandate","Trinket","Voidscar Arena",250225,"https://render.worldofwarcraft.com/us/icons/56/2178828.jpg",null],
   ["Voidscarred Crown","Helm (Mail)","Voidscar Arena",251220,"https://render.worldofwarcraft.com/us/icons/56/7259236.jpg",null],
 ];
+/* Real official PT-BR item names for every item in ITEM_LOOT_TABLE above, pulled directly
+   from Wowhead's own tooltip API (nether.wowhead.com/tooltip/item/{id}?locale=8) - locale 8
+   is Wowhead's Portuguese (Brazil) locale, confirmed by fetching a known item in every
+   locale and comparing (checked against Blizzard's actual pt-BR client strings, e.g. "Item
+   Level" -> "Nível do Item", "Bind on Pickup" -> "Vincula-se ao ser recolhido" - this is the
+   real client translation, not a guess). Keyed by whId so it works purely as a display layer
+   at render time - the item's stored `name` field stays whatever was saved (usually English,
+   from ITEM_LOOT_TABLE or Murlok), so nothing about matching/dedup/export logic changes. */
+const ITEM_NAME_PT = {
+  273787: "Placa de Escamas Entrelaçadas Envelhecida",
+  273784: "Arco Recurvo Amani Ancestral",
+  273776: "Pilares de Obsidiana do Antigo General",
+  273792: "Elo do Senhor da Guerra Amani",
+  273789: "Couraça de Escamas Corroídas",
+  273795: "Pedra-presa Retorcida",
+  273773: "Mitenes de Ritos Blasfemos",
+  273775: "Munhequeiras de Escama de Hidra",
+  273793: "Lâminas Gêmeas de Espinha de Hidra",
+  273794: "Nó de Serpentes Contorcidas",
+  273786: "Perneiras de Serpentes Entrelaçadas",
+  273779: "Presa Focal Maléfica",
+  273777: "Pisoteadores à Prova de Veneno",
+  273778: "Canalizador de Lumineira Polido",
+  273785: "Veste de Ritos Primordial",
+  275070: "Navalha de Lumineira Afiada",
+  273774: "Espaldares de Couro de Cobra",
+  273791: "Capuz do Porta-voz Sobressalente",
+  273781: "Feixe de Presas Protetoras",
+  273797: "Estandarte de Guerra Amani Esfarrapado",
+  273783: "Cajado de Guerra Revestido de Toxinas",
+  273780: "Crescente Gravada com Peçonha",
+  273796: "Ampola Torpe de Peçonha Volátil",
+  273782: "Glaive Pulsigarra Torpe",
+  251153: "Culotes do Explorador Ártico",
+  251144: "Cinto da Dádiva do Outono",
+  251214: "Elos dos Hash'ura",
+  251156: "Cajado do Orador Decaído",
+  251160: "Guarda-pernas do Sonho Florestal",
+  251145: "Guarda-pés da Tribo Esquecida",
+  251143: "Luvas da Colheita Sinistra",
+  251147: "Mantelete da Colheita Acumulado",
+  250229: "Ídolo do Loa da Guerra",
+  250248: "Remédio Micólico",
+  251158: "Pesadelo de Nalorakk",
+  271681: "Patuá Atagelo Perene",
+  250244: "Essência de Permafrio",
+  251148: "Elo Precioso Surrupiado",
+  251146: "Espaldares do Catador",
+  251152: "Manoplas da Virada de Estação",
+  251151: "Prêmio de Desafiante Sentinela",
+  251150: "Abrigo da Tormenta",
+  251155: "Cordão de Defensor Tribal",
+  251149: "Lâmina Supercongelada do Vitorioso",
+  251159: "Vestimenta da Provação de Guerra",
+  251154: "Braçadeiras do Abraço do Inverno",
+  251173: "Jugo do Urso Atacante",
+  159412: "Pisoteadores de Poça Áurica",
+  159369: "Cinto da Tumba Consagrada",
+  159371: "Botas do Conquistador Abrupto",
+  159313: "Calções do Salão Sagrado",
+  159288: "Manto das Tribos Irrequietas",
+  160216: "Kilij de Jade Crepitante",
+  159643: "Besta da Majestade Esquecida",
+  159312: "Luvas Abençoadas do Dissecador",
+  159234: "Calções Forrados de Penugem",
+  159409: "Braçadeira da Constância do Embalsamador",
+  159413: "Manoplas da Sentinela Aviária",
+  159644: "Geti'ikku, o Gume da Morte",
+  159137: "Dente de Serpente Folheado",
+  159418: "Cinturão da Purificação Pestilenta",
+  159304: "Botas Plumáurea",
+  159645: "Quebra-crânio da Súplica",
+  239047: "Turbante do Primeiro Império",
+  159236: "Turbante do Primeiro Império",
+  239050: "Elmo do Raptor Rei",
+  159422: "Elmo do Raptor Rei",
+  159136: "Adaga Ornamentada da Subjugação",
+  159300: "Munhequeiras Carniceiras de Kula",
+  239046: "Couraça Abençoada pelos Loas",
+  158355: "Couraça Abençoada pelos Loas",
+  159617: "Plumagem Dourada Lustrosa",
+  158344: "Dragonas da Ascensão Cerimonial",
+  239045: "Dragonas da Ascensão Cerimonial",
+  159618: "Bandagens Rituais de Muquimba",
+  239051: "Brafoneiras do Grande Unificador",
+  159423: "Brafoneiras do Grande Unificador",
+  159301: "Cinto do Dinomante Primevo",
+  159459: "Anel do Vinculador Ritual",
+  159642: "Lâmina do Purificador Real",
+  159243: "Sandálias do Vodu Sábio",
+  160213: "Luvas do Constructo Sepulcral",
+  159368: "Espaldares do Imperador Primordial",
+  239049: "Espaldares do Imperador Primordial",
+  273649: "Emblema Tempestuoso de Dazar",
+  159667: "Receptáculo dos Últimos ritos",
+  159303: "Colete da Adoração Reverente",
+  239048: "Colete da Adoração Reverente",
+  251128: "Laminúrio",
+  251130: "Calções do Acordo Célere",
+  251138: "Guarda-ombros de Brasafúria",
+  251129: "Amarras Adulteradas",
+  258045: "Glaives Aurolumes",
+  251125: "Solas Vilimbuídas",
+  250215: "Frasco do Cargueiro",
+  251135: "Vírias Furiadornadas",
+  251124: "Manoplas da Defesa Febril",
+  251126: "Grande Elmo da Tentação",
+  251131: "Palas Vis Estrídulas",
+  251141: "Perneiras Articuladas de Lithiel",
+  250243: "Chama Vinculante de Manacárdia",
+  251123: "Bastão de Treinamento da Mordisco",
+  251127: "Embraces Mordisqueiros",
+  251133: "Avambraços do Feitor",
+  251142: "Pingente da Fúria Maléfica",
+  250228: "Pedra-fole Ressonante",
+  251136: "Sinete da Servidão Sibilante",
+  271680: "Repetidor Calcinado pelo Pecado",
+  251132: "Mortalha do Inferninho",
+  251139: "Camisa Calcinante do Evocador",
+  251137: "Sandálias Tempestuosas",
+  250255: "Cristal Vilcórdio Instável",
+  251140: "Socapa do Diabo Vil",
+  251134: "Cutelo de Xathuux",
+  193755: "Cutelo da Cortina de Fogo",
+  193762: "Casco de Ataflamas",
+  193765: "Elmo do Tenente Preso às Chamas",
+  193753: "Peitoral do Terror Pairante",
+  193761: "Cajado de Infusão de Geladura",
+  193751: "Coroa das Tempestades Estrondosas",
+  193754: "Tarja do Cavalga-draco",
+  193759: "Perneiras do Cuidador de Ovos",
+  193763: "Clâmide à Prova de Fogo",
+  193752: "Manoplas Chocalho-do-vendaval",
+  193767: "Esmagador da Devastação",
+  193764: "Couraça da Tempestade de Fogo do Invasor",
+  193766: "Bastão da Combustão de Kokia",
+  193748: "Brasas Calcinantes de Kyrakka",
+  193757: "Casca de Dragonete Rubi",
+  193728: "Grandes Botas do Impávido do Guarda Escamoso",
+  193691: "Cordão Sela Celeste",
+  193756: "Rondel Céu-ferno",
+  193758: "Garras Congelantes do Subjugante",
+  193750: "Calções do Dispara-vento",
+  159380: "Braceletes de Arcovidro",
+  159263: "Braceletes da Correnteza Serpeante",
+  239031: "Sobreveste do Purificador da Ninhada",
+  159254: "Sobreveste do Purificador da Ninhada",
+  159664: "Baluarte do Potencial Latente",
+  158366: "Elo de Arenito Carregado",
+  159370: "Vestimenta do Bagateiro Corrompido",
+  239034: "Vestimenta do Bagateiro Corrompido",
+  159439: "Brafoneiras das Amarras de C'Thraxxi",
+  239037: "Brafoneiras das Amarras de C'Thraxxi",
+  239036: "Peitoral do Guardião do Deserto",
+  159424: "Peitoral do Guardião do Deserto",
+  159437: "Manoplas à Prova de Presas",
+  158369: "Esmagavento Galvanizado",
+  159337: "Guantes da Defesa Eletrizada",
+  159247: "Mitenes da Polaridade Oscilante",
+  239033: "Capuz do Loa Serpenteante",
+  159318: "Capuz do Loa Serpenteante",
+  162544: "Elo Ofídico de Jade",
+  159329: "Perneiras da Víbora Borrascante",
+  159375: "Guarda-pernas da Ninhada Desperta",
+  159435: "Coxotes da Dualidade Carregada",
+  158367: "Presa de Merektha",
+  159255: "Faixa Ouroborial",
+  158373: "Cimitarra do Cristal Ressoante",
+  159257: "Vestes da Serpente Renascida",
+  239032: "Vestes da Serpente Renascida",
+  159388: "Escarpes de Energia Coruscante",
+  159442: "Correão Areado",
+  159327: "Sandálias de Couro de Cobra Polido com Areia",
+  159259: "Sandálias de Areeiro",
+  158368: "Relíquia Profanada de Sethraliss",
+  159374: "Elmo com Presas de Sethraliss",
+  239035: "Elmo com Presas de Sethraliss",
+  159425: "Avambraços com Ponta de Estilhaço",
+  159637: "Arco Recurvo Mordida de Cobra",
+  159636: "Cajado da Serpente do Relâmpago",
+  158714: "Gume do Enxame",
+  158374: "Eletromental Pequeno no Pote",
+  158370: "Arma de Haste do Acerto Duplo",
+  159317: "Faixa do Dervixe Giratório",
+  251187: "Rincão de Amirdrassil",
+  251182: "Calções Rochosos",
+  251190: "Burnous do Espinho Sangrento",
+  251192: "Galho de Orgulho",
+  251188: "Pétala da ruína",
+  251184: "Coleira de Raiz-de-ferro",
+  251185: "Cilha Botão de Luz",
+  250214: "Núcleo Altaluz",
+  251198: "Perneiras de Esporo luminoso",
+  251194: "Vínculo do Guardião da Luz",
+  251191: "Broto Luminescente",
+  251181: "Lança de poda",
+  251165: "Ombreira pulverizante",
+  251189: "Arnês do Andarraiz",
+  251183: "Munhequeiras de guardirraiz",
+  250259: "Broto de Raizaurora",
+  251200: "Guardas Mataflorráptor",
+  250254: "Semente da Esperança Resplandecente",
+  250238: "Semente da Natureza Voraz",
+  251193: "Costelas de Raiz profunda",
+  251196: "Sacrifício de Teldrassil",
+  251180: "Lâmina Espinhosa",
+  251195: "Resposta Espinhosa",
+  251197: "Manoplas Espinhadas",
+  251186: "Gume Garracúleo",
+  251199: "Copa da Raiz-Mundo",
+  268215: "Bardiche do Prolemônio Abissal",
+  268248: "Xale de Evocação Amani",
+  268209: "Aman'muso, Vingança do Senhor da Guerra",
+  268251: "Amuleto das Presas Gêmeas",
+  268204: "Estoque Peçonhento do Constructo Antigo",
+  268252: "Anel de Garra do Brutamontes Alfa",
+  268265: "Relicário Aqiricida",
+  271876: "Corselete de Presátera Despertado",
+  268211: "Faca Ritual do Infortúnio",
+  268261: "Sapatilhas Rastejantes Perdigotadas",
+  268258: "Botas do Viajante Imprudente",
+  268255: "Botinas Anímicas Crepitantes",
+  268257: "Faixa Cáustica Envolta em Correntes",
+  268198: "Esmaga-guarda Cáustico",
+  268207: "Grande Arco do Repouso Cáustico",
+  271878: "Chausses do Rancor Liberto",
+  268225: "Guarda-pernas da Bagata Enrolada",
+  268230: "Coroa da Presa Eterna",
+  268237: "Cuísses da União Desenrolada",
+  268216: "Cíngulo de Relicário Amaldiçoado",
+  268245: "Escarpes do Sectário Sepultado",
+  268242: "Capuz do Sábio dos Pergaminhos Errante",
+  270161: "Presa de Malignidade Umbrática",
+  268233: "Botas de Escamas Ferozes",
+  270160: "Concha Protetora do Imediato",
+  270168: "Fonte de Raiva Peçonhenta",
+  268246: "Espaldares de Peçonha Espumante",
+  271875: "Olhar da Observadora Enrolada",
+  268200: "Detonador Reserva de Gebbo",
+  270164: "Bolsa sem Fundo de Gebbo",
+  268259: "Cinturão do Arrependimento Tóxico",
+  268243: "Agarres da Sombra Eterna",
+  270169: "Ídolo da Perdição do Grão-bagateiro",
+  268203: "Rasga-almas de Bagata",
+  270174: "Ídolo do Nexus Uivante",
+  268236: "Meia-calça Sacrificial do Iniciado",
+  271092: "Jan'thrazet, a Presa Anímica",
+  268202: "Mandíbula da Deusa Agrilhoada",
+  270165: "Núcleo Fumegante do Guardião",
+  268210: "Clavalma Malévola",
+  268214: "Gume Dentado Maligno",
+  268213: "Maze-roa, Fúria do Senhor da Guerra",
+  268218: "Andarilhos Espirituais de Nek'zali",
+  268223: "Malha de Presas Ofídica",
+  268241: "Ornamentos da Espiral Eterna",
+  270171: "Antídoto Sobrenatural",
+  268264: "Presa do Glutão Voraz",
+  268222: "Peitoral do Espírito Imprudente",
+  268240: "Grilhões do Espírito Indócil",
+  268234: "Guantes da Carnificina Inclemente",
+  268256: "Faixa do Receptáculo Desolado",
+  268260: "Coturnos do Demônio Escamado",
+  268220: "Estranguladores de Placa de Escamas",
+  268250: "Corrente Vitriólica da Sentinela",
+  268254: "Cinto de Mistura Serpentina",
+  268219: "Máscara de Guerra do Caçador Sombrio",
+  268239: "Braçadeiras Cascatreladas",
+  268253: "Clâmide de Vodu Sedosa",
+  268229: "Guarda-crânio do Sacrifício Reanimado",
+  268206: "Martelete do Selvagem Serpenteante",
+  270162: "Receptáculo Ritual Enrosca-almas",
+  268231: "Espaldares Rastejalmas",
+  268197: "Espinha do Abismo Sibilante",
+  270163: "Ferocidade de Sszorak",
+  268208: "Cutelo Cerimonial de Sangueforte",
+  270930: "Garra do Rastejante da Tumba",
+  268227: "Faixa Cadavérica Despossuída",
+  270166: "Rancor Sanguíneo de Vashnik",
+  268224: "Grevas do Vigilante Peçonhento",
+  268205: "Canalizador Alado do Peçonhante",
+  271874: "Capucho Horrendo do Guardião da Peçonha",
+  268201: "Glaive de Osso Peçonhenta",
+  268228: "Manilhas Chamuscadas por Peçonha",
+  268196: "Escamparo Retalhado por Peçonha",
+  268235: "Vestimenta do Despertar",
+  270170: "Glândula Transbordante de Vexhul",
+  268249: "Elo do Alquimista Torpe",
+  270175: "Coração Voraz de Ula'tek",
+  271093: "Zatha'tek, Sopro de Corrupção",
+  270173: "Técnica da Guilhotina de Zul'jin",
+  251228: "Cintel de Beemote",
+  251230: "Crescente Carônica",
+  251221: "Manoplas do Desanimado",
+  251222: "Atadura do Éter Etérea",
+  251225: "Presa do Contágio",
+  251234: "Enxerto dos Domanaar",
+  251235: "Cinturão Gravítico",
+  251226: "Pelego da Pestilência",
+  251224: "Machadinha Grandiosa",
+  251233: "Colete do Manipulador",
+  250224: "Signo do Furamentes",
+  251232: "Diadema do Feitor",
+  251227: "Brafoneiras do Envenenador",
+  251219: "Pisoteadores da Fissura corroída",
+  252258: "Sinete Doentio de Atroxus",
+  251231: "Fatiador da Singularidade",
+  251223: "Espaldares Lúgubres",
+  251218: "Gume Cósmico de Taz'Rah",
+  250245: "Tumor do Enxame",
+  251229: "Visor do Predador",
+  250225: "Mandato de Execução do Caos",
+  251220: "Coroa Marcada pelo Caos",
+};
+/* Real official PT-BR names for our own dungeon/raid/boss constants above, verified the same
+   way (Wowhead zone/npc tooltips in locale 0 vs locale 8, matched back to our exact English
+   string). Only entries actually confirmed this way are here - most raid boss names in
+   RAID_POOL turned out to be proper nouns Blizzard doesn't translate at all (confirmed for
+   Sszorak: identical name in both locales) or aren't indexed on Wowhead yet (too new), and
+   guessing at those instead of leaving them in English would be exactly the kind of
+   fabricated data this app avoids everywhere else. Keyed by both spellings for the two zones
+   where Raider.IO's live dungeon name and our own DUNGEON_POOL name already drifted apart
+   (see DUNGEON_NAME_ALIASES further down) so either one resolves to the same real name. */
+const GAME_NAME_PT = {
+  "Murder Row": "Travessa do Assassino",
+  "Den of Noralakk": "Covil de Nalorakk",
+  "Den of Nalorakk": "Covil de Nalorakk",
+  "Altar of Fangs": "Altar das Presas",
+  "Ruby Life Pools": "Poços da Vida Rubi",
+  "Temple of Sethraliss": "Templo de Sethraliss",
+  "The Blinding Vale": "O Vale Ofuscante",
+  "Voidscar Arena": "Arena da Chaga do Caos",
+  "King's Rest": "Repouso do Rei",
+  "Kings' Rest": "Repouso do Rei",
+  "The Venomous Abyss": "Abismo Peçonhento",
+  "Nek'zali the Soulcoiler": "Nek'zali, a Enrosca-almas",
+};
+/* Item name display wrapper - looks up the real PT-BR name by whId (falls back to whatever
+   name is already stored if there's no whId or no confirmed translation, e.g. Murlok imports
+   Wowhead hasn't been queried for yet). Never touches the stored `name` field itself. */
+function itemDisplayName(name, whId){
+  if(currentLang !== 'pt' || !whId) return name;
+  return ITEM_NAME_PT[whId] || name;
+}
+/* Dungeon/raid/boss display wrapper - same idea, keyed by our own English constant strings. */
+function gn(name){
+  if(currentLang !== 'pt' || !name) return name;
+  return GAME_NAME_PT[name] || name;
+}
+/* Class/spec/role names: stable, official Blizzard pt-BR client strings (unlike the raid
+   content above these haven't changed in years and don't need a live lookup). Kept as a pure
+   display layer same as the others - c.class/c.spec themselves stay Raider.IO's English
+   values everywhere they're used as data (SPEC_ID lookups, icon URLs, CLASS_HEX, etc). */
+const CLASS_NAME_PT = {
+  "Warrior":"Guerreiro","Paladin":"Paladino","Hunter":"Caçador","Rogue":"Ladino","Priest":"Sacerdote",
+  "Death Knight":"Cavaleiro da Morte","Shaman":"Xamã","Mage":"Mago","Warlock":"Bruxo","Monk":"Monge",
+  "Druid":"Druida","Demon Hunter":"Caçador de Demônios","Evoker":"Evocador",
+};
+const SPEC_NAME_PT = {
+  "Arms":"Arma","Fury":"Fúria","Protection":"Proteção",
+  "Holy":"Sagrado","Retribution":"Retribuição",
+  "Beast Mastery":"Domínio de Feras","Marksmanship":"Pontaria","Survival":"Sobrevivência",
+  "Assassination":"Assassinato","Outlaw":"Fora da Lei","Subtlety":"Sutileza",
+  "Discipline":"Disciplina","Shadow":"Sombria",
+  "Blood":"Sangue","Frost":"Gelo","Unholy":"Profano",
+  "Elemental":"Elementalista","Enhancement":"Aprimoramento","Restoration":"Restauração",
+  "Arcane":"Arcano","Fire":"Fogo",
+  "Affliction":"Aflição","Demonology":"Demonologia","Destruction":"Destruição",
+  "Brewmaster":"Mestre Cervejeiro","Windwalker":"Andarilho do Vento","Mistweaver":"Tecelão de Névoa",
+  "Balance":"Equilíbrio","Feral":"Selvagem","Guardian":"Guardião",
+  "Havoc":"Devastação","Vengeance":"Vingança",
+  "Devastation":"Devastação","Preservation":"Preservação","Augmentation":"Aumento",
+};
+const ROLE_NAME_PT = { "Tank":"Tanque", "Healer":"Curandeiro", "DPS":"DPS" };
+const DIFFICULTY_NAME_PT = { "Normal":"Normal", "Heroic":"Heroico", "Mythic":"Mítico", "LFR":"Busca de Raide" };
+function className(cls){ return (currentLang === 'pt' && cls && CLASS_NAME_PT[cls]) || cls; }
+function specName(spec){ return (currentLang === 'pt' && spec && SPEC_NAME_PT[spec]) || spec; }
+function roleName(role){ return (currentLang === 'pt' && role && ROLE_NAME_PT[role]) || role; }
+function diffName(d){ return (currentLang === 'pt' && d && DIFFICULTY_NAME_PT[d]) || d; }
 /* Real stat data pulled from Wowhead's tooltip API (nether.wowhead.com/tooltip/item/{id}),
    at each item's max Mythic-track ilvl (or its listed drop ilvl for raid items with no
    upgrade track). i = item level, s = [[statName, value], ...]. Hybrid primary stats
@@ -4464,7 +4842,7 @@ function renderCharacters(){
       <button class="champ-card-remove" title="${t('remove')}">✕</button>
       <div class="champ-card-info">
         <div class="champ-card-name">${escapeHtml(c.name)}</div>
-        <div class="champ-card-meta">${c.class}${c.spec ? ` · ${escapeHtml(c.spec)}` : ''}</div>
+        <div class="champ-card-meta">${escapeHtml(className(c.class)||'')}${c.spec ? ` · ${escapeHtml(specName(c.spec))}` : ''}</div>
         <div class="champ-card-stats"><span>ILVL <b>${c.ilvl || '—'}</b></span><span>IO <b>${c.ioscore || '—'}</b></span></div>
       </div>
     `;
@@ -4547,7 +4925,7 @@ function renderCharacterPage(){
     const dateStr = new Date(run.completed_at).toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
     const affixNames = (run.affixes || []).map(a => a.name).join(', ');
     const domId = `${prefix}-${run.keystone_run_id}`;
-    const tooltip = `${run.dungeon} +${run.mythic_level}${chests} — ${t('scoreCol')}: ${run.score}\n${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}${affixNames ? '\n'+affixNames : ''}\n${dateStr}`;
+    const tooltip = `${gn(run.dungeon)} +${run.mythic_level}${chests} — ${t('scoreCol')}: ${run.score}\n${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}${affixNames ? '\n'+affixNames : ''}\n${dateStr}`;
     const iconColor = RUN_ICON_PALETTE[(idx || 0) % RUN_ICON_PALETTE.length];
     const timePct = run.par_time_ms ? Math.min(100, (run.clear_time_ms / run.par_time_ms) * 100) : 0;
     const overTime = !!(run.par_time_ms && run.clear_time_ms > run.par_time_ms);
@@ -4557,7 +4935,7 @@ function renderCharacterPage(){
         ${run.icon_url ? `<img class="recent-run-icon" style="border-color:${iconColor}" src="${run.icon_url}" alt="">` : ''}
         <div class="recent-run-info">
           <div class="recent-run-top">
-            <span class="recent-run-name">${escapeHtml(run.dungeon)} <span class="best-run-level">+${run.mythic_level}${chests ? ` <span class="sb-tile-chest">${chests}</span>` : ''}</span></span>
+            <span class="recent-run-name">${escapeHtml(gn(run.dungeon))} <span class="best-run-level">+${run.mythic_level}${chests ? ` <span class="sb-tile-chest">${chests}</span>` : ''}</span></span>
             <span class="recent-run-time" title="${t('clearTimeLabel')}">⏱ ${formatClearTime(run.clear_time_ms)} / ${formatClearTime(run.par_time_ms)}</span>
             <div class="recent-run-timebar-track"><div class="recent-run-timebar-fill" style="width:${timePct}%; background:${overTime?'var(--danger)':'var(--ok)'}"></div></div>
             <span class="recent-run-score" title="${t('scoreCol')}">★ ${run.score ? run.score.toFixed(1) : '—'}</span>
@@ -4595,7 +4973,7 @@ function renderCharacterPage(){
     <div class="gear-row">
       ${iconUrl ? `<img class="gear-icon" src="${iconUrl}" alt="">` : ''}
       <div class="gear-info">
-        <a href="https://www.wowhead.com/item=${item.item_id}${Array.isArray(item.bonuses) && item.bonuses.length ? '?bonus=' + item.bonuses.join(':') : ''}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(item.name)}</a>
+        <a href="https://www.wowhead.com/item=${item.item_id}${Array.isArray(item.bonuses) && item.bonuses.length ? '?bonus=' + item.bonuses.join(':') : ''}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(itemDisplayName(item.name, item.item_id))}</a>
         <div class="gear-meta">${escapeHtml(label)} · ${item.item_level}${enchant ? ` · ${escapeHtml(enchant)}` : ''}</div>
       </div>
       ${bisInfo}
@@ -4628,14 +5006,14 @@ function renderCharacterPage(){
         <span class="wtr-tooltip-role">${roleUrl ? `<img class="comp-role-icon" src="${roleUrl}" alt="${escapeHtml(m.role||'')}" title="${escapeHtml(m.role||'')}">` : ''}</span>
         ${iconUrl ? `<img class="wtr-tooltip-class-icon" src="${iconUrl}" alt="">` : ''}
         <span class="wtr-tooltip-name" style="color:${clsColor}">${escapeHtml(m.name)}</span>
-        <span class="wtr-tooltip-spec">${escapeHtml(m.spec || '')} ${escapeHtml(m.class || '')}</span>
+        <span class="wtr-tooltip-spec">${escapeHtml(specName(m.spec) || '')} ${escapeHtml(className(m.class) || '')}</span>
       </div>`;
     }).join('');
     return `
     <a class="wtr-row" href="${run.url ? escapeHtml(run.url) : '#'}" target="_blank" rel="noopener noreferrer">
       ${run.icon ? `<img class="wtr-dungeon-icon" src="${run.icon}" alt="">` : ''}
       <div class="wtr-info">
-        <span class="wtr-dungeon-name">${escapeHtml(run.shortName || run.dungeon)}</span>
+        <span class="wtr-dungeon-name">${escapeHtml(gn(run.shortName) || gn(run.dungeon))}</span>
         <span class="wtr-level">+${run.level}</span>
       </div>
       <div class="wtr-roster">
@@ -4649,7 +5027,7 @@ function renderCharacterPage(){
       </div>
       <div class="wtr-tooltip">
         <div class="wtr-tooltip-head">
-          <span class="wtr-tooltip-dungeon">${escapeHtml(run.dungeon)} <span class="wtr-tooltip-level">+${run.level}</span></span>
+          <span class="wtr-tooltip-dungeon">${escapeHtml(gn(run.dungeon))} <span class="wtr-tooltip-level">+${run.level}</span></span>
           ${clearStr ? `<span class="wtr-tooltip-time">⏱ ${escapeHtml(clearStr)}</span>` : ''}
         </div>
         <div class="wtr-tooltip-roster">${tooltipRoster}</div>
@@ -4674,9 +5052,9 @@ function renderCharacterPage(){
   const dungeonTile = run => {
     const chests = '+'.repeat(run.num_keystone_upgrades || 0);
     return `
-    <div class="sb-tile" style="background-image:url('${run.background_image_url || run.icon_url || ''}')" data-run-id="${run.keystone_run_id}" title="${escapeHtml(run.dungeon)} +${run.mythic_level}${chests} — ${t('viewDetails')}">
+    <div class="sb-tile" style="background-image:url('${run.background_image_url || run.icon_url || ''}')" data-run-id="${run.keystone_run_id}" title="${escapeHtml(gn(run.dungeon))} +${run.mythic_level}${chests} — ${t('viewDetails')}">
       <div class="sb-tile-level"><img class="sb-tile-keystone-icon" src="${zamIconUrl('inv_relics_hourglass','small')}" alt=""> +${run.mythic_level}${chests ? `<span class="sb-tile-chest">${chests}</span>` : ''}</div>
-      <div class="sb-tile-name">${escapeHtml(run.dungeon)}</div>
+      <div class="sb-tile-name">${escapeHtml(gn(run.dungeon))}</div>
     </div>`;
   };
 
@@ -4730,13 +5108,14 @@ function renderCharacterPage(){
       const boss = findItemBoss(b.whId);
       const linkTag = b.whId ? 'a' : 'span';
       const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer"` : '';
-      const searchKey = `${b.name} ${b.slot||''} ${boss||''}`.toLowerCase();
+      const displayName = itemDisplayName(b.name, b.whId);
+      const searchKey = `${b.name} ${displayName} ${b.slot||''} ${boss||''}`.toLowerCase();
       return `
       <div class="bis-dchip-item ${isEquipped ? 'equipped-collected' : ''}" data-search="${escapeHtml(searchKey)}">
         ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
         <span class="bis-dchip-item-info">
-          <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
-          ${boss ? `<span class="bis-dchip-item-boss">${escapeHtml(boss)}</span>` : ''}
+          <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(displayName)}</${linkTag}>
+          ${boss ? `<span class="bis-dchip-item-boss">${escapeHtml(gn(boss))}</span>` : ''}
         </span>
         ${isEquipped ? `<span class="bis-dchip-check" title="${escapeHtml(t('bisAlreadyEquippedTooltip'))}">✓</span>` : ''}
         ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
@@ -4748,7 +5127,7 @@ function renderCharacterPage(){
     <div class="bis-dchip">
       <div class="bis-dchip-header">
         ${iconUrl ? `<img class="bis-dchip-icon" src="${iconUrl}" alt="">` : `<div class="bis-dchip-icon bis-dchip-icon-empty"></div>`}
-        <span class="bis-dchip-loc">${escapeHtml(loc)}</span>
+        <span class="bis-dchip-loc">${escapeHtml(gn(loc))}</span>
         <span class="bis-dchip-count ${remaining === 0 ? 'all-collected' : ''}" title="${escapeHtml(remaining === 0 ? t('bisAllCollectedTooltip') : t('bisRemainingCountTooltip', remaining, items.length))}">${remaining === 0 ? '✓' : remaining}</span>
       </div>
       <div class="bis-dchip-items">${items.map(itemRow).join('')}</div>
@@ -4771,8 +5150,8 @@ function renderCharacterPage(){
     ${RAID_POOL.map(boss => {
       const killedDiff = RAID_DIFF_RANK.find(d => c.raidBosses[boss] && c.raidBosses[boss][d]);
       return killedDiff
-        ? `<div class="raid-diff-line raid-diff-done"><span class="raid-diff-mark">✓</span> ${escapeHtml(boss)} <span class="raid-diff-count">(${killedDiff.toUpperCase()})</span></div>`
-        : `<div class="raid-diff-line raid-diff-pending"><span class="raid-diff-mark">○</span> ${escapeHtml(boss)}</div>`;
+        ? `<div class="raid-diff-line raid-diff-done"><span class="raid-diff-mark">✓</span> ${escapeHtml(gn(boss))} <span class="raid-diff-count">(${killedDiff.toUpperCase()})</span></div>`
+        : `<div class="raid-diff-line raid-diff-pending"><span class="raid-diff-mark">○</span> ${escapeHtml(gn(boss))}</div>`;
     }).join('')}`;
   const todoDone = (c.todos || []).filter(x => x.done).length;
   const todoTotal = (c.todos || []).length;
@@ -4818,7 +5197,7 @@ function renderCharacterPage(){
               ${c.faction && FACTION_ICON[c.faction.toLowerCase()] ? `<img class="cpage-faction-icon" src="${FACTION_ICON[c.faction.toLowerCase()]}" alt="${escapeHtml(c.faction)}" title="${escapeHtml(c.faction)}">` : ''}
             </div>
             ${c.race ? `<div class="cpage-race">${escapeHtml(c.race)}</div>` : ''}
-            <div class="cpage-sub">${c.class}${c.spec ? ` – ${escapeHtml(c.spec)}` : ''}</div>
+            <div class="cpage-sub">${escapeHtml(className(c.class)||'')}${c.spec ? ` – ${escapeHtml(specName(c.spec))}` : ''}</div>
             <div class="cpage-sync-row">
               <span class="cpage-lastsync">${t('lastUpdatedLabel')}: ${formatRelativeTime(c.lastSyncedAt)}</span>
               <button class="cpage-refresh-btn" id="cpageRefreshBtn" title="${t('refreshFromRaiderIO')}"><span class="cpage-refresh-icon">↻</span> ${t('refreshBtnLabel')}</button>
@@ -4849,7 +5228,7 @@ function renderCharacterPage(){
         <div class="stat-tile stat-tile-center">
           <div class="stat-tile-label">${t('bestRunLabel')}</div>
           <div class="stat-tile-value" style="color:var(--gold)">${bestRun ? '+'+bestRun.mythic_level : '—'}</div>
-          <div class="stat-tile-sub">${bestRun ? escapeHtml(bestRun.dungeon) : ''}</div>
+          <div class="stat-tile-sub">${bestRun ? escapeHtml(gn(bestRun.dungeon)) : ''}</div>
         </div>
         <div class="stat-tile stat-tile-center stat-tile-outline">
           <div class="stat-tile-label">🕐 ${t('weeklyResetLabel')}</div>
@@ -4899,9 +5278,9 @@ function renderCharacterPage(){
 
             <div class="dash-topgroup-item dash-topgroup-narrow raid-progress-hover" id="section-raid">
               <h3>${t('progressionTitle')}</h3>
-              <div class="raid-progress-value">${raidCount}/${RAID_POOL.length}${highestRaidDiff ? ` <span class="raid-progress-diff">${highestRaidDiff}</span>` : ''}</div>
+              <div class="raid-progress-value">${raidCount}/${RAID_POOL.length}${highestRaidDiff ? ` <span class="raid-progress-diff">${diffName(highestRaidDiff)}</span>` : ''}</div>
               <div class="pbar-track"><div class="pbar-fill" style="width:${RAID_POOL.length ? (raidCount/RAID_POOL.length*100) : 0}%; background:var(--purple)"></div></div>
-              <div class="raid-progress-name">${RAID_NAME}</div>
+              <div class="raid-progress-name">${gn(RAID_NAME)}</div>
               <div class="raid-diff-tooltip">${raidDiffTooltipHtml}</div>
 
               <div class="weekly-rewards-mini" id="section-weekly">
@@ -5431,8 +5810,8 @@ function renderClassMetaPickers(){
   const specWrap = document.getElementById('classMetaSpecPicker');
   const classes = Object.keys(WOW_CLASS_SPECS);
   classWrap.innerHTML = classes.map(cls => `
-    <button class="classmeta-class-btn ${classMetaSelected && classMetaSelected.class === cls ? 'active' : ''}" data-class="${escapeHtml(cls)}" title="${escapeHtml(cls)}">
-      <img src="${classIconUrl(cls)}" alt="${escapeHtml(cls)}">
+    <button class="classmeta-class-btn ${classMetaSelected && classMetaSelected.class === cls ? 'active' : ''}" data-class="${escapeHtml(cls)}" title="${escapeHtml(className(cls))}">
+      <img src="${classIconUrl(cls)}" alt="${escapeHtml(className(cls))}">
     </button>`).join('');
   classWrap.querySelectorAll('.classmeta-class-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -5447,7 +5826,7 @@ function renderClassMetaPickers(){
   specWrap.innerHTML = specs.map(spec => `
     <button class="classmeta-spec-btn ${classMetaSelected && classMetaSelected.spec === spec ? 'active' : ''}" data-spec="${escapeHtml(spec)}">
       <img src="${specIconUrl(activeCls, spec)}" alt="">
-      <span>${escapeHtml(spec)}</span>
+      <span>${escapeHtml(specName(spec))}</span>
     </button>`).join('');
   specWrap.querySelectorAll('.classmeta-spec-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -5548,9 +5927,9 @@ function renderClassMetaDungeonGrid(entry){
   return `${title}
     <div class="classmeta-dungeon-grid">
       ${byDungeon.map(d => `
-        <a class="classmeta-dungeon-chip" href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(d.dungeon)}">
+        <a class="classmeta-dungeon-chip" href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(gn(d.dungeon))}">
           ${d.icon ? `<img class="classmeta-dungeon-icon" src="${escapeHtml(d.icon)}" alt="">` : ''}
-          <span class="classmeta-dungeon-name">${escapeHtml(d.shortName || d.dungeon)}</span>
+          <span class="classmeta-dungeon-name">${escapeHtml(gn(d.shortName) || gn(d.dungeon))}</span>
           <span class="classmeta-dungeon-level">+${d.level}</span>
         </a>`).join('')}
     </div>`;
@@ -5572,7 +5951,7 @@ function renderClassMetaDetail(){
   const topRunHtml = entry.topRun ? `
     <a class="classmeta-toprun" href="${escapeHtml(entry.topRun.url)}" target="_blank" rel="noopener noreferrer">
       <span class="classmeta-toprun-level">+${entry.topRun.level}</span>
-      <span class="classmeta-toprun-dungeon">${escapeHtml(entry.topRun.shortName || entry.topRun.dungeon)}</span>
+      <span class="classmeta-toprun-dungeon">${escapeHtml(gn(entry.topRun.shortName) || gn(entry.topRun.dungeon))}</span>
       <span class="classmeta-toprun-link">${t('viewOnRaiderIo')} →</span>
     </a>` : `<div class="empty-note">${t('classMetaNoRuns')}</div>`;
   wrap.innerHTML = `
@@ -5581,7 +5960,7 @@ function renderClassMetaDetail(){
       <div class="classmeta-detail-head">
         <img class="classmeta-detail-icon" src="${iconUrl}" alt="">
         <div>
-          <div class="classmeta-detail-name" style="color:${clsColor}">${escapeHtml(entry.spec)} ${escapeHtml(entry.class)}</div>
+          <div class="classmeta-detail-name" style="color:${clsColor}">${escapeHtml(specName(entry.spec))} ${escapeHtml(className(entry.class))}</div>
           <div class="classmeta-detail-rank">${t('classMetaRankLabel', rank, totalSpecs)}</div>
         </div>
         ${entry.role ? `<img class="classmeta-report-role" src="${roleIconUrl(entry.role)}" title="${classMetaRoleLabel(entry)}" alt="">` : ''}
@@ -5728,7 +6107,7 @@ async function renderClassMetaInsight(entry){
   const minLvl = Math.min(...analysis.levels), maxLvl = Math.max(...analysis.levels);
   const text = analysis.totalDeaths === 0
     ? t('classMetaInsightClean', analysis.runsAnalyzed, minLvl, maxLvl)
-    : t('classMetaInsightShort', analysis.runsAnalyzed, minLvl, maxLvl, analysis.specDeaths, analysis.totalDeaths, target.spec);
+    : t('classMetaInsightShort', analysis.runsAnalyzed, minLvl, maxLvl, analysis.specDeaths, analysis.totalDeaths, specName(target.spec));
   el.innerHTML = `<div class="classmeta-insight-text">${text}</div>`;
   setClassMetaInsightStatus(classMetaInsightStatus(analysis));
 }
@@ -5749,7 +6128,7 @@ function renderClassMetaTable(){
         <div class="classmeta-table-row ${active ? 'active' : ''}" data-class="${escapeHtml(entry.class)}" data-spec="${escapeHtml(entry.spec)}">
           <span class="classmeta-table-rank">#${i+1}</span>
           <img class="classmeta-table-icon" src="${specIconUrl(entry.class, entry.spec)}" alt="">
-          <span class="classmeta-table-name" style="color:${CLASS_HEX[entry.class]||'#fff'}">${escapeHtml(entry.spec)} ${escapeHtml(entry.class)}</span>
+          <span class="classmeta-table-name" style="color:${CLASS_HEX[entry.class]||'#fff'}">${escapeHtml(specName(entry.spec))} ${escapeHtml(className(entry.class))}</span>
           <span class="classmeta-table-count">${entry.count}</span>
           <span class="classmeta-table-pct">${pct.toFixed(1)}%</span>
           <span class="classmeta-table-high">${entry.highestLevel ? '+'+entry.highestLevel : '—'}</span>
@@ -5871,7 +6250,7 @@ function rosterCardHtml(c){
         <img class="roster-card-avatar" src="${c.avatarUrl || classIconUrl(c.class)}" alt="">
         <div>
           <div class="roster-card-name" style="color:${CLASS_HEX[c.class]||'#fff'}">${escapeHtml(c.name)}</div>
-          <div class="roster-card-meta">${escapeHtml(c.spec||'')} ${escapeHtml(c.class||'')}${c.realmName ? ' · '+escapeHtml(c.realmName) : ''}</div>
+          <div class="roster-card-meta">${escapeHtml(specName(c.spec)||'')} ${escapeHtml(className(c.class)||'')}${c.realmName ? ' · '+escapeHtml(c.realmName) : ''}</div>
         </div>
       </div>
       <div class="roster-card-stats">
@@ -5926,8 +6305,8 @@ function rosterCardDetailHtml(c){
           return `
           <div class="roster-raid-row ${killedDiff ? 'done' : 'pending'}">
             <span class="roster-raid-mark">${killedDiff ? '✓' : '○'}</span>
-            <span>${escapeHtml(boss)}</span>
-            ${killedDiff ? `<span class="roster-raid-diff">${escapeHtml(killedDiff)}</span>` : ''}
+            <span>${escapeHtml(gn(boss))}</span>
+            ${killedDiff ? `<span class="roster-raid-diff">${escapeHtml(diffName(killedDiff))}</span>` : ''}
           </div>`;
         }).join('')}
       </div>
@@ -6448,7 +6827,7 @@ document.getElementById('recentRunsModal').addEventListener('click', (e) => { if
 
 async function openSeasonBestDetail(run){
   const chests = '+'.repeat(run.num_keystone_upgrades || 0);
-  document.getElementById('seasonBestModalTitle').textContent = `${run.dungeon} +${run.mythic_level}${chests}`;
+  document.getElementById('seasonBestModalTitle').textContent = `${gn(run.dungeon)} +${run.mythic_level}${chests}`;
   const body = document.getElementById('seasonBestModalBody');
   body.innerHTML = `<div class="empty-note">…</div>`;
   document.getElementById('seasonBestModal').style.display = 'flex';
@@ -6535,7 +6914,7 @@ function renderBisBrowseGrid(){
     <div class="bis-browse-card ${loc===bisActiveBrowseLoc?'active':''} ${filteredCount===0?'bis-browse-card-empty':''}" data-loc="${escapeHtml(loc)}">
       ${thumb ? `<img class="bis-browse-card-icon" src="${thumb}" alt="">` : ''}
       <div>
-        <div class="bis-browse-card-name">${escapeHtml(loc)}</div>
+        <div class="bis-browse-card-name">${escapeHtml(gn(loc))}</div>
         <div class="bis-browse-card-count">${t('bisItemCount', filteredCount)}</div>
       </div>
     </div>`;
@@ -6577,7 +6956,7 @@ function renderBisBrowseBossGrid(items){
     <div class="bis-browse-card bis-browse-boss-card" data-boss="${escapeHtml(boss)}">
       ${thumb ? `<img class="bis-browse-card-icon" src="${thumb}" alt="">` : `<div class="bis-browse-card-icon bis-browse-card-icon-empty"></div>`}
       <div>
-        <div class="bis-browse-card-name">${escapeHtml(boss)}</div>
+        <div class="bis-browse-card-name">${escapeHtml(gn(boss))}</div>
         <div class="bis-browse-card-count">${t('bisItemCount', its.length)}</div>
       </div>
     </div>`;
@@ -6618,7 +6997,7 @@ function renderBisBrowseItems(){
     return;
   }
   headEl.textContent = loc
-    ? (bisActiveBrowseBoss && bisActiveBrowseBoss !== '__all__' ? `${loc} — ${bisActiveBrowseBoss}` : loc)
+    ? (bisActiveBrowseBoss && bisActiveBrowseBoss !== '__all__' ? `${gn(loc)} — ${gn(bisActiveBrowseBoss)}` : gn(loc))
     : t('bisBrowseAllItemsLabel');
 
   // Real WoW paperdoll order (head down to off-hand), same order/grouping already used
@@ -6640,9 +7019,10 @@ function renderBisBrowseItems(){
     const already = targetItems.some(b => (item.whId && String(b.whId) === String(item.whId)) || b.name.toLowerCase() === item.name.toLowerCase());
     const iconHtml = item.icon ? `<img class="bicon-img" src="${item.icon}" alt="">` : slotIcon(item.slot);
     const statsStr = formatItemStatsShort(item.whId);
+    const itemDispName = itemDisplayName(item.name, item.whId);
     const nameHtml = item.whId
-      ? `<a href="https://www.wowhead.com/item=${item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link">${escapeHtml(item.name)}</a>`
-      : `<span class="bis-browse-item-name">${escapeHtml(item.name)}</span>`;
+      ? `<a href="https://www.wowhead.com/item=${item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link">${escapeHtml(itemDispName)}</a>`
+      : `<span class="bis-browse-item-name">${escapeHtml(itemDispName)}</span>`;
     return `
     <div class="bis-browse-item-row ${already?'added':''}" data-idx="${i}">
       <span class="bicon">${iconHtml}</span>
@@ -6669,7 +7049,7 @@ function renderBisBrowseItems(){
       byBoss.get(key).push(i);
     });
     bodyHtml = [...byBoss.entries()].map(([boss, idxs]) => `
-      <div class="bis-browse-boss-head">${escapeHtml(boss)}</div>
+      <div class="bis-browse-boss-head">${escapeHtml(gn(boss))}</div>
       ${idxs.map(i => itemRowHtml(items[i], i)).join('')}
     `).join('');
   } else if(loc && hasBosses){
@@ -6729,11 +7109,11 @@ const bisRowHtml = b => {
   <div class="bis-row" data-id="${b.id}">
     <span class="bicon">${iconHtml}</span>
     <div class="bis-row-info">
-      <${linkTag}${linkAttrs}>${escapeHtml(b.name)}</${linkTag}>
+      <${linkTag}${linkAttrs}>${escapeHtml(itemDisplayName(b.name, b.whId))}</${linkTag}>
       <span class="bslot">${escapeHtml(b.slot || '—')}</span>
     </div>
     ${statsStr ? `<span class="bis-row-stats">${escapeHtml(statsStr)}</span>` : ''}
-    ${loc ? `<span class="bis-row-loc">${escapeHtml(loc)}</span>` : ''}
+    ${loc ? `<span class="bis-row-loc">${escapeHtml(gn(loc))}</span>` : ''}
     ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
     <button class="bis-priority-toggle bis-priority-${priority}" data-id="${b.id}" title="${t('bisPriorityToggleHint')}">${priority === 'secondary' ? t('mustHaveTag') : t('bisTag')}</button>
     <button class="bdel">✕</button>
@@ -6881,24 +7261,48 @@ function findItemBoss(whId){
    (e.g. a world boss not in our dungeon/raid tables); anything left with none of those is
    the closest honest guess left - a crafted/BOE item. */
 const MURLOK_SEASON_MIN_ILVL = 292;
+// Wowhead locale 8 = Portuguese (Brazil) - confirmed by fetching a known item in every
+// locale and comparing real client strings ("Item Level" -> "Nível do Item", "Bind on
+// Pickup" -> "Vincula-se ao ser recolhido"). Cache key includes the locale so switching the
+// app's language doesn't serve a stale tooltip fetched in the other one.
 const wowheadTooltipCache = new Map();
 async function fetchWowheadTooltip(whId){
-  if(wowheadTooltipCache.has(whId)) return wowheadTooltipCache.get(whId);
+  const locale = currentLang === 'pt' ? 8 : 0;
+  const cacheKey = `${whId}_${locale}`;
+  if(wowheadTooltipCache.has(cacheKey)) return wowheadTooltipCache.get(cacheKey);
+  const promise = fetch(`https://nether.wowhead.com/tooltip/item/${whId}?locale=${locale}&content=1`)
+    .then(res => res.ok ? res.json() : null)
+    .catch(() => null);
+  wowheadTooltipCache.set(cacheKey, promise);
+  return promise;
+}
+// Always-English variant, used only where the result feeds real matching logic (slot
+// classification against WOWHEAD_SLOT_TO_BIS's English keys) rather than display text -
+// separate cache entry so it never collides with the locale-aware one above.
+function fetchWowheadTooltipEnglish(whId){
+  const cacheKey = `${whId}_0`;
+  if(wowheadTooltipCache.has(cacheKey)) return wowheadTooltipCache.get(cacheKey);
   const promise = fetch(`https://nether.wowhead.com/tooltip/item/${whId}?locale=0&content=1`)
     .then(res => res.ok ? res.json() : null)
     .catch(() => null);
-  wowheadTooltipCache.set(whId, promise);
+  wowheadTooltipCache.set(cacheKey, promise);
   return promise;
 }
 async function classifyUnknownMurlokItem(whId){
   const data = await fetchWowheadTooltip(whId);
   if(!data || !data.tooltip) return { label: t('murlokSourceUnknown'), category: 'unknown' };
   const tooltip = data.tooltip;
-  const ilvlM = /Item Level <!--ilvl-->(\d+)/.exec(tooltip);
+  // Both markers below are Wowhead's own internal comment/class hooks, stable across every
+  // locale (confirmed: locale 8's ilvl line reads "Nível do Item: <!--ilvl-->334", same
+  // marker as English's "Item Level <!--ilvl-->334") - so this works regardless of language,
+  // unlike matching on the surrounding English words would.
+  const ilvlM = /<!--ilvl-->(\d+)/.exec(tooltip);
   const ilvl = ilvlM ? Number(ilvlM[1]) : null;
   const hasItemSet = /\/item-set=/.test(tooltip);
-  const droppedByM = /Dropped by:\s*([^<]+)</.exec(tooltip);
-  const droppedBy = droppedByM ? droppedByM[1].trim() : null;
+  const droppedByM = /whtt-droppedby">([^<]+)</.exec(tooltip);
+  // Strip the locale's own "Dropped by: " / "Saqueado de: " prefix, whichever one this
+  // response came back in - only the location/boss name after it is what we want.
+  const droppedBy = droppedByM ? droppedByM[1].replace(/^[^:]+:\s*/, '').trim() : null;
   // A Tier Set piece has no real farm location (it's crafted via the Catalyst, not dropped
   // by a boss) - but the item itself, exactly as Murlok reported it, is still the real thing
   // top players are actually wearing, stat roll included. This used to try to find a
@@ -6965,7 +7369,7 @@ function openMurlokModal(){
     const defaultSpec = specs.includes(c.spec) ? c.spec : specs[0];
     murlokSpecSlug = murlokSlugify(defaultSpec);
     renderMurlokSpecPills(c.class, defaultSpec);
-    specLabel.textContent = t('murlokBuildSpecLabel', defaultSpec, c.class);
+    specLabel.textContent = t('murlokBuildSpecLabel', specName(defaultSpec), className(c.class));
     loadMurlokBuild(clsSlug, murlokSpecSlug, '');
   } else {
     specLabel.textContent = t('murlokNoSpecMsg');
@@ -7089,7 +7493,7 @@ function renderMurlokSpecPills(cls, activeSpec){
   const specs = WOW_CLASS_SPECS[cls] || [];
   const wrap = document.getElementById('murlokSpecPills');
   wrap.innerHTML = specs.map(spec => `
-    <button class="murlok-hero-pill ${spec === activeSpec ? 'active' : ''}" data-spec="${escapeHtml(spec)}">${escapeHtml(spec)}</button>
+    <button class="murlok-hero-pill ${spec === activeSpec ? 'active' : ''}" data-spec="${escapeHtml(spec)}">${escapeHtml(specName(spec))}</button>
   `).join('');
   wrap.querySelectorAll('.murlok-hero-pill').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -7102,7 +7506,7 @@ function renderMurlokSpecPills(cls, activeSpec){
       murlokHeroTalents = [];
       murlokHeroSlug = '';
       wrap.querySelectorAll('.murlok-hero-pill').forEach(b => b.classList.toggle('active', b === btn));
-      document.getElementById('murlokBuildSpecLabel').textContent = t('murlokBuildSpecLabel', spec, cls);
+      document.getElementById('murlokBuildSpecLabel').textContent = t('murlokBuildSpecLabel', specName(spec), className(cls));
       loadMurlokBuild(clsSlug, murlokSpecSlug, '');
     });
   });
@@ -7234,9 +7638,9 @@ function renderMurlokResult(){
         <div class="murlok-item-row" data-row-key="${escapeHtml(r.key)}">
           <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : (murlokSelected.has(r.key) ? 'checked' : '')}>
           ${r.item.icon ? `<img class="bicon-img" src="${r.item.icon}" alt="">` : slotIcon(r.bisSlot)}
-          <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link" style="flex:1;">${escapeHtml(r.item.name)}</a>
+          <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link" style="flex:1;">${escapeHtml(itemDisplayName(r.item.name, r.item.whId))}</a>
           ${r.loc
-            ? `<span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>`
+            ? `<span class="bis-browse-item-loc">${escapeHtml(gn(r.loc))}</span>`
             : `<span class="bis-browse-item-loc murlok-loc-loading" data-key="${escapeHtml(r.key)}">…</span>`}
           ${(r.item.count !== null && r.item.count !== undefined) ? `<span class="murlok-item-count">${t('murlokPlayersLabel', r.item.count)}</span>` : ''}
           ${r.altRank ? `<span class="bis-rank-tag ${bisRankClass(r.altRank)}" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', r.altRank)}</span>` : ''}
@@ -7296,10 +7700,10 @@ function murlokCatalystRowHtml(r){
       <input type="checkbox" data-key="${escapeHtml(r.key)}" ${r.already ? 'disabled' : (murlokSelected.has(r.key) ? 'checked' : '')}>
       ${r.item.icon ? `<img class="bicon-img" src="${r.item.icon}" alt="">` : slotIcon(r.bisSlot)}
       <span class="bis-browse-item-info" style="flex:1;">
-        <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link">${escapeHtml(r.item.name)}</a>
+        <a href="https://www.wowhead.com/item=${r.item.whId}" target="_blank" rel="noopener noreferrer" class="bis-browse-item-name bis-wh-link">${escapeHtml(itemDisplayName(r.item.name, r.item.whId))}</a>
         ${statsStr ? `<span class="bis-browse-item-stats">${escapeHtml(statsStr)}</span>` : ''}
       </span>
-      <span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>
+      <span class="bis-browse-item-loc">${escapeHtml(gn(r.loc))}</span>
       <span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>
       ${r.altRank ? `<span class="bis-rank-tag ${bisRankClass(r.altRank)}" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', r.altRank)}</span>` : ''}
       ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
@@ -7446,7 +7850,7 @@ function maybeCheckMurlokDrift(c){
 }
 function murlokDriftItemChip(item, cls){
   const icon = item.icon ? `<img class="bicon-img" src="${item.icon}" alt="">` : '';
-  return `<span class="murlok-drift-item ${cls}">${icon}${escapeHtml(item.name)}</span>`;
+  return `<span class="murlok-drift-item ${cls}">${icon}${escapeHtml(itemDisplayName(item.name, item.whId))}</span>`;
 }
 function renderMurlokDriftBanner(c){
   const wrap = document.getElementById('murlokDriftBanner');
@@ -7676,7 +8080,12 @@ async function resolveKeystoneLootItem(itemId){
   if(found) return { name: found[0], slot: found[1], source: found[2], icon: found[4], catalyst: false, whId: itemId };
   const data = await fetchWowheadTooltip(itemId);
   if(!data || !data.tooltip) return null;
-  const slotM = /<table width="100%"><tr><td>([^<]+)<\/td>/.exec(data.tooltip);
+  // Slot classification always reads the English tooltip regardless of the app's current
+  // language - WOWHEAD_SLOT_TO_BIS's keys ("Shoulder", "Trinket", ...) are English, and this
+  // result feeds real slot-matching logic elsewhere (bisSlotGroupKey, slot filters), not just
+  // display text, so it can't follow the localized fetch the way the item's name safely can.
+  const enData = currentLang === 'pt' ? await fetchWowheadTooltipEnglish(itemId) : data;
+  const slotM = /<table width="100%"><tr><td>([^<]+)<\/td>/.exec((enData || data).tooltip || '');
   const rawSlot = slotM ? slotM[1].trim() : '';
   const slot = WOWHEAD_SLOT_TO_BIS[rawSlot] || rawSlot;
   const classified = await classifyUnknownMurlokItem(itemId);
@@ -7732,9 +8141,9 @@ function renderBisSearchResults(query){
     ${matches.map(([name, slot, loc, whId, icon, boss]) => `
       <div class="bis-search-row" data-name="${name}" data-slot="${slot}" data-loc="${loc}" data-whid="${whId || ''}" data-icon="${icon || ''}" data-boss="${boss || ''}">
         <span class="bsr-icon">${icon ? `<img class="bicon-img" src="${icon}" alt="">` : slotIcon(slot)}</span>
-        <span class="bsr-name">${whId ? `<a href="https://www.wowhead.com/item=${whId}" target="_blank" rel="noopener noreferrer" class="bis-wh-link">${name}</a>` : name}</span>
+        <span class="bsr-name">${whId ? `<a href="https://www.wowhead.com/item=${whId}" target="_blank" rel="noopener noreferrer" class="bis-wh-link">${itemDisplayName(name, whId)}</a>` : name}</span>
         <span class="bsr-slot">${slot.split(' (')[0]}</span>
-        <span class="bsr-loc">${loc}</span>
+        <span class="bsr-loc">${gn(loc)}</span>
       </div>`).join('')}
   `;
   panel.classList.add('open');
@@ -8197,7 +8606,7 @@ function renderQuizResult(){
       <div class="quiz-result-target">
         <div class="quiz-result-label">${t('quizResultRaidLabel')}</div>
         <div class="quiz-result-level">${t('upgradesRaidTab')} — ${bestRaid.difficulty}</div>
-        <div class="quiz-result-explain">${t('quizResultRaidExplain', RAID_NAME, bestRaid.difficulty, UPGRADE_TRACK_LABEL[bestRaid.track])}</div>
+        <div class="quiz-result-explain">${t('quizResultRaidExplain', gn(RAID_NAME), bestRaid.difficulty, UPGRADE_TRACK_LABEL[bestRaid.track])}</div>
       </div>`;
     rulerHtml = `
       <div class="quiz-ruler" id="quizRuler">
@@ -8258,7 +8667,7 @@ function bonusWishChip(c, [loc, items]){
     return `
     <div class="bis-dchip-item ${obtained?'bonus-wish-obtained':''}">
       ${w.icon ? `<img class="bis-dchip-item-icon" src="${w.icon}" alt="">` : ''}
-      <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(w.name)}</${linkTag}>
+      <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(itemDisplayName(w.name, w.whId))}</${linkTag}>
       <span class="bis-dchip-item-slot">${escapeHtml((w.slot||'').split(' (')[0])}</span>
       ${obtained ? `<span class="bonus-wish-check" title="${t('bonusRollObtainedLabel')}">✓</span>` : ''}
       <button class="bonus-wish-del" data-id="${w.id}">✕</button>
@@ -8267,7 +8676,7 @@ function bonusWishChip(c, [loc, items]){
   return `
   <div class="bis-dchip">
     <div class="bis-dchip-header">
-      <span class="bis-dchip-loc">${escapeHtml(loc)}</span>
+      <span class="bis-dchip-loc">${escapeHtml(gn(loc))}</span>
       <span class="bis-dchip-count">${items.length}</span>
     </div>
     <div class="bis-dchip-items">${items.map(itemRow).join('')}</div>
@@ -8310,9 +8719,9 @@ function renderBonusWishSearchResults(query){
     ${matches.map(([name, slot, loc, whId, icon, boss]) => `
       <div class="bis-search-row" data-name="${name}" data-slot="${slot}" data-loc="${loc}" data-whid="${whId || ''}" data-icon="${icon || ''}" data-boss="${boss || ''}">
         <span class="bsr-icon">${icon ? `<img class="bicon-img" src="${icon}" alt="">` : slotIcon(slot)}</span>
-        <span class="bsr-name">${whId ? `<a href="https://www.wowhead.com/item=${whId}" target="_blank" rel="noopener noreferrer" class="bis-wh-link">${name}</a>` : name}</span>
+        <span class="bsr-name">${whId ? `<a href="https://www.wowhead.com/item=${whId}" target="_blank" rel="noopener noreferrer" class="bis-wh-link">${itemDisplayName(name, whId)}</a>` : name}</span>
         <span class="bsr-slot">${slot.split(' (')[0]}</span>
-        <span class="bsr-loc">${loc}</span>
+        <span class="bsr-loc">${gn(loc)}</span>
       </div>`).join('')}
   `;
   panel.classList.add('open');
@@ -8371,9 +8780,9 @@ function renderBonusLogItemSearchResults(query){
     ${matches.map(([name, slot, loc, whId, icon]) => `
       <div class="bis-search-row" data-name="${name}" data-loc="${loc}" data-whid="${whId || ''}" data-icon="${icon || ''}">
         <span class="bsr-icon">${icon ? `<img class="bicon-img" src="${icon}" alt="">` : slotIcon(slot)}</span>
-        <span class="bsr-name">${name}</span>
+        <span class="bsr-name">${itemDisplayName(name, whId)}</span>
         <span class="bsr-slot">${slot.split(' (')[0]}</span>
-        <span class="bsr-loc">${loc}</span>
+        <span class="bsr-loc">${gn(loc)}</span>
       </div>`).join('')}
   `;
   panel.classList.add('open');
@@ -8440,7 +8849,7 @@ function bonusReceivedChip([loc, entries]){
   return `
   <div class="bis-dchip">
     <div class="bis-dchip-header">
-      <span class="bis-dchip-loc">${escapeHtml(loc)}</span>
+      <span class="bis-dchip-loc">${escapeHtml(gn(loc))}</span>
       <span class="bis-dchip-count">${entries.length}</span>
     </div>
     <div class="bis-dchip-items">${entries.map(itemRow).join('')}</div>
@@ -8580,9 +8989,9 @@ function renderVaultItemSearchResults(query){
     ${matches.map(([name, slot, loc, whId, icon]) => `
       <div class="bis-search-row" data-name="${name}" data-slot="${slot}" data-whid="${whId || ''}" data-icon="${icon || ''}">
         <span class="bsr-icon">${icon ? `<img class="bicon-img" src="${icon}" alt="">` : slotIcon(slot)}</span>
-        <span class="bsr-name">${name}</span>
+        <span class="bsr-name">${itemDisplayName(name, whId)}</span>
         <span class="bsr-slot">${slot.split(' (')[0]}</span>
-        <span class="bsr-loc">${loc}</span>
+        <span class="bsr-loc">${gn(loc)}</span>
       </div>`).join('')}
   `;
   panel.classList.add('open');
