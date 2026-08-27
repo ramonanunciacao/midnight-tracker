@@ -355,24 +355,27 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bonus-wish-del:hover{ opacity:1; color:var(--danger); }
 .season-best-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
 /* Dashboard's discreet "where to farm" strip - a mini mirror of the BIS Gear page's BIS by
-   Location cards, condensed into scannable pills instead of full item lists. Read-only and
-   click-through only (real editing stays on the BIS Gear page), so it's kept visually quiet:
-   no bright colors besides the gold count badge, same pill language dash-bis-list-pill
-   already uses elsewhere on this page. */
+   Location cards: just the dungeon/raid icon+name (no pill/badge decoration around it) and,
+   underneath, the real items still missing there in a small plain list - no BIS tags, no
+   equipped checkmark, that detail stays on the real page. Read-only and click-through only:
+   clicking a whole block jumps to and glows the matching card on the BIS Gear page instead of
+   editing anything here. */
 .bis-farm-card h3{ margin-bottom:10px; }
-.bis-farm-strip{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
+.bis-farm-strip{ display:flex; gap:18px; overflow-x:auto; padding-bottom:4px; align-items:flex-start; }
 .bis-farm-chip{
-  display:flex; align-items:center; gap:8px; flex:0 0 auto; background: var(--bg-panel-raised); border:1px solid var(--hairline);
-  border-radius:20px; padding:5px 12px 5px 6px; cursor:pointer; font-family:inherit; color:var(--text);
-  transition: border-color .15s, background .15s;
+  display:flex; flex-direction:column; gap:7px; flex:0 0 200px; cursor:pointer; padding:6px; margin:-6px; border-radius:10px;
+  transition: background .15s;
 }
-.bis-farm-chip:hover{ border-color: var(--gold-dim); background: rgba(242,181,61,.08); }
-.bis-farm-chip-icon{ width:24px; height:24px; border-radius:6px; object-fit:cover; flex-shrink:0; }
-.bis-farm-chip-name{ font-size:12px; font-weight:700; white-space:nowrap; }
-.bis-farm-chip-count{
-  font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:800; color:var(--gold); background: rgba(242,181,61,.14);
-  border-radius:10px; padding:1px 8px; line-height:1.5; flex-shrink:0;
-}
+.bis-farm-chip:hover{ background: var(--bg-panel-raised); }
+.bis-farm-chip-head{ display:flex; align-items:center; gap:8px; }
+.bis-farm-chip-icon{ width:26px; height:26px; border-radius:6px; object-fit:cover; flex-shrink:0; }
+.bis-farm-chip-name{ font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:800; color:var(--text); letter-spacing:.02em; }
+.bis-farm-chip-items{ display:flex; flex-direction:column; gap:4px; }
+.bis-farm-item{ display:flex; align-items:center; gap:6px; font-size:10.5px; color:var(--text-dim); min-width:0; }
+.bis-farm-item-icon{ width:16px; height:16px; border-radius:4px; object-fit:cover; flex-shrink:0; }
+.bis-farm-item-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bis-farm-item-slot{ flex-shrink:0; opacity:.75; }
+.jump-glow-2s{ animation: jumpGlow 2s ease-out; }
 .dash-topgroup-mplus{ display:flex; flex-direction:column; flex:1 1 260px; max-width:300px; }
 .dash-topgroup-mplus h3{ font-family:'Rajdhani',sans-serif; font-size:13px; color:var(--text); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; }
 .mplus-season-total{
@@ -4920,12 +4923,14 @@ function renderCharacters(){
 }
 
 /* Discreet "where to farm" summary for the Dashboard - a much lighter mirror of the BIS Gear
-   page's "BIS by Location" card, reduced to just a real location name + how many items are
-   still missing there, sorted by what's most outstanding first (that's the actual "where's
-   it worth going" signal, not the fixed dungeon-then-raid order the full page uses). Craft,
-   Tier Set, Season Anterior, and "no location" are excluded entirely - they're not real game
-   content you can go run this week, so they don't belong in a farm-target list. Editing still
-   only happens on the real BIS Gear page; this is read-only, click-through navigation. */
+   page's "BIS by Location" card: real location name + icon up top, then just the items still
+   missing there (icon, name, slot - no BIS/Catalyst tags, no equipped checkmark, that detail
+   stays on the real page). Sorted by how much is outstanding (most first), since that's the
+   actual "where's it worth going" signal for a quick-glance tool, not the fixed
+   dungeon-then-raid order the full BIS Gear page uses. Craft, Tier Set, Season Anterior, and
+   "no location" are excluded entirely - they're not real game content you can go run this
+   week, so they don't belong in a farm-target list. Editing still only happens on the real
+   BIS Gear page; this is read-only, click-through navigation. */
 function bisFarmSummary(c){
   const bestByDungeon = new Map();
   c.mplusBestRuns.forEach(r => {
@@ -4944,19 +4949,47 @@ function bisFarmSummary(c){
     byLoc.get(loc).push(b);
   });
   return [...byLoc.entries()].map(([loc, items]) => {
-    const remaining = items.filter(b => !findEquippedMatchForBis(c, b)).length;
+    const missing = items.filter(b => !findEquippedMatchForBis(c, b));
     const dungeonMatch = bestByDungeon.get(loc);
     const icon = dungeonMatch ? (dungeonMatch.icon_url || dungeonMatch.background_image_url) : (items.find(i => i.icon) || {}).icon || '';
-    return { loc, icon, remaining, total: items.length };
-  }).filter(entry => entry.remaining > 0).sort((a, b) => b.remaining - a.remaining);
+    return { loc, icon, missing };
+  }).filter(entry => entry.missing.length > 0).sort((a, b) => b.missing.length - a.missing.length);
 }
 function bisFarmChip(entry){
+  const itemRow = b => `
+    <div class="bis-farm-item">
+      ${b.icon ? `<img class="bis-farm-item-icon" src="${b.icon}" alt="">` : ''}
+      <span class="bis-farm-item-name">${escapeHtml(itemDisplayName(b.name, b.whId))}</span>
+      <span class="bis-farm-item-slot">${escapeHtml((b.slot||'').split(' (')[0])}</span>
+    </div>`;
   return `
-  <button class="bis-farm-chip" data-farm-loc="${escapeHtml(entry.loc)}">
-    ${entry.icon ? `<img class="bis-farm-chip-icon" src="${entry.icon}" alt="">` : ''}
-    <span class="bis-farm-chip-name">${escapeHtml(gn(entry.loc))}</span>
-    <span class="bis-farm-chip-count" title="${escapeHtml(t('bisRemainingCountTooltip', entry.remaining, entry.total))}">${entry.remaining}</span>
-  </button>`;
+  <div class="bis-farm-chip" data-farm-loc="${escapeHtml(entry.loc)}" role="button" tabindex="0">
+    <div class="bis-farm-chip-head">
+      ${entry.icon ? `<img class="bis-farm-chip-icon" src="${entry.icon}" alt="">` : ''}
+      <span class="bis-farm-chip-name">${escapeHtml(gn(entry.loc))}</span>
+    </div>
+    <div class="bis-farm-chip-items">${entry.missing.map(itemRow).join('')}</div>
+  </div>`;
+}
+/* Navigates from a Dashboard "where to farm" block straight to its real card on the BIS Gear
+   page, and glows that card for ~2s (same gold jumpGlow animation the sidebar's own
+   scroll-jump links use, just held a beat longer) so it's obvious exactly which card the
+   click was pointing at - same idea as "here's where to edit this", not just "here's the
+   page". Waits two animation frames after the re-render so the browser has actually painted
+   the new card before trying to scroll to it. */
+function jumpToBisGearLocation(loc){
+  switchToTab('bis');
+  renderBisGearPage();
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const page = document.getElementById('bisGearPage');
+    const target = page ? page.querySelector(`.bis-dchip[data-loc="${CSS.escape(loc || '')}"]`) : null;
+    if(!target) return;
+    target.scrollIntoView({ behavior:'smooth', block:'center' });
+    target.classList.remove('jump-glow-2s');
+    void target.offsetWidth;
+    target.classList.add('jump-glow-2s');
+    target.addEventListener('animationend', () => target.classList.remove('jump-glow-2s'), { once:true });
+  }));
 }
 /* Shared character identity header - avatar, name, class/spec, Mythic+ Score, best run,
    weekly reset countdown. Used at the top of both the Dashboard and the BIS Gear page (moved
@@ -5312,15 +5345,6 @@ function renderCharacterPage(){
             </div>
           </div>
 
-          ${bisFarmEntries.length ? `
-          <div class="dash-card bis-farm-card">
-            <div class="dash-card-head-inline">
-              <h3>${t('bisFarmTitle')}</h3>
-            </div>
-            <div class="bis-farm-strip">${bisFarmEntries.map(bisFarmChip).join('')}</div>
-          </div>
-          ` : ''}
-
           <div class="dash-row-strip">
             ${dungeonBestRuns.length ? `
             <div class="dash-card season-best-strip-card" id="section-mplus">
@@ -5337,6 +5361,15 @@ function renderCharacterPage(){
               ${sortedRecentRuns.length > 5 ? `<button class="dash-viewall-link view-more-runs-btn" id="viewMoreRunsBtn" style="margin-top:8px;">${t('viewMoreRunsLabel')}</button>` : ''}
             </div>
           </div>
+
+          ${bisFarmEntries.length ? `
+          <div class="dash-card bis-farm-card">
+            <div class="dash-card-head-inline">
+              <h3>${t('bisFarmTitle')}</h3>
+            </div>
+            <div class="bis-farm-strip">${bisFarmEntries.map(bisFarmChip).join('')}</div>
+          </div>
+          ` : ''}
 
         </div>
 
@@ -5466,10 +5499,9 @@ function renderCharacterPage(){
   });
 
   container.querySelectorAll('.bis-farm-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      switchToTab('bis');
-      renderBisGearPage();
-    });
+    const go = () => jumpToBisGearLocation(chip.dataset.farmLoc);
+    chip.addEventListener('click', go);
+    chip.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); go(); } });
   });
 
   container.querySelector('#vaultHistoryBtn').addEventListener('click', () => {
@@ -5597,7 +5629,7 @@ function renderBisGearPage(){
       </div>`;
     };
     return `
-    <div class="bis-dchip">
+    <div class="bis-dchip" data-loc="${escapeHtml(loc)}">
       <div class="bis-dchip-header">
         ${iconUrl ? `<img class="bis-dchip-icon" src="${iconUrl}" alt="">` : `<div class="bis-dchip-icon bis-dchip-icon-empty"></div>`}
         <span class="bis-dchip-loc">${escapeHtml(gn(loc))}</span>
