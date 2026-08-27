@@ -70,14 +70,18 @@
    dungeon.slug and fetching it directly - resolves to a real 200). No Blizzard token needed.
 
    Seventh, unrelated usage: GET <worker-url>/?type=rio-class-meta&season=season-mn-2
-   Same real Raider.IO runs endpoint as rio-world-top, but sampling the world's top 500 runs
-   (25 pages x 20/page, confirmed the real page size directly) across all dungeons combined
-   and aggregating every roster slot by class/spec - powers the "Meta Check" feature (how
-   represented is a spec among the world's best players right now, and what's its own highest
-   run in that sample). 500 rather than the original 200: a bigger sample both makes the
-   representativity % less noisy and, more importantly, gives the death-insight feature (see
-   below) a wider spread of real key levels per spec to work with instead of a narrow band
-   clustered at the very top. Returns { totalRuns, totalPlayers, specs: [{class, spec, role,
+   Same real Raider.IO runs endpoint as rio-world-top, but sampled per-region instead of
+   world: 10 pages x 20/page for each of the 4 real regions (us/eu/kr/tw), aggregating every
+   roster slot by class/spec - powers the "Meta Check" feature. Confirmed directly that
+   region=world&dungeon=all hard-caps at page 100 (page 101 returns a real 400) and never
+   drops below roughly +16-17 within that cap, since merging every region into one ranking
+   means the very top of that merged ranking alone fills all 100 pages - that gave
+   representativity data from only the tip of the elite. Splitting the same query per real
+   region reaches much lower key levels far faster (confirmed: eu/us bottom out around +16,
+   kr/tw around +12-13, at the same page depth), so combining a shallower sample across all
+   four covers roughly 6-8 real key-level tiers each season instead of one narrow band -
+   still every real run, no fabrication, and every region's page 0 is included so the actual
+   world-record run is always still captured. Returns { totalRuns, totalPlayers, specs: [{class, spec, role,
    count, highestLevel, topRun: {level, dungeon, shortName, url}, deathSampleRuns: [{runId,
    level, dungeon, shortName, url}, ...], byDungeon: [{dungeon, shortName, level, icon, url},
    ...]}, ...] } - deathSampleRuns is up to 12 of that spec's real runs in the sample, chosen
@@ -193,19 +197,28 @@ export default {
     if(url.searchParams.get('type') === 'rio-class-meta'){
       const season = url.searchParams.get('season');
       if(!season) return new Response(JSON.stringify({ error: 'missing season' }), { status: 400, headers: corsHeaders });
-      // Same real Raider.IO endpoint as rio-world-top, but sampling the world's top 500 runs
-      // (25 pages x 20 runs/page, confirmed the real page size by fetching page 0 directly)
-      // across all dungeons combined, to get a real representativity snapshot: how many of
-      // those ~2500 roster slots are each class/spec, and each spec's own highest run within
-      // that sample. This is genuinely what the top of the world is playing right now, not a
-      // guess - the "meta check" feature is built entirely on this real data. 500 instead of
-      // 200 so the death-insight sample below isn't confined to one narrow key-level band.
-      const PAGES = 25;
+      // Real Raider.IO runs endpoint, same one that backs rio-world-top, but sampled
+      // differently: region=world&dungeon=all caps out hard at page 100 (confirmed directly -
+      // page 101 returns a 400) and, within that cap, never drops below roughly +16-17,
+      // because "world" merges all regions into one ranking and the very top of that merged
+      // ranking alone is enough to fill 100 pages. That gave representativity data from only
+      // the tip of the elite, not the "median-ish" pushing population the feature needs.
+      // Querying each real region (us/eu/kr/tw) separately instead reaches much lower key
+      // levels far faster, since each region's own population is far smaller - confirmed
+      // directly: at the same page depth, eu/us reach ~+16, while kr/tw reach ~+12-13. Merging
+      // a shallower sample from all four real regions covers roughly 6-8 real key-level tiers
+      // (per-season, moves with whatever the actual top level is that season) instead of one.
+      // Every region's page 0 is included, so the single world-record run (whichever region it
+      // happens to be in) is still always captured - nothing is lost versus the old approach.
+      const REGIONS = ['us', 'eu', 'kr', 'tw'];
+      const PAGES_PER_REGION = 10;
       try{
-        const pages = await Promise.all(Array.from({ length: PAGES }, (_, i) =>
-          fetch(`https://raider.io/api/v1/mythic-plus/runs?season=${encodeURIComponent(season)}&region=world&dungeon=all&affixes=all&page=${i}`)
-            .then(res => res.ok ? res.json() : null)
-            .catch(() => null)
+        const pages = await Promise.all(REGIONS.flatMap(region =>
+          Array.from({ length: PAGES_PER_REGION }, (_, i) =>
+            fetch(`https://raider.io/api/v1/mythic-plus/runs?season=${encodeURIComponent(season)}&region=${region}&dungeon=all&affixes=all&page=${i}`)
+              .then(res => res.ok ? res.json() : null)
+              .catch(() => null)
+          )
         ));
         const specMap = new Map();
         const seenRunIds = new Set();

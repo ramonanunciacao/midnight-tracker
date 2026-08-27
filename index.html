@@ -1660,7 +1660,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
         <h2 data-i18n="classMetaTitle">Meta Check</h2>
         <span class="classmeta-sampled-label" id="classMetaSampledLabel"></span>
       </div>
-      <div class="upgrades-sub" data-i18n="classMetaSub">Baseado nas top 500 runs do mundo desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela. Isso é uma foto do momento, não é ao vivo — os dados do topo do mundo mudam o tempo todo e essa página se atualiza sozinha em segundo plano a cada poucos minutos.</div>
+      <div class="upgrades-sub" data-i18n="classMetaSub">Baseado nas runs mais altas de cada região do mundo (US/EU/KR/TW) desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela. Isso é uma foto do momento, não é ao vivo — os dados do topo do mundo mudam o tempo todo e essa página se atualiza sozinha em segundo plano a cada poucos minutos.</div>
 
       <div class="classmeta-picker" id="classMetaClassPicker"></div>
       <div class="classmeta-picker classmeta-spec-picker" id="classMetaSpecPicker"></div>
@@ -1668,7 +1668,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <div id="classMetaDetail"></div>
 
       <div class="bis-list-head" data-i18n="classMetaRankingTitle">Ranking completo por representatividade</div>
-      <div class="classmeta-ranking-caption" data-i18n="classMetaRankingCaption">Baseado na amostra das top 500 runs do mundo desta season — um "0" significa que a spec não apareceu nesse recorte específico, não que ninguém a joga.</div>
+      <div class="classmeta-ranking-caption" data-i18n="classMetaRankingCaption">Baseado na amostra das runs mais altas de cada região (US/EU/KR/TW) desta season — um "0" significa que a spec não apareceu nesse recorte específico, não que ninguém a joga.</div>
       <div id="classMetaTable"></div>
     </div>
   </section>
@@ -2143,10 +2143,10 @@ const I18N = {
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     worldTopRunsTitle: "Top Runs do Mundo", worldTopRunsLoading: "Carregando as melhores runs do mundo...",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
-    classMetaSub: "Baseado nas top 500 runs do mundo desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela. É uma foto do momento, não é ao vivo — os dados do topo do mundo mudam o tempo todo e essa página se atualiza sozinha em segundo plano a cada poucos minutos.",
+    classMetaSub: "Baseado nas runs mais altas de cada região do mundo (US/EU/KR/TW) desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela. É uma foto do momento, não é ao vivo — os dados do topo do mundo mudam o tempo todo e essa página se atualiza sozinha em segundo plano a cada poucos minutos.",
     classMetaRankingTitle: "Ranking completo por representatividade",
-    classMetaRankingCaption: "Baseado na amostra das top 500 runs do mundo desta season — um \"0\" significa que a spec não apareceu nesse recorte específico, não que ninguém a joga.",
-    classMetaLoading: "Buscando as top 500 runs do mundo no Raider.IO...",
+    classMetaRankingCaption: "Baseado na amostra das runs mais altas de cada região (US/EU/KR/TW) desta season — um \"0\" significa que a spec não apareceu nesse recorte específico, não que ninguém a joga.",
+    classMetaLoading: "Buscando as runs mais altas de cada região do mundo no Raider.IO...",
     classMetaPickPrompt: "Escolha uma classe e spec acima pra ver os dados",
     classMetaSampledAt: (rel) => `Amostra: ${rel}`,
     classMetaReportEyebrow: "Relatório da Spec",
@@ -2154,13 +2154,13 @@ const I18N = {
     classMetaRankLabel: (rank, total) => `#${rank} de ${total} specs por representatividade`,
     classMetaRankStatLabel: "Posição no ranking",
     classMetaRepresentLabel: "Representatividade no topo do mundo",
-    classMetaRepresentTooltip: (count, total) => `${count} de ${total} jogadores amostrados (top 500 runs do mundo)`,
+    classMetaRepresentTooltip: (count, total) => `${count} de ${total} jogadores amostrados (top runs de cada região do mundo)`,
     classMetaTopRunLabel: "Maior run feita com essa spec",
     classMetaNoRuns: "Nenhuma run dessa spec apareceu na amostra atual.",
     classMetaVerdictStrong: "Muito bem representada no topo do mundo agora — spec forte pra Mythic+ nesse momento.",
     classMetaVerdictGood: "Representação razoável no topo do mundo — uma escolha viável.",
     classMetaVerdictWeak: "Pouco representada no topo do mundo no momento — não significa que é fraca, mas está menos popular entre quem está pushando mais alto agora.",
-    classMetaVerdictNone: "Nenhum jogador dessa spec apareceu na amostra atual (top 500 runs do mundo) — amostra pequena, não é uma confirmação definitiva de que é fraca.",
+    classMetaVerdictNone: "Nenhum jogador dessa spec apareceu na amostra atual (top runs de cada região do mundo) — amostra pequena, não é uma confirmação definitiva de que é fraca.",
     classMetaColSpec: "Spec", classMetaColCount: "Jogadores", classMetaColHighest: "Maior key",
     classMetaRoleTank: "Tank", classMetaRoleHealer: "Healer", classMetaRoleMelee: "DPS Corpo a Corpo", classMetaRoleRanged: "DPS à Distância",
     classMetaChartTitle: (role) => `Representatividade entre specs de ${role}`,
@@ -2372,10 +2372,10 @@ const I18N = {
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     worldTopRunsTitle: "World Top Runs", worldTopRunsLoading: "Loading the world's top runs...",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
-    classMetaSub: "Based on the world's top 500 runs this season (raider.io) - see how popular a spec is at the top and its own highest run. This is a snapshot, not live — the world's top runs change constantly, and this page refreshes itself in the background every few minutes.",
+    classMetaSub: "Based on the top runs from every real region (US/EU/KR/TW) this season (raider.io) - see how popular a spec is at the top and its own highest run. This is a snapshot, not live — the world's top runs change constantly, and this page refreshes itself in the background every few minutes.",
     classMetaRankingTitle: "Full ranking by representation",
-    classMetaRankingCaption: "Based on the sample of the world's top 500 runs this season — a \"0\" means the spec didn't show up in that specific sample, not that nobody plays it.",
-    classMetaLoading: "Fetching the world's top 500 runs from Raider.IO...",
+    classMetaRankingCaption: "Based on the sample of top runs from every real region (US/EU/KR/TW) this season — a \"0\" means the spec didn't show up in that specific sample, not that nobody plays it.",
+    classMetaLoading: "Fetching the top runs from every region of the world from Raider.IO...",
     classMetaPickPrompt: "Pick a class and spec above to see the data",
     classMetaSampledAt: (rel) => `Sample: ${rel}`,
     classMetaReportEyebrow: "Spec Report",
@@ -2383,13 +2383,13 @@ const I18N = {
     classMetaRankLabel: (rank, total) => `#${rank} of ${total} specs by representation`,
     classMetaRankStatLabel: "Ranking position",
     classMetaRepresentLabel: "Representation at the top of the world",
-    classMetaRepresentTooltip: (count, total) => `${count} of ${total} sampled players (world's top 500 runs)`,
+    classMetaRepresentTooltip: (count, total) => `${count} of ${total} sampled players (top runs from every region)`,
     classMetaTopRunLabel: "Highest run made with this spec",
     classMetaNoRuns: "No run with this spec showed up in the current sample.",
     classMetaVerdictStrong: "Very well represented at the top of the world right now — a strong pick for Mythic+ at the moment.",
     classMetaVerdictGood: "Reasonable representation at the top of the world — a viable choice.",
     classMetaVerdictWeak: "Not very represented at the top of the world right now — that doesn't mean it's weak, just less popular among those pushing highest right now.",
-    classMetaVerdictNone: "No player with this spec showed up in the current sample (world's top 500 runs) — a small sample, not a definitive confirmation that it's weak.",
+    classMetaVerdictNone: "No player with this spec showed up in the current sample (top runs from every region) — a small sample, not a definitive confirmation that it's weak.",
     classMetaColSpec: "Spec", classMetaColCount: "Players", classMetaColHighest: "Highest key",
     classMetaRoleTank: "Tank", classMetaRoleHealer: "Healer", classMetaRoleMelee: "Melee DPS", classMetaRoleRanged: "Ranged DPS",
     classMetaChartTitle: (role) => `Representation among ${role} specs`,
@@ -4165,6 +4165,7 @@ async function loadAll(){
   refreshAllCharacters();
   ensureWorldTopRuns();
   checkAutoWeeklyReset();
+  restoreLastTab();
 }
 
 function makeRaidBossEntry(){ return Object.fromEntries(RAID_DIFFICULTIES.map(d=>[d,false])); }
@@ -5088,7 +5089,7 @@ function ensureWorldTopRuns(){
 }
 
 /* ---------------- "Meta Check": real representativity + best-run data for every spec,
-   sampled from the world's actual top 500 M+ runs this season (see the rio-class-meta
+   sampled from the top M+ runs of every real region this season (see the rio-class-meta
    branch in worker/raid-proxy.js) - character-independent, but NOT static: the world's top
    runs change constantly as people push keys, so this is a snapshot as of classMetaFetchedAt,
    not a live feed. Cached per session like the rest of this app's Raider.IO reads, kept fresh
@@ -5182,7 +5183,7 @@ function renderClassMetaPickers(){
     });
   });
 }
-/* Every real spec (all 39, from WOW_CLASS_SPECS) cross-referenced against the sample - a
+/* Every real spec (from WOW_CLASS_SPECS) cross-referenced against the sample - a
    spec with zero appearances in the sample still shows up honestly as 0/0%, not omitted. */
 function classMetaFullList(){
   if(!classMetaCache) return [];
@@ -5213,8 +5214,8 @@ function classMetaVerdict(rank, totalSpecs, count){
    grouped by their own role as-is (every tank genuinely competes with every other tank for a
    group's one tank slot, same for healers). */
 const MELEE_DPS_SPECS = new Set([
-  'Death Knight|Frost', 'Death Knight|Unholy', 'Demon Hunter|Havoc', 'Druid|Feral',
-  'Hunter|Survival', 'Monk|Windwalker', 'Paladin|Retribution',
+  'Death Knight|Frost', 'Death Knight|Unholy', 'Demon Hunter|Havoc', 'Demon Hunter|Devourer',
+  'Druid|Feral', 'Hunter|Survival', 'Monk|Windwalker', 'Paladin|Retribution',
   'Rogue|Assassination', 'Rogue|Outlaw', 'Rogue|Subtlety', 'Shaman|Enhancement',
   'Warrior|Arms', 'Warrior|Fury'
 ]);
@@ -5234,7 +5235,7 @@ function classMetaRoleLabel(entry){
 }
 /* Bar-chart comparing this spec's representation against other specs sharing the same real
    group (tank / healer / melee dps / ranged dps) - the meaningful "is this competitive against
-   my other options" comparison, since raw count across all 39 specs mixes pools of very
+   my other options" comparison, since raw count across every spec mixes pools of very
    different sizes and roles that don't even fill the same slot. Shows the group's top 8 by
    count, always including the selected spec even if it falls outside that top 8. */
 function renderClassMetaRoleChart(entry, list){
@@ -5334,7 +5335,7 @@ function renderClassMetaDetail(){
         <div class="classmeta-report-full-title">${t('classMetaReportFullTitle')}</div>
         <div class="classmeta-insight-block">
           <div class="classmeta-insight-title">
-            <span class="classmeta-insight-icon">💀</span>${t('classMetaInsightLabel')}
+            <span class="classmeta-insight-icon">💀</span>${t('classMetaInsightLabel')}:
             <span id="classMetaInsightStatus" class="classmeta-insight-status status-unknown">${t('classMetaStatusUnknown')}</span>
           </div>
           <div id="classMetaInsight" class="classmeta-insight">${entry.deathSampleRuns && entry.deathSampleRuns.length ? t('classMetaInsightLoading') : `<span class="empty-note">${t('classMetaInsightNoData')}</span>`}</div>
@@ -6308,7 +6309,7 @@ const MURLOK_CLASS_SLUG = {
    player may want to check a build for a spec they're not currently playing. */
 const WOW_CLASS_SPECS = {
   "Death Knight": ["Blood","Frost","Unholy"],
-  "Demon Hunter": ["Havoc","Vengeance"],
+  "Demon Hunter": ["Havoc","Vengeance","Devourer"],
   "Druid": ["Balance","Feral","Guardian","Restoration"],
   "Evoker": ["Devastation","Preservation","Augmentation"],
   "Hunter": ["Beast Mastery","Marksmanship","Survival"],
@@ -6993,7 +6994,7 @@ async function importCharacterNative(c, str){
    by Blizzard's own Game Data API, Raider.IO, SimC and Wowhead. */
 const SPEC_ID = {
   "Death Knight": { "Blood":250, "Frost":251, "Unholy":252 },
-  "Demon Hunter": { "Havoc":577, "Vengeance":581 },
+  "Demon Hunter": { "Havoc":577, "Vengeance":581, "Devourer":1480 },
   "Druid": { "Balance":102, "Feral":103, "Guardian":104, "Restoration":105 },
   "Evoker": { "Devastation":1467, "Preservation":1468, "Augmentation":1473 },
   "Hunter": { "Beast Mastery":253, "Marksmanship":254, "Survival":255 },
@@ -8087,6 +8088,20 @@ function switchToTab(tabName){
   if(btn) btn.classList.add('active');
   document.getElementById('tab-'+tabName).classList.add('active');
   window.scrollTo(0, 0);
+  try{ localStorage.setItem('mt_lastTab', tabName); }catch(e){}
+}
+/* Restores whichever tab the player was last on before an F5/reload, instead of always
+   dropping them back on the dashboard - runs once loadAll() has real data to render into
+   those tabs. Re-runs each tab's own special-case setup (the same calls the sidebar click
+   handler makes), not just switchToTab, since some tabs need more than the section swap. */
+function restoreLastTab(){
+  let last = null;
+  try{ last = localStorage.getItem('mt_lastTab'); }catch(e){}
+  if(!last || last === 'dashboard' || !document.getElementById('tab-'+last)) return;
+  switchToTab(last);
+  if(last === 'upgrades'){ renderUpgradesTable(); resetQuiz(); }
+  else if(last === 'bonusrolls'){ renderBonusRolls(); }
+  else if(last === 'classmeta'){ openClassMeta(); }
 }
 function goToDashboard(){
   switchToTab('dashboard');
