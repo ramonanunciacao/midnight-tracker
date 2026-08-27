@@ -49,12 +49,10 @@ body{
 .app-main{ padding: 24px 28px 60px; }
 .sidebar-brand{ display:flex; justify-content:center; padding:0 0 18px; }
 .sidebar-brand-circle{
-  display:flex; align-items:center; justify-content:center; width:46px; height:46px; border-radius:50%;
-  overflow:hidden; background: #0c0714; border:1.5px solid rgba(163,53,238,.6);
-  box-shadow: 0 0 18px -1px rgba(163,53,238,.7), inset 0 0 10px rgba(163,53,238,.25);
+  display:flex; align-items:center; justify-content:center; width:46px; height:46px;
 }
 .sidebar-brand-mark{
-  width:118%; height:118%; object-fit:cover; object-position:50% 20%;
+  width:100%; height:100%; object-fit:contain;
 }
 .sidebar-link{
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; width:100%;
@@ -462,6 +460,15 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .raid-progress-diff{ font-size:14px; color:var(--text-dim); font-weight:600; }
 .raid-progress-name{ font-size:12px; color:var(--text); margin-top:10px; }
 .todo-count{ font-size:18px; color:var(--text-dim); font-weight:800; transition: color .2s; }
+.todo-collapse-btn{
+  margin-left:auto; display:flex; align-items:center; justify-content:center; width:24px; height:24px;
+  background:none; border:1px solid var(--hairline); border-radius:6px; color:var(--text-dim); cursor:pointer;
+  flex-shrink:0; transition: border-color .15s, color .15s;
+}
+.todo-collapse-btn:hover{ border-color: var(--gold-dim); color: var(--gold); }
+.todo-collapse-btn svg{ width:15px; height:15px; transition: transform .2s; }
+.todo-card.collapsed .todo-collapse-btn svg{ transform: rotate(-90deg); }
+.todo-card.collapsed .todo-collapsible{ display:none; }
 .raid-progress-hover{ position:relative; cursor:default; }
 .raid-diff-tooltip{
   position:absolute; left:0; right:0; top:100%; margin-top:8px; z-index:6; min-width:220px;
@@ -2138,6 +2145,7 @@ const I18N = {
     bestRunLabel: "Melhor Run", weeklyResetLabel: "Reset Semanal", daysLeftLabel: "dias restantes",
     ilvlEvoTitle: "Evolução de Item Level", mplusEvoTitle: "Evolução de Mythic+ Score", currentLabel: "Atual",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
+    todoCollapseToggle: "Minimizar/maximizar",
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     worldTopRunsTitle: "Top Runs do Mundo", worldTopRunsLoading: "Carregando as melhores runs do mundo...",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
@@ -2373,6 +2381,7 @@ const I18N = {
     bestRunLabel: "Best Run", weeklyResetLabel: "Weekly Reset", daysLeftLabel: "days left",
     ilvlEvoTitle: "Item Level Evolution", mplusEvoTitle: "Mythic+ Score Evolution", currentLabel: "Current",
     bisTitle: "Best in Slot (PvE)", todoTitle: "To-Do List",
+    todoCollapseToggle: "Minimize/maximize",
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     worldTopRunsTitle: "World Top Runs", worldTopRunsLoading: "Loading the world's top runs...",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
@@ -4837,16 +4846,21 @@ function renderCharacterPage(){
             </div>
           </div>
 
-          <div class="dash-card">
+          <div class="dash-card todo-card" id="todoCard">
             <div class="dash-card-head-inline">
               <h3>${t('todoTitle')}</h3>
               <span class="todo-count" id="todoCount" style="color:${todoCountColor(todoDone, todoTotal)}">${todoDone}/${todoTotal}</span>
+              <button class="todo-collapse-btn" id="todoCollapseBtn" title="${t('todoCollapseToggle')}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
             </div>
-            <div class="todo-add">
-              <input type="text" id="todoInput" placeholder="${t('todoPlaceholder')}" data-i18n-placeholder="todoPlaceholder">
-              <button id="todoAddBtn">${t('add')}</button>
+            <div class="todo-collapsible">
+              <div class="todo-add">
+                <input type="text" id="todoInput" placeholder="${t('todoPlaceholder')}" data-i18n-placeholder="todoPlaceholder">
+                <button id="todoAddBtn">${t('add')}</button>
+              </div>
+              <div id="todoList"></div>
             </div>
-            <div id="todoList"></div>
           </div>
 
           <div class="dash-card">
@@ -5006,6 +5020,13 @@ function renderCharacterPage(){
   container.querySelector('#todoAddBtn').addEventListener('click', addTodo);
   container.querySelector('#todoInput').addEventListener('keydown', (e) => { if(e.key==='Enter') addTodo(); });
   renderTodos();
+  applyTodoCollapsedState();
+  container.querySelector('#todoCollapseBtn').addEventListener('click', () => {
+    let collapsed = true;
+    try{ collapsed = localStorage.getItem('mt_todoCollapsed') !== '0'; }catch(e){}
+    try{ localStorage.setItem('mt_todoCollapsed', collapsed ? '0' : '1'); }catch(e){}
+    applyTodoCollapsedState();
+  });
 
   renderMurlokDriftBanner(c);
   maybeCheckMurlokDrift(c);
@@ -5746,6 +5767,16 @@ function enableDragReorder(row, id, onDrop){
 }
 
 /* ---------------- To-Do (dashboard card, follows the active dashboard character) ---------------- */
+/* Starts collapsed by default (only the title + done/total count showing) - a per-viewer
+   preference remembered in localStorage once toggled, same lightweight pattern already used
+   for the last-open sidebar tab. */
+function applyTodoCollapsedState(){
+  const card = document.getElementById('todoCard');
+  if(!card) return;
+  let collapsed = true;
+  try{ collapsed = localStorage.getItem('mt_todoCollapsed') !== '0'; }catch(e){}
+  card.classList.toggle('collapsed', collapsed);
+}
 function renderTodos(){
   const list = document.getElementById('todoList');
   if(!list) return;
