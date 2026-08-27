@@ -4400,7 +4400,7 @@ function renderCharacterPage(){
       ${iconUrl ? `<img class="gear-icon" src="${iconUrl}" alt="">` : ''}
       <div class="gear-info">
         <a href="https://www.wowhead.com/item=${item.item_id}${Array.isArray(item.bonuses) && item.bonuses.length ? '?bonus=' + item.bonuses.join(':') : ''}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(item.name)}</a>
-        <div class="gear-meta">${item.item_level}${enchant ? ` · ${escapeHtml(enchant)}` : ''}</div>
+        <div class="gear-meta">${escapeHtml(label)} · ${item.item_level}${enchant ? ` · ${escapeHtml(enchant)}` : ''}</div>
       </div>
       ${bisInfo}
     </div>`;
