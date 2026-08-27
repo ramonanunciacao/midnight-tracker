@@ -62,11 +62,12 @@
    need as rio-run. Queried once per current-season dungeon (real slugs confirmed by paging
    the "all dungeons" world leaderboard directly) to get each dungeon's own #1 world run - the
    single best run overall would just be whichever dungeon happens to be easiest to push that
-   week, not one result per dungeon. Returns { topRuns: [{dungeon, icon, level, clearTimeMs,
-   url, roster: [{name, class, spec, role}, ...]}, ...] } - roster is pre-sorted tank/healer/
-   dps, and url is the real per-run Raider.IO page (confirmed by constructing one from
-   keystone_run_id/mythic_level/dungeon.slug and fetching it directly - resolves to a real
-   200). No Blizzard token needed. */
+   week, not one result per dungeon. Returns { topRuns: [{dungeon, shortName, icon, level,
+   clearTimeMs, url, roster: [{name, class, spec, role}, ...]}, ...] } - shortName is
+   Raider.IO's own real dungeon abbreviation (e.g. "KR" for Kings' Rest), taken straight from
+   their dungeon object, not derived; roster is pre-sorted tank/healer/dps; url is the real
+   per-run Raider.IO page (confirmed by constructing one from keystone_run_id/mythic_level/
+   dungeon.slug and fetching it directly - resolves to a real 200). No Blizzard token needed. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -154,6 +155,7 @@ export default {
             .sort((a, b) => (ROLE_ORDER[a.role] ?? 9) - (ROLE_ORDER[b.role] ?? 9));
           return {
             dungeon: run.dungeon.name,
+            shortName: run.dungeon.short_name || null,
             icon: run.dungeon.icon_url ? `https://cdn.raiderio.net${run.dungeon.icon_url}` : null,
             level: run.mythic_level,
             clearTimeMs: run.clear_time_ms || null,

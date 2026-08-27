@@ -418,14 +418,14 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .news-date{ color: var(--text-dim); font-size:10px; flex-shrink:0; }
 .world-top-list{ display:flex; flex-direction:column; gap:8px; }
 .wtr-row{
-  display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:6px 0; border-bottom:1px solid var(--hairline);
+  display:flex; align-items:center; flex-wrap:nowrap; gap:8px; padding:6px 0; border-bottom:1px solid var(--hairline);
   text-decoration:none; color:inherit; border-radius:6px; transition: background .15s;
 }
 .wtr-row:hover{ background: var(--bg-panel-raised); }
 .wtr-row:last-child{ border-bottom:none; padding-bottom:0; }
 .wtr-dungeon-icon{ width:26px; height:26px; border-radius:6px; border:1px solid var(--hairline); flex-shrink:0; }
-.wtr-info{ display:flex; flex-direction:column; gap:1px; min-width:0; margin-right:auto; }
-.wtr-dungeon-name{ font-size:12px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:130px; }
+.wtr-info{ display:flex; flex-direction:column; gap:1px; min-width:0; flex-shrink:0; margin-right:auto; }
+.wtr-dungeon-name{ font-size:12px; font-weight:700; color:var(--text); white-space:nowrap; letter-spacing:.02em; }
 .wtr-level{ font-size:11px; font-weight:800; color: var(--gold); }
 .wtr-roster{ display:flex; gap:4px; flex-shrink:0; }
 .wtr-member-icon{ width:24px; height:24px; border-radius:5px; border:1px solid var(--hairline); }
@@ -4175,7 +4175,7 @@ function renderCharacterPage(){
     <a class="wtr-row" href="${run.url ? escapeHtml(run.url) : '#'}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(runTip)}">
       ${run.icon ? `<img class="wtr-dungeon-icon" src="${run.icon}" alt="">` : ''}
       <div class="wtr-info">
-        <span class="wtr-dungeon-name">${escapeHtml(run.dungeon)}</span>
+        <span class="wtr-dungeon-name">${escapeHtml(run.shortName || run.dungeon)}</span>
         <span class="wtr-level">+${run.level}</span>
       </div>
       <div class="wtr-roster">
