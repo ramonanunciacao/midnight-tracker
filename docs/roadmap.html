@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keystone Hub Roadmap</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#080b14;
+  --panel:#111a2c;
+  --panel-raised:#182440;
+  --hairline:#263454;
+  --gold:#f2b53d;
+  --gold-dim:#b8863a;
+  --purple:#a335ee;
+  --cyan:#22d3ee;
+  --blue:#4f8fff;
+  --ok:#22c55e;
+  --danger:#ef4444;
+  --text:#e9edf7;
+  --text-dim:#8792ad;
+}
+*{ box-sizing:border-box; }
+body{
+  background: radial-gradient(ellipse 1200px 600px at 50% -10%, #14203a 0%, var(--bg) 55%);
+  color: var(--text);
+  font-family:'Inter',sans-serif;
+  margin:0;
+  padding:56px 24px 100px;
+}
+.wrap{ max-width:900px; margin:0 auto; }
+
+/* ---- header ---- */
+.eyebrow{
+  font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.eyebrow::before{ content:''; width:22px; height:1px; background:var(--gold-dim); }
+h1{
+  font-family:'Rajdhani',sans-serif; font-weight:800; font-size:clamp(32px,5vw,46px); line-height:1.05;
+  letter-spacing:.01em; text-wrap:balance; margin:0 0 14px;
+}
+.lede{
+  font-size:16px; line-height:1.65; color:var(--text-dim); max-width:62ch; margin:0 0 28px;
+}
+.meta-row{
+  display:flex; flex-wrap:wrap; gap:22px; padding-top:20px; border-top:1px solid var(--hairline);
+  font-size:12.5px; color:var(--text-dim);
+}
+.meta-row b{ color:var(--text); font-weight:600; }
+
+/* ---- section ---- */
+.tier{ margin-top:64px; }
+.tier-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:6px; flex-wrap:wrap; }
+.tier-num{
+  font-family:'Rajdhani',sans-serif; font-weight:800; font-size:13px; letter-spacing:.1em;
+  color: var(--tier-color); text-transform:uppercase;
+}
+.tier-title{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:22px; color:var(--text); }
+.tier-desc{ font-size:13.5px; color:var(--text-dim); margin:6px 0 24px; max-width:62ch; line-height:1.6; }
+
+.cards{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media(max-width:640px){ .cards{ grid-template-columns:1fr; } }
+
+.card{
+  background:var(--panel); border:1px solid var(--hairline); border-radius:12px; padding:18px 20px;
+  border-top:3px solid var(--tier-color);
+  display:flex; flex-direction:column; gap:10px;
+}
+.card h3{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:17px; margin:0; color:var(--text); }
+.card p{ font-size:13.5px; line-height:1.6; color:var(--text-dim); margin:0; }
+.card p b{ color:var(--text); font-weight:600; }
+.tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; padding-top:4px; }
+.tag{
+  font-family:'Rajdhani',sans-serif; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+  padding:3px 8px; border-radius:5px; border:1px solid;
+}
+.tag.eff-quick{ color:var(--ok); border-color:rgba(34,197,94,.4); background:rgba(34,197,94,.1); }
+.tag.eff-med{ color:var(--cyan); border-color:rgba(34,211,238,.4); background:rgba(34,211,238,.1); }
+.tag.eff-big{ color:var(--blue); border-color:rgba(79,143,255,.4); background:rgba(79,143,255,.1); }
+.tag.data{ color:var(--gold); border-color:var(--gold-dim); background:rgba(242,181,61,.1); }
+
+/* blocked tier reads differently on purpose - it's the "no" list */
+.blocked .card{ border-top-color:var(--hairline); opacity:.85; }
+.blocked .card h3{ color:var(--text-dim); }
+.blocked .card h3::before{ content:'✕ '; color:var(--danger); font-family:'Inter',sans-serif; }
+
+footer{
+  margin-top:70px; padding-top:22px; border-top:1px solid var(--hairline);
+  font-size:12px; color:var(--text-dim); line-height:1.7;
+}
+footer b{ color:var(--gold-dim); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Keystone Hub · Relatório de produto</div>
+  <h1>Para onde o Keystone Hub pode ir a partir daqui</h1>
+  <p class="lede">
+    Um levantamento honesto do que dá pra construir a seguir — separado por esforço real, não por
+    empolgação. As quatro últimas ideias eu explico por que <b>não</b> vão pra lista: a gente já
+    confirmou, com testes reais, que a fonte de dado pra elas simplesmente não existe.
+  </p>
+  <div class="meta-row">
+    <span><b>27 de agosto de 2026</b></span>
+    <span>18 ideias · 4 categorias</span>
+    <span>Baseado só em dado real já disponível ou realisticamente buildável</span>
+  </div>
+
+  <!-- TIER 1 -->
+  <section class="tier" style="--tier-color: var(--ok);">
+    <div class="tier-head">
+      <span class="tier-num">Tier 1</span>
+      <span class="tier-title">Ganhos rápidos</span>
+    </div>
+    <p class="tier-desc">Pouco esforço, sem precisar de API nova — em geral, dado que já temos guardado e só não estamos mostrando ainda.</p>
+    <div class="cards">
+
+      <div class="card">
+        <h3>Instalável de verdade no celular</h3>
+        <p>Um <b>manifest.json</b> + service worker simples transforma o Keystone Hub num app instalável — ícone na tela inicial, abre em tela cheia sem barra do navegador. É o complemento natural do ajuste de bottom nav que acabamos de fazer.</p>
+        <div class="tags"><span class="tag eff-quick">Rápido</span><span class="tag data">Zero API nova</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Checklist de consumíveis</h3>
+        <p>Flask, poção, comida — marcar antes de cada key, igual o To-Do já funciona hoje. Não depende de nenhuma API: é preferência do jogador, guardada do mesmo jeito que qualquer outra lista da conta.</p>
+        <div class="tags"><span class="tag eff-quick">Rápido</span><span class="tag data">Zero API nova</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Aviso de encantamento/gema faltando</h3>
+        <p>Já puxamos <b>enchants_detail</b> de cada item equipado do Raider.IO — só falta comparar contra "esse slot deveria ter encantamento" e sinalizar o que ficou pra trás. Dado 100% real, já em mãos.</p>
+        <div class="tags"><span class="tag eff-quick">Rápido</span><span class="tag data">Já temos o dado</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Card "Pronto pra semana?"</h3>
+        <p>Um indicador único no topo do dashboard resumindo vault + bonus rolls + to-do num só relance — sem abrir três cards pra saber se ainda falta alguma coisa essa semana.</p>
+        <div class="tags"><span class="tag eff-quick">Rápido</span><span class="tag data">Zero API nova</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TIER 2 -->
+  <section class="tier" style="--tier-color: var(--cyan);">
+    <div class="tier-head">
+      <span class="tier-num">Tier 2</span>
+      <span class="tier-title">Funcionalidades médias</span>
+    </div>
+    <p class="tier-desc">Esforço real de alguns dias — geralmente envolve guardar dado novo ao longo do tempo, não só puxar e mostrar.</p>
+    <div class="cards">
+
+      <div class="card">
+        <h3>Meta Check com histórico</h3>
+        <p>Hoje o Meta Check é uma foto do momento. Guardando 1 snapshot por semana no Firestore, dá pra desenhar um gráfico real de "como a representatividade da sua spec mudou ao longo da season" — sem inventar tendência, só acumulando o que a gente já calcula.</p>
+        <div class="tags"><span class="tag eff-med">Médio</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Comparador de personagens</h3>
+        <p>Colocar 2–3 personagens lado a lado — ilvl, score, % de vault, % de BIS — pra decidir em qual focar essa semana sem trocar de aba o tempo todo.</p>
+        <div class="tags"><span class="tag eff-med">Médio</span><span class="tag data">Já temos o dado</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Lembrete de reset semanal</h3>
+        <p>Notificação do navegador (Notification API, opt-in) algumas horas antes do reset — pra quem esquece de rodar aquele último M+ antes da semana virar.</p>
+        <div class="tags"><span class="tag eff-med">Médio</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Visão consolidada do roster</h3>
+        <p>Uma tela só com todos os personagens numa lista compacta (vault, ilvl, key mais alta) — hoje pra ver isso de todo mundo é preciso trocar de personagem um a um.</p>
+        <div class="tags"><span class="tag eff-med">Médio</span><span class="tag data">Já temos o dado</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TIER 3 -->
+  <section class="tier" style="--tier-color: var(--blue);">
+    <div class="tier-head">
+      <span class="tier-num">Tier 3</span>
+      <span class="tier-title">Apostas maiores</span>
+    </div>
+    <p class="tier-desc">O que faz sentido se a ideia de convidar amigos for pra frente de verdade — infraestrutura, não só tela nova.</p>
+    <div class="cards">
+
+      <div class="card">
+        <h3>Estrutura real multi-usuário</h3>
+        <p>Convite por link, isolamento de dado por conta, regras de acesso no Firestore revisadas pra aguentar mais de uma pessoa de verdade. Pré-requisito de tudo abaixo — e do que a gente já discutiu sobre convidar seus amigos.</p>
+        <div class="tags"><span class="tag eff-big">Investimento</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Visão de grupo de amigos</h3>
+        <p>Comparar vault e progresso semanal entre quem usa o app junto com você — só faz sentido depois da estrutura multi-usuário acima estar de pé.</p>
+        <div class="tags"><span class="tag eff-big">Investimento</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BLOCKED -->
+  <section class="tier blocked" style="--tier-color: var(--hairline);">
+    <div class="tier-head">
+      <span class="tier-num" style="color:var(--danger)">Fora de cogitação</span>
+      <span class="tier-title">Bloqueado por falta de dado real</span>
+    </div>
+    <p class="tier-desc">Já testamos essas quatro diretamente contra as APIs reais nesta mesma sessão. Não é falta de vontade — a fonte de dado não existe hoje, e inventar um número aqui quebraria a regra mais importante do projeto.</p>
+    <div class="cards">
+
+      <div class="card">
+        <h3>Delve / Prey no Weekly Vault</h3>
+        <p>Confirmado direto no próprio obsi.gg (que usa as mesmas APIs que a gente) que nem eles rastreiam isso. Raider.IO e Blizzard não expõem esse dado em lugar nenhum.</p>
+        <div class="tags"><span class="tag data">Testado nesta sessão</span></div>
+      </div>
+
+      <div class="card">
+        <h3>% de boss kill (Warcraft Logs)</h3>
+        <p>Precisaria de uma API e autenticação totalmente separadas das que já usamos — fora do escopo atual, não é algo que dá pra encaixar no fluxo de dado existente sem uma integração nova do zero.</p>
+        <div class="tags"><span class="tag data">API separada</span></div>
+      </div>
+
+      <div class="card">
+        <h3>AOTC, Renome, Conquista</h3>
+        <p>Nenhuma fonte real verifica conquista ou reputação pra gente. Mostrar isso seria inventar o número — exatamente o que esse projeto se recusa a fazer desde o início.</p>
+        <div class="tags"><span class="tag data">Sem fonte real</span></div>
+      </div>
+
+      <div class="card">
+        <h3>Contagem real de chaves repetidas</h3>
+        <p>O Weekly Vault de M+ conta dungeons distintas, não o total de chaves rodadas (repetir a mesma dungeon não é contado à parte). Testamos todas as fontes disponíveis — nenhuma expõe esse total. Já avisamos isso com um ⓘ no próprio card.</p>
+        <div class="tags"><span class="tag data">Limitação documentada</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    Todas as ideias acima partem do mesmo princípio que guiou o projeto até aqui: <b>nada na tela sem um dado real por trás</b>.
+    Onde a fonte não existe, a resposta é dizer isso claramente — não inventar um número que parece bom.
+  </footer>
+
+</div>
+</body>
+</html>
