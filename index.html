@@ -1535,6 +1535,49 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   .bonusrolls-spend-browse-btn{ width:100%; }
   .upgrades-quiz-col{ padding:14px; }
 }
+
+/* Real mobile "app" card paging for the Dashboard specifically. A long vertical stack of
+   full-desktop-size cards on a phone doesn't read as an app - it reads as a shrunk desktop
+   page, which is exactly what was happening here. This turns the same HTML/JS (untouched,
+   desktop untouched) into a horizontally swipeable sequence, one card at a time, using native
+   touch scroll-snap - no JS, no duplicated markup. Every wrapper that exists only to lay
+   cards out in a grid on desktop (.dash-main, .dash-side, .dash-topgroup, .dash-row-strip)
+   gets display:contents here: that removes ONLY that wrapper's own box, its real children
+   keep generating boxes exactly as before, they just become direct flex children of
+   .dash-layout instead of grid children several levels deep - display:contents is defined to
+   ignore DOM nesting for exactly this kind of "flatten for layout, keep the markup" case.
+   .dash-layout is the only place this class is used anywhere in the app, so nothing here can
+   leak onto another page. */
+@media(max-width:600px){
+  .dash-layout{
+    display:flex; flex-wrap:nowrap; align-items:flex-start; gap:14px;
+    overflow-x:auto; overflow-y:visible; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    padding-bottom:10px;
+  }
+  .dash-main, .dash-side, .dash-topgroup, .dash-row-strip{ display:contents; }
+  /* Season Best sometimes renders as a bare empty placeholder div (no runs yet) instead of a
+     real card - :empty only matches that exact case, never the real dash-card version. */
+  #section-mplus:empty{ display:none; }
+
+  /* Every real card becomes one page: 85% of the screen width, so the next one visibly peeks
+     in at the edge as a "there's more, swipe" hint, snapping one at a time (scroll-snap-stop
+     stops a hard flick from skipping past several cards at once). */
+  .dash-topgroup-item, .dash-layout .dash-card{
+    flex:0 0 85%; width:85%; max-width:none; scroll-snap-align:start; scroll-snap-stop:always;
+  }
+  /* .dash-topgroup-item normally borrows its card look (background/border) from the shared
+     .dash-topgroup wrapper it sits inside - now that the wrapper is dissolved and each item is
+     its own page, it needs that same look on itself, and no more of the divider styling that
+     only made sense when they all lived inside one continuous card. */
+  .dash-topgroup-item{
+    background: var(--bg-panel); border:1px solid var(--hairline); border-radius:14px;
+    border-right:none; border-bottom:none;
+  }
+  .dash-topgroup-narrow, .dash-topgroup-mplus{ max-width:none; }
+  /* An unbounded To-Do list would make its own "page" taller than the screen, breaking the
+     one-swipe-per-card feel - scrolls internally instead. */
+  .todo-collapsible{ max-height:44vh; overflow-y:auto; }
+}
 </style>
 </head>
 <body>
@@ -5374,7 +5417,7 @@ function renderCharacterPage(){
         </div>
 
         <div class="dash-side">
-          <div class="dash-card">
+          <div class="dash-card dash-card-bonusrolls">
             <div class="dash-card-head-inline">
               <h3>${t('bonusRollsTitle')}</h3>
               <button class="dash-viewall-link" id="dashBonusRollsBtn">${t('bonusRollsEditBtn')}</button>
@@ -5412,7 +5455,7 @@ function renderCharacterPage(){
             </div>
           </div>
 
-          <div class="dash-card">
+          <div class="dash-card dash-card-worldtop">
             <div class="dash-card-head-inline">
               <h3>${t('worldTopRunsTitle')}</h3>
             </div>
