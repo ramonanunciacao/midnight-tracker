@@ -685,29 +685,40 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .roster-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; text-transform:uppercase; letter-spacing:.04em; }
 
 /* Full Roster: same card language as the Meta Check report card (gradient panel, class-color
-   top accent via the same --class-color var the character page itself already sets, gold
-   stat values) - every character shows up automatically, no picker, since the whole point is
-   "everyone at a glance" rather than a manual comparison. */
-.roster-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px; margin-top:18px; }
+   top accent via the same --class-color var the character page itself already sets) - every
+   character shows up automatically, no picker, since the whole point is "everyone at a
+   glance" rather than a manual comparison. align-items:start keeps each card's own natural
+   height independent of its row-mates, so expanding one card's report never stretches or
+   shifts the cards next to it. */
+.roster-mini-strip{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.roster-mini-card{
+  display:flex; align-items:center; gap:7px; background: var(--bg-panel-raised); border:1px solid var(--hairline);
+  border-left:3px solid var(--class-color, var(--gold)); border-radius:9px; padding:5px 10px 5px 8px;
+  cursor:pointer; font-family:inherit; transition: border-color .15s, background .15s;
+}
+.roster-mini-card:hover{ background: var(--bg-panel); border-color: var(--gold-dim); }
+.roster-mini-avatar{ width:24px; height:24px; border-radius:6px; object-fit:cover; flex-shrink:0; }
+.roster-mini-name{ font-size:12px; font-weight:700; color:var(--text); }
+.roster-mini-add{ font-size:14px; font-weight:800; color:var(--gold); line-height:1; }
+.roster-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px; margin-top:18px; align-items:start; }
 .roster-card{
   background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
   border-top:3px solid var(--class-color, var(--gold)); border-radius:14px; padding:18px; box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  position:relative;
 }
-.roster-card-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.roster-card-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; padding-right:22px; }
 .roster-card-avatar{ width:52px; height:52px; border-radius:11px; border:1px solid var(--hairline); object-fit:cover; flex-shrink:0; }
 .roster-card-name{ font-family:'Rajdhani',sans-serif; font-size:19px; font-weight:800; line-height:1.15; }
 .roster-card-meta{ font-size:12px; color: var(--text-dim); margin-top:2px; }
-.roster-card-diff-badge{
-  margin-left:auto; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em;
-  padding:3px 9px; border-radius:6px; border:1px solid var(--hairline); color:var(--text-dim); flex-shrink:0; white-space:nowrap;
+.roster-card-remove-btn{
+  position:absolute; top:14px; right:14px; width:20px; height:20px; border-radius:6px; border:1px solid var(--hairline);
+  background:none; color:var(--text-dim); font-size:12px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition: border-color .15s, color .15s;
 }
-.roster-card-diff-badge.tier-mythic{ color:var(--danger); border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.1); }
-.roster-card-diff-badge.tier-heroic{ color:var(--purple); border-color:rgba(163,53,238,.4); background:rgba(163,53,238,.1); }
-.roster-card-diff-badge.tier-normal{ color:var(--cyan); border-color:rgba(34,211,238,.4); background:rgba(34,211,238,.1); }
-.roster-card-diff-badge.tier-lfr{ color:var(--text-dim); }
+.roster-card-remove-btn:hover{ border-color:var(--danger); color:var(--danger); }
 .roster-card-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
 .roster-stat{ background:var(--bg-panel); border:1px solid var(--hairline); border-radius:8px; padding:8px 6px; text-align:center; }
-.roster-stat-value{ font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:800; color:var(--gold); line-height:1.1; }
+.roster-stat-value{ font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:800; color:var(--text); line-height:1.1; }
 .roster-stat-label{ font-size:9px; text-transform:uppercase; letter-spacing:.02em; color:var(--text-dim); font-weight:700; margin-top:3px; }
 .roster-card-expand-btn{
   width:100%; margin-top:12px; background:none; border:1px solid var(--hairline); color:var(--text-dim);
@@ -722,6 +733,14 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .roster-detail-chart-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px; }
 .roster-detail-chart-title{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--text-dim); }
 .roster-detail-chart-value{ font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:800; color:var(--text); }
+.roster-raid-diff-summary{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; margin-bottom:10px; }
+.roster-raid-diff-pill{
+  font-size:11px; font-weight:800; letter-spacing:.02em; padding:3px 9px; border-radius:6px;
+  border:1px solid var(--hairline); color:var(--text-dim); white-space:nowrap;
+}
+.roster-raid-diff-pill.diff-mythic{ color:var(--danger); border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.1); }
+.roster-raid-diff-pill.diff-heroic{ color:var(--purple); border-color:rgba(163,53,238,.4); background:rgba(163,53,238,.1); }
+.roster-raid-diff-pill.diff-normal{ color:var(--cyan); border-color:rgba(34,211,238,.4); background:rgba(34,211,238,.1); }
 .roster-raid-list{ display:flex; flex-direction:column; gap:4px; margin-top:6px; }
 .roster-raid-row{ display:flex; align-items:center; gap:8px; font-size:12px; }
 .roster-raid-row.done{ color:var(--text); }
@@ -2255,6 +2274,8 @@ const I18N = {
     navRoster: "Full Roster", rosterTitle: "Full Roster",
     rosterSub: "Todos os seus personagens numa visão só — clique em qualquer um pra ver o relatório completo.",
     rosterNoCharsYet: "Adicione um personagem para ver seu roster aqui.",
+    rosterAllRemovedNote: "Todos os personagens foram removidos da visualização — clique em um card acima pra adicionar de volta.",
+    rosterRemoveBtn: "Remover da visualização",
     rosterExpandBtn: "Ver relatório completo ▾", rosterCollapseBtn: "Fechar relatório ▴",
     charCompareRowBestKey: "Maior Key",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
@@ -2498,6 +2519,8 @@ const I18N = {
     navRoster: "Full Roster", rosterTitle: "Full Roster",
     rosterSub: "Every character you've added, at a glance — click any card for the full report.",
     rosterNoCharsYet: "Add a character to see your roster here.",
+    rosterAllRemovedNote: "Every character has been removed from view — click a card above to add it back.",
+    rosterRemoveBtn: "Remove from view",
     rosterExpandBtn: "View full report ▾", rosterCollapseBtn: "Collapse report ▴",
     charCompareRowBestKey: "Highest Key",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
@@ -5753,7 +5776,14 @@ function renderClassMetaTable(){
    local time-range toggle (kept separate from state.dashChartRange - that one belongs to
    whichever character is the active Dashboard character, not to every card here at once),
    plus a real raid boss-by-boss breakdown. ---------------- */
-let rosterExpanded = new Set();
+// Defaults to expanded: a character id only lands in this set once the user explicitly
+// collapses its report, so every card opens already showing its full report (per feedback
+// that having to expand each one manually was extra clicks for no reason).
+let rosterCollapsed = new Set();
+// A character id in here is hidden from the main grid and shown instead as a small "add
+// back" chip in the strip above it - lets someone shrink the page down to just the
+// characters they care about right now without losing the rest.
+let rosterRemoved = new Set();
 let rosterChartRange = {};
 function openFullRoster(){
   renderRosterGrid();
@@ -5776,15 +5806,7 @@ function rosterBestKey(c){
   const levels = (c.mplusBestRuns || []).map(r => r.mythic_level).filter(Boolean);
   return levels.length ? Math.max(...levels) : null;
 }
-/* Highest real raid difficulty this character has killed ANY boss at - same rank order the
-   character page's own raid tooltip already uses (Mythic beats Heroic beats Normal beats
-   LFR), just reduced to one badge instead of a full per-boss breakdown for the card itself. */
-function rosterHighestRaidDiff(c){
-  for(const d of RAID_DIFFICULTIES.slice().reverse()){
-    if(RAID_POOL.some(b => c.raidBosses[b] && c.raidBosses[b][d])) return d;
-  }
-  return null;
-}
+const ROSTER_RAID_DIFF_SHORT = { LFR: 'LFR', Normal: 'N', Heroic: 'HC', Mythic: 'M' };
 function renderRosterGrid(){
   const wrap = document.getElementById('rosterGrid');
   if(!wrap) return;
@@ -5792,11 +5814,37 @@ function renderRosterGrid(){
     wrap.innerHTML = `<div class="empty-note">${t('rosterNoCharsYet')}</div>`;
     return;
   }
-  wrap.innerHTML = `<div class="roster-grid">${state.characters.map(rosterCardHtml).join('')}</div>`;
+  const visible = state.characters.filter(c => !rosterRemoved.has(c.id));
+  const removed = state.characters.filter(c => rosterRemoved.has(c.id));
+  const miniStripHtml = removed.length ? `
+    <div class="roster-mini-strip">
+      ${removed.map(c => `
+        <button class="roster-mini-card" data-id="${c.id}" style="--class-color:${CLASS_HEX[c.class] || 'var(--gold)'}">
+          <img class="roster-mini-avatar" src="${c.avatarUrl || classIconUrl(c.class)}" alt="">
+          <span class="roster-mini-name">${escapeHtml(c.name)}</span>
+          <span class="roster-mini-add">+</span>
+        </button>`).join('')}
+    </div>` : '';
+  const gridHtml = visible.length
+    ? `<div class="roster-grid">${visible.map(rosterCardHtml).join('')}</div>`
+    : `<div class="empty-note">${t('rosterAllRemovedNote')}</div>`;
+  wrap.innerHTML = miniStripHtml + gridHtml;
+  wrap.querySelectorAll('.roster-mini-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      rosterRemoved.delete(btn.dataset.id);
+      renderRosterGrid();
+    });
+  });
+  wrap.querySelectorAll('.roster-card-remove-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      rosterRemoved.add(btn.dataset.id);
+      renderRosterGrid();
+    });
+  });
   wrap.querySelectorAll('.roster-card-expand-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id;
-      if(rosterExpanded.has(id)) rosterExpanded.delete(id); else rosterExpanded.add(id);
+      if(rosterCollapsed.has(id)) rosterCollapsed.delete(id); else rosterCollapsed.add(id);
       renderRosterGrid();
     });
   });
@@ -5808,32 +5856,31 @@ function renderRosterGrid(){
   });
   // Charts are real SVG built after the row exists in the DOM (same two-step pattern the
   // Dashboard's own evolution charts and Meta Check's history chart already use).
-  state.characters.forEach(c => { if(rosterExpanded.has(c.id)) renderRosterCardCharts(c); });
+  visible.forEach(c => { if(!rosterCollapsed.has(c.id)) renderRosterCardCharts(c); });
 }
 function rosterCardHtml(c){
-  const diff = rosterHighestRaidDiff(c);
   const vault = computeVaultSlots(c);
   const bis = bisSlotProgress(c);
   const bestKey = rosterBestKey(c);
   const raidCount = RAID_POOL.filter(b => raidBossKilled(c, b)).length;
-  const expanded = rosterExpanded.has(c.id);
+  const expanded = !rosterCollapsed.has(c.id);
   return `
     <div class="roster-card ${expanded ? 'expanded' : ''}" style="--class-color:${CLASS_HEX[c.class] || 'var(--gold)'}">
+      <button class="roster-card-remove-btn" data-id="${c.id}" title="${t('rosterRemoveBtn')}">✕</button>
       <div class="roster-card-head">
         <img class="roster-card-avatar" src="${c.avatarUrl || classIconUrl(c.class)}" alt="">
         <div>
           <div class="roster-card-name" style="color:${CLASS_HEX[c.class]||'#fff'}">${escapeHtml(c.name)}</div>
           <div class="roster-card-meta">${escapeHtml(c.spec||'')} ${escapeHtml(c.class||'')}${c.realmName ? ' · '+escapeHtml(c.realmName) : ''}</div>
         </div>
-        ${diff ? `<span class="roster-card-diff-badge tier-${diff.toLowerCase()}">${escapeHtml(diff)}</span>` : ''}
       </div>
       <div class="roster-card-stats">
-        <div class="roster-stat"><div class="roster-stat-value">${c.ilvl || '—'}</div><div class="roster-stat-label">${t('gearIlvlLabel')}</div></div>
-        <div class="roster-stat"><div class="roster-stat-value">${c.ioscore || '—'}</div><div class="roster-stat-label">${t('mRatingLabel')}</div></div>
-        <div class="roster-stat"><div class="roster-stat-value">${bestKey ? '+'+bestKey : '—'}</div><div class="roster-stat-label">${t('charCompareRowBestKey')}</div></div>
-        <div class="roster-stat"><div class="roster-stat-value">${vault.filled}/${vault.total}</div><div class="roster-stat-label">${t('weeklyRewardsTitle')}</div></div>
-        <div class="roster-stat"><div class="roster-stat-value">${bis.matched}/${bis.total}</div><div class="roster-stat-label">${t('bisProgressLabel')}</div></div>
-        <div class="roster-stat"><div class="roster-stat-value">${raidCount}/${RAID_POOL.length}</div><div class="roster-stat-label">${t('progressionTitle')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value" style="color:${CLASS_HEX[c.class]||'var(--text)'}">${c.ilvl || '—'}</div><div class="roster-stat-label">${t('gearIlvlLabel')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value" style="color:var(--danger)">${c.ioscore || '—'}</div><div class="roster-stat-label">${t('mRatingLabel')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value" style="color:var(--gold)">${bestKey ? '+'+bestKey : '—'}</div><div class="roster-stat-label">${t('charCompareRowBestKey')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value" style="color:var(--purple)">${vault.filled}/${vault.total}</div><div class="roster-stat-label">${t('weeklyRewardsTitle')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value" style="color:var(--gold)">${bis.matched}/${bis.total}</div><div class="roster-stat-label">${t('bisProgressLabel')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value" style="color:var(--purple)">${raidCount}/${RAID_POOL.length}</div><div class="roster-stat-label">${t('progressionTitle')}</div></div>
       </div>
       <button class="roster-card-expand-btn" data-id="${c.id}">${expanded ? t('rosterCollapseBtn') : t('rosterExpandBtn')}</button>
       ${expanded ? rosterCardDetailHtml(c) : ''}
@@ -5866,7 +5913,13 @@ function rosterCardDetailHtml(c){
           <div id="rosterScoreChart-${c.id}"></div>
         </div>
       </div>
-      <div class="classmeta-detail-subtitle" style="margin-top:14px;">${t('bossKillStatusLabel')}</div>
+      <div class="classmeta-detail-subtitle" style="margin-top:14px;">${t('progressionTitle')}</div>
+      <div class="roster-raid-diff-summary">
+        ${RAID_DIFFICULTIES.map(d => {
+          const n = RAID_POOL.filter(b => c.raidBosses[b] && c.raidBosses[b][d]).length;
+          return `<span class="roster-raid-diff-pill diff-${d.toLowerCase()}">${n}/${RAID_POOL.length} ${ROSTER_RAID_DIFF_SHORT[d]}</span>`;
+        }).join('')}
+      </div>
       <div class="roster-raid-list">
         ${RAID_POOL.map(boss => {
           const killedDiff = RAID_DIFFICULTIES.slice().reverse().find(d => c.raidBosses[boss] && c.raidBosses[boss][d]);
