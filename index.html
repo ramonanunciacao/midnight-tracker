@@ -536,11 +536,18 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   border-radius:5px; padding:1px 6px; white-space:nowrap;
 }
 .gear-bis-badge.must-have{ color: var(--cyan); border-color: rgba(34,211,238,.4); background: rgba(34,211,238,.12); }
-.gear-bis-badge.alt-rank{ color: var(--gold); border-color: var(--gold-dim); background: rgba(242,181,61,.12); }
+/* Rank tiers each get their own real color so BIS / 2nd BIS / 3rd BIS never look like the
+   same tag at a glance, and none of them reuse Catalyst's gold (that one's matched to the
+   game's own real Catalyst color, decided earlier - ranks shouldn't compete with it). */
+.gear-bis-badge.rank-2{ color: var(--cyan); border-color: rgba(34,211,238,.4); background: rgba(34,211,238,.12); }
+.gear-bis-badge.rank-3{ color: var(--blue); border-color: rgba(79,143,255,.45); background: rgba(79,143,255,.12); }
 .bis-rank-tag{
-  font-size:9.5px; font-weight:800; color: var(--gold); border:1px solid var(--gold-dim); background: rgba(242,181,61,.12);
-  border-radius:5px; padding:1px 6px; white-space:nowrap; flex-shrink:0; text-transform:uppercase; letter-spacing:.02em;
+  font-size:9.5px; font-weight:800; border-radius:5px; padding:1px 6px; white-space:nowrap;
+  flex-shrink:0; text-transform:uppercase; letter-spacing:.02em; border:1px solid;
 }
+.bis-rank-tag.rank-1{ color: var(--ok); border-color: rgba(34,197,94,.4); background: rgba(34,197,94,.12); }
+.bis-rank-tag.rank-2{ color: var(--cyan); border-color: rgba(34,211,238,.4); background: rgba(34,211,238,.12); }
+.bis-rank-tag.rank-3{ color: var(--blue); border-color: rgba(79,143,255,.45); background: rgba(79,143,255,.12); }
 .bis-priority-toggle{
   font-size:9px; font-weight:800; border-radius:5px; padding:1px 6px; white-space:nowrap; cursor:pointer;
   flex-shrink:0; transition: opacity .15s;
@@ -4151,6 +4158,11 @@ function todayStr(){ return new Date().toISOString().slice(0,10); }
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
+/* BIS/2nd BIS/3rd BIS+ each map to their own real color (green/cyan/blue) via this class,
+   kept out of gold entirely so a rank tag never looks like the Catalyst tag. */
+function bisRankClass(rank){
+  return rank <= 1 ? 'rank-1' : rank === 2 ? 'rank-2' : 'rank-3';
+}
 
 async function loadAll(){
   let roster;
@@ -4442,7 +4454,7 @@ function renderCharacterPage(){
     const badgeTooltip = isAltRank ? t('bisRankTagTooltip') : (isMustHave ? t('mustHaveMatchTooltip') : t('bisMatchTooltip'));
     const bisInfo = bisMatch ? `
       <div class="gear-bis-info">
-        <span class="gear-bis-badge ${isMustHave ? 'must-have' : ''} ${isAltRank ? 'alt-rank' : ''}" title="${badgeTooltip}">${badgeText}</span>
+        <span class="gear-bis-badge ${isMustHave ? 'must-have' : ''} ${isAltRank ? bisRankClass(bisMatch.altRank) : ''}" title="${badgeTooltip}">${badgeText}</span>
       </div>` : '';
     return `
     <div class="gear-row">
@@ -4593,7 +4605,7 @@ function renderCharacterPage(){
         </span>
         ${isEquipped ? `<span class="bis-dchip-check" title="${escapeHtml(t('bisAlreadyEquippedTooltip'))}">✓</span>` : ''}
         ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
-        ${b.altRank ? `<span class="bis-rank-tag" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', b.altRank)}</span>` : ''}
+        ${b.altRank ? `<span class="bis-rank-tag ${bisRankClass(b.altRank)}" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', b.altRank)}</span>` : ''}
         <span class="bis-dchip-item-slot">${escapeHtml((b.slot||'').split(' (')[0])}</span>
       </div>`;
     };
@@ -6687,12 +6699,23 @@ function renderMurlokSpecPills(cls, activeSpec){
   });
 }
 
+/* Real bug reported directly: picking Blood DK + San'layn showed a trinket only actually
+   used by Unholy DK San'layn. Root cause was a request race, not bad data - loadMurlokBuild
+   had nothing stopping an EARLIER, slower-to-respond fetch (e.g. a spec you clicked first)
+   from resolving AFTER a newer one (the spec/hero you actually settled on) and silently
+   overwriting murlokResult/murlokHeroSlug with the wrong build's data. A monotonically
+   increasing token per call, checked again after the await, means only the most recently
+   issued request is ever allowed to apply its result - anything that resolves after being
+   superseded is discarded instead of clobbering what's actually on screen. */
+let murlokLoadToken = 0;
 async function loadMurlokBuild(clsSlug, specSlug, heroSlug){
   const wrap = document.getElementById('murlokResultWrap');
   wrap.innerHTML = `<div class="murlok-loading-note">${t('murlokLoadingMsg')}</div>`;
   document.getElementById('murlokAddSelectedBtn').style.display = 'none';
+  const token = ++murlokLoadToken;
   try{
     const data = await fetchMurlokGear({ mode:'build', class: clsSlug, spec: specSlug, hero: heroSlug });
+    if(token !== murlokLoadToken) return; // superseded by a newer selection - discard
     murlokResult = data;
     murlokHeroSlug = heroSlug;
     if(Array.isArray(data.heroTalents) && data.heroTalents.length){
@@ -6702,6 +6725,7 @@ async function loadMurlokBuild(clsSlug, specSlug, heroSlug){
     murlokSelected = new Set();
     renderMurlokResult();
   } catch(err){
+    if(token !== murlokLoadToken) return;
     wrap.innerHTML = `<div class="murlok-error-note">${t('murlokErrorMsg')}</div>`;
   }
 }
@@ -6798,7 +6822,7 @@ function renderMurlokResult(){
             ? `<span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>`
             : `<span class="bis-browse-item-loc murlok-loc-loading" data-key="${escapeHtml(r.key)}">…</span>`}
           ${(r.item.count !== null && r.item.count !== undefined) ? `<span class="murlok-item-count">${t('murlokPlayersLabel', r.item.count)}</span>` : ''}
-          ${r.altRank ? `<span class="bis-rank-tag" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', r.altRank)}</span>` : ''}
+          ${r.altRank ? `<span class="bis-rank-tag ${bisRankClass(r.altRank)}" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', r.altRank)}</span>` : ''}
           ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
         </div>`).join('')}
     </div>`).join('');
@@ -6860,7 +6884,7 @@ function murlokCatalystRowHtml(r){
       </span>
       <span class="bis-browse-item-loc">${escapeHtml(r.loc)}</span>
       <span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>
-      ${r.altRank ? `<span class="bis-rank-tag" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', r.altRank)}</span>` : ''}
+      ${r.altRank ? `<span class="bis-rank-tag ${bisRankClass(r.altRank)}" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', r.altRank)}</span>` : ''}
       ${r.already ? `<span class="murlok-item-added-badge">✓ ${t('alreadyAddedLabel')}</span>` : ''}
     </div>`;
 }
@@ -6888,12 +6912,18 @@ document.getElementById('murlokPlayerFetchBtn').addEventListener('click', async 
   const wrap = document.getElementById('murlokResultWrap');
   wrap.innerHTML = `<div class="murlok-loading-note">${t('murlokLoadingMsg')}</div>`;
   document.getElementById('murlokAddSelectedBtn').style.display = 'none';
+  // Same shared request token as loadMurlokBuild - a player fetch and a build fetch (or two
+  // player fetches) racing each other should never let the slower one clobber the faster,
+  // more recent one's result.
+  const token = ++murlokLoadToken;
   try{
     const data = await fetchMurlokGear({ mode:'player', region, realm: murlokSlugify(realm), name });
+    if(token !== murlokLoadToken) return;
     murlokResult = data;
     murlokSelected = new Set();
     renderMurlokResult();
   } catch(err){
+    if(token !== murlokLoadToken) return;
     wrap.innerHTML = `<div class="murlok-error-note">${t('murlokErrorMsg')}</div>`;
   }
 });
