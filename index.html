@@ -681,7 +681,28 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .add-char-status.loading{ color:var(--gold-dim); }
 
 /* todo */
-.todo-panel, .mural-panel, .upgrades-panel, .classmeta-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
+.todo-panel, .mural-panel, .upgrades-panel, .classmeta-panel, .charcompare-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
+.charcompare-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; text-transform:uppercase; letter-spacing:.04em; }
+.charcompare-picker{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 22px; }
+.charcompare-pill{
+  display:flex; align-items:center; gap:8px; padding:6px 14px 6px 6px; border-radius:20px; border:1px solid var(--hairline);
+  background: var(--bg-panel-raised); color: var(--text-dim); cursor:pointer; font-size:13px; font-weight:600;
+  transition: border-color .15s, color .15s;
+}
+.charcompare-pill:hover{ color: var(--text); }
+.charcompare-pill.active{ border-color: var(--pill-color, var(--purple)); color: var(--text); background: rgba(163,53,238,.12); }
+.charcompare-pill-avatar{ width:26px; height:26px; border-radius:50%; border:1px solid var(--hairline); object-fit:cover; }
+.charcompare-table-wrap{ overflow-x:auto; }
+.charcompare-table{ width:100%; border-collapse:collapse; min-width:420px; }
+.charcompare-table th, .charcompare-table td{ padding:12px 16px; border-bottom:1px solid var(--hairline); text-align:center; }
+.charcompare-table tr:last-child td{ border-bottom:none; }
+.charcompare-row-label{
+  text-align:left !important; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--text-dim);
+  white-space:nowrap;
+}
+.charcompare-table td:not(.charcompare-row-label){ font-family:'Rajdhani',sans-serif; font-size:17px; font-weight:700; color:var(--text); }
+.charcompare-th{ display:flex; flex-direction:column; align-items:center; gap:6px; font-size:13px; font-weight:700; }
+.charcompare-th-avatar{ width:40px; height:40px; border-radius:50%; border:1.5px solid var(--hairline); object-fit:cover; }
 .classmeta-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; text-transform:uppercase; letter-spacing:.04em; }
 .classmeta-head-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
 .classmeta-head-row h2{ margin-bottom:0; }
@@ -722,6 +743,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .classmeta-stat-pct{ font-size:13.5px; color: var(--text-dim); font-weight:600; margin-left:6px; }
 .classmeta-stat-label{ font-size:11.5px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin-top:3px; font-weight:700; }
 .classmeta-detail-subtitle{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); margin:18px 0 9px; }
+.classmeta-history-chart{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:10px; padding:10px 4px 2px; }
 .classmeta-toprun{
   display:inline-flex; align-items:center; gap:10px; padding:10px 16px; background: var(--bg-panel); border:1px solid var(--hairline);
   border-radius:8px; text-decoration:none; color:inherit; transition: border-color .15s; max-width:100%;
@@ -1567,6 +1589,9 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <button class="sidebar-link" data-tab="classmeta" title="Meta Check">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V13M11 20V6M18 20v-9"/><circle cx="18" cy="8" r="2.2"/></svg></span><span class="sidebar-label" data-i18n="navClassMeta">Meta Check</span>
       </button>
+      <button class="sidebar-link" data-tab="charcompare" title="Comparar Personagens">
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="18" rx="1.5"/><rect x="13" y="3" width="8" height="18" rx="1.5"/><path d="M7 8v6M17 8v10"/></svg></span><span class="sidebar-label" data-i18n="navCharCompare">Comparar</span>
+      </button>
       <button class="sidebar-link" data-tab="mural" title="Mural">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
       </button>
@@ -1719,6 +1744,16 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <div class="bis-list-head" data-i18n="classMetaRankingTitle">Ranking completo por representatividade</div>
       <div class="classmeta-ranking-caption" data-i18n="classMetaRankingCaption">Baseado na amostra das runs mais altas de cada região (US/EU/KR/TW) desta season — um "0" significa que a spec não apareceu nesse recorte específico, não que ninguém a joga.</div>
       <div id="classMetaTable"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-charcompare">
+    <div class="charcompare-panel">
+      <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
+      <h2 data-i18n="charCompareTitle">Comparar Personagens</h2>
+      <div class="upgrades-sub" data-i18n="charCompareSub">Escolha até 3 personagens do seu roster pra ver lado a lado.</div>
+      <div class="charcompare-picker" id="charComparePicker"></div>
+      <div id="charCompareTable"></div>
     </div>
   </section>
     </div>
@@ -2192,6 +2227,10 @@ const I18N = {
     todoCollapseToggle: "Minimizar/maximizar",
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     worldTopRunsTitle: "Top Runs do Mundo", worldTopRunsLoading: "Carregando as melhores runs do mundo...",
+    navCharCompare: "Comparar", charCompareTitle: "Comparar Personagens",
+    charCompareSub: "Escolha até 3 personagens do seu roster pra ver lado a lado.",
+    charComparePickPrompt: "Escolha pelo menos 2 personagens acima pra comparar.",
+    charCompareRowSpec: "Classe/Spec", charCompareRowBestKey: "Maior Key",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
     classMetaSub: "Baseado nas runs mais altas de cada região do mundo (US/EU/KR/TW) desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela. É uma foto do momento, não é ao vivo — os dados do topo do mundo mudam o tempo todo e essa página se atualiza sozinha em segundo plano a cada poucos minutos.",
     classMetaRankingTitle: "Ranking completo por representatividade",
@@ -2206,6 +2245,8 @@ const I18N = {
     classMetaRepresentLabel: "Representatividade no topo do mundo",
     classMetaRepresentTooltip: (count, total) => `${count} de ${total} jogadores amostrados (top runs de cada região do mundo)`,
     classMetaTopRunLabel: "Maior run feita com essa spec",
+    classMetaHistoryLabel: "Histórico de representatividade",
+    classMetaHistoryNotEnough: "Ainda sem histórico suficiente — a cada reset semanal guardamos um novo ponto real. Volte em algumas semanas pra ver a tendência.",
     classMetaNoRuns: "Nenhuma run dessa spec apareceu na amostra atual.",
     classMetaVerdictStrong: "Muito bem representada no topo do mundo agora — spec forte pra Mythic+ nesse momento.",
     classMetaVerdictGood: "Representação razoável no topo do mundo — uma escolha viável.",
@@ -2428,6 +2469,10 @@ const I18N = {
     todoCollapseToggle: "Minimize/maximize",
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     worldTopRunsTitle: "World Top Runs", worldTopRunsLoading: "Loading the world's top runs...",
+    navCharCompare: "Compare", charCompareTitle: "Compare Characters",
+    charCompareSub: "Pick up to 3 characters from your roster to see side by side.",
+    charComparePickPrompt: "Pick at least 2 characters above to compare.",
+    charCompareRowSpec: "Class/Spec", charCompareRowBestKey: "Highest Key",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
     classMetaSub: "Based on the top runs from every real region (US/EU/KR/TW) this season (raider.io) - see how popular a spec is at the top and its own highest run. This is a snapshot, not live — the world's top runs change constantly, and this page refreshes itself in the background every few minutes.",
     classMetaRankingTitle: "Full ranking by representation",
@@ -2442,6 +2487,8 @@ const I18N = {
     classMetaRepresentLabel: "Representation at the top of the world",
     classMetaRepresentTooltip: (count, total) => `${count} of ${total} sampled players (top runs from every region)`,
     classMetaTopRunLabel: "Highest run made with this spec",
+    classMetaHistoryLabel: "Representation history",
+    classMetaHistoryNotEnough: "Not enough history yet — a new real data point gets saved every weekly reset. Check back in a few weeks to see the trend.",
     classMetaNoRuns: "No run with this spec showed up in the current sample.",
     classMetaVerdictStrong: "Very well represented at the top of the world right now — a strong pick for Mythic+ at the moment.",
     classMetaVerdictGood: "Reasonable representation at the top of the world — a viable choice.",
@@ -4232,6 +4279,7 @@ async function loadAll(){
   renderMuralGrid();
   refreshAllCharacters();
   ensureWorldTopRuns();
+  ensureClassMetaHistory();
   checkAutoWeeklyReset();
   restoreLastTab();
 }
@@ -5222,6 +5270,57 @@ function ensureWorldTopRuns(){
 let classMetaCache = null;
 let classMetaPromise = null;
 let classMetaFetchedAt = null;
+/* Weekly history of Meta Check representativity - one snapshot per real weekly reset, NOT
+   per page load or per 5-minute background refresh (otherwise "history" would just be the
+   same week's noise repeated many times, not a real trend). Stored account-wide, not per
+   character - a spec's popularity isn't tied to any one character - via the same
+   storageGet/storageSet Firestore layer everything else here already uses. Capped to the
+   last 52 weeks so the stored doc never grows unbounded. Count + that week's totalPlayers
+   are both kept per entry, so the % is computed fresh at render time but stays internally
+   consistent with whatever the real sample size was that specific week. */
+let classMetaHistory = [];
+let classMetaHistoryPromise = null;
+const CLASS_META_HISTORY_KEY = 'classMetaHistory';
+const CLASS_META_HISTORY_MAX_WEEKS = 52;
+function ensureClassMetaHistory(){
+  if(!classMetaHistoryPromise){
+    classMetaHistoryPromise = (async () => {
+      try{
+        const r = await storageGet(CLASS_META_HISTORY_KEY);
+        classMetaHistory = (r && r.value) ? JSON.parse(r.value) : [];
+      } catch(e){ classMetaHistory = []; }
+    })();
+  }
+  return classMetaHistoryPromise;
+}
+async function maybeSnapshotClassMeta(){
+  if(!classMetaCache || !Array.isArray(classMetaCache.specs)) return;
+  // Wait for the real stored history to actually finish loading first - otherwise a fast
+  // ensureClassMeta() resolving before loadAll()'s own history fetch would think there's no
+  // history yet and save a snapshot into an empty array, wiping out real past weeks.
+  await ensureClassMetaHistory();
+  // Same weekly-reset boundary already used for vault/raid progress, just anchored to US
+  // purely as a consistent weekly tick - Meta Check itself isn't region-specific.
+  const weekKey = mostRecentResetBoundary('us').toISOString();
+  if(classMetaHistory.some(h => h.weekKey === weekKey)) return;
+  classMetaHistory.push({
+    weekKey, fetchedAt: Date.now(), totalPlayers: classMetaCache.totalPlayers || 0,
+    specs: classMetaCache.specs.filter(s => s.count > 0).map(s => ({ class: s.class, spec: s.spec, count: s.count }))
+  });
+  classMetaHistory.sort((a, b) => new Date(a.weekKey) - new Date(b.weekKey));
+  if(classMetaHistory.length > CLASS_META_HISTORY_MAX_WEEKS){
+    classMetaHistory = classMetaHistory.slice(-CLASS_META_HISTORY_MAX_WEEKS);
+  }
+  try{ await storageSet(CLASS_META_HISTORY_KEY, JSON.stringify(classMetaHistory)); }catch(e){}
+}
+function classMetaHistorySeries(cls, spec){
+  return classMetaHistory.map(h => {
+    const found = h.specs.find(s => s.class === cls && s.spec === spec);
+    const count = found ? found.count : 0;
+    const pct = h.totalPlayers ? (count / h.totalPlayers * 100) : 0;
+    return { x: h.weekKey.slice(0, 10), y: Math.round(pct * 10) / 10 };
+  });
+}
 function ensureClassMeta(){
   if(classMetaCache) return classMetaPromise;
   if(!classMetaPromise){
@@ -5229,7 +5328,10 @@ function ensureClassMeta(){
       .then(res => res.ok ? res.json() : Promise.reject(new Error('class-meta proxy error')))
       .then(data => {
         classMetaCache = (data && Array.isArray(data.specs) && data.specs.length) ? data : null;
-        if(classMetaCache) classMetaFetchedAt = Date.now();
+        if(classMetaCache){
+          classMetaFetchedAt = Date.now();
+          maybeSnapshotClassMeta();
+        }
         renderClassMetaSampledLabel();
         const tab = document.getElementById('tab-classmeta');
         if(classMetaCache && tab && tab.classList.contains('active')) renderClassMetaAll();
@@ -5446,6 +5548,8 @@ function renderClassMetaDetail(){
       </div>
       <div class="classmeta-detail-note tone-${classMetaVerdictTone(rank, totalSpecs, entry.count)}">${classMetaVerdict(rank, totalSpecs, entry.count)}</div>
 
+      ${renderClassMetaHistorySection(entry)}
+
       ${renderClassMetaRoleChart(entry, list)}
 
       <div class="classmeta-detail-subtitle">${t('classMetaTopRunLabel')}</div>
@@ -5465,6 +5569,30 @@ function renderClassMetaDetail(){
       </div>
     </div>`;
   renderClassMetaInsight(entry);
+  renderClassMetaHistoryChart(entry);
+}
+/* Weekly representativity trend - only draws a real line once there are at least 2 real
+   snapshots to connect; a single point would just be this week's number restated as a
+   "chart", not an actual trend, so it stays an honest note instead until there's real
+   history to show. */
+function renderClassMetaHistorySection(entry){
+  const series = classMetaHistorySeries(entry.class, entry.spec);
+  const title = `<div class="classmeta-detail-subtitle">${t('classMetaHistoryLabel')}</div>`;
+  if(series.length < 2){
+    return `${title}<div class="empty-note">${t('classMetaHistoryNotEnough')}</div>`;
+  }
+  return `${title}<div id="classMetaHistoryChart" class="classmeta-history-chart"></div>`;
+}
+function renderClassMetaHistoryChart(entry){
+  const el = document.getElementById('classMetaHistoryChart');
+  if(!el) return;
+  const series = classMetaHistorySeries(entry.class, entry.spec);
+  if(series.length < 2) return;
+  const clsColor = CLASS_HEX[entry.class] || '#f2b53d';
+  el.innerHTML = buildLineChartSVG(
+    [{ label: t('classMetaRepresentLabel'), color: clsColor, data: series }], 600, 130, 'classmetahist'
+  );
+  bindChartHover(el);
 }
 /* "Insight" section: real death counts from a level-spread sample of the spec's own sampled
    runs (up to 12, picked by the Worker across the full range of key levels it appeared at -
@@ -5586,6 +5714,106 @@ function renderClassMetaTable(){
       wrap.querySelectorAll('.classmeta-table-row').forEach(r => r.classList.toggle('active', r === row));
     });
   });
+}
+
+/* ---------------- Character Comparator: 2-3 characters from the roster side by side, all
+   real numbers already computed elsewhere in the app (ilvl/score straight off the character,
+   best key from mplusBestRuns, vault slots via the exact same threshold logic the dashboard's
+   own Weekly Vault mini-lines use, BIS/raid progress via the same helpers those cards already
+   call) - nothing new is invented here, this just puts several characters' real numbers in
+   one place instead of switching the active character back and forth to compare them. ---------------- */
+let charCompareSelected = [];
+function openCharCompare(){
+  if(!charCompareSelected.length && state.dashboardActiveChar){
+    charCompareSelected = [state.dashboardActiveChar];
+  }
+  // Drop any selected id that no longer exists (character removed since last visit).
+  charCompareSelected = charCompareSelected.filter(id => state.characters.some(c => c.id === id));
+  renderCharComparePicker();
+  renderCharCompareTable();
+}
+function renderCharComparePicker(){
+  const wrap = document.getElementById('charComparePicker');
+  if(!wrap) return;
+  wrap.innerHTML = state.characters.map(c => `
+    <button class="charcompare-pill ${charCompareSelected.includes(c.id) ? 'active' : ''}" data-id="${c.id}" style="--pill-color:${CLASS_HEX[c.class] || '#fff'}">
+      <img class="charcompare-pill-avatar" src="${c.avatarUrl || classIconUrl(c.class)}" alt="">
+      <span>${escapeHtml(c.name)}</span>
+    </button>`).join('');
+  wrap.querySelectorAll('.charcompare-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const idx = charCompareSelected.indexOf(id);
+      if(idx !== -1){
+        charCompareSelected.splice(idx, 1);
+      } else {
+        charCompareSelected.push(id);
+        // Cap at 3 selections - drop the oldest pick rather than blocking the click, so
+        // swapping one character for another is a single tap instead of deselect-then-select.
+        if(charCompareSelected.length > 3) charCompareSelected.shift();
+      }
+      renderCharComparePicker();
+      renderCharCompareTable();
+    });
+  });
+}
+/* Same real vault-threshold logic as the dashboard's Weekly Vault mini-lines
+   (raid [2,4,6] / mplus [2,4,8] / world [1,2,4] boss/key/dungeon counts) - just summed into
+   one "X/9 slots filled" number instead of three separate bar rows, since a side-by-side
+   comparison reads faster as one figure per stat. */
+function computeVaultSlots(c){
+  const boundary = mostRecentResetBoundary(c.region || 'us').getTime();
+  const raidCount = raidBossesDoneThisWeek(c, boundary);
+  const dCount = countDone(c.dungeons);
+  const wbCount = countDone(c.worldboss);
+  const filled = [2,4,6].filter(t => raidCount >= t).length
+    + [2,4,8].filter(t => dCount >= t).length
+    + [1,2,4].filter(t => wbCount >= t).length;
+  return { filled, total: 9 };
+}
+function charCompareBestKey(c){
+  const levels = (c.mplusBestRuns || []).map(r => r.mythic_level).filter(Boolean);
+  return levels.length ? Math.max(...levels) : null;
+}
+function renderCharCompareTable(){
+  const wrap = document.getElementById('charCompareTable');
+  if(!wrap) return;
+  const chars = charCompareSelected.map(id => state.characters.find(c => c.id === id)).filter(Boolean);
+  if(chars.length < 2){
+    wrap.innerHTML = `<div class="empty-note">${t('charComparePickPrompt')}</div>`;
+    return;
+  }
+  const rows = [
+    { label: t('charCompareRowSpec'), render: c => `<span style="color:${CLASS_HEX[c.class]||'#fff'}">${escapeHtml(c.spec||'—')} ${escapeHtml(c.class||'')}</span>` },
+    { label: t('gearIlvlLabel'), render: c => c.ilvl || '—' },
+    { label: t('mRatingLabel'), render: c => c.ioscore || '—' },
+    { label: t('charCompareRowBestKey'), render: c => { const lvl = charCompareBestKey(c); return lvl ? `+${lvl}` : '—'; } },
+    { label: t('weeklyRewardsTitle'), render: c => { const v = computeVaultSlots(c); return `${v.filled}/${v.total}`; } },
+    { label: t('bisProgressLabel'), render: c => { const p = bisSlotProgress(c); return `${p.matched}/${p.total}`; } },
+    { label: t('progressionTitle'), render: c => { const n = RAID_POOL.filter(b => raidBossKilled(c, b)).length; return `${n}/${RAID_POOL.length}`; } },
+  ];
+  wrap.innerHTML = `
+    <div class="charcompare-table-wrap">
+      <table class="charcompare-table">
+        <thead><tr>
+          <th></th>
+          ${chars.map(c => `
+            <th>
+              <div class="charcompare-th">
+                <img class="charcompare-th-avatar" src="${c.avatarUrl || classIconUrl(c.class)}" alt="">
+                <span style="color:${CLASS_HEX[c.class]||'#fff'}">${escapeHtml(c.name)}</span>
+              </div>
+            </th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td class="charcompare-row-label">${escapeHtml(r.label)}</td>
+              ${chars.map(c => `<td>${r.render(c)}</td>`).join('')}
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
 }
 
 function applyMplusSeasonSummary(c, data){
@@ -8350,6 +8578,7 @@ document.querySelectorAll('.sidebar-link').forEach(btn => {
     if(btn.dataset.tab === 'upgrades'){ switchToTab('upgrades'); renderUpgradesTable(); resetQuiz(); return; }
     if(btn.dataset.tab === 'bonusrolls'){ switchToTab('bonusrolls'); renderBonusRolls(); return; }
     if(btn.dataset.tab === 'classmeta'){ switchToTab('classmeta'); openClassMeta(); return; }
+    if(btn.dataset.tab === 'charcompare'){ switchToTab('charcompare'); openCharCompare(); return; }
     switchToTab(btn.dataset.tab);
   });
 });
