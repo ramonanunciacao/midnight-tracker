@@ -62,8 +62,11 @@
    need as rio-run. Queried once per current-season dungeon (real slugs confirmed by paging
    the "all dungeons" world leaderboard directly) to get each dungeon's own #1 world run - the
    single best run overall would just be whichever dungeon happens to be easiest to push that
-   week, not one result per dungeon. Returns { topRuns: [{dungeon, icon, level, roster:
-   [{name, class, spec, role}, ...]}, ...] }. No Blizzard token needed. */
+   week, not one result per dungeon. Returns { topRuns: [{dungeon, icon, level, clearTimeMs,
+   url, roster: [{name, class, spec, role}, ...]}, ...] } - roster is pre-sorted tank/healer/
+   dps, and url is the real per-run Raider.IO page (confirmed by constructing one from
+   keystone_run_id/mythic_level/dungeon.slug and fetching it directly - resolves to a real
+   200). No Blizzard token needed. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -138,16 +141,24 @@ export default {
           const top = data.rankings && data.rankings[0];
           if(!top || !top.run) return null;
           const run = top.run;
-          return {
-            dungeon: run.dungeon.name,
-            icon: run.dungeon.icon_url ? `https://cdn.raiderio.net${run.dungeon.icon_url}` : null,
-            level: run.mythic_level,
-            roster: (run.roster || []).map(m => ({
+          // Real Raider.IO run-page URL pattern (confirmed by constructing one and fetching
+          // it directly - resolves to a real 200): /mythic-plus-runs/{season}/{run_id}-{level}-{dungeon-slug}
+          const ROLE_ORDER = { tank: 0, healer: 1, dps: 2 };
+          const roster = (run.roster || [])
+            .map(m => ({
               name: m.character.name,
               class: m.character.class && m.character.class.name,
               spec: m.character.spec && m.character.spec.name,
               role: m.role
             }))
+            .sort((a, b) => (ROLE_ORDER[a.role] ?? 9) - (ROLE_ORDER[b.role] ?? 9));
+          return {
+            dungeon: run.dungeon.name,
+            icon: run.dungeon.icon_url ? `https://cdn.raiderio.net${run.dungeon.icon_url}` : null,
+            level: run.mythic_level,
+            clearTimeMs: run.clear_time_ms || null,
+            url: `https://raider.io/mythic-plus-runs/${encodeURIComponent(season)}/${run.keystone_run_id}-${run.mythic_level}-${run.dungeon.slug}`,
+            roster
           };
         }));
         return new Response(JSON.stringify({ topRuns: results.filter(Boolean) }), { headers: corsHeaders });
