@@ -926,7 +926,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 }
 .bonusrolls-right-col-second-head{ margin-top:28px; padding-top:16px; border-top:1px solid var(--hairline); }
 .bis-browse-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
-.bis-browse-modal{ width:720px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
+.bis-browse-modal{ width:900px; max-width:97vw; max-height:94vh; overflow-y:auto; text-align:left; }
 .recent-runs-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
 .recent-runs-modal{ width:640px; max-width:96vw; max-height:88vh; overflow-y:auto; text-align:left; }
 .season-best-modal-overlay{ z-index: 150; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding:20px; }
@@ -1005,8 +1005,17 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .bis-browse-card-icon{ width:28px; height:28px; border-radius:6px; border:1px solid var(--hairline); }
 .bis-browse-card-name{ font-size:12px; font-weight:600; color:var(--text); }
 .bis-browse-card-count{ font-size:10px; color:var(--text-dim); }
+.bis-browse-items-head{
+  font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim);
+  margin-top:14px; padding-top:10px; border-top:1px solid var(--hairline); min-height:13px;
+}
+.bis-browse-grid-section-title{
+  font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim);
+  margin:12px 0 6px;
+}
+.bis-browse-grid-section-title:first-child{ margin-top:0; }
 .bis-browse-items{
-  display:grid; grid-template-columns: 1fr 1fr; gap:2px 14px; margin-top:10px; max-height:340px; overflow-y:auto;
+  display:grid; grid-template-columns: 1fr 1fr; gap:2px 14px; margin-top:8px; max-height:560px; overflow-y:auto;
 }
 @media(max-width:640px){ .bis-browse-items{ grid-template-columns: 1fr; } }
 .bis-browse-item-row{
@@ -1658,7 +1667,8 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       </div>
     </div>
 
-    <div class="bis-browse-grid" id="bisBrowseGrid"></div>
+    <div id="bisBrowseGrid"></div>
+    <div class="bis-browse-items-head" id="bisBrowseItemsHead"></div>
     <div class="bis-browse-items" id="bisBrowseItems"></div>
   </div>
 </div>
@@ -1968,6 +1978,8 @@ const I18N = {
     noBisYet: "Nenhum item de BIS cadastrado ainda. Adicione os itens que você quer trackear e de onde dropam.",
     bisNoLocation: "Sem local definido", bisItemCount: (n) => n === 1 ? "1 item" : `${n} itens`,
     bisBrowseGeneralLabel: "Geral", bisBrowseBackToBosses: "Voltar aos bosses",
+    bisBrowseAllItemsLabel: "Todos os itens (filtrado)",
+    bisBrowseDungeonsLabel: "Dungeons", bisBrowseRaidLabel: "Raid",
     murlokImportTitle: "Espelhar do Murlok.io", murlokImportSub: "Baseado em dados reais de murlok.io - a build dos top jogadores ou o gear de um jogador específico",
     murlokModeBuild: "Build recomendada", murlokModePlayer: "Jogador específico",
     murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
@@ -2164,6 +2176,8 @@ const I18N = {
     noBisYet: "No BIS items yet. Add the items you want to track and where they drop from.",
     bisNoLocation: "No location set", bisItemCount: (n) => n === 1 ? "1 item" : `${n} items`,
     bisBrowseGeneralLabel: "General", bisBrowseBackToBosses: "Back to bosses",
+    bisBrowseAllItemsLabel: "All items (filtered)",
+    bisBrowseDungeonsLabel: "Dungeons", bisBrowseRaidLabel: "Raid",
     murlokImportTitle: "Mirror from Murlok.io", murlokImportSub: "Based on real data from murlok.io - the top players' build or a specific player's gear",
     murlokModeBuild: "Recommended build", murlokModePlayer: "Specific player",
     murlokSpecLabel: "Spec", murlokHeroTalentLabel: "Hero Talent",
@@ -5272,7 +5286,9 @@ function renderBisBrowseGrid(){
   bisBrowseGroups = groups;
   if(bisActiveBrowseLoc && !groups.has(bisActiveBrowseLoc)) bisActiveBrowseLoc = null;
   const locs = [...groups.keys()].sort();
-  gridWrap.innerHTML = locs.map(loc => {
+  const dungeonLocs = locs.filter(l => l !== RAID_NAME);
+  const raidLocs = locs.filter(l => l === RAID_NAME);
+  const cardHtml = loc => {
     const items = groups.get(loc);
     const filteredCount = items.filter(bisItemMatchesFilters).length;
     const thumb = items.find(i => i.icon)?.icon || '';
@@ -5284,7 +5300,16 @@ function renderBisBrowseGrid(){
         <div class="bis-browse-card-count">${t('bisItemCount', filteredCount)}</div>
       </div>
     </div>`;
-  }).join('');
+  };
+  gridWrap.innerHTML = `
+    ${dungeonLocs.length ? `
+      <div class="bis-browse-grid-section-title">${t('bisBrowseDungeonsLabel')}</div>
+      <div class="bis-browse-grid">${dungeonLocs.map(cardHtml).join('')}</div>
+    ` : ''}
+    ${raidLocs.length ? `
+      <div class="bis-browse-grid-section-title">${t('bisBrowseRaidLabel')}</div>
+      <div class="bis-browse-grid">${raidLocs.map(cardHtml).join('')}</div>
+    ` : ''}`;
   gridWrap.querySelectorAll('.bis-browse-card').forEach(card => {
     card.addEventListener('click', () => {
       bisActiveBrowseLoc = (bisActiveBrowseLoc === card.dataset.loc) ? null : card.dataset.loc;
@@ -5339,6 +5364,7 @@ function renderBisBrowseBossGrid(items){
 
 function renderBisBrowseItems(){
   const itemsWrap = document.getElementById('bisBrowseItems');
+  const headEl = document.getElementById('bisBrowseItemsHead');
   const c = state.characters.find(x => x.id === state.bisActiveChar);
   const loc = bisActiveBrowseLoc;
 
@@ -5349,8 +5375,20 @@ function renderBisBrowseItems(){
     items = [...bisBrowseGroups.values()].flat().filter(bisItemMatchesFilters);
   } else {
     itemsWrap.innerHTML = '';
+    headEl.textContent = '';
     return;
   }
+  headEl.textContent = loc
+    ? (bisActiveBrowseBoss && bisActiveBrowseBoss !== '__all__' ? `${loc} — ${bisActiveBrowseBoss}` : loc)
+    : t('bisBrowseAllItemsLabel');
+
+  // Real WoW paperdoll order (head down to off-hand), same order/grouping already used
+  // for the player's own BIS list, so the picker reads the same way.
+  items = items.slice().sort((a, b) => {
+    const rankA = BIS_SLOT_GROUP_ORDER.indexOf(bisSlotGroupKey(a.slot));
+    const rankB = BIS_SLOT_GROUP_ORDER.indexOf(bisSlotGroupKey(b.slot));
+    return (rankA === -1 ? 999 : rankA) - (rankB === -1 ? 999 : rankB);
+  });
 
   const hasBosses = items.some(i => i.boss);
   if(loc && hasBosses && bisActiveBrowseBoss === null){
