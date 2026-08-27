@@ -7427,6 +7427,7 @@ function switchToTab(tabName){
   const btn = document.querySelector(`.sidebar-link[data-tab="${tabName}"]`);
   if(btn) btn.classList.add('active');
   document.getElementById('tab-'+tabName).classList.add('active');
+  window.scrollTo(0, 0);
 }
 function goToDashboard(){
   switchToTab('dashboard');
