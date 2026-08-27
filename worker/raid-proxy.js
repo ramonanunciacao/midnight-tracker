@@ -70,16 +70,25 @@
    dungeon.slug and fetching it directly - resolves to a real 200). No Blizzard token needed.
 
    Seventh, unrelated usage: GET <worker-url>/?type=rio-class-meta&season=season-mn-2
-   Same real Raider.IO runs endpoint as rio-world-top, but sampling the world's top 200 runs
-   (10 pages x 20/page, confirmed the real page size directly) across all dungeons combined
+   Same real Raider.IO runs endpoint as rio-world-top, but sampling the world's top 500 runs
+   (25 pages x 20/page, confirmed the real page size directly) across all dungeons combined
    and aggregating every roster slot by class/spec - powers the "Meta Check" feature (how
    represented is a spec among the world's best players right now, and what's its own highest
-   run in that sample). Returns { totalRuns, totalPlayers, specs: [{class, spec, role, count,
-   highestLevel, topRun: {level, dungeon, shortName, url}, topRuns: [{runId, level, dungeon,
-   shortName, url}, ...]}, ...] } - topRuns is that spec's own top 5 real runs in the sample
-   (by level, deduped by run id), used by the frontend to lazily fetch real death data for
-   just those runs via the existing rio-run branch instead of pulling details for all 200
-   runs up front. No Blizzard token needed. */
+   run in that sample). 500 rather than the original 200: a bigger sample both makes the
+   representativity % less noisy and, more importantly, gives the death-insight feature (see
+   below) a wider spread of real key levels per spec to work with instead of a narrow band
+   clustered at the very top. Returns { totalRuns, totalPlayers, specs: [{class, spec, role,
+   count, highestLevel, topRun: {level, dungeon, shortName, url}, deathSampleRuns: [{runId,
+   level, dungeon, shortName, url}, ...], byDungeon: [{dungeon, shortName, level, icon, url},
+   ...]}, ...] } - deathSampleRuns is up to 12 of that spec's real runs in the sample, chosen
+   by sorting all its runs by level and taking evenly-spaced picks across the full range
+   (not just the highest ones) so the frontend can fetch real death data for each (via the
+   existing rio-run branch) and see whether deaths cluster from some key level upward, rather
+   than only looking at a handful of runs all bunched at the same top level. byDungeon is that
+   spec's own best real run in each individual dungeon it appeared in (also from the same
+   sample, deduped by run id first) - a spec can be well-tested in one dungeon and absent from
+   another within the sample, so this is a genuinely different signal from the single overall
+   topRun. No Blizzard token needed. */
 
 let cachedToken = null;
 let cachedTokenExpiry = 0;
@@ -184,13 +193,14 @@ export default {
     if(url.searchParams.get('type') === 'rio-class-meta'){
       const season = url.searchParams.get('season');
       if(!season) return new Response(JSON.stringify({ error: 'missing season' }), { status: 400, headers: corsHeaders });
-      // Same real Raider.IO endpoint as rio-world-top, but sampling the world's top 200 runs
-      // (10 pages x 20 runs/page, confirmed the real page size by fetching page 0 directly)
+      // Same real Raider.IO endpoint as rio-world-top, but sampling the world's top 500 runs
+      // (25 pages x 20 runs/page, confirmed the real page size by fetching page 0 directly)
       // across all dungeons combined, to get a real representativity snapshot: how many of
-      // those ~1000 roster slots are each class/spec, and each spec's own highest run within
+      // those ~2500 roster slots are each class/spec, and each spec's own highest run within
       // that sample. This is genuinely what the top of the world is playing right now, not a
-      // guess - the "meta check" feature is built entirely on this real data.
-      const PAGES = 10;
+      // guess - the "meta check" feature is built entirely on this real data. 500 instead of
+      // 200 so the death-insight sample below isn't confined to one narrow key-level band.
+      const PAGES = 25;
       try{
         const pages = await Promise.all(Array.from({ length: PAGES }, (_, i) =>
           fetch(`https://raider.io/api/v1/mythic-plus/runs?season=${encodeURIComponent(season)}&region=world&dungeon=all&affixes=all&page=${i}`)
@@ -225,7 +235,8 @@ export default {
               // runs up front (which would be far too many subrequests for one invocation).
               entry.runs.push({
                 runId: run.keystone_run_id, level: run.mythic_level, dungeon: run.dungeon.name,
-                shortName: run.dungeon.short_name || null, dungeonSlug: run.dungeon.slug
+                shortName: run.dungeon.short_name || null, dungeonSlug: run.dungeon.slug,
+                icon: run.dungeon.icon_url ? `https://cdn.raiderio.net${run.dungeon.icon_url}` : null
               });
               if(run.mythic_level > entry.highestLevel){
                 entry.highestLevel = run.mythic_level;
@@ -244,14 +255,42 @@ export default {
           entry.runs.forEach(r => {
             if(!uniqueRuns.has(r.runId) || r.level > uniqueRuns.get(r.runId).level) uniqueRuns.set(r.runId, r);
           });
-          const topRuns = [...uniqueRuns.values()]
+          const allRuns = [...uniqueRuns.values()];
+          // Level-spread sample for the death-insight feature: sort this spec's own runs by
+          // level and take up to 12 evenly-spaced picks across the FULL range, instead of just
+          // the highest ones - a sample confined to one narrow top-of-the-range band can't tell
+          // the frontend whether deaths cluster from some key level upward, only whether deaths
+          // happened at the single level everyone in the sample already plays at.
+          const byLevel = [...allRuns].sort((a, b) => a.level - b.level);
+          const SAMPLE_SIZE = Math.min(12, byLevel.length);
+          let spread;
+          if(byLevel.length <= SAMPLE_SIZE){
+            spread = byLevel;
+          } else {
+            const step = (byLevel.length - 1) / (SAMPLE_SIZE - 1);
+            const idxSet = new Set();
+            for(let i = 0; i < SAMPLE_SIZE; i++) idxSet.add(Math.round(i * step));
+            spread = [...idxSet].sort((a, b) => a - b).map(i => byLevel[i]);
+          }
+          const deathSampleRuns = spread.map(r => ({
+            runId: r.runId, level: r.level, dungeon: r.dungeon, shortName: r.shortName,
+            url: `https://raider.io/mythic-plus-runs/${encodeURIComponent(season)}/${r.runId}-${r.level}-${r.dungeonSlug}`
+          }));
+          // Best run per individual dungeon (not just the single overall best) - lets the
+          // frontend show "highest run by dungeon" for the selected spec, since a spec can be
+          // strong in one dungeon and untested in another within this same sample.
+          const dungeonMap = new Map();
+          allRuns.forEach(r => {
+            const prev = dungeonMap.get(r.dungeonSlug);
+            if(!prev || r.level > prev.level) dungeonMap.set(r.dungeonSlug, r);
+          });
+          const byDungeon = [...dungeonMap.values()]
             .sort((a, b) => b.level - a.level)
-            .slice(0, 5)
             .map(r => ({
-              runId: r.runId, level: r.level, dungeon: r.dungeon, shortName: r.shortName,
+              dungeon: r.dungeon, shortName: r.shortName, level: r.level, icon: r.icon,
               url: `https://raider.io/mythic-plus-runs/${encodeURIComponent(season)}/${r.runId}-${r.level}-${r.dungeonSlug}`
             }));
-          return { class: entry.class, spec: entry.spec, role: entry.role, count: entry.count, highestLevel: entry.highestLevel, topRun: entry.topRun, topRuns };
+          return { class: entry.class, spec: entry.spec, role: entry.role, count: entry.count, highestLevel: entry.highestLevel, topRun: entry.topRun, deathSampleRuns, byDungeon };
         });
         return new Response(JSON.stringify({ totalRuns, totalPlayers, specs }), { headers: corsHeaders });
       } catch(err){

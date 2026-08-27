@@ -633,7 +633,10 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
 /* todo */
 .todo-panel, .mural-panel, .upgrades-panel, .classmeta-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
-.classmeta-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; margin-bottom:6px; text-transform:uppercase; letter-spacing:.04em; }
+.classmeta-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; text-transform:uppercase; letter-spacing:.04em; }
+.classmeta-head-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
+.classmeta-head-row h2{ margin-bottom:0; }
+#classMetaRefreshBtn.spinning .cpage-refresh-icon{ display:inline-block; animation: char-refresh-spin .8s linear infinite; }
 .classmeta-picker{ display:flex; flex-wrap:wrap; gap:6px; margin:16px 0; }
 .classmeta-class-btn{
   width:36px; height:36px; padding:2px; border-radius:8px; border:1px solid var(--hairline); background: var(--bg-panel-raised);
@@ -650,32 +653,70 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .classmeta-spec-btn img{ width:20px; height:20px; border-radius:5px; }
 .classmeta-spec-btn:hover{ color: var(--text); }
 .classmeta-spec-btn.active{ border-color: var(--purple); color: var(--text); background: rgba(163,53,238,.12); }
-.classmeta-detail-card{
-  background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:12px; padding:18px; margin:18px 0;
+.classmeta-report{
+  background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
+  border-radius:14px; padding:22px; margin:18px 0; box-shadow: 0 8px 24px rgba(0,0,0,.18);
 }
-.classmeta-detail-head{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-.classmeta-detail-icon{ width:44px; height:44px; border-radius:9px; border:1px solid var(--hairline); flex-shrink:0; }
-.classmeta-detail-name{ font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:800; }
-.classmeta-detail-rank{ font-size:12px; color: var(--text-dim); margin-top:2px; }
-.classmeta-detail-stats{ display:flex; gap:20px; margin-bottom:16px; }
-.classmeta-stat-value{ font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:800; color: var(--gold); }
-.classmeta-stat-pct{ font-size:13px; color: var(--text-dim); font-weight:600; margin-left:6px; }
-.classmeta-stat-label{ font-size:11px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin-top:2px; }
-.classmeta-detail-subtitle{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); margin-bottom:8px; }
+.classmeta-report-eyebrow{
+  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color: var(--gold);
+  margin-bottom:10px; display:flex; align-items:center; gap:6px;
+}
+.classmeta-report-eyebrow::before{ content:'📊'; font-size:12px; }
+.classmeta-detail-head{ display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.classmeta-detail-icon{ width:52px; height:52px; border-radius:11px; border:1px solid var(--hairline); flex-shrink:0; }
+.classmeta-detail-name{ font-family:'Rajdhani',sans-serif; font-size:23px; font-weight:800; line-height:1.15; }
+.classmeta-detail-rank{ font-size:12.5px; color: var(--text-dim); margin-top:3px; font-weight:600; }
+.classmeta-report-role{ width:34px; height:34px; border-radius:8px; border:1px solid var(--hairline); margin-left:auto; flex-shrink:0; }
+.classmeta-detail-stats{ display:flex; gap:28px; margin-bottom:14px; flex-wrap:wrap; }
+.classmeta-stat-value{ font-family:'Rajdhani',sans-serif; font-size:32px; font-weight:800; color: var(--gold); }
+.classmeta-stat-pct{ font-size:13.5px; color: var(--text-dim); font-weight:600; margin-left:6px; }
+.classmeta-stat-label{ font-size:11.5px; color: var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin-top:3px; font-weight:700; }
+.classmeta-detail-subtitle{ font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--gold-dim); margin:18px 0 9px; }
 .classmeta-toprun{
-  display:flex; align-items:center; gap:10px; padding:8px 12px; background: var(--bg-panel); border:1px solid var(--hairline);
+  display:flex; align-items:center; gap:10px; padding:10px 14px; background: var(--bg-panel); border:1px solid var(--hairline);
   border-radius:8px; text-decoration:none; color:inherit; transition: border-color .15s;
 }
 .classmeta-toprun:hover{ border-color: var(--gold-dim); }
-.classmeta-toprun-level{ font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:800; color: var(--gold); }
-.classmeta-toprun-dungeon{ font-size:13px; font-weight:700; color: var(--text); }
-.classmeta-toprun-link{ font-size:11px; color: var(--text-dim); margin-left:auto; }
-.classmeta-detail-note{ font-size:12.5px; color: var(--text-dim); line-height:1.6; margin-top:14px; padding-top:14px; border-top:1px solid var(--hairline); }
-.classmeta-insight{ font-size:12.5px; color: var(--text-dim); line-height:1.6; }
-.classmeta-insight-text{ margin-bottom:6px; }
+.classmeta-toprun-level{ font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:800; color: var(--gold); }
+.classmeta-toprun-dungeon{ font-size:14px; font-weight:700; color: var(--text); }
+.classmeta-toprun-link{ font-size:11.5px; color: var(--text-dim); margin-left:auto; }
+.classmeta-detail-note{ font-size:13px; color: var(--text-dim); line-height:1.6; margin-top:14px; padding-top:14px; border-top:1px solid var(--hairline); }
+.classmeta-chart{ display:flex; flex-direction:column; gap:7px; }
+.classmeta-bar-row{ display:grid; grid-template-columns:22px 92px 1fr 48px; align-items:center; gap:9px; }
+.classmeta-bar-row.active .classmeta-bar-name{ font-weight:800; }
+.classmeta-bar-icon{ width:22px; height:22px; border-radius:5px; border:1px solid var(--hairline); }
+.classmeta-bar-name{ font-size:12.5px; font-weight:600; color: var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.classmeta-bar-track{ height:9px; background: var(--bg-panel); border-radius:5px; overflow:hidden; border:1px solid var(--hairline); }
+.classmeta-bar-fill{ height:100%; border-radius:5px; min-width:2px; transition: width .3s; }
+.classmeta-bar-row.active .classmeta-bar-track{ border-color: var(--gold-dim); }
+.classmeta-bar-value{ font-size:12px; font-weight:700; color: var(--text-dim); text-align:right; }
+.classmeta-bar-row.active .classmeta-bar-value{ color: var(--gold); }
+.classmeta-dungeon-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap:8px; }
+.classmeta-dungeon-chip{
+  display:flex; align-items:center; gap:7px; padding:8px 10px; background: var(--bg-panel); border:1px solid var(--hairline);
+  border-radius:8px; text-decoration:none; color:inherit; transition: border-color .15s, transform .15s;
+}
+.classmeta-dungeon-chip:hover{ border-color: var(--gold-dim); transform:translateY(-1px); }
+.classmeta-dungeon-icon{ width:20px; height:20px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
+.classmeta-dungeon-name{ font-size:11.5px; font-weight:700; color: var(--text); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.classmeta-dungeon-level{ font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:800; color: var(--gold); }
+.classmeta-insight-block{
+  margin-top:18px; padding-top:16px; border-top:1px solid var(--hairline);
+}
+.classmeta-insight-title{
+  display:flex; align-items:center; gap:8px; font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:800;
+  color: var(--text); text-transform:uppercase; letter-spacing:.03em; margin-bottom:10px;
+}
+.classmeta-insight-icon{ font-size:17px; }
+.classmeta-insight{ font-size:13.5px; color: var(--text-dim); line-height:1.65; }
+.classmeta-insight-text{ margin-bottom:8px; }
 .classmeta-insight-warning{
-  color: var(--danger); font-weight:600; padding:8px 10px; background: rgba(239,68,68,.1);
-  border:1px solid rgba(239,68,68,.3); border-radius:8px; margin-top:6px;
+  color: var(--danger); font-weight:700; font-size:13px; padding:10px 12px; background: rgba(239,68,68,.1);
+  border:1px solid rgba(239,68,68,.3); border-radius:8px; margin-top:8px;
+}
+@media(max-width:640px){
+  .classmeta-bar-row{ grid-template-columns:20px 74px 1fr 40px; gap:6px; }
+  .classmeta-dungeon-grid{ grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
 }
 .classmeta-table{ display:flex; flex-direction:column; gap:2px; margin-top:12px; }
 .classmeta-table-head{
@@ -1458,11 +1499,11 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <button class="sidebar-link" data-tab="bonusrolls" title="Bonus Rolls">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="sidebar-label" data-i18n="navBonusRolls">Bonus Rolls</span>
       </button>
-      <button class="sidebar-link" data-tab="mural" title="Mural">
-        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
-      </button>
       <button class="sidebar-link" data-tab="classmeta" title="Meta Check">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V13M11 20V6M18 20v-9"/><circle cx="18" cy="8" r="2.2"/></svg></span><span class="sidebar-label" data-i18n="navClassMeta">Meta Check</span>
+      </button>
+      <button class="sidebar-link" data-tab="mural" title="Mural">
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
       </button>
 
       <div class="sidebar-footer">
@@ -1599,8 +1640,13 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   <section class="tab" id="tab-classmeta">
     <div class="classmeta-panel">
       <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
-      <h2 data-i18n="classMetaTitle">Meta Check</h2>
-      <div class="upgrades-sub" data-i18n="classMetaSub">Baseado nas top 200 runs do mundo desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela</div>
+      <div class="classmeta-head-row">
+        <h2 data-i18n="classMetaTitle">Meta Check</h2>
+        <button class="cpage-refresh-btn" id="classMetaRefreshBtn">
+          <span class="cpage-refresh-icon">↻</span> <span id="classMetaSampledLabel"></span>
+        </button>
+      </div>
+      <div class="upgrades-sub" data-i18n="classMetaSub">Baseado nas top 500 runs do mundo desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela. Isso é uma foto do momento, não é ao vivo — os dados do topo do mundo mudam o tempo todo, clique em atualizar pra reamostrar.</div>
 
       <div class="classmeta-picker" id="classMetaClassPicker"></div>
       <div class="classmeta-picker classmeta-spec-picker" id="classMetaSpecPicker"></div>
@@ -2082,25 +2128,35 @@ const I18N = {
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     worldTopRunsTitle: "Top Runs do Mundo", worldTopRunsLoading: "Carregando as melhores runs do mundo...",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
-    classMetaSub: "Baseado nas top 200 runs do mundo desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela",
+    classMetaSub: "Baseado nas top 500 runs do mundo desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela. É uma foto do momento, não é ao vivo — os dados do topo do mundo mudam o tempo todo, clique em atualizar pra reamostrar.",
     classMetaRankingTitle: "Ranking completo por representatividade",
-    classMetaLoading: "Buscando as top 200 runs do mundo no Raider.IO...",
+    classMetaLoading: "Buscando as top 500 runs do mundo no Raider.IO...",
     classMetaPickPrompt: "Escolha uma classe e spec acima pra ver os dados",
+    classMetaRefreshLabel: "Atualizar",
+    classMetaRefreshTooltip: "Buscar uma nova amostra das top 500 runs do mundo agora",
+    classMetaSampledAt: (rel) => `Amostra: ${rel}`,
+    classMetaReportEyebrow: "Relatório da Spec",
     classMetaRankLabel: (rank, total) => `#${rank} de ${total} specs por representatividade`,
+    classMetaRankStatLabel: "Posição no ranking",
     classMetaRepresentLabel: "Representatividade no topo do mundo",
-    classMetaRepresentTooltip: (count, total) => `${count} de ${total} jogadores amostrados (top 200 runs do mundo)`,
+    classMetaRepresentTooltip: (count, total) => `${count} de ${total} jogadores amostrados (top 500 runs do mundo)`,
     classMetaTopRunLabel: "Maior run feita com essa spec",
-    classMetaNoRuns: "Nenhuma run dessa spec apareceu no top 200 atual.",
+    classMetaNoRuns: "Nenhuma run dessa spec apareceu na amostra atual.",
     classMetaVerdictStrong: "Muito bem representada no topo do mundo agora — spec forte pra Mythic+ nesse momento.",
     classMetaVerdictGood: "Representação razoável no topo do mundo — uma escolha viável.",
     classMetaVerdictWeak: "Pouco representada no topo do mundo no momento — não significa que é fraca, mas está menos popular entre quem está pushando mais alto agora.",
-    classMetaVerdictNone: "Nenhum jogador dessa spec apareceu na amostra atual (top 200 runs do mundo) — amostra pequena, não é uma confirmação definitiva de que é fraca.",
+    classMetaVerdictNone: "Nenhum jogador dessa spec apareceu na amostra atual (top 500 runs do mundo) — amostra pequena, não é uma confirmação definitiva de que é fraca.",
     classMetaColSpec: "Spec", classMetaColCount: "Jogadores", classMetaColHighest: "Maior key",
+    classMetaRoleTank: "Tank", classMetaRoleHealer: "Healer", classMetaRoleDps: "DPS",
+    classMetaChartTitle: (role) => `Representatividade entre specs de ${role}`,
+    classMetaDungeonGridTitle: "Maior run por dungeon",
     classMetaInsightLabel: "Insight de sobrevivência",
-    classMetaInsightLoading: "Analisando mortes nas runs mais altas dessa spec...",
+    classMetaInsightLoading: "Analisando mortes numa amostra de runs dessa spec em vários níveis de key...",
     classMetaInsightNoData: "Sem runs suficientes dessa spec na amostra pra gerar um insight de mortes.",
-    classMetaInsightText: (n, minLvl, maxLvl, totalDeaths, specDeaths, specName) => `Nas ${n} runs mais altas dessa spec no top 200 (entre +${minLvl} e +${maxLvl}), foram registradas ${totalDeaths} morte(s) ao todo — ${specDeaths} delas de jogadores de ${specName}.`,
-    classMetaInsightWarning: "Essa spec teve uma parcela de mortes acima da média do grupo nessas runs — pode valer a pena olhar problemas de sobrevivência ou timing, mas com uma amostra tão pequena isso não é conclusivo.",
+    classMetaInsightText: (n, minLvl, maxLvl, totalDeaths) => `Amostra de ${n} runs dessa spec entre +${minLvl} e +${maxLvl}: ${totalDeaths} morte(s) registrada(s) ao todo nesse grupo de runs.`,
+    classMetaInsightSpecClean: (specName) => `Nenhuma delas foi de um jogador de ${specName} — bom sinal de sobrevivência nesse recorte de níveis.`,
+    classMetaInsightThreshold: (specName, specDeaths, thresholdLevel) => `${specDeaths} delas de jogadores de ${specName}, começando a partir da key +${thresholdLevel} — não houve mortes dessa spec registradas abaixo desse nível na amostra.`,
+    classMetaInsightWarning: "Essa spec teve uma parcela de mortes acima da média do grupo nessa amostra — pode valer a pena olhar problemas de sobrevivência ou timing, mas com uma amostra desse tamanho isso não é conclusivo.",
     newsPlaceholder1: "Hotfixes recentes", newsPlaceholder2: "Novidades da Season 2", newsPlaceholder3: "Rotação de Mythic+ da semana",
     comingSoon: "em breve", weeklyRewardsTitle: "Weekly Vault", progressionTitle: "Raid Progression",
     viewAllLabel: "Ver Tudo", seasonBestDungeonsTitle: "Season Best",
@@ -2302,25 +2358,35 @@ const I18N = {
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     worldTopRunsTitle: "World Top Runs", worldTopRunsLoading: "Loading the world's top runs...",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
-    classMetaSub: "Based on the world's top 200 runs this season (raider.io) - see how popular a spec is at the top and its own highest run",
+    classMetaSub: "Based on the world's top 500 runs this season (raider.io) - see how popular a spec is at the top and its own highest run. This is a snapshot, not live — the world's top runs change constantly, click refresh to resample.",
     classMetaRankingTitle: "Full ranking by representation",
-    classMetaLoading: "Fetching the world's top 200 runs from Raider.IO...",
+    classMetaLoading: "Fetching the world's top 500 runs from Raider.IO...",
     classMetaPickPrompt: "Pick a class and spec above to see the data",
+    classMetaRefreshLabel: "Refresh",
+    classMetaRefreshTooltip: "Fetch a fresh sample of the world's top 500 runs now",
+    classMetaSampledAt: (rel) => `Sample: ${rel}`,
+    classMetaReportEyebrow: "Spec Report",
     classMetaRankLabel: (rank, total) => `#${rank} of ${total} specs by representation`,
+    classMetaRankStatLabel: "Ranking position",
     classMetaRepresentLabel: "Representation at the top of the world",
-    classMetaRepresentTooltip: (count, total) => `${count} of ${total} sampled players (world's top 200 runs)`,
+    classMetaRepresentTooltip: (count, total) => `${count} of ${total} sampled players (world's top 500 runs)`,
     classMetaTopRunLabel: "Highest run made with this spec",
-    classMetaNoRuns: "No run with this spec showed up in the current top 200.",
+    classMetaNoRuns: "No run with this spec showed up in the current sample.",
     classMetaVerdictStrong: "Very well represented at the top of the world right now — a strong pick for Mythic+ at the moment.",
     classMetaVerdictGood: "Reasonable representation at the top of the world — a viable choice.",
     classMetaVerdictWeak: "Not very represented at the top of the world right now — that doesn't mean it's weak, just less popular among those pushing highest right now.",
-    classMetaVerdictNone: "No player with this spec showed up in the current sample (world's top 200 runs) — a small sample, not a definitive confirmation that it's weak.",
+    classMetaVerdictNone: "No player with this spec showed up in the current sample (world's top 500 runs) — a small sample, not a definitive confirmation that it's weak.",
     classMetaColSpec: "Spec", classMetaColCount: "Players", classMetaColHighest: "Highest key",
+    classMetaRoleTank: "Tank", classMetaRoleHealer: "Healer", classMetaRoleDps: "DPS",
+    classMetaChartTitle: (role) => `Representation among ${role} specs`,
+    classMetaDungeonGridTitle: "Highest run by dungeon",
     classMetaInsightLabel: "Survival insight",
-    classMetaInsightLoading: "Analyzing deaths in this spec's highest runs...",
+    classMetaInsightLoading: "Analyzing deaths across a sample of this spec's runs at multiple key levels...",
     classMetaInsightNoData: "Not enough runs from this spec in the sample to generate a death insight.",
-    classMetaInsightText: (n, minLvl, maxLvl, totalDeaths, specDeaths, specName) => `Across this spec's ${n} highest runs in the top 200 (between +${minLvl} and +${maxLvl}), ${totalDeaths} death(s) were recorded in total — ${specDeaths} of them from ${specName} players.`,
-    classMetaInsightWarning: "This spec accounted for a disproportionate share of deaths in these runs — might be worth looking into survivability or timing issues, though with a sample this small it's not conclusive.",
+    classMetaInsightText: (n, minLvl, maxLvl, totalDeaths) => `Sample of ${n} runs from this spec between +${minLvl} and +${maxLvl}: ${totalDeaths} death(s) recorded in total across that group of runs.`,
+    classMetaInsightSpecClean: (specName) => `None of them were from a ${specName} player — a good survivability sign across this level range.`,
+    classMetaInsightThreshold: (specName, specDeaths, thresholdLevel) => `${specDeaths} of them from ${specName} players, starting from key +${thresholdLevel} — no deaths from this spec were recorded below that level in the sample.`,
+    classMetaInsightWarning: "This spec accounted for a disproportionate share of deaths in this sample — might be worth looking into survivability or timing issues, though with a sample this size it's not conclusive.",
     newsPlaceholder1: "Recent hotfixes", newsPlaceholder2: "Season 2 highlights", newsPlaceholder3: "This week's Mythic+ rotation",
     comingSoon: "coming soon", weeklyRewardsTitle: "Weekly Vault", progressionTitle: "Raid Progression",
     viewAllLabel: "View All", seasonBestDungeonsTitle: "Season Best",
@@ -5009,10 +5075,15 @@ function ensureWorldTopRuns(){
 }
 
 /* ---------------- "Meta Check": real representativity + best-run data for every spec,
-   sampled from the world's actual top 200 M+ runs this season (see the rio-class-meta
-   branch in worker/raid-proxy.js) - fetched once per session, character-independent. ---------------- */
+   sampled from the world's actual top 500 M+ runs this season (see the rio-class-meta
+   branch in worker/raid-proxy.js) - character-independent, but NOT static: the world's top
+   runs change constantly as people push keys, so this is a snapshot as of classMetaFetchedAt,
+   not a live feed. Cached per session like the rest of this app's Raider.IO reads, with an
+   explicit refresh control (below) so the player can re-sample on demand rather than us
+   silently polling raider.io in the background. ---------------- */
 let classMetaCache = null;
 let classMetaPromise = null;
+let classMetaFetchedAt = null;
 function ensureClassMeta(){
   if(classMetaCache) return classMetaPromise;
   if(!classMetaPromise){
@@ -5020,12 +5091,34 @@ function ensureClassMeta(){
       .then(res => res.ok ? res.json() : Promise.reject(new Error('class-meta proxy error')))
       .then(data => {
         classMetaCache = (data && Array.isArray(data.specs) && data.specs.length) ? data : null;
+        if(classMetaCache) classMetaFetchedAt = Date.now();
+        renderClassMetaSampledLabel();
         const tab = document.getElementById('tab-classmeta');
         if(classMetaCache && tab && tab.classList.contains('active')) renderClassMetaAll();
       })
       .catch(() => {});
   }
   return classMetaPromise;
+}
+function renderClassMetaSampledLabel(){
+  const el = document.getElementById('classMetaSampledLabel');
+  if(!el) return;
+  el.textContent = classMetaFetchedAt ? t('classMetaSampledAt', formatRelativeTime(classMetaFetchedAt)) : t('classMetaRefreshLabel');
+  const btn = document.getElementById('classMetaRefreshBtn');
+  if(btn) btn.title = t('classMetaRefreshTooltip');
+}
+function refreshClassMeta(){
+  const btn = document.getElementById('classMetaRefreshBtn');
+  if(btn && btn.classList.contains('spinning')) return;
+  if(btn) btn.classList.add('spinning');
+  classMetaCache = null;
+  classMetaPromise = null;
+  classMetaDeathCache.clear();
+  ensureClassMeta().finally(() => {
+    if(btn) btn.classList.remove('spinning');
+    renderClassMetaSampledLabel();
+    if(classMetaCache) renderClassMetaAll();
+  });
 }
 let classMetaSelected = null;
 function openClassMeta(){
@@ -5035,6 +5128,12 @@ function openClassMeta(){
       classMetaSelected = { class: c.class, spec: c.spec };
     }
   }
+  const refreshBtn = document.getElementById('classMetaRefreshBtn');
+  if(refreshBtn && !refreshBtn.dataset.bound){
+    refreshBtn.dataset.bound = '1';
+    refreshBtn.addEventListener('click', refreshClassMeta);
+  }
+  renderClassMetaSampledLabel();
   renderClassMetaPickers();
   if(classMetaCache) renderClassMetaAll();
   else {
@@ -5079,7 +5178,7 @@ function renderClassMetaPickers(){
   });
 }
 /* Every real spec (all 39, from WOW_CLASS_SPECS) cross-referenced against the sample - a
-   spec with zero appearances in the top 200 still shows up honestly as 0/0%, not omitted. */
+   spec with zero appearances in the sample still shows up honestly as 0/0%, not omitted. */
 function classMetaFullList(){
   if(!classMetaCache) return [];
   const found = new Map(classMetaCache.specs.map(s => [`${s.class}|${s.spec}`, s]));
@@ -5087,7 +5186,7 @@ function classMetaFullList(){
   Object.entries(WOW_CLASS_SPECS).forEach(([cls, specs]) => {
     specs.forEach(spec => {
       const entry = found.get(`${cls}|${spec}`);
-      all.push(entry || { class: cls, spec, role: null, count: 0, highestLevel: 0, topRun: null });
+      all.push(entry || { class: cls, spec, role: null, count: 0, highestLevel: 0, topRun: null, deathSampleRuns: [], byDungeon: [] });
     });
   });
   return all.sort((a, b) => b.count - a.count);
@@ -5097,6 +5196,57 @@ function classMetaVerdict(rank, totalSpecs, count){
   if(rank <= Math.ceil(totalSpecs * 0.15)) return t('classMetaVerdictStrong');
   if(rank <= Math.ceil(totalSpecs * 0.4)) return t('classMetaVerdictGood');
   return t('classMetaVerdictWeak');
+}
+function classMetaRoleLabel(role){
+  if(role === 'tank') return t('classMetaRoleTank');
+  if(role === 'healer') return t('classMetaRoleHealer');
+  return t('classMetaRoleDps');
+}
+/* Bar-chart comparing this spec's representation against other specs sharing the same role -
+   the meaningful "is this competitive against my other options" comparison, since raw count
+   across all 39 specs mixes tank/healer/dps pools of very different sizes. Shows the role's
+   top 8 by count, always including the selected spec even if it falls outside that top 8. */
+function renderClassMetaRoleChart(entry, list){
+  if(!entry.role) return '';
+  const total = classMetaCache.totalPlayers || 0;
+  const sameRole = list.filter(s => s.role === entry.role).sort((a, b) => b.count - a.count);
+  let shown = sameRole.slice(0, 8);
+  if(!shown.some(s => s.class === entry.class && s.spec === entry.spec)){
+    const self = sameRole.find(s => s.class === entry.class && s.spec === entry.spec);
+    if(self) shown = [...shown.slice(0, 7), self];
+  }
+  const maxCount = Math.max(1, ...shown.map(s => s.count));
+  return `
+    <div class="classmeta-detail-subtitle">${t('classMetaChartTitle', classMetaRoleLabel(entry.role))}</div>
+    <div class="classmeta-chart">
+      ${shown.map(s => {
+        const isActive = s.class === entry.class && s.spec === entry.spec;
+        const pct = total ? (s.count / total * 100) : 0;
+        const barPct = maxCount ? (s.count / maxCount * 100) : 0;
+        const color = CLASS_HEX[s.class] || '#fff';
+        return `
+        <div class="classmeta-bar-row ${isActive ? 'active' : ''}">
+          <img class="classmeta-bar-icon" src="${specIconUrl(s.class, s.spec)}" alt="">
+          <span class="classmeta-bar-name" style="${isActive ? `color:${color}` : ''}">${escapeHtml(s.spec)}</span>
+          <div class="classmeta-bar-track"><div class="classmeta-bar-fill" style="width:${barPct}%; background:${color}"></div></div>
+          <span class="classmeta-bar-value">${pct.toFixed(1)}%</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+function renderClassMetaDungeonGrid(entry){
+  const byDungeon = entry.byDungeon || [];
+  const title = `<div class="classmeta-detail-subtitle">${t('classMetaDungeonGridTitle')}</div>`;
+  if(!byDungeon.length) return `${title}<div class="empty-note">${t('classMetaNoRuns')}</div>`;
+  return `${title}
+    <div class="classmeta-dungeon-grid">
+      ${byDungeon.map(d => `
+        <a class="classmeta-dungeon-chip" href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(d.dungeon)}">
+          ${d.icon ? `<img class="classmeta-dungeon-icon" src="${escapeHtml(d.icon)}" alt="">` : ''}
+          <span class="classmeta-dungeon-name">${escapeHtml(d.shortName || d.dungeon)}</span>
+          <span class="classmeta-dungeon-level">+${d.level}</span>
+        </a>`).join('')}
+    </div>`;
 }
 function renderClassMetaDetail(){
   const wrap = document.getElementById('classMetaDetail');
@@ -5119,41 +5269,59 @@ function renderClassMetaDetail(){
       <span class="classmeta-toprun-link">${t('viewOnRaiderIo')} →</span>
     </a>` : `<div class="empty-note">${t('classMetaNoRuns')}</div>`;
   wrap.innerHTML = `
-    <div class="classmeta-detail-card">
+    <div class="classmeta-report">
+      <div class="classmeta-report-eyebrow">${t('classMetaReportEyebrow')}</div>
       <div class="classmeta-detail-head">
         <img class="classmeta-detail-icon" src="${iconUrl}" alt="">
         <div>
           <div class="classmeta-detail-name" style="color:${clsColor}">${escapeHtml(entry.spec)} ${escapeHtml(entry.class)}</div>
           <div class="classmeta-detail-rank">${t('classMetaRankLabel', rank, totalSpecs)}</div>
         </div>
+        ${entry.role ? `<img class="classmeta-report-role" src="${roleIconUrl(entry.role)}" title="${classMetaRoleLabel(entry.role)}" alt="">` : ''}
       </div>
       <div class="classmeta-detail-stats">
         <div class="classmeta-stat" title="${t('classMetaRepresentTooltip', entry.count, total)}">
           <div class="classmeta-stat-value">${pct.toFixed(1)}%<span class="classmeta-stat-pct">(${entry.count}/${total})</span></div>
           <div class="classmeta-stat-label">${t('classMetaRepresentLabel')}</div>
         </div>
+        <div class="classmeta-stat">
+          <div class="classmeta-stat-value">#${rank}<span class="classmeta-stat-pct">/${totalSpecs}</span></div>
+          <div class="classmeta-stat-label">${t('classMetaRankStatLabel')}</div>
+        </div>
       </div>
+      <div class="classmeta-detail-note">${classMetaVerdict(rank, totalSpecs, entry.count)}</div>
+
+      ${renderClassMetaRoleChart(entry, list)}
+
       <div class="classmeta-detail-subtitle">${t('classMetaTopRunLabel')}</div>
       ${topRunHtml}
-      <div class="classmeta-detail-note">${classMetaVerdict(rank, totalSpecs, entry.count)}</div>
-      <div class="classmeta-detail-subtitle">${t('classMetaInsightLabel')}</div>
-      <div id="classMetaInsight" class="classmeta-insight">${entry.topRuns && entry.topRuns.length ? t('classMetaInsightLoading') : `<span class="empty-note">${t('classMetaInsightNoData')}</span>`}</div>
+
+      ${renderClassMetaDungeonGrid(entry)}
+
+      <div class="classmeta-insight-block">
+        <div class="classmeta-insight-title"><span class="classmeta-insight-icon">💀</span>${t('classMetaInsightLabel')}</div>
+        <div id="classMetaInsight" class="classmeta-insight">${entry.deathSampleRuns && entry.deathSampleRuns.length ? t('classMetaInsightLoading') : `<span class="empty-note">${t('classMetaInsightNoData')}</span>`}</div>
+      </div>
     </div>`;
   renderClassMetaInsight(entry);
 }
-/* "Insight" section: real death counts from the spec's own top 5 sampled runs (lazily
-   fetched via the existing rio-run run-details branch, only for the spec the player has
-   actually selected - not all 39 up front, to keep this cheap). Cross-references each
-   death's character_id against that run's own roster to tell which class/spec actually
-   died, confirmed the real field shapes match by fetching a real top-world run directly
-   before building this. Small sample (<=5 runs), so the tone stays hedged rather than
-   presenting a firm conclusion. */
+/* "Insight" section: real death counts from a level-spread sample of the spec's own sampled
+   runs (up to 12, picked by the Worker across the full range of key levels it appeared at -
+   see deathSampleRuns in the rio-class-meta branch - rather than only the very highest ones,
+   so the range analyzed isn't artificially narrow/biased toward one level). Lazily fetched
+   via the existing rio-run run-details branch, only for the spec the player has actually
+   selected. Cross-references each death's character_id against that run's own roster to tell
+   which class/spec actually died, confirmed the real field shapes match by fetching a real
+   top-world run directly before building this. Reports the lowest key level in the sample at
+   which a death from this spec was actually recorded, rather than a vague "many deaths" - but
+   still a small sample by nature (single-digit to low-double-digit runs), so the tone stays
+   hedged rather than presenting a firm statistical conclusion. */
 const classMetaDeathCache = new Map();
 async function analyzeClassMetaDeaths(entry){
   const key = `${entry.class}|${entry.spec}`;
   if(classMetaDeathCache.has(key)) return classMetaDeathCache.get(key);
   const promise = (async () => {
-    const results = await Promise.all(entry.topRuns.map(async r => {
+    const results = await Promise.all(entry.deathSampleRuns.map(async r => {
       try{
         const data = await fetchRunDetails(CURRENT_SEASON_SLUG, r.runId);
         const deaths = (data.logged_details && data.logged_details.deaths) || [];
@@ -5166,14 +5334,17 @@ async function analyzeClassMetaDeaths(entry){
             specDeaths++;
           }
         });
-        return { total: deaths.length, specDeaths };
+        return { level: r.level, total: deaths.length, specDeaths };
       } catch(e){ return null; }
     }));
     const valid = results.filter(Boolean);
+    const specDeathLevels = valid.filter(r => r.specDeaths > 0).map(r => r.level);
     return {
       runsAnalyzed: valid.length,
+      levels: valid.map(r => r.level),
       totalDeaths: valid.reduce((s, r) => s + r.total, 0),
-      specDeaths: valid.reduce((s, r) => s + r.specDeaths, 0)
+      specDeaths: valid.reduce((s, r) => s + r.specDeaths, 0),
+      thresholdLevel: specDeathLevels.length ? Math.min(...specDeathLevels) : null
     };
   })();
   classMetaDeathCache.set(key, promise);
@@ -5182,7 +5353,7 @@ async function analyzeClassMetaDeaths(entry){
   return resolved;
 }
 async function renderClassMetaInsight(entry){
-  if(!entry.topRuns || !entry.topRuns.length) return;
+  if(!entry.deathSampleRuns || !entry.deathSampleRuns.length) return;
   const target = { class: entry.class, spec: entry.spec };
   const analysis = await analyzeClassMetaDeaths(entry);
   // Guard against the player switching specs while this was in flight - don't clobber a
@@ -5194,9 +5365,12 @@ async function renderClassMetaInsight(entry){
     el.innerHTML = `<span class="empty-note">${t('classMetaInsightNoData')}</span>`;
     return;
   }
-  const levels = entry.topRuns.map(r => r.level);
-  const minLvl = Math.min(...levels), maxLvl = Math.max(...levels);
-  let html = `<div class="classmeta-insight-text">${t('classMetaInsightText', analysis.runsAnalyzed, minLvl, maxLvl, analysis.totalDeaths, analysis.specDeaths, target.spec)}</div>`;
+  const minLvl = Math.min(...analysis.levels), maxLvl = Math.max(...analysis.levels);
+  let html = `<div class="classmeta-insight-text">${t('classMetaInsightText', analysis.runsAnalyzed, minLvl, maxLvl, analysis.totalDeaths)} `;
+  html += analysis.thresholdLevel == null
+    ? t('classMetaInsightSpecClean', target.spec)
+    : t('classMetaInsightThreshold', target.spec, analysis.specDeaths, analysis.thresholdLevel);
+  html += `</div>`;
   if(analysis.totalDeaths > 0 && analysis.specDeaths > (analysis.totalDeaths / 5) * 1.5){
     html += `<div class="classmeta-insight-warning">${t('classMetaInsightWarning')}</div>`;
   }
