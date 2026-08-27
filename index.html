@@ -721,12 +721,14 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 }
 .classmeta-insight-icon{ font-size:17px; }
 .classmeta-insight{ font-size:14.5px; line-height:1.6; }
-.classmeta-insight-text{
-  font-weight:700; padding:10px 13px; border-radius:8px; border:1px solid var(--hairline);
-  background: var(--bg-panel); color: var(--text-dim);
+.classmeta-insight-text{ color: var(--text-dim); }
+.classmeta-insight-status{
+  font-family:'Rajdhani',sans-serif; font-size:16.5px; font-weight:800; text-transform:uppercase; letter-spacing:.03em;
 }
-.classmeta-insight.is-good .classmeta-insight-text{ color: var(--ok); background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.35); }
-.classmeta-insight.is-bad .classmeta-insight-text{ color: var(--danger); background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.35); }
+.classmeta-insight-status.status-good{ color: var(--ok); }
+.classmeta-insight-status.status-moderate{ color: #facc15; }
+.classmeta-insight-status.status-bad{ color: var(--danger); }
+.classmeta-insight-status.status-unknown{ color: var(--text-dim); }
 @media(max-width:640px){
   .classmeta-bar-row{ grid-template-columns:20px 74px 1fr 40px; gap:6px; }
   .classmeta-dungeon-grid{ grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
@@ -2164,6 +2166,7 @@ const I18N = {
     classMetaChartTitle: (role) => `Representatividade entre specs de ${role}`,
     classMetaDungeonGridTitle: "Maior run por dungeon",
     classMetaInsightLabel: "Insight de sobrevivência",
+    classMetaStatusGood: "GOOD", classMetaStatusModerate: "MODERATE", classMetaStatusBad: "BAD", classMetaStatusUnknown: "UNKNOWN",
     classMetaInsightLoading: "Analisando mortes numa amostra de runs dessa spec em vários níveis de key...",
     classMetaInsightNoData: "Sem runs suficientes dessa spec na amostra pra gerar um insight de mortes.",
     classMetaInsightShort: (n, minLvl, maxLvl, specDeaths, totalDeaths, specName) => `${n} runs analisadas (+${minLvl}–+${maxLvl}): ${specDeaths} de ${totalDeaths} mortes foram de ${specName}.`,
@@ -2392,6 +2395,7 @@ const I18N = {
     classMetaChartTitle: (role) => `Representation among ${role} specs`,
     classMetaDungeonGridTitle: "Highest run by dungeon",
     classMetaInsightLabel: "Survival insight",
+    classMetaStatusGood: "GOOD", classMetaStatusModerate: "MODERATE", classMetaStatusBad: "BAD", classMetaStatusUnknown: "UNKNOWN",
     classMetaInsightLoading: "Analyzing deaths across a sample of this spec's runs at multiple key levels...",
     classMetaInsightNoData: "Not enough runs from this spec in the sample to generate a death insight.",
     classMetaInsightShort: (n, minLvl, maxLvl, specDeaths, totalDeaths, specName) => `${n} runs analyzed (+${minLvl}–+${maxLvl}): ${specDeaths} of ${totalDeaths} deaths were ${specName}.`,
@@ -5329,7 +5333,10 @@ function renderClassMetaDetail(){
       <div class="classmeta-report-full">
         <div class="classmeta-report-full-title">${t('classMetaReportFullTitle')}</div>
         <div class="classmeta-insight-block">
-          <div class="classmeta-insight-title"><span class="classmeta-insight-icon">💀</span>${t('classMetaInsightLabel')}</div>
+          <div class="classmeta-insight-title">
+            <span class="classmeta-insight-icon">💀</span>${t('classMetaInsightLabel')}
+            <span id="classMetaInsightStatus" class="classmeta-insight-status status-unknown">${t('classMetaStatusUnknown')}</span>
+          </div>
           <div id="classMetaInsight" class="classmeta-insight">${entry.deathSampleRuns && entry.deathSampleRuns.length ? t('classMetaInsightLoading') : `<span class="empty-note">${t('classMetaInsightNoData')}</span>`}</div>
         </div>
       </div>
@@ -5383,12 +5390,28 @@ async function analyzeClassMetaDeaths(entry){
 }
 /* "Good" vs "bad" is a fair-share check, not "any deaths = bad" - deaths happen normally at
    high keys, so what actually signals a real survivability problem is this spec eating a
-   disproportionate slice of a 5-person roster's deaths (>1.5x its 1-in-5 fair share). */
-function classMetaInsightIsBad(analysis){
-  return analysis.totalDeaths > 0 && analysis.specDeaths > (analysis.totalDeaths / 5) * 1.5;
+   disproportionate slice of a 5-person roster's deaths, not just "any death happened". Four
+   states: unknown (not enough sample), good (at/under its fair 1-in-5 share, or zero deaths),
+   moderate (above fair share but not badly so), bad (>1.5x its fair share). */
+function classMetaInsightStatus(analysis){
+  if(!analysis || !analysis.runsAnalyzed) return 'unknown';
+  if(analysis.totalDeaths === 0) return 'good';
+  const fairShare = analysis.totalDeaths / 5;
+  if(analysis.specDeaths > fairShare * 1.5) return 'bad';
+  if(analysis.specDeaths > fairShare) return 'moderate';
+  return 'good';
+}
+function setClassMetaInsightStatus(status){
+  const el = document.getElementById('classMetaInsightStatus');
+  if(!el) return;
+  el.className = `classmeta-insight-status status-${status}`;
+  el.textContent = t(`classMetaStatus${status.replace(/^./, c => c.toUpperCase())}`);
 }
 async function renderClassMetaInsight(entry){
-  if(!entry.deathSampleRuns || !entry.deathSampleRuns.length) return;
+  if(!entry.deathSampleRuns || !entry.deathSampleRuns.length){
+    setClassMetaInsightStatus('unknown');
+    return;
+  }
   const target = { class: entry.class, spec: entry.spec };
   const analysis = await analyzeClassMetaDeaths(entry);
   // Guard against the player switching specs while this was in flight - don't clobber a
@@ -5398,15 +5421,15 @@ async function renderClassMetaInsight(entry){
   if(!el) return;
   if(!analysis || !analysis.runsAnalyzed){
     el.innerHTML = `<span class="empty-note">${t('classMetaInsightNoData')}</span>`;
+    setClassMetaInsightStatus('unknown');
     return;
   }
   const minLvl = Math.min(...analysis.levels), maxLvl = Math.max(...analysis.levels);
-  const isBad = classMetaInsightIsBad(analysis);
   const text = analysis.totalDeaths === 0
     ? t('classMetaInsightClean', analysis.runsAnalyzed, minLvl, maxLvl)
     : t('classMetaInsightShort', analysis.runsAnalyzed, minLvl, maxLvl, analysis.specDeaths, analysis.totalDeaths, target.spec);
-  el.className = `classmeta-insight ${isBad ? 'is-bad' : 'is-good'}`;
   el.innerHTML = `<div class="classmeta-insight-text">${text}</div>`;
+  setClassMetaInsightStatus(classMetaInsightStatus(analysis));
 }
 function renderClassMetaTable(){
   const wrap = document.getElementById('classMetaTable');
