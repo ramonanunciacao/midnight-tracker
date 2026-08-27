@@ -329,7 +329,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
   display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:2px;
   background: var(--bg-panel-raised); border:1px solid var(--hairline); border-top:3px solid transparent; border-radius:7px; padding:6px 6px;
 }
-.mss-label{ font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.02em; }
+.mss-label{ font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.02em; }
 .mss-value{ font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:800; line-height:1; color: var(--text); }
 .mss-m0{ border-top-color:#8792ad; }
 .mss-m0 .mss-label{ color:#a7b0c8; }
@@ -4540,15 +4540,21 @@ function renderCharacterPage(){
 
   const bisByLoc = new Map();
   sortedBis.forEach(b => {
-    if(b.source === t('murlokTierSetLabel')) return; // not a real farmable location, skip this card
+    // A Tier Set/Catalyst item used to get silently skipped here entirely, back when it was
+    // still being swapped for a substitute dropped item that WOULD show under a real
+    // dungeon/raid card - since that substitution was removed (it could guess the wrong
+    // stats; the real Murlok item is kept now, honestly labeled "Tier Set"), skipping it here
+    // too meant Catalyst-crafted items had no card anywhere at all. Give it its own card
+    // instead, same as Craft/Season Anterior below.
     const loc = (b.source && b.source !== '—') ? b.source : t('bisNoLocation');
     if(!bisByLoc.has(loc)) bisByLoc.set(loc, []);
     bisByLoc.get(loc).push(b);
   });
-  // Craft and Season Anterior aren't real farm locations like the rest of the cards here -
-  // pushed to the end (Craft second-to-last, Season Anterior last) so the real dungeon/raid
-  // cards read first. Array.sort is stable, so every other card keeps its existing order.
-  const bisLocOrderRank = loc => loc === t('murlokCraftLabel') ? 1 : (loc === t('murlokOldSeasonLabel') ? 2 : 0);
+  // Craft, Tier Set, and Season Anterior aren't real farm locations like the rest of the
+  // cards here - pushed to the end (in that order) so the real dungeon/raid cards read
+  // first. Array.sort is stable, so every other card keeps its existing order.
+  const bisLocOrderRank = loc =>
+    loc === t('murlokCraftLabel') ? 1 : loc === t('murlokTierSetLabel') ? 2 : loc === t('murlokOldSeasonLabel') ? 3 : 0;
   const bisLocEntries = [...bisByLoc.entries()].sort((a, b) => {
     const rankDiff = bisLocOrderRank(a[0]) - bisLocOrderRank(b[0]);
     return rankDiff !== 0 ? rankDiff : a[0].localeCompare(b[0]);
@@ -6865,6 +6871,16 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
   if(!c) return;
   const toAdd = murlokLastRows.filter(r => murlokSelected.has(r.key) && !r.already);
   if(!toAdd.length) return;
+  // Classification for items outside our own table (Craft, Tier Set, previous-season, etc.)
+  // runs in the background and can still be in flight when Add is clicked - resolve any
+  // stragglers here too, so a fast click never lands an item with no real source label
+  // (falling to the generic "no location" bucket) just because Wowhead's tooltip fetch
+  // hadn't finished yet.
+  await Promise.all(toAdd.filter(r => !r.loc && !r.locLabel).map(async r => {
+    const { label, category } = await classifyUnknownMurlokItem(r.item.whId);
+    if(category === 'tierset'){ r.loc = label; r.isCatalyst = true; }
+    else r.locLabel = label;
+  }));
   const qualifier = currentMurlokQualifierLabel();
   const murlokList = getOrCreateMurlokBisList(c, qualifier);
   toAdd.forEach(r => {
