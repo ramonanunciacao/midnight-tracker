@@ -54,7 +54,7 @@ body{
   box-shadow: 0 0 18px -1px rgba(163,53,238,.7), inset 0 0 10px rgba(163,53,238,.25);
 }
 .sidebar-brand-mark{
-  width:118%; height:118%; object-fit:cover; object-position:50% 46%;
+  width:118%; height:118%; object-fit:cover; object-position:50% 20%;
 }
 .sidebar-link{
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; width:100%;
@@ -1268,7 +1268,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .login-box h1{ font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 26px; color: var(--text); margin-bottom: 6px; text-shadow: 0 0 24px rgba(163,53,238,.5), 0 0 48px rgba(163,53,238,.25); letter-spacing: .04em; text-transform:uppercase; }
 .brand-tagline{ font-size:11px; color:var(--text-dim); letter-spacing:.03em; margin-bottom:20px; }
 .login-logo{
-  width:96px; height:96px; object-fit:cover; object-position:50% 46%; border-radius:50%; display:block; margin:0 auto 18px;
+  width:96px; height:96px; object-fit:cover; object-position:50% 20%; border-radius:50%; display:block; margin:0 auto 18px;
   border:2px solid rgba(163,53,238,.55); box-shadow: 0 0 24px -2px rgba(163,53,238,.7);
 }
 .login-box{ box-shadow: 0 0 70px -20px rgba(163,53,238,.25); }
@@ -1285,7 +1285,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .landing-nav{ display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:48px; }
 .landing-brand{ display:flex; align-items:center; gap:10px; }
 .brand-mark{
-  width:36px; height:36px; flex-shrink:0; object-fit:cover; object-position:50% 46%; border-radius:50%;
+  width:36px; height:36px; flex-shrink:0; object-fit:cover; object-position:50% 20%; border-radius:50%;
   border:1.5px solid rgba(163,53,238,.6); box-shadow: 0 0 14px -1px rgba(163,53,238,.7);
 }
 .landing-wordmark{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:.06em; text-transform:uppercase; color:var(--text); }
@@ -1396,7 +1396,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 <div id="landingScreen">
   <nav class="landing-nav">
     <div class="landing-brand">
-      <img class="brand-mark" src="assets/Logo-Midnight-2.png" alt="World of Warcraft: Midnight">
+      <img class="brand-mark" src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight">
       <span class="landing-wordmark" data-i18n="brandTitle">Keystone Hub</span>
     </div>
     <div class="landing-nav-links">
@@ -1419,7 +1419,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <button class="landing-cta-btn" id="landingHeroCta" data-i18n="landingHeroCtaLabel">Get Started →</button>
     </div>
     <div class="landing-hero-art">
-      <img src="assets/Logo-Midnight-2.png" alt="World of Warcraft: Midnight">
+      <img src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight">
     </div>
   </div>
 
@@ -1458,7 +1458,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 <div id="loginScreen" style="display:none;">
   <div class="login-box">
     <a href="#" id="loginBackLink" class="login-back-link" data-i18n="landingBackLink">← Back</a>
-    <img class="login-logo" src="assets/Logo-Midnight-2.png" alt="World of Warcraft: Midnight">
+    <img class="login-logo" src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight">
     <div class="eyebrow" data-i18n="brandEyebrow">Midnight · Season 2</div>
     <h1 data-i18n="brandTitle">Keystone Hub</h1>
     <div class="brand-tagline" data-i18n="brandTagline">Season Command Center • Powered by Rawmohn</div>
@@ -1487,7 +1487,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   <div class="app-body">
     <nav class="sidebar">
       <a class="sidebar-brand" href="#" id="homeLink" aria-label="Ir para o início" data-i18n-aria="ariaGoHome">
-        <span class="sidebar-brand-circle"><img class="sidebar-brand-mark" src="assets/Logo-Midnight-2.png" alt="World of Warcraft: Midnight"></span>
+        <span class="sidebar-brand-circle"><img class="sidebar-brand-mark" src="assets/midnight-logo-cutout.png" alt="World of Warcraft: Midnight"></span>
       </a>
       <button class="sidebar-link active" data-tab="dashboard" title="Dashboard">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></span><span class="sidebar-label" data-i18n="navDashboard">Dashboard</span>
