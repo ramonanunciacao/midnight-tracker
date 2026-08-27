@@ -878,11 +878,11 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 }
 .upgrades-sub{ font-size:13px; color:var(--text-dim); margin-bottom:18px; }
 .back-to-dashboard-btn{
-  display:inline-flex; align-items:center; gap:6px; background:none; border:1px solid var(--hairline);
-  color:var(--text-dim); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
-  padding:7px 14px; border-radius:8px; cursor:pointer; margin-bottom:16px; transition: border-color .15s, color .15s;
+  display:inline-flex; align-items:center; gap:7px; background: rgba(242,181,61,.1); border:1px solid var(--gold-dim);
+  color: var(--gold); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.04em;
+  padding:8px 16px; border-radius:9px; cursor:pointer; margin-bottom:16px; transition: background .15s, border-color .15s, box-shadow .15s;
 }
-.back-to-dashboard-btn:hover{ border-color: var(--gold-dim); color: var(--gold); }
+.back-to-dashboard-btn:hover{ background: rgba(242,181,61,.18); border-color: var(--gold); box-shadow: 0 0 14px -4px rgba(242,181,61,.55); }
 .upgrades-layout{ display:flex; gap:24px; align-items:flex-start; }
 .upgrades-quiz-col{
   flex:0 0 360px; background: var(--bg-panel-raised); border:1px solid var(--hairline); border-radius:12px; padding:18px;
@@ -1630,18 +1630,15 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <button class="sidebar-link" data-tab="bis" title="BIS Gear">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22"/></svg></span><span class="sidebar-label" data-i18n="navBis">BIS Gear</span>
       </button>
+      <button class="sidebar-link" data-tab="mural" title="Mural">
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
+      </button>
       <div class="sidebar-divider"></div>
       <button class="sidebar-link" data-tab="upgrades" title="Upgrade Chart">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2 10l2-2 2 2M9 4l2-2 2 2M16 13l2-2 2 2"/></svg></span><span class="sidebar-label" data-i18n="navUpgrades">Upgrade Chart</span>
       </button>
-      <button class="sidebar-link" data-tab="bonusrolls" title="Bonus Rolls">
-        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="sidebar-label" data-i18n="navBonusRolls">Bonus Rolls</span>
-      </button>
       <button class="sidebar-link" data-tab="classmeta" title="Meta Check">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V13M11 20V6M18 20v-9"/><circle cx="18" cy="8" r="2.2"/></svg></span><span class="sidebar-label" data-i18n="navClassMeta">Meta Check</span>
-      </button>
-      <button class="sidebar-link" data-tab="mural" title="Mural">
-        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
       </button>
 
       <div class="sidebar-footer">
@@ -1663,7 +1660,6 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
       <section class="tab" id="tab-bis">
         <div class="bisgear-panel">
-          <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
           <div id="bisGearPage"></div>
         </div>
       </section>
@@ -1713,70 +1709,6 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
             <button data-mode="raid" data-i18n="upgradesRaidTab">Raid</button>
           </div>
           <div id="upgradesTableWrap"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="tab" id="tab-bonusrolls">
-    <div class="bonusrolls-panel">
-      <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
-      <h2 data-i18n="bonusRollsTitle">Bonus Rolls</h2>
-      <div class="upgrades-sub" data-i18n="bonusRollsSub">Acompanhe seus bonus rolls: quantos você tem, onde gastou, e se acertou o item</div>
-
-      <div class="upgrades-layout">
-        <div class="upgrades-quiz-col bonusrolls-left-col">
-          <div class="bonusrolls-available-row">
-            <div>
-              <div class="bonusrolls-available-label" data-i18n="bonusRollsAvailableLabel">Bonus Rolls disponíveis</div>
-              <div class="bonusrolls-available-sub" data-i18n="bonusRollsAvailableSub">Ajuste manualmente conforme você ganha ou gasta</div>
-            </div>
-            <div class="bonusrolls-stepper">
-              <button id="bonusRollDecBtn">−</button>
-              <span id="bonusRollAvailableVal">0</span>
-              <button id="bonusRollIncBtn">+</button>
-            </div>
-          </div>
-
-          <div class="bonusrolls-summary" id="bonusRollsSummary"></div>
-
-          <h3 class="upgrades-subtitle" data-i18n="bonusRollsWishlistTitle">Bonus Roll BIS</h3>
-          <div class="upgrades-sub" data-i18n="bonusRollsWishlistSub">Adicione os itens que você quer pegar de bonus roll - por nome ou por dungeon/raid</div>
-          <div class="bis-add" style="position:relative;">
-            <input type="hidden" id="bonusWishWhId" value="">
-            <input type="hidden" id="bonusWishIconUrl" value="">
-            <input type="hidden" id="bonusWishBoss" value="">
-            <input type="text" class="iname" id="bonusWishName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
-            <input type="hidden" id="bonusWishSlot">
-            <input type="hidden" id="bonusWishSource">
-            <button id="bonusWishAddBtn" data-i18n="add">Adicionar</button>
-            <div class="bis-search-results" id="bonusWishSearchResults"></div>
-          </div>
-          <button class="bis-browse-trigger-btn" id="bonusWishBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
-
-          <h3 class="upgrades-subtitle" data-i18n="bonusRollsLogSpendTitle">Registrar item recebido</h3>
-          <div class="bonusrolls-spend-form">
-            <input type="hidden" id="bonusRollLocation" value="">
-            <input type="hidden" id="bonusRollWhId" value="">
-            <input type="hidden" id="bonusRollIconUrl" value="">
-            <div style="position:relative; flex:1; min-width:160px;">
-              <input type="text" id="bonusRollItemInput" data-i18n-placeholder="bonusRollItemPlaceholder" placeholder="Item recebido" autocomplete="off" style="width:100%;">
-              <div class="bis-search-results" id="bonusRollItemSearchResults"></div>
-            </div>
-            <button class="bis-browse-trigger-btn bonusrolls-spend-browse-btn" id="bonusLogBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
-            <button id="bonusRollLogBtn" data-i18n="bonusRollLogBtn">Registrar</button>
-          </div>
-
-          <div class="bis-list-head" data-i18n="bonusRollsHistoryTitle">Histórico</div>
-          <div class="bonusrolls-history" id="bonusRollsHistory"></div>
-        </div>
-
-        <div class="upgrades-table-col bonusrolls-right-col">
-          <div class="bis-list-head" data-i18n="bonusRollsWishlistTitle">Bonus Roll BIS</div>
-          <div class="bis-dungeon-grid" id="bonusWishGrid"></div>
-
-          <div class="bis-list-head bonusrolls-right-col-second-head" data-i18n="bonusRollsByLocationTitle">Recebidos por local</div>
-          <div class="bis-dungeon-grid" id="bonusReceivedGrid"></div>
         </div>
       </div>
     </div>
@@ -1927,6 +1859,74 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
     <div class="bis-list-head" data-i18n="yourBisListLabel">Sua lista BIS</div>
     <div class="bis-list" id="bisList"></div>
+  </div>
+</div>
+
+<div class="modal-overlay bis-browse-modal-overlay" id="bonusRollsModal" style="display:none;">
+  <div class="modal bis-browse-modal bonusrolls-modal">
+    <div class="bis-modal-head">
+      <div>
+        <h3 data-i18n="bonusRollsTitle">Bonus Rolls</h3>
+        <div class="bis-modal-sub" data-i18n="bonusRollsSub">Acompanhe seus bonus rolls: quantos você tem, onde gastou, e se acertou o item</div>
+      </div>
+      <button class="modal-close-btn" id="bonusRollsModalClose" aria-label="Close">✕</button>
+    </div>
+
+    <div class="upgrades-layout">
+      <div class="upgrades-quiz-col bonusrolls-left-col">
+        <div class="bonusrolls-available-row">
+          <div>
+            <div class="bonusrolls-available-label" data-i18n="bonusRollsAvailableLabel">Bonus Rolls disponíveis</div>
+            <div class="bonusrolls-available-sub" data-i18n="bonusRollsAvailableSub">Ajuste manualmente conforme você ganha ou gasta</div>
+          </div>
+          <div class="bonusrolls-stepper">
+            <button id="bonusRollDecBtn">−</button>
+            <span id="bonusRollAvailableVal">0</span>
+            <button id="bonusRollIncBtn">+</button>
+          </div>
+        </div>
+
+        <div class="bonusrolls-summary" id="bonusRollsSummary"></div>
+
+        <h3 class="upgrades-subtitle" data-i18n="bonusRollsWishlistTitle">Bonus Roll BIS</h3>
+        <div class="upgrades-sub" data-i18n="bonusRollsWishlistSub">Adicione os itens que você quer pegar de bonus roll - por nome ou por dungeon/raid</div>
+        <div class="bis-add" style="position:relative;">
+          <input type="hidden" id="bonusWishWhId" value="">
+          <input type="hidden" id="bonusWishIconUrl" value="">
+          <input type="hidden" id="bonusWishBoss" value="">
+          <input type="text" class="iname" id="bonusWishName" placeholder="Nome do item" data-i18n-placeholder="bisNamePlaceholder" autocomplete="off">
+          <input type="hidden" id="bonusWishSlot">
+          <input type="hidden" id="bonusWishSource">
+          <button id="bonusWishAddBtn" data-i18n="add">Adicionar</button>
+          <div class="bis-search-results" id="bonusWishSearchResults"></div>
+        </div>
+        <button class="bis-browse-trigger-btn" id="bonusWishBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
+
+        <h3 class="upgrades-subtitle" data-i18n="bonusRollsLogSpendTitle">Registrar item recebido</h3>
+        <div class="bonusrolls-spend-form">
+          <input type="hidden" id="bonusRollLocation" value="">
+          <input type="hidden" id="bonusRollWhId" value="">
+          <input type="hidden" id="bonusRollIconUrl" value="">
+          <div style="position:relative; flex:1; min-width:160px;">
+            <input type="text" id="bonusRollItemInput" data-i18n-placeholder="bonusRollItemPlaceholder" placeholder="Item recebido" autocomplete="off" style="width:100%;">
+            <div class="bis-search-results" id="bonusRollItemSearchResults"></div>
+          </div>
+          <button class="bis-browse-trigger-btn bonusrolls-spend-browse-btn" id="bonusLogBrowseBtn" data-i18n="browseByLocationLabel">Ou escolha por dungeon/raid</button>
+          <button id="bonusRollLogBtn" data-i18n="bonusRollLogBtn">Registrar</button>
+        </div>
+
+        <div class="bis-list-head" data-i18n="bonusRollsHistoryTitle">Histórico</div>
+        <div class="bonusrolls-history" id="bonusRollsHistory"></div>
+      </div>
+
+      <div class="upgrades-table-col bonusrolls-right-col">
+        <div class="bis-list-head" data-i18n="bonusRollsWishlistTitle">Bonus Roll BIS</div>
+        <div class="bis-dungeon-grid" id="bonusWishGrid"></div>
+
+        <div class="bis-list-head bonusrolls-right-col-second-head" data-i18n="bonusRollsByLocationTitle">Recebidos por local</div>
+        <div class="bis-dungeon-grid" id="bonusReceivedGrid"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2207,6 +2207,7 @@ const I18N = {
     quizResultRaidExplain: (raidName, difficulty, track) => `${raidName} (${difficulty}) dropa item ${track}, com crest no mesmo tier.`,
     navBonusRolls: "Bonus Rolls",
     bonusRollsTitle: "Bonus Rolls", bonusRollsSub: "Acompanhe seus bonus rolls: quantos você tem, onde gastou, e se acertou o item",
+    bonusRollsEditBtn: "Editar Bonus Rolls",
     bonusRollsAvailableLabel: "Bonus Rolls disponíveis", bonusRollsAvailableSub: "Ajuste manualmente conforme você ganha ou gasta",
     bonusRollsWishlistTitle: "Bonus Roll BIS", bonusRollsWishlistSub: "Adicione os itens que você quer pegar de bonus roll - por nome ou por dungeon/raid",
     bonusRollsNoWishlist: "Nenhum item na sua Bonus Roll BIS ainda.",
@@ -2452,6 +2453,7 @@ const I18N = {
     quizResultRaidExplain: (raidName, difficulty, track) => `${raidName} (${difficulty}) drops ${track} gear, with crests at the same tier.`,
     navBonusRolls: "Bonus Rolls",
     bonusRollsTitle: "Bonus Rolls", bonusRollsSub: "Track your bonus rolls: how many you have, where you spent them, and whether you hit",
+    bonusRollsEditBtn: "Edit Bonus Rolls",
     bonusRollsAvailableLabel: "Bonus Rolls available", bonusRollsAvailableSub: "Adjust manually as you earn or spend them",
     bonusRollsWishlistTitle: "Bonus Roll BIS", bonusRollsWishlistSub: "Add the items you want from bonus rolls - by name or by dungeon/raid",
     bonusRollsNoWishlist: "Nothing on your Bonus Roll BIS yet.",
@@ -5271,7 +5273,7 @@ function renderCharacterPage(){
           <div class="dash-card">
             <div class="dash-card-head-inline">
               <h3>${t('bonusRollsTitle')}</h3>
-              <button class="dash-viewall-link" id="dashBonusRollsBtn">${t('viewDetails')}</button>
+              <button class="dash-viewall-link" id="dashBonusRollsBtn">${t('bonusRollsEditBtn')}</button>
             </div>
             <div class="bonus-widget-stats">
               <div>
@@ -5389,8 +5391,7 @@ function renderCharacterPage(){
   }
 
   container.querySelector('#dashBonusRollsBtn').addEventListener('click', () => {
-    switchToTab('bonusrolls');
-    renderBonusRolls();
+    openBonusRollsModal();
   });
 
   container.querySelector('#vaultHistoryBtn').addEventListener('click', () => {
@@ -5532,6 +5533,7 @@ function renderBisGearPage(){
     <div class="cpage" style="--class-color:${color}">
       <div id="murlokDriftBanner"></div>
       ${renderCharHeaderHtml(c)}
+      <button class="back-to-dashboard-btn" id="bisGearBackBtn">${t('backToDashboard')}</button>
 
       <div class="dash-main bisgear-cards">
       <div class="dash-card dash-card-wide">
@@ -5576,6 +5578,7 @@ function renderBisGearPage(){
   container.querySelector('#cpageRefreshBtn').addEventListener('click', (e) => {
     refreshCharFromRaiderIO(c, e.currentTarget);
   });
+  container.querySelector('#bisGearBackBtn').addEventListener('click', goToDashboard);
 
   container.querySelector('#dashBisEditBtn').addEventListener('click', () => {
     openBisModal(c.id);
@@ -6856,11 +6859,30 @@ function closeBisModal(){
 }
 document.getElementById('bisModalClose').addEventListener('click', closeBisModal);
 document.getElementById('bisModal').addEventListener('click', (e) => { if(e.target.id === 'bisModal') closeBisModal(); });
+
+/* Bonus Rolls used to be its own sidebar page - now an overlay on top of the Dashboard,
+   same pattern as the BIS Gear edit modal above, opened from the Bonus Rolls card's own
+   "Edit" button instead of a sidebar tab. renderBonusRolls() itself didn't need to change at
+   all - it already just populates fixed element ids, which now live inside this modal
+   instead of a tab section. */
+function openBonusRollsModal(){
+  renderBonusRolls();
+  document.getElementById('bonusRollsModal').style.display = 'flex';
+}
+function closeBonusRollsModal(){
+  document.getElementById('bonusRollsModal').style.display = 'none';
+  document.getElementById('bonusWishSearchResults').classList.remove('open');
+  document.getElementById('bonusRollItemSearchResults').classList.remove('open');
+}
+document.getElementById('bonusRollsModalClose').addEventListener('click', closeBonusRollsModal);
+document.getElementById('bonusRollsModal').addEventListener('click', (e) => { if(e.target.id === 'bonusRollsModal') closeBonusRollsModal(); });
+
 document.addEventListener('keydown', (e) => {
   if(e.key !== 'Escape') return;
   if(document.getElementById('kslModal').style.display !== 'none'){ closeKslModal(); return; }
   if(document.getElementById('murlokModal').style.display !== 'none'){ closeMurlokModal(); return; }
   if(document.getElementById('bisBrowseModal').style.display !== 'none'){ closeBisBrowseModal(); return; }
+  if(document.getElementById('bonusRollsModal').style.display !== 'none'){ closeBonusRollsModal(); return; }
   if(document.getElementById('bisModal').style.display !== 'none'){ closeBisModal(); return; }
   if(document.getElementById('recentRunsModal').style.display !== 'none'){ closeRecentRunsModal(); return; }
   if(document.getElementById('seasonBestModal').style.display !== 'none'){ closeSeasonBestModal(); return; }
@@ -9167,7 +9189,6 @@ function restoreLastTab(){
   if(!last || last === 'dashboard' || !document.getElementById('tab-'+last)) return;
   switchToTab(last);
   if(last === 'upgrades'){ renderUpgradesTable(); resetQuiz(); }
-  else if(last === 'bonusrolls'){ renderBonusRolls(); }
   else if(last === 'classmeta'){ openClassMeta(); }
   else if(last === 'bis'){ renderBisGearPage(); }
   else if(last === 'roster'){ openFullRoster(); }
@@ -9200,7 +9221,6 @@ document.querySelectorAll('.sidebar-link').forEach(btn => {
     if(btn.dataset.tab === 'dashboard'){ goToDashboard(); return; }
     if(btn.dataset.tab === 'bis'){ switchToTab('bis'); renderBisGearPage(); return; }
     if(btn.dataset.tab === 'upgrades'){ switchToTab('upgrades'); renderUpgradesTable(); resetQuiz(); return; }
-    if(btn.dataset.tab === 'bonusrolls'){ switchToTab('bonusrolls'); renderBonusRolls(); return; }
     if(btn.dataset.tab === 'classmeta'){ switchToTab('classmeta'); openClassMeta(); return; }
     if(btn.dataset.tab === 'roster'){ switchToTab('roster'); openFullRoster(); return; }
     switchToTab(btn.dataset.tab);
