@@ -208,15 +208,21 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 }
 .cpage-portrait img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-/* top identity + stat tile strip — real dungeon splash art as a banner, dark-purple vignette over it for legibility */
+/* top identity + stat tile strip — same real-banner recipe as the landing page hero: our own
+   hub-banner art as the base (fixed brand background now, not a per-character Raider.IO
+   photo), a diagonal dark-to-clear fade for text legibility, side vignettes so the
+   rectangular photo melts into the surrounding page instead of showing hard edges, and the
+   same purple/cyan accent glows this app already uses everywhere else. */
 .cpage-topgrid{
   display:grid; grid-template-columns: 1.25fr 1fr 0.6fr 1fr 1fr; gap:20px; margin-bottom:16px; padding:20px 28px 20px 18px; align-items:center;
-  position:relative; border-radius:14px; overflow:hidden; background-size:cover; background-position:center;
+  position:relative; border-radius:14px; overflow:hidden;
+  background-image:url('assets/hub-banner.jpg'); background-size:cover; background-position:center; background-repeat:no-repeat;
   border:1px solid var(--hairline);
 }
 .cpage-topgrid::before{
   content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
-  background: linear-gradient(100deg, rgba(6,5,12,.88) 15%, rgba(14,7,22,.55) 50%, rgba(20,8,32,.35) 100%),
+  background: linear-gradient(90deg, rgba(6,5,12,.95) 0%, transparent 14%, transparent 86%, rgba(6,5,12,.95) 100%),
+              linear-gradient(100deg, rgba(6,5,12,.85) 15%, rgba(14,7,22,.55) 50%, rgba(20,8,32,.35) 100%),
               radial-gradient(ellipse 70% 120% at 90% 20%, rgba(163,53,238,.22), transparent 65%),
               radial-gradient(ellipse 50% 90% at 78% 0%, rgba(34,211,238,.14), transparent 60%);
 }
@@ -224,8 +230,9 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 @media(max-width:900px){ .cpage-topgrid{ grid-template-columns: 1fr 1fr; } .cpage-deco-badge{ display:none; } }
 .cpage-deco-badge{
   display:flex; align-items:center; justify-content:center;
-  filter: drop-shadow(0 0 14px rgba(163,53,238,.55)); opacity:.95;
+  filter: drop-shadow(0 0 14px rgba(163,53,238,.55)) drop-shadow(0 0 8px rgba(242,181,61,.3)); opacity:.95;
 }
+.cpage-deco-badge img{ width:76px; height:76px; object-fit:contain; }
 .stat-tile{
   background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
   border-radius:12px; padding:14px 18px; position:relative; display:flex; flex-direction:column; justify-content:center;
@@ -5066,13 +5073,12 @@ function renderCharHeaderHtml(c){
   const color = CLASS_HEX[c.class] || '#f2b53d';
   const sortedBestRuns = [...c.mplusBestRuns].sort((a,b) => (b.score||0) - (a.score||0));
   const bestRun = sortedBestRuns[0] || null;
-  const headerBannerUrl = bestRun ? (bestRun.background_image_url || '') : '';
   const weeklyResetBoundary = mostRecentResetBoundary(c.region || 'us').getTime();
   const nextReset = new Date(weeklyResetBoundary + 7*24*60*60*1000);
   const daysLeft = Math.max(0, Math.ceil((nextReset.getTime() - Date.now()) / 86400000));
   const resetAtStr = nextReset.toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {weekday:'long', hour:'2-digit', minute:'2-digit'});
   return `
-      <div class="cpage-topgrid" style="${headerBannerUrl ? `background-image:url('${headerBannerUrl}');` : ''}">
+      <div class="cpage-topgrid">
         <div class="stat-tile cpage-identity">
           <div class="cpage-portrait">
             <img src="${c.avatarUrl || classIconUrl(c.class)}" alt="${c.class}">
@@ -5097,19 +5103,7 @@ function renderCharHeaderHtml(c){
           ${c.ioscoreSeason1 ? `<div class="stat-tile-sub">${t('season1PeakLabel')}: ${c.ioscoreSeason1}</div>` : ''}
         </div>
         <div class="cpage-deco-badge">
-          <svg viewBox="0 0 100 100" width="76" height="76">
-            <defs>
-              <linearGradient id="dbShieldGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#ffe6a8"/><stop offset=".45" stop-color="var(--gold)"/><stop offset="1" stop-color="var(--gold-dim)"/>
-              </linearGradient>
-            </defs>
-            <path d="M50 4 L90 21 V47 C90 72 73 89 50 97 C27 89 10 72 10 47 V21 Z" fill="#120a1c" stroke="url(#dbShieldGrad)" stroke-width="4"/>
-            <path d="M50 26 L67 44 L50 49 Z" fill="var(--purple)" opacity=".95"/>
-            <path d="M50 26 L33 44 L50 49 Z" fill="var(--purple)" opacity=".75"/>
-            <path d="M67 44 L50 78 L50 49 Z" fill="var(--purple-dim)" opacity=".85"/>
-            <path d="M33 44 L50 78 L50 49 Z" fill="var(--purple-dim)" opacity=".6"/>
-            <path d="M50 26 L58 36 L50 40 Z" fill="#fff" opacity=".35"/>
-          </svg>
+          <img src="assets/hub-logo.png" alt="Keystone Hub">
         </div>
         <div class="stat-tile stat-tile-center">
           <div class="stat-tile-label">${t('bestRunLabel')}</div>
