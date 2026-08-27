@@ -214,7 +214,7 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
    rectangular photo melts into the surrounding page instead of showing hard edges, and the
    same purple/cyan accent glows this app already uses everywhere else. */
 .cpage-topgrid{
-  display:grid; grid-template-columns: 1.25fr 1fr 0.6fr 1fr 1fr; gap:20px; margin-bottom:16px; padding:20px 28px 20px 18px; align-items:center;
+  display:grid; grid-template-columns: 1.25fr 1fr 0.9fr 1fr 1fr; gap:20px; margin-bottom:16px; padding:20px 28px 20px 18px; align-items:center;
   position:relative; border-radius:14px; overflow:hidden;
   background-image:url('assets/hub-banner.jpg'); background-size:cover; background-position:center; background-repeat:no-repeat;
   border:1px solid var(--hairline);
@@ -230,9 +230,12 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 @media(max-width:900px){ .cpage-topgrid{ grid-template-columns: 1fr 1fr; } .cpage-deco-badge{ display:none; } }
 .cpage-deco-badge{
   display:flex; align-items:center; justify-content:center;
-  filter: drop-shadow(0 0 14px rgba(163,53,238,.55)) drop-shadow(0 0 8px rgba(242,181,61,.3)); opacity:.95;
+  /* No colored glow on purpose - a purple/gold halo read as its own separate blob sitting on
+     top of the banner instead of belonging to it. A soft neutral shadow just grounds it
+     against the stone texture, same way the medallion's own art would cast one. */
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,.5));
 }
-.cpage-deco-badge img{ width:76px; height:76px; object-fit:contain; }
+.cpage-deco-badge img{ width:108px; height:108px; object-fit:contain; }
 .stat-tile{
   background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
   border-radius:12px; padding:14px 18px; position:relative; display:flex; flex-direction:column; justify-content:center;
