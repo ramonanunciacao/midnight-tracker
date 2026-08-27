@@ -565,6 +565,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .comp-list{ display:flex; flex-direction:column; gap:4px; }
 .comp-row{ display:grid; grid-template-columns: 22px 20px 1.3fr 1.3fr 40px; align-items:center; gap:8px; font-size:12px; padding:3px 6px; background: var(--bg-panel-raised); border-radius:6px; }
 .comp-role{ text-align:center; font-size:12px; }
+.comp-role-icon{ width:18px; height:18px; border-radius:4px; border:1px solid var(--hairline); vertical-align:middle; }
 .comp-class-icon{ width:20px; height:20px; border-radius:4px; border:1px solid var(--hairline); }
 .comp-name{ font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .comp-spec{ color: var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -2457,6 +2458,42 @@ function classIconUrl(cls){
   const slug = CLASS_ICON_SLUG[cls];
   return slug ? `https://wow.zamimg.com/images/wow/icons/medium/classicon_${slug}.jpg` : '';
 }
+/* Real per-spec icons (each spec's own signature ability/aura, the same icon WoW's talent
+   spec picker has used since specs were introduced) - verified one by one by fetching each
+   slug directly against Wowhead's real icon CDN before using it, not guessed blind. Evoker
+   uses its own classicon_evoker_{spec} set since that class shipped with dedicated spec
+   icons rather than reusing an ability icon like the older classes. */
+const SPEC_ICON_SLUG = {
+  "Death Knight": { Blood:"spell_deathknight_bloodpresence", Frost:"spell_deathknight_frostpresence", Unholy:"spell_deathknight_unholypresence" },
+  "Demon Hunter": { Havoc:"ability_demonhunter_specdps", Vengeance:"ability_demonhunter_spectank" },
+  "Druid": { Balance:"spell_nature_starfall", Feral:"ability_druid_catform", Guardian:"ability_racial_bearform", Restoration:"spell_nature_healingtouch" },
+  "Evoker": { Devastation:"classicon_evoker_devastation", Preservation:"classicon_evoker_preservation", Augmentation:"classicon_evoker_augmentation" },
+  "Hunter": { "Beast Mastery":"ability_hunter_bestialdiscipline", Marksmanship:"ability_hunter_focusedaim", Survival:"ability_hunter_camouflage" },
+  "Mage": { Arcane:"spell_holy_magicalsentry", Fire:"spell_fire_firebolt02", Frost:"spell_frost_frostbolt02" },
+  "Monk": { Brewmaster:"spell_monk_brewmaster_spec", Mistweaver:"spell_monk_mistweaver_spec", Windwalker:"spell_monk_windwalker_spec" },
+  "Paladin": { Holy:"spell_holy_holybolt", Protection:"ability_paladin_shieldofthetemplar", Retribution:"spell_holy_auraoflight" },
+  "Priest": { Discipline:"spell_holy_powerwordshield", Holy:"spell_holy_guardianspirit", Shadow:"spell_shadow_shadowwordpain" },
+  "Rogue": { Assassination:"ability_rogue_deadlybrew", Outlaw:"ability_rogue_waylay", Subtlety:"ability_stealth" },
+  "Shaman": { Elemental:"spell_nature_lightning", Enhancement:"spell_shaman_improvedstormstrike", Restoration:"spell_nature_magicimmunity" },
+  "Warlock": { Affliction:"spell_shadow_deathcoil", Demonology:"spell_shadow_metamorphosis", Destruction:"spell_shadow_rainoffire" },
+  "Warrior": { Arms:"ability_warrior_savageblow", Fury:"ability_warrior_innerrage", Protection:"ability_warrior_defensivestance" }
+};
+function specIconUrl(cls, spec){
+  const slug = SPEC_ICON_SLUG[cls] && SPEC_ICON_SLUG[cls][spec];
+  return slug ? `https://wow.zamimg.com/images/wow/icons/medium/${slug}.jpg` : classIconUrl(cls);
+}
+/* Real WoW ability icons standing in for the tank/healer/dps role concept - Blizzard's own
+   role-selector UI icons (the shield/cross/swords shown in the Group Finder) aren't
+   individually hosted as linkable web assets anywhere (checked Wowhead's icon CDN and
+   Raider.IO's own JS bundle directly - Raider.IO renders its role icons as inline SVG
+   components, not files), so these are genuine, verifiable WoW icons that are thematically
+   the same symbols (a defensive shield, a holy renewal spell, dual-wielded weapons) rather
+   than the generic emoji used before. */
+const ROLE_ICON_SLUG = { tank: 'inv_shield_06', healer: 'spell_holy_renew', dps: 'ability_dualwield' };
+function roleIconUrl(role){
+  const slug = ROLE_ICON_SLUG[role];
+  return slug ? `https://wow.zamimg.com/images/wow/icons/medium/${slug}.jpg` : '';
+}
 /* Raider.io's `faction` field comes through lowercase ("alliance"/"horde"), not
    title-cased - confirmed by fetching a real profile directly. */
 const FACTION_ICON = { alliance: 'assets/alliance-logo.png', horde: 'assets/horde-logo.png' };
@@ -3199,7 +3236,6 @@ function bisSlotProgress(c){
   return { matched, total: slots.length };
 }
 function zamIconUrl(icon, size){ return icon ? `https://wow.zamimg.com/images/wow/icons/${size||'medium'}/${icon}.jpg` : ''; }
-const ROLE_ICON = { tank:'🛡️', healer:'✚', dps:'⚔️' };
 function buildRunDetailHtml(data, runUrl){
   const encounters = (data.logged_details && data.logged_details.encounters) || [];
   const rosterMap = new Map();
@@ -3214,9 +3250,10 @@ function buildRunDetailHtml(data, runUrl){
     const clsColor = CLASS_HEX[clsName] || '#fff';
     const specName = ch.spec ? ch.spec.name : '';
     const ilvl = r.items && r.items.item_level_equipped ? Math.round(r.items.item_level_equipped) : '—';
-    const iconUrl = classIconUrl(clsName);
+    const iconUrl = specIconUrl(clsName, specName);
+    const roleUrl = roleIconUrl(r.role);
     return `<div class="comp-row">
-      <span class="comp-role">${ROLE_ICON[r.role] || ''}</span>
+      <span class="comp-role">${roleUrl ? `<img class="comp-role-icon" src="${roleUrl}" alt="${escapeHtml(r.role||'')}" title="${escapeHtml(r.role||'')}">` : ''}</span>
       ${iconUrl ? `<img class="comp-class-icon" src="${iconUrl}" alt="${escapeHtml(clsName)}">` : ''}
       <span class="comp-name" style="color:${clsColor}">${escapeHtml(ch.name)}</span>
       <span class="comp-spec">${escapeHtml(specName)} ${escapeHtml(clsName)}</span>
@@ -4193,10 +4230,11 @@ function renderCharacterPage(){
     const clearStr = run.clearTimeMs ? formatClearTime(run.clearTimeMs) : '';
     const tooltipRoster = run.roster.map(m => {
       const clsColor = CLASS_HEX[m.class] || '#fff';
-      const iconUrl = classIconUrl(m.class);
+      const iconUrl = specIconUrl(m.class, m.spec);
+      const roleUrl = roleIconUrl(m.role);
       return `
       <div class="wtr-tooltip-row">
-        <span class="wtr-tooltip-role">${ROLE_ICON[m.role] || ''}</span>
+        <span class="wtr-tooltip-role">${roleUrl ? `<img class="comp-role-icon" src="${roleUrl}" alt="${escapeHtml(m.role||'')}" title="${escapeHtml(m.role||'')}">` : ''}</span>
         ${iconUrl ? `<img class="wtr-tooltip-class-icon" src="${iconUrl}" alt="">` : ''}
         <span class="wtr-tooltip-name" style="color:${clsColor}">${escapeHtml(m.name)}</span>
         <span class="wtr-tooltip-spec">${escapeHtml(m.spec || '')} ${escapeHtml(m.class || '')}</span>
@@ -4211,10 +4249,11 @@ function renderCharacterPage(){
       </div>
       <div class="wtr-roster">
         ${run.roster.map(m => {
-          const iconUrl = classIconUrl(m.class);
+          const iconUrl = specIconUrl(m.class, m.spec);
+          const roleUrl = roleIconUrl(m.role);
           return iconUrl
             ? `<img class="wtr-member-icon" src="${iconUrl}" alt="">`
-            : `<span class="wtr-member-icon wtr-member-fallback">${ROLE_ICON[m.role] || '•'}</span>`;
+            : `<img class="wtr-member-icon wtr-member-fallback" src="${roleUrl}" alt="">`;
         }).join('')}
       </div>
       <div class="wtr-tooltip">
