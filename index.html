@@ -304,6 +304,8 @@ section.tab.active{ display:block; animation: fadeIn .25s ease; }
 .bis-dchip-result-badge{ width:16px; height:16px; font-size:9px; flex-shrink:0; cursor:default; }
 .bis-dchip-result-badge:hover{ transform:none; }
 .bis-dchip-item.bonus-wish-obtained .bis-dchip-item-name{ text-decoration:line-through; opacity:.6; }
+.bis-dchip-item.equipped-collected .bis-dchip-item-name{ text-decoration:line-through; opacity:.6; }
+.bis-dchip-check{ color: var(--ok); font-weight:800; font-size:11px; flex-shrink:0; }
 .bonus-wish-check{ color: var(--ok); font-weight:800; font-size:11px; flex-shrink:0; }
 .bonus-wish-del{ background:none; border:none; color:var(--text-dim); cursor:pointer; opacity:.5; font-size:11px; flex-shrink:0; }
 .bonus-wish-del:hover{ opacity:1; color:var(--danger); }
@@ -502,18 +504,6 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .char-power-stat{ flex:1; }
 
 
-/* Best in Slot rows */
-.bis-summary-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--hairline); }
-.bis-summary-row:last-child{ border-bottom:none; }
-.bis-summary-row.collected{ opacity:.55; }
-.bicon-lg{ width:32px; height:32px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-.bicon-img-lg{ width:32px; height:32px; border-radius:6px; border:1px solid var(--hairline); }
-.bis-summary-info{ flex:1; min-width:0; }
-.bis-summary-name{ display:block; font-size:13px; font-weight:600; color: var(--purple); text-decoration:none; }
-.bis-summary-name.collected{ text-decoration:line-through; color: var(--text-dim); }
-.bis-summary-name:hover{ text-decoration:underline; }
-.bis-summary-source{ font-size:11px; color: var(--text-dim); margin-top:1px; }
-.bis-summary-slot{ font-size:11px; color: var(--text-dim); flex-shrink:0; }
 
 /* character page: gear, progression, recent runs */
 
@@ -2176,6 +2166,7 @@ const I18N = {
     viewAllLabel: "Ver Tudo", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Nome do item", bisSourcePlaceholder: "Dungeon/Raid de onde dropa",
     bisSummaryTitle: "BIS por Local", editBisLabel: "Editar Lista", searchBisPlaceholder: "Buscar por nome ou slot (ex: trinket)...",
+    bisAlreadyEquippedTooltip: "Já equipado neste personagem",
     defaultBisListName: "BIS", newBisListLabel: "Nova lista", deleteBisListConfirm: "Remover essa lista e todos os itens dela?",
     activeBisListLabel: "Lista ativa",
     switchBisListConfirmTitle: "Trocar de lista BIS?",
@@ -2405,6 +2396,7 @@ const I18N = {
     viewAllLabel: "View All", seasonBestDungeonsTitle: "Season Best",
     bisGearTitle: "BIS Gear", bisNamePlaceholder: "Item name", bisSourcePlaceholder: "Dungeon/Raid it drops from",
     bisSummaryTitle: "BIS by Location", editBisLabel: "Edit List", searchBisPlaceholder: "Search by name or slot (e.g. trinket)...",
+    bisAlreadyEquippedTooltip: "Already equipped on this character",
     defaultBisListName: "BIS", newBisListLabel: "New list", deleteBisListConfirm: "Remove this list and all its items?",
     activeBisListLabel: "Active list",
     switchBisListConfirmTitle: "Switch BIS list?",
@@ -4525,13 +4517,19 @@ function renderCharacterPage(){
     const dungeonMatch = bestByDungeon.get(loc);
     const iconUrl = dungeonMatch ? (dungeonMatch.icon_url || dungeonMatch.background_image_url) : (items[0].icon || '');
     const itemRow = b => {
+      // Cross-reference against the character's actual equipped gear (same match logic used
+      // on the Gear tab's BIS badges: exact item id first, name fallback for entries with no
+      // whId) so an item already worn shows as collected here instead of sitting forever in
+      // the "still need to get this" list.
+      const isEquipped = !!findEquippedMatchForBis(c, b);
       const linkTag = b.whId ? 'a' : 'span';
       const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer"` : '';
       const searchKey = `${b.name} ${b.slot||''}`.toLowerCase();
       return `
-      <div class="bis-dchip-item" data-search="${escapeHtml(searchKey)}">
+      <div class="bis-dchip-item ${isEquipped ? 'equipped-collected' : ''}" data-search="${escapeHtml(searchKey)}">
         ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
         <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(b.name)}</${linkTag}>
+        ${isEquipped ? `<span class="bis-dchip-check" title="${escapeHtml(t('bisAlreadyEquippedTooltip'))}">✓</span>` : ''}
         ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
         <span class="bis-dchip-item-slot">${escapeHtml((b.slot||'').split(' (')[0])}</span>
       </div>`;
