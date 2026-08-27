@@ -86,6 +86,12 @@ body{
   opacity:1; visibility:visible; transform:translateX(0);
 }
 .sidebar-char-flyout .char-selector-row{ margin-bottom:0; }
+.sidebar-flyout-roster-link{
+  flex-direction:row; justify-content:flex-start; gap:10px; width:100%; margin-top:12px; padding-top:12px;
+  border-top:1px solid var(--hairline); border-radius:0; text-transform:none; letter-spacing:normal; font-size:12px;
+}
+.sidebar-flyout-roster-link .sidebar-icon{ width:18px; height:18px; }
+.sidebar-flyout-roster-link.active::before{ display:none; }
 .sidebar-footer{ margin-top:auto; padding-top:14px; border-top:1px solid var(--hairline); width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; }
 .sidebar-lang{ display:flex; gap:6px; justify-content:center; }
 .sidebar-user{ display:flex; flex-direction:column; gap:6px; align-items:center; font-size:10px; color:var(--text-dim); text-align:center; }
@@ -1616,15 +1622,15 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
         </button>
         <div class="sidebar-char-flyout">
           <div class="char-selector-row" id="charSelector"><div class="loading" data-i18n="loading">Carregando...</div></div>
+          <button class="sidebar-link sidebar-flyout-roster-link" data-tab="roster" title="Full Roster">
+            <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.3"/><path d="M10.5 6h9.5"/><circle cx="6" cy="12" r="2.3"/><path d="M10.5 12h9.5"/><circle cx="6" cy="18" r="2.3"/><path d="M10.5 18h9.5"/></svg></span><span class="sidebar-label" data-i18n="navRoster">Full Roster</span>
+          </button>
         </div>
       </div>
-      <button class="sidebar-link sidebar-jump" data-jump="section-gear" title="Gear">
-        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3.2v4.8c0 5-3 8.6-7 10-4-1.4-7-5-7-10V6.2L12 3z"/></svg></span><span class="sidebar-label" data-i18n="navGear">Gear</span>
-      </button>
-      <div class="sidebar-divider"></div>
       <button class="sidebar-link" data-tab="bis" title="BIS Gear">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22"/></svg></span><span class="sidebar-label" data-i18n="navBis">BIS Gear</span>
       </button>
+      <div class="sidebar-divider"></div>
       <button class="sidebar-link" data-tab="upgrades" title="Upgrade Chart">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2 10l2-2 2 2M9 4l2-2 2 2M16 13l2-2 2 2"/></svg></span><span class="sidebar-label" data-i18n="navUpgrades">Upgrade Chart</span>
       </button>
@@ -1633,9 +1639,6 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       </button>
       <button class="sidebar-link" data-tab="classmeta" title="Meta Check">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V13M11 20V6M18 20v-9"/><circle cx="18" cy="8" r="2.2"/></svg></span><span class="sidebar-label" data-i18n="navClassMeta">Meta Check</span>
-      </button>
-      <button class="sidebar-link" data-tab="roster" title="Full Roster">
-        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.3"/><path d="M10.5 6h9.5"/><circle cx="6" cy="12" r="2.3"/><path d="M10.5 12h9.5"/><circle cx="6" cy="18" r="2.3"/><path d="M10.5 18h9.5"/></svg></span><span class="sidebar-label" data-i18n="navRoster">Full Roster</span>
       </button>
       <button class="sidebar-link" data-tab="mural" title="Mural">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
@@ -1656,6 +1659,13 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
     <div class="app-main">
       <section class="tab active" id="tab-dashboard">
         <div id="characterPage"></div>
+      </section>
+
+      <section class="tab" id="tab-bis">
+        <div class="bisgear-panel">
+          <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
+          <div id="bisGearPage"></div>
+        </div>
       </section>
 
   <section class="tab" id="tab-mural">
@@ -4850,6 +4860,11 @@ function renderCharacters(){
       if(e.target.closest('.champ-card-remove, .champ-card-drag')) return;
       state.dashboardActiveChar = c.id;
       renderCharacters();
+      // Already on the BIS Gear page? Stay there with the new character's data instead of
+      // bouncing back to the Dashboard - the header up top makes it obvious who's active
+      // either way, so there's no need to force a page switch just to switch characters.
+      const activeTab = document.querySelector('section.tab.active');
+      if(activeTab && activeTab.id === 'tab-bis'){ renderBisGearPage(); return; }
       switchToTab('dashboard');
     });
     pill.querySelector('.champ-card-remove').addEventListener('click', async (e) => {
@@ -4878,8 +4893,101 @@ function renderCharacters(){
   wrap.appendChild(addPill);
 
   renderCharacterPage();
+  if(document.getElementById('bisGearPage')) renderBisGearPage();
 }
 
+/* Shared character identity header - avatar, name, class/spec, Mythic+ Score, best run,
+   weekly reset countdown. Used at the top of both the Dashboard and the BIS Gear page (moved
+   out to its own function specifically so BIS Gear always shows which character its BIS/gear
+   cards belong to, without duplicating this block by hand in two places and having them
+   drift apart later). Self-contained: recomputes everything it needs from `c` alone, same as
+   every other standalone render function in this file. */
+function renderCharHeaderHtml(c){
+  const color = CLASS_HEX[c.class] || '#f2b53d';
+  const sortedBestRuns = [...c.mplusBestRuns].sort((a,b) => (b.score||0) - (a.score||0));
+  const bestRun = sortedBestRuns[0] || null;
+  const headerBannerUrl = bestRun ? (bestRun.background_image_url || '') : '';
+  const weeklyResetBoundary = mostRecentResetBoundary(c.region || 'us').getTime();
+  const nextReset = new Date(weeklyResetBoundary + 7*24*60*60*1000);
+  const daysLeft = Math.max(0, Math.ceil((nextReset.getTime() - Date.now()) / 86400000));
+  const resetAtStr = nextReset.toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {weekday:'long', hour:'2-digit', minute:'2-digit'});
+  return `
+      <div class="cpage-topgrid" style="${headerBannerUrl ? `background-image:url('${headerBannerUrl}');` : ''}">
+        <div class="stat-tile cpage-identity">
+          <div class="cpage-portrait">
+            <img src="${c.avatarUrl || classIconUrl(c.class)}" alt="${c.class}">
+          </div>
+          <div>
+            <div class="cpage-name-row">
+              <h2 style="color:${color}">${c.name}</h2>
+              ${c.faction && FACTION_ICON[c.faction.toLowerCase()] ? `<img class="cpage-faction-icon" src="${FACTION_ICON[c.faction.toLowerCase()]}" alt="${escapeHtml(c.faction)}" title="${escapeHtml(c.faction)}">` : ''}
+            </div>
+            ${c.race ? `<div class="cpage-race">${escapeHtml(c.race)}</div>` : ''}
+            <div class="cpage-sub">${escapeHtml(className(c.class)||'')}${c.spec ? ` – ${escapeHtml(specName(c.spec))}` : ''}</div>
+            <div class="cpage-sync-row">
+              <span class="cpage-lastsync">${t('lastUpdatedLabel')}: ${formatRelativeTime(c.lastSyncedAt)}</span>
+              <button class="cpage-refresh-btn" id="cpageRefreshBtn" title="${t('refreshFromRaiderIO')}"><span class="cpage-refresh-icon">↻</span> ${t('refreshBtnLabel')}</button>
+            </div>
+          </div>
+        </div>
+        <div class="stat-tile stat-tile-center">
+          <div class="stat-tile-label">${t('mRatingLabel')}</div>
+          <div class="stat-tile-value" style="color:var(--danger)">${c.ioscore || '—'}</div>
+          <div class="stat-tile-sub2">${t('ioScoreLabel')}</div>
+          ${c.ioscoreSeason1 ? `<div class="stat-tile-sub">${t('season1PeakLabel')}: ${c.ioscoreSeason1}</div>` : ''}
+        </div>
+        <div class="cpage-deco-badge">
+          <svg viewBox="0 0 100 100" width="76" height="76">
+            <defs>
+              <linearGradient id="dbShieldGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffe6a8"/><stop offset=".45" stop-color="var(--gold)"/><stop offset="1" stop-color="var(--gold-dim)"/>
+              </linearGradient>
+            </defs>
+            <path d="M50 4 L90 21 V47 C90 72 73 89 50 97 C27 89 10 72 10 47 V21 Z" fill="#120a1c" stroke="url(#dbShieldGrad)" stroke-width="4"/>
+            <path d="M50 26 L67 44 L50 49 Z" fill="var(--purple)" opacity=".95"/>
+            <path d="M50 26 L33 44 L50 49 Z" fill="var(--purple)" opacity=".75"/>
+            <path d="M67 44 L50 78 L50 49 Z" fill="var(--purple-dim)" opacity=".85"/>
+            <path d="M33 44 L50 78 L50 49 Z" fill="var(--purple-dim)" opacity=".6"/>
+            <path d="M50 26 L58 36 L50 40 Z" fill="#fff" opacity=".35"/>
+          </svg>
+        </div>
+        <div class="stat-tile stat-tile-center">
+          <div class="stat-tile-label">${t('bestRunLabel')}</div>
+          <div class="stat-tile-value" style="color:var(--gold)">${bestRun ? '+'+bestRun.mythic_level : '—'}</div>
+          <div class="stat-tile-sub">${bestRun ? escapeHtml(gn(bestRun.dungeon)) : ''}</div>
+        </div>
+        <div class="stat-tile stat-tile-center stat-tile-outline">
+          <div class="stat-tile-label">🕐 ${t('weeklyResetLabel')}</div>
+          <div class="stat-tile-value" style="color:var(--purple)">⏳ ${daysLeft}</div>
+          <div class="stat-tile-sub">${t('daysLeftLabel')}</div>
+          <div class="stat-tile-sub2">${t('resetAtPrefix')}: ${resetAtStr}</div>
+        </div>
+      </div>`;
+}
+/* Refreshes one character's real data from Raider.IO (gear/scores/runs) plus the raid &
+   world-boss worker, saves it, then re-renders whichever of the Dashboard/BIS Gear pages are
+   currently in the DOM - shared by both pages' header refresh buttons so the fetch pipeline
+   only lives in one place. */
+async function refreshCharFromRaiderIO(c, btn){
+  if(btn){ btn.disabled = true; btn.classList.add('spinning'); }
+  try{
+    const data = await fetchRaiderIoProfile(c.name, c.realm, c.region);
+    applyRaiderIoData(c, data);
+    try{
+      const rwData = await fetchRaidWorldBossProgress(c.realm, c.region, c.name);
+      applyRaidWorldBossData(c, rwData);
+    } catch(e){ /* worker unavailable, keep manual raid/world-boss entries as-is */ }
+    try{
+      const summaryData = await fetchMplusSeasonSummary(c.realm, c.region, c.name);
+      applyMplusSeasonSummary(c, summaryData);
+    } catch(e){ /* worker unavailable, keep last known stats */ }
+    await saveChar(c);
+    if(document.getElementById('characterPage')) renderCharacterPage();
+    if(document.getElementById('bisGearPage')) renderBisGearPage();
+  } catch(err){
+    if(btn){ btn.disabled = false; btn.classList.remove('spinning'); }
+  }
+}
 function renderCharacterPage(){
   const container = document.getElementById('characterPage');
   const c = state.characters.find(x => x.id === state.dashboardActiveChar);
@@ -4947,38 +5055,6 @@ function renderCharacterPage(){
       <div class="best-run-detail" id="run-detail-${domId}"></div>
     </div>`;
   };
-  const gearItemRow = slotKey => {
-    const item = c.gearItems ? c.gearItems[slotKey] : null;
-    const label = t(GEAR_SLOT_LABEL_KEYS[slotKey]);
-    if(!item) return `<div class="gear-row empty"><span class="gear-slot-label">${label}</span><span class="gear-empty-note">—</span></div>`;
-    const qColor = ITEM_QUALITY_COLOR[item.item_quality] || '#fff';
-    const iconUrl = zamIconUrl(item.icon);
-    const enchant = item.enchants_detail && item.enchants_detail[0] ? item.enchants_detail[0].name : '';
-    const bisMatch = getActiveBisList(c).items.find(b =>
-      (b.whId && item.item_id && String(b.whId) === String(item.item_id)) ||
-      (!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
-    );
-    const isMustHave = bisMatch && bisMatch.priority === 'secondary';
-    // A match against a "2nd BIS"/"3rd BIS" alternate (see the Murlok import's close-usage
-    // ranking) is still worth flagging on the Gear tab, but as that specific rank rather than
-    // a flat "✓ BIS" - so equipping the real #2 pick doesn't read identically to the #1 pick.
-    const isAltRank = bisMatch && bisMatch.altRank > 1;
-    const badgeText = isAltRank ? t('bisRankTag', bisMatch.altRank) : (isMustHave ? t('mustHaveTag') : '✓ ' + t('bisTag'));
-    const badgeTooltip = isAltRank ? t('bisRankTagTooltip') : (isMustHave ? t('mustHaveMatchTooltip') : t('bisMatchTooltip'));
-    const bisInfo = bisMatch ? `
-      <div class="gear-bis-info">
-        <span class="gear-bis-badge ${isMustHave ? 'must-have' : ''} ${isAltRank ? bisRankClass(bisMatch.altRank) : ''}" title="${badgeTooltip}">${badgeText}</span>
-      </div>` : '';
-    return `
-    <div class="gear-row">
-      ${iconUrl ? `<img class="gear-icon" src="${iconUrl}" alt="">` : ''}
-      <div class="gear-info">
-        <a href="https://www.wowhead.com/item=${item.item_id}${Array.isArray(item.bonuses) && item.bonuses.length ? '?bonus=' + item.bonuses.join(':') : ''}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(itemDisplayName(item.name, item.item_id))}</a>
-        <div class="gear-meta">${escapeHtml(label)} · ${item.item_level}${enchant ? ` · ${escapeHtml(enchant)}` : ''}</div>
-      </div>
-      ${bisInfo}
-    </div>`;
-  };
   const recentRunRow = (run, idx) => runRow(run, 'rr', idx);
   const newsRow = n => `
     <div class="news-row">
@@ -5035,11 +5111,7 @@ function renderCharacterPage(){
     </a>`;
   };
 
-  const sortedBestRuns = [...c.mplusBestRuns].sort((a,b) => (b.score||0) - (a.score||0));
   const sortedRecentRuns = [...c.mplusRecentRuns].sort((a,b) => new Date(b.completed_at) - new Date(a.completed_at));
-  const bestRun = sortedBestRuns[0] || null;
-  const sortedBis = [...getActiveBisList(c).items].filter(b => deriveBisItemTier(c, b) !== 'mythic');
-  const headerBannerUrl = bestRun ? (bestRun.background_image_url || '') : '';
 
   const bestByDungeon = new Map();
   c.mplusBestRuns.forEach(r => {
@@ -5071,72 +5143,6 @@ function renderCharacterPage(){
           <span class="vault-mini-bar ${count>=th?'done':''}" title="${escapeHtml(descFn(th))}">${(count>=th && bestLabel) ? escapeHtml(bestLabel) : ''}</span>`).join('')}
       </div>
     </div>`;
-
-  const bisByLoc = new Map();
-  sortedBis.forEach(b => {
-    // A Tier Set/Catalyst item used to get silently skipped here entirely, back when it was
-    // still being swapped for a substitute dropped item that WOULD show under a real
-    // dungeon/raid card - since that substitution was removed (it could guess the wrong
-    // stats; the real Murlok item is kept now, honestly labeled "Tier Set"), skipping it here
-    // too meant Catalyst-crafted items had no card anywhere at all. Give it its own card
-    // instead, same as Craft/Season Anterior below.
-    const loc = (b.source && b.source !== '—') ? b.source : t('bisNoLocation');
-    if(!bisByLoc.has(loc)) bisByLoc.set(loc, []);
-    bisByLoc.get(loc).push(b);
-  });
-  // Craft, Tier Set, and Season Anterior aren't real farm locations like the rest of the
-  // cards here - pushed to the end (in that order) so the real dungeon/raid cards read
-  // first. Array.sort is stable, so every other card keeps its existing order.
-  const bisLocOrderRank = loc =>
-    loc === t('murlokCraftLabel') ? 1 : loc === t('murlokTierSetLabel') ? 2 : loc === t('murlokOldSeasonLabel') ? 3 : 0;
-  const bisLocEntries = [...bisByLoc.entries()].sort((a, b) => {
-    const rankDiff = bisLocOrderRank(a[0]) - bisLocOrderRank(b[0]);
-    return rankDiff !== 0 ? rankDiff : a[0].localeCompare(b[0]);
-  });
-  const bisDungeonChip = ([loc, items]) => {
-    const dungeonMatch = bestByDungeon.get(loc);
-    const iconUrl = dungeonMatch ? (dungeonMatch.icon_url || dungeonMatch.background_image_url) : (items[0].icon || '');
-    // The header badge counts what's still left to collect, not the card's full BIS list -
-    // an item already equipped shouldn't keep inflating "how many do I still need here".
-    const remaining = items.filter(b => !findEquippedMatchForBis(c, b)).length;
-    const itemRow = b => {
-      // Cross-reference against the character's actual equipped gear (same match logic used
-      // on the Gear tab's BIS badges: exact item id first, name fallback for entries with no
-      // whId) so an item already worn shows as collected here instead of sitting forever in
-      // the "still need to get this" list.
-      const isEquipped = !!findEquippedMatchForBis(c, b);
-      const boss = findItemBoss(b.whId);
-      const linkTag = b.whId ? 'a' : 'span';
-      const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer"` : '';
-      const displayName = itemDisplayName(b.name, b.whId);
-      const searchKey = `${b.name} ${displayName} ${b.slot||''} ${boss||''}`.toLowerCase();
-      return `
-      <div class="bis-dchip-item ${isEquipped ? 'equipped-collected' : ''}" data-search="${escapeHtml(searchKey)}">
-        ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
-        <span class="bis-dchip-item-info">
-          <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(displayName)}</${linkTag}>
-          ${boss ? `<span class="bis-dchip-item-boss">${escapeHtml(gn(boss))}</span>` : ''}
-        </span>
-        ${isEquipped ? `<span class="bis-dchip-check" title="${escapeHtml(t('bisAlreadyEquippedTooltip'))}">✓</span>` : ''}
-        ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
-        ${b.altRank ? `<span class="bis-rank-tag ${bisRankClass(b.altRank)}" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', b.altRank)}</span>` : ''}
-        <span class="bis-dchip-item-slot">${escapeHtml((b.slot||'').split(' (')[0])}</span>
-      </div>`;
-    };
-    return `
-    <div class="bis-dchip">
-      <div class="bis-dchip-header">
-        ${iconUrl ? `<img class="bis-dchip-icon" src="${iconUrl}" alt="">` : `<div class="bis-dchip-icon bis-dchip-icon-empty"></div>`}
-        <span class="bis-dchip-loc">${escapeHtml(gn(loc))}</span>
-        <span class="bis-dchip-count ${remaining === 0 ? 'all-collected' : ''}" title="${escapeHtml(remaining === 0 ? t('bisAllCollectedTooltip') : t('bisRemainingCountTooltip', remaining, items.length))}">${remaining === 0 ? '✓' : remaining}</span>
-      </div>
-      <div class="bis-dchip-items">${items.map(itemRow).join('')}</div>
-    </div>`;
-  };
-
-
-  const nextReset = new Date(weeklyResetBoundary + 7*24*60*60*1000);
-  const daysLeft = Math.max(0, Math.ceil((nextReset.getTime() - Date.now()) / 86400000));
 
   let highestRaidDiff = null, highestRaidDiffCount = 0;
   [...RAID_DIFFICULTIES].reverse().forEach(d => {
@@ -5181,62 +5187,9 @@ function renderCharacterPage(){
       <option value="90" ${state.dashChartRange===90?'selected':''}>90D</option>
     </select>`;
 
-  const resetAtStr = nextReset.toLocaleString(currentLang==='pt'?'pt-BR':'en-US', {weekday:'long', hour:'2-digit', minute:'2-digit'});
-
   container.innerHTML = `
     <div class="cpage" style="--class-color:${color}">
-      <div id="murlokDriftBanner"></div>
-      <div class="cpage-topgrid" style="${headerBannerUrl ? `background-image:url('${headerBannerUrl}');` : ''}">
-        <div class="stat-tile cpage-identity">
-          <div class="cpage-portrait">
-            <img src="${c.avatarUrl || classIconUrl(c.class)}" alt="${c.class}">
-          </div>
-          <div>
-            <div class="cpage-name-row">
-              <h2 style="color:${color}">${c.name}</h2>
-              ${c.faction && FACTION_ICON[c.faction.toLowerCase()] ? `<img class="cpage-faction-icon" src="${FACTION_ICON[c.faction.toLowerCase()]}" alt="${escapeHtml(c.faction)}" title="${escapeHtml(c.faction)}">` : ''}
-            </div>
-            ${c.race ? `<div class="cpage-race">${escapeHtml(c.race)}</div>` : ''}
-            <div class="cpage-sub">${escapeHtml(className(c.class)||'')}${c.spec ? ` – ${escapeHtml(specName(c.spec))}` : ''}</div>
-            <div class="cpage-sync-row">
-              <span class="cpage-lastsync">${t('lastUpdatedLabel')}: ${formatRelativeTime(c.lastSyncedAt)}</span>
-              <button class="cpage-refresh-btn" id="cpageRefreshBtn" title="${t('refreshFromRaiderIO')}"><span class="cpage-refresh-icon">↻</span> ${t('refreshBtnLabel')}</button>
-            </div>
-          </div>
-        </div>
-        <div class="stat-tile stat-tile-center">
-          <div class="stat-tile-label">${t('mRatingLabel')}</div>
-          <div class="stat-tile-value" style="color:var(--danger)">${c.ioscore || '—'}</div>
-          <div class="stat-tile-sub2">${t('ioScoreLabel')}</div>
-          ${c.ioscoreSeason1 ? `<div class="stat-tile-sub">${t('season1PeakLabel')}: ${c.ioscoreSeason1}</div>` : ''}
-        </div>
-        <div class="cpage-deco-badge">
-          <svg viewBox="0 0 100 100" width="76" height="76">
-            <defs>
-              <linearGradient id="dbShieldGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#ffe6a8"/><stop offset=".45" stop-color="var(--gold)"/><stop offset="1" stop-color="var(--gold-dim)"/>
-              </linearGradient>
-            </defs>
-            <path d="M50 4 L90 21 V47 C90 72 73 89 50 97 C27 89 10 72 10 47 V21 Z" fill="#120a1c" stroke="url(#dbShieldGrad)" stroke-width="4"/>
-            <path d="M50 26 L67 44 L50 49 Z" fill="var(--purple)" opacity=".95"/>
-            <path d="M50 26 L33 44 L50 49 Z" fill="var(--purple)" opacity=".75"/>
-            <path d="M67 44 L50 78 L50 49 Z" fill="var(--purple-dim)" opacity=".85"/>
-            <path d="M33 44 L50 78 L50 49 Z" fill="var(--purple-dim)" opacity=".6"/>
-            <path d="M50 26 L58 36 L50 40 Z" fill="#fff" opacity=".35"/>
-          </svg>
-        </div>
-        <div class="stat-tile stat-tile-center">
-          <div class="stat-tile-label">${t('bestRunLabel')}</div>
-          <div class="stat-tile-value" style="color:var(--gold)">${bestRun ? '+'+bestRun.mythic_level : '—'}</div>
-          <div class="stat-tile-sub">${bestRun ? escapeHtml(gn(bestRun.dungeon)) : ''}</div>
-        </div>
-        <div class="stat-tile stat-tile-center stat-tile-outline">
-          <div class="stat-tile-label">🕐 ${t('weeklyResetLabel')}</div>
-          <div class="stat-tile-value" style="color:var(--purple)">⏳ ${daysLeft}</div>
-          <div class="stat-tile-sub">${t('daysLeftLabel')}</div>
-          <div class="stat-tile-sub2">${t('resetAtPrefix')}: ${resetAtStr}</div>
-        </div>
-      </div>
+      ${renderCharHeaderHtml(c)}
 
       <div class="dash-layout">
         <div class="dash-main">
@@ -5312,42 +5265,6 @@ function renderCharacterPage(){
             </div>
           </div>
 
-          <div class="dash-card dash-card-wide">
-            <div class="dash-card-head-inline">
-              <h3>${t('bisSummaryTitle')}</h3>
-              <button class="dash-viewall-link" id="dashBisEditBtn">${t('editBisLabel')}</button>
-              <div class="dash-bis-list-pills" id="dashBisListPills" title="${t('activeBisListLabel')}">
-                ${c.bisLists.map(l => `
-                <div class="dash-bis-list-pill ${l.id===c.activeBisListId?'active':''}" data-id="${l.id}">
-                  <span class="dash-bis-list-pill-name" data-id="${l.id}">${escapeHtml(l.name)}</span>
-                  ${c.bisLists.length > 1 ? `<button class="dash-bis-list-pill-del" data-id="${l.id}" title="${t('remove')}">✕</button>` : ''}
-                </div>`).join('')}
-              </div>
-              <div class="dash-ksl-actions">
-                <button class="dash-ksl-btn" id="dashKslShareBtn" data-i18n="kslShareBtn">Import/Export</button>
-              </div>
-            </div>
-            ${bisByLoc.size ? `
-            <input type="text" class="bis-summary-search" id="bisSummarySearch" placeholder="${t('searchBisPlaceholder')}">
-            <div class="bis-dungeon-grid" id="bisSummaryGrid">${bisLocEntries.map(bisDungeonChip).join('')}</div>
-            ` : `<div class="empty-note">${t('noBisYet')}</div>`}
-          </div>
-
-          <div class="dash-card dash-card-wide" id="section-gear">
-            <div class="dash-card-head-inline">
-              <h3 style="margin-bottom:0;">${t('subtabGear')} (${c.ilvl || '—'})</h3>
-              <div class="gear-bis-progress-inline">${(() => { const p = bisSlotProgress(c); return `<span class="gear-bis-progress-value">${p.matched}/${p.total}</span><span class="gear-bis-progress-label">${t('bisProgressLabel')}</span>`; })()}</div>
-            </div>
-            ${c.gearItems ? `
-            <div class="gear-columns">
-              <div class="gear-col">${GEAR_LEFT_SLOTS.map(gearItemRow).join('')}</div>
-              <div class="gear-col">${GEAR_RIGHT_SLOTS.map(gearItemRow).join('')}</div>
-              <div class="gear-weapons">
-                ${GEAR_WEAPON_SLOTS.map(gearItemRow).join('')}
-              </div>
-            </div>
-            ` : `<div class="empty-note">${t('noGearYet')}</div>`}
-          </div>
         </div>
 
         <div class="dash-side">
@@ -5426,27 +5343,8 @@ function renderCharacterPage(){
     });
   });
 
-  container.querySelector('#cpageRefreshBtn').addEventListener('click', async (e) => {
-    const btn = e.currentTarget;
-    btn.disabled = true;
-    btn.classList.add('spinning');
-    try{
-      const data = await fetchRaiderIoProfile(c.name, c.realm, c.region);
-      applyRaiderIoData(c, data);
-      try{
-        const rwData = await fetchRaidWorldBossProgress(c.realm, c.region, c.name);
-        applyRaidWorldBossData(c, rwData);
-      } catch(e){ /* worker unavailable, keep manual raid/world-boss entries as-is */ }
-      try{
-        const summaryData = await fetchMplusSeasonSummary(c.realm, c.region, c.name);
-        applyMplusSeasonSummary(c, summaryData);
-      } catch(e){ /* worker unavailable, keep last known stats */ }
-      await saveChar(c);
-      renderCharacterPage();
-    } catch(err){
-      btn.disabled = false;
-      btn.classList.remove('spinning');
-    }
+  container.querySelector('#cpageRefreshBtn').addEventListener('click', (e) => {
+    refreshCharFromRaiderIO(c, e.currentTarget);
   });
   updateLangFlagsUI();
 
@@ -5490,14 +5388,6 @@ function renderCharacterPage(){
     });
   }
 
-  container.querySelector('#dashBisEditBtn').addEventListener('click', () => {
-    openBisModal(c.id);
-  });
-
-  container.querySelector('#dashKslShareBtn').addEventListener('click', () => {
-    openKslModal(c.id);
-  });
-
   container.querySelector('#dashBonusRollsBtn').addEventListener('click', () => {
     switchToTab('bonusrolls');
     renderBonusRolls();
@@ -5507,6 +5397,192 @@ function renderCharacterPage(){
     openVaultHistoryModal();
   });
 
+  container.querySelector('#todoAddBtn').addEventListener('click', addTodo);
+  container.querySelector('#todoInput').addEventListener('keydown', (e) => { if(e.key==='Enter') addTodo(); });
+  renderTodos();
+  applyTodoCollapsedState();
+  container.querySelector('#todoCollapseBtn').addEventListener('click', () => {
+    let collapsed = true;
+    try{ collapsed = localStorage.getItem('mt_todoCollapsed') !== '0'; }catch(e){}
+    try{ localStorage.setItem('mt_todoCollapsed', collapsed ? '0' : '1'); }catch(e){}
+    applyTodoCollapsedState();
+  });
+}
+
+/* Equipped gear row - standalone (used to be a closure inside renderCharacterPage) since it
+   now only renders on the BIS Gear page, not the Dashboard. */
+function gearItemRow(c, slotKey){
+  const item = c.gearItems ? c.gearItems[slotKey] : null;
+  const label = t(GEAR_SLOT_LABEL_KEYS[slotKey]);
+  if(!item) return `<div class="gear-row empty"><span class="gear-slot-label">${label}</span><span class="gear-empty-note">—</span></div>`;
+  const qColor = ITEM_QUALITY_COLOR[item.item_quality] || '#fff';
+  const iconUrl = zamIconUrl(item.icon);
+  const enchant = item.enchants_detail && item.enchants_detail[0] ? item.enchants_detail[0].name : '';
+  const bisMatch = getActiveBisList(c).items.find(b =>
+    (b.whId && item.item_id && String(b.whId) === String(item.item_id)) ||
+    (!b.whId && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
+  );
+  const isMustHave = bisMatch && bisMatch.priority === 'secondary';
+  // A match against a "2nd BIS"/"3rd BIS" alternate (see the Murlok import's close-usage
+  // ranking) is still worth flagging on the Gear tab, but as that specific rank rather than
+  // a flat "✓ BIS" - so equipping the real #2 pick doesn't read identically to the #1 pick.
+  const isAltRank = bisMatch && bisMatch.altRank > 1;
+  const badgeText = isAltRank ? t('bisRankTag', bisMatch.altRank) : (isMustHave ? t('mustHaveTag') : '✓ ' + t('bisTag'));
+  const badgeTooltip = isAltRank ? t('bisRankTagTooltip') : (isMustHave ? t('mustHaveMatchTooltip') : t('bisMatchTooltip'));
+  const bisInfo = bisMatch ? `
+    <div class="gear-bis-info">
+      <span class="gear-bis-badge ${isMustHave ? 'must-have' : ''} ${isAltRank ? bisRankClass(bisMatch.altRank) : ''}" title="${badgeTooltip}">${badgeText}</span>
+    </div>` : '';
+  return `
+  <div class="gear-row">
+    ${iconUrl ? `<img class="gear-icon" src="${iconUrl}" alt="">` : ''}
+    <div class="gear-info">
+      <a href="https://www.wowhead.com/item=${item.item_id}${Array.isArray(item.bonuses) && item.bonuses.length ? '?bonus=' + item.bonuses.join(':') : ''}" target="_blank" rel="noopener noreferrer" class="gear-name" style="color:${qColor}">${escapeHtml(itemDisplayName(item.name, item.item_id))}</a>
+      <div class="gear-meta">${escapeHtml(label)} · ${item.item_level}${enchant ? ` · ${escapeHtml(enchant)}` : ''}</div>
+    </div>
+    ${bisInfo}
+  </div>`;
+}
+/* BIS Gear page: BIS by Location + equipped Gear, moved out of the Dashboard (which was
+   getting too dense with both of these plus everything else) into their own sidebar page,
+   right under Characters. The same character header always renders at the top here too
+   (renderCharHeaderHtml, shared with the Dashboard) so it's never ambiguous whose gear/BIS
+   list is on screen. Fully self-contained, same as every other standalone render function in
+   this file - recomputes bisByLoc/bestByDungeon fresh from `c` rather than reusing anything
+   from renderCharacterPage. */
+function renderBisGearPage(){
+  const container = document.getElementById('bisGearPage');
+  if(!container) return;
+  const c = state.characters.find(x => x.id === state.dashboardActiveChar);
+  if(!c){ container.innerHTML = ''; return; }
+  const color = CLASS_HEX[c.class] || '#f2b53d';
+
+  const sortedBis = [...getActiveBisList(c).items].filter(b => deriveBisItemTier(c, b) !== 'mythic');
+  const bestByDungeon = new Map();
+  c.mplusBestRuns.forEach(r => {
+    const prev = bestByDungeon.get(r.dungeon);
+    const better = !prev || r.mythic_level > prev.mythic_level ||
+      (r.mythic_level === prev.mythic_level && (r.num_keystone_upgrades||0) > (prev.num_keystone_upgrades||0));
+    if(better) bestByDungeon.set(r.dungeon, r);
+  });
+
+  const bisByLoc = new Map();
+  sortedBis.forEach(b => {
+    // A Tier Set/Catalyst item used to get silently skipped here entirely, back when it was
+    // still being swapped for a substitute dropped item that WOULD show under a real
+    // dungeon/raid card - since that substitution was removed (it could guess the wrong
+    // stats; the real Murlok item is kept now, honestly labeled "Tier Set"), skipping it here
+    // too meant Catalyst-crafted items had no card anywhere at all. Give it its own card
+    // instead, same as Craft/Season Anterior below.
+    const loc = (b.source && b.source !== '—') ? b.source : t('bisNoLocation');
+    if(!bisByLoc.has(loc)) bisByLoc.set(loc, []);
+    bisByLoc.get(loc).push(b);
+  });
+  // Craft, Tier Set, and Season Anterior aren't real farm locations like the rest of the
+  // cards here - pushed to the end (in that order) so the real dungeon/raid cards read
+  // first. Array.sort is stable, so every other card keeps its existing order.
+  const bisLocOrderRank = loc =>
+    loc === t('murlokCraftLabel') ? 1 : loc === t('murlokTierSetLabel') ? 2 : loc === t('murlokOldSeasonLabel') ? 3 : 0;
+  const bisLocEntries = [...bisByLoc.entries()].sort((a, b) => {
+    const rankDiff = bisLocOrderRank(a[0]) - bisLocOrderRank(b[0]);
+    return rankDiff !== 0 ? rankDiff : a[0].localeCompare(b[0]);
+  });
+  const bisDungeonChip = ([loc, items]) => {
+    const dungeonMatch = bestByDungeon.get(loc);
+    const iconUrl = dungeonMatch ? (dungeonMatch.icon_url || dungeonMatch.background_image_url) : (items[0].icon || '');
+    // The header badge counts what's still left to collect, not the card's full BIS list -
+    // an item already equipped shouldn't keep inflating "how many do I still need here".
+    const remaining = items.filter(b => !findEquippedMatchForBis(c, b)).length;
+    const itemRow = b => {
+      // Cross-reference against the character's actual equipped gear (same match logic used
+      // on the Gear tab's BIS badges: exact item id first, name fallback for entries with no
+      // whId) so an item already worn shows as collected here instead of sitting forever in
+      // the "still need to get this" list.
+      const isEquipped = !!findEquippedMatchForBis(c, b);
+      const boss = findItemBoss(b.whId);
+      const linkTag = b.whId ? 'a' : 'span';
+      const linkAttrs = b.whId ? ` href="https://www.wowhead.com/item=${b.whId}" target="_blank" rel="noopener noreferrer"` : '';
+      const displayName = itemDisplayName(b.name, b.whId);
+      const searchKey = `${b.name} ${displayName} ${b.slot||''} ${boss||''}`.toLowerCase();
+      return `
+      <div class="bis-dchip-item ${isEquipped ? 'equipped-collected' : ''}" data-search="${escapeHtml(searchKey)}">
+        ${b.icon ? `<img class="bis-dchip-item-icon" src="${b.icon}" alt="">` : ''}
+        <span class="bis-dchip-item-info">
+          <${linkTag}${linkAttrs} class="bis-dchip-item-name">${escapeHtml(displayName)}</${linkTag}>
+          ${boss ? `<span class="bis-dchip-item-boss">${escapeHtml(gn(boss))}</span>` : ''}
+        </span>
+        ${isEquipped ? `<span class="bis-dchip-check" title="${escapeHtml(t('bisAlreadyEquippedTooltip'))}">✓</span>` : ''}
+        ${b.catalyst ? `<span class="murlok-catalyst-tag" title="${t('murlokCatalystTagTooltip')}">${t('murlokCatalystTag')}</span>` : ''}
+        ${b.altRank ? `<span class="bis-rank-tag ${bisRankClass(b.altRank)}" title="${escapeHtml(t('bisRankTagTooltip'))}">${t('bisRankTag', b.altRank)}</span>` : ''}
+        <span class="bis-dchip-item-slot">${escapeHtml((b.slot||'').split(' (')[0])}</span>
+      </div>`;
+    };
+    return `
+    <div class="bis-dchip">
+      <div class="bis-dchip-header">
+        ${iconUrl ? `<img class="bis-dchip-icon" src="${iconUrl}" alt="">` : `<div class="bis-dchip-icon bis-dchip-icon-empty"></div>`}
+        <span class="bis-dchip-loc">${escapeHtml(gn(loc))}</span>
+        <span class="bis-dchip-count ${remaining === 0 ? 'all-collected' : ''}" title="${escapeHtml(remaining === 0 ? t('bisAllCollectedTooltip') : t('bisRemainingCountTooltip', remaining, items.length))}">${remaining === 0 ? '✓' : remaining}</span>
+      </div>
+      <div class="bis-dchip-items">${items.map(itemRow).join('')}</div>
+    </div>`;
+  };
+
+  container.innerHTML = `
+    <div class="cpage" style="--class-color:${color}">
+      <div id="murlokDriftBanner"></div>
+      ${renderCharHeaderHtml(c)}
+
+      <div class="dash-main bisgear-cards">
+      <div class="dash-card dash-card-wide">
+        <div class="dash-card-head-inline">
+          <h3>${t('bisSummaryTitle')}</h3>
+          <button class="dash-viewall-link" id="dashBisEditBtn">${t('editBisLabel')}</button>
+          <div class="dash-bis-list-pills" id="dashBisListPills" title="${t('activeBisListLabel')}">
+            ${c.bisLists.map(l => `
+            <div class="dash-bis-list-pill ${l.id===c.activeBisListId?'active':''}" data-id="${l.id}">
+              <span class="dash-bis-list-pill-name" data-id="${l.id}">${escapeHtml(l.name)}</span>
+              ${c.bisLists.length > 1 ? `<button class="dash-bis-list-pill-del" data-id="${l.id}" title="${t('remove')}">✕</button>` : ''}
+            </div>`).join('')}
+          </div>
+          <div class="dash-ksl-actions">
+            <button class="dash-ksl-btn" id="dashKslShareBtn" data-i18n="kslShareBtn">Import/Export</button>
+          </div>
+        </div>
+        ${bisByLoc.size ? `
+        <input type="text" class="bis-summary-search" id="bisSummarySearch" placeholder="${t('searchBisPlaceholder')}">
+        <div class="bis-dungeon-grid" id="bisSummaryGrid">${bisLocEntries.map(bisDungeonChip).join('')}</div>
+        ` : `<div class="empty-note">${t('noBisYet')}</div>`}
+      </div>
+
+      <div class="dash-card dash-card-wide">
+        <div class="dash-card-head-inline">
+          <h3 style="margin-bottom:0;">${t('subtabGear')} (${c.ilvl || '—'})</h3>
+          <div class="gear-bis-progress-inline">${(() => { const p = bisSlotProgress(c); return `<span class="gear-bis-progress-value">${p.matched}/${p.total}</span><span class="gear-bis-progress-label">${t('bisProgressLabel')}</span>`; })()}</div>
+        </div>
+        ${c.gearItems ? `
+        <div class="gear-columns">
+          <div class="gear-col">${GEAR_LEFT_SLOTS.map(s => gearItemRow(c, s)).join('')}</div>
+          <div class="gear-col">${GEAR_RIGHT_SLOTS.map(s => gearItemRow(c, s)).join('')}</div>
+          <div class="gear-weapons">
+            ${GEAR_WEAPON_SLOTS.map(s => gearItemRow(c, s)).join('')}
+          </div>
+        </div>
+        ` : `<div class="empty-note">${t('noGearYet')}</div>`}
+      </div>
+      </div>
+    </div>`;
+
+  container.querySelector('#cpageRefreshBtn').addEventListener('click', (e) => {
+    refreshCharFromRaiderIO(c, e.currentTarget);
+  });
+
+  container.querySelector('#dashBisEditBtn').addEventListener('click', () => {
+    openBisModal(c.id);
+  });
+  container.querySelector('#dashKslShareBtn').addEventListener('click', () => {
+    openKslModal(c.id);
+  });
   container.querySelectorAll('.dash-bis-list-pill').forEach(pill => {
     pill.addEventListener('click', async (e) => {
       if(e.target.closest('.dash-bis-list-pill-del')) return;
@@ -5517,7 +5593,7 @@ function renderCharacterPage(){
       if(!ok) return;
       c.activeBisListId = newId;
       await saveChar(c);
-      renderCharacterPage();
+      renderBisGearPage();
     });
   });
   container.querySelectorAll('.dash-bis-list-pill-del').forEach(delBtn => {
@@ -5526,7 +5602,6 @@ function renderCharacterPage(){
       deleteBisListWithConfirm(c, delBtn.dataset.id);
     });
   });
-
   const bisSummarySearch = container.querySelector('#bisSummarySearch');
   if(bisSummarySearch){
     bisSummarySearch.addEventListener('input', () => {
@@ -5542,17 +5617,6 @@ function renderCharacterPage(){
       });
     });
   }
-
-  container.querySelector('#todoAddBtn').addEventListener('click', addTodo);
-  container.querySelector('#todoInput').addEventListener('keydown', (e) => { if(e.key==='Enter') addTodo(); });
-  renderTodos();
-  applyTodoCollapsedState();
-  container.querySelector('#todoCollapseBtn').addEventListener('click', () => {
-    let collapsed = true;
-    try{ collapsed = localStorage.getItem('mt_todoCollapsed') !== '0'; }catch(e){}
-    try{ localStorage.setItem('mt_todoCollapsed', collapsed ? '0' : '1'); }catch(e){}
-    applyTodoCollapsedState();
-  });
 
   renderMurlokDriftBanner(c);
   maybeCheckMurlokDrift(c);
@@ -6664,6 +6728,7 @@ async function switchActiveBisList(c, id){
   renderBisBrowseGrid();
   renderBisList();
   if(document.getElementById('characterPage')) renderCharacterPage();
+  if(document.getElementById('bisGearPage')) renderBisGearPage();
 }
 async function deleteBisListWithConfirm(c, id){
   const list = c.bisLists.find(l => l.id === id);
@@ -6677,6 +6742,7 @@ async function deleteBisListWithConfirm(c, id){
   renderBisBrowseGrid();
   renderBisList();
   if(document.getElementById('characterPage')) renderCharacterPage();
+  if(document.getElementById('bisGearPage')) renderBisGearPage();
 }
 function startEditBisListName(c, nameEl){
   const id = nameEl.dataset.id;
@@ -6697,6 +6763,7 @@ function startEditBisListName(c, nameEl){
     await saveChar(c);
     renderBisListSelector();
     if(document.getElementById('characterPage')) renderCharacterPage();
+    if(document.getElementById('bisGearPage')) renderBisGearPage();
   };
   input.addEventListener('blur', commit);
   input.addEventListener('keydown', (e) => {
@@ -6734,6 +6801,7 @@ function renderBisListSelector(){
       renderBisBrowseGrid();
       renderBisList();
       if(document.getElementById('characterPage')) renderCharacterPage();
+      if(document.getElementById('bisGearPage')) renderBisGearPage();
     });
   });
   wrap.querySelectorAll('.bis-list-pill-name').forEach(nameEl => {
@@ -6759,6 +6827,7 @@ function renderBisListSelector(){
       renderBisBrowseGrid();
       renderBisList();
       if(document.getElementById('characterPage')) renderCharacterPage();
+      if(document.getElementById('bisGearPage')) renderBisGearPage();
       const nameEl = wrap.querySelector(`.bis-list-pill-name[data-id="${newList.id}"]`);
       if(nameEl) startEditBisListName(c, nameEl);
     });
@@ -6783,6 +6852,7 @@ function closeBisModal(){
   document.getElementById('bisModal').style.display = 'none';
   document.getElementById('bisSearchResults').classList.remove('open');
   if(document.getElementById('characterPage')) renderCharacterPage();
+  if(document.getElementById('bisGearPage')) renderBisGearPage();
 }
 document.getElementById('bisModalClose').addEventListener('click', closeBisModal);
 document.getElementById('bisModal').addEventListener('click', (e) => { if(e.target.id === 'bisModal') closeBisModal(); });
@@ -7139,6 +7209,7 @@ function bindBisRow(row){
     await saveChar(c);
     renderBisList();
     if(document.getElementById('characterPage')) renderCharacterPage();
+    if(document.getElementById('bisGearPage')) renderBisGearPage();
   });
 }
 
@@ -7482,6 +7553,7 @@ document.getElementById('kslImportBtn').addEventListener('click', async () => {
     renderBisListSelector();
     renderBisList();
     if(document.getElementById('characterPage')) renderCharacterPage();
+    if(document.getElementById('bisGearPage')) renderBisGearPage();
   } catch(err){
     statusEl.className = 'ksl-status-note ksl-status-error';
     statusEl.textContent = 'Erro: ' + (err && err.message || err);
@@ -7787,6 +7859,7 @@ document.getElementById('murlokAddSelectedBtn').addEventListener('click', async 
   renderBisListSelector();
   renderBisList();
   if(document.getElementById('characterPage')) renderCharacterPage();
+  if(document.getElementById('bisGearPage')) renderBisGearPage();
   murlokSelected = new Set();
   renderMurlokResult();
 });
@@ -7924,6 +7997,7 @@ async function applyMurlokDrift(c, listId){
   renderBisListSelector();
   renderBisList();
   if(document.getElementById('characterPage')) renderCharacterPage();
+  if(document.getElementById('bisGearPage')) renderBisGearPage();
 }
 
 /* ---------------- KeystoneLoot (KSL) addon interop ----------------
@@ -9095,6 +9169,8 @@ function restoreLastTab(){
   if(last === 'upgrades'){ renderUpgradesTable(); resetQuiz(); }
   else if(last === 'bonusrolls'){ renderBonusRolls(); }
   else if(last === 'classmeta'){ openClassMeta(); }
+  else if(last === 'bis'){ renderBisGearPage(); }
+  else if(last === 'roster'){ openFullRoster(); }
 }
 function goToDashboard(){
   switchToTab('dashboard');
@@ -9122,7 +9198,7 @@ document.querySelectorAll('.sidebar-link').forEach(btn => {
     }
     if(!btn.dataset.tab) return; // e.g. the Characters flyout anchor - hover-only, no click navigation
     if(btn.dataset.tab === 'dashboard'){ goToDashboard(); return; }
-    if(btn.dataset.tab === 'bis'){ openBisModal(); return; }
+    if(btn.dataset.tab === 'bis'){ switchToTab('bis'); renderBisGearPage(); return; }
     if(btn.dataset.tab === 'upgrades'){ switchToTab('upgrades'); renderUpgradesTable(); resetQuiz(); return; }
     if(btn.dataset.tab === 'bonusrolls'){ switchToTab('bonusrolls'); renderBonusRolls(); return; }
     if(btn.dataset.tab === 'classmeta'){ switchToTab('classmeta'); openClassMeta(); return; }
