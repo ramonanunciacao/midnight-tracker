@@ -449,7 +449,12 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .vault-mini-icon{ width:20px; height:20px; border-radius:5px; border:1px solid var(--hairline); flex-shrink:0; }
 .vault-mini-label{
   font-size:9.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:.02em;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:44px; flex-shrink:0;
+  white-space:nowrap; overflow:visible; text-overflow:ellipsis; width:44px; flex-shrink:0;
+}
+.vault-mini-note-hint{
+  display:inline-flex; align-items:center; justify-content:center; width:12px; height:12px; border-radius:50%;
+  border:1px solid var(--hairline); color:var(--text-dim); font-size:8.5px; cursor:help; margin-left:3px;
+  text-transform:none; vertical-align:middle;
 }
 .vault-mini-bars{ display:flex; gap:4px; flex:1; }
 .vault-mini-bar{
@@ -1907,6 +1912,7 @@ const I18N = {
     mplusRunsTitle: "Runs da Season", mplusSeasonNoData: "Sincronize pra ver",
     mplusSeasonTotalLabel: "Total na season", mplusSeasonM0Label: "M0",
     mplusSeasonLowLabel: "+2 a +4", mplusSeasonMidLabel: "+5 a +9", mplusSeasonHighLabel: "+10 ou mais",
+    mplusVaultCountNote: "Conta dungeons diferentes feitas na semana, não o total de keys. O Raider.IO não expõe o total de runs (repetir a mesma dungeon não soma aqui), então isso pode subestimar seu progresso real do baú se você repetir dungeons.",
     raidUlatekNormalNote: "Ula'tek (último boss) dropa 20 Champion + 10 Hero, em vez do padrão da dificuldade Normal",
     raidUlatekHeroicNote: "Ula'tek (último boss) dropa 20 Hero + 10 Myth, em vez do padrão da dificuldade Heroica",
     loading: "Carregando...",
@@ -2105,6 +2111,7 @@ const I18N = {
     mplusRunsTitle: "Season Runs", mplusSeasonNoData: "Sync to see this",
     mplusSeasonTotalLabel: "Total this season", mplusSeasonM0Label: "M0",
     mplusSeasonLowLabel: "+2 to +4", mplusSeasonMidLabel: "+5 to +9", mplusSeasonHighLabel: "+10 or higher",
+    mplusVaultCountNote: "Counts distinct dungeons run this week, not total keys. Raider.IO doesn't expose total run count (repeating the same dungeon doesn't add here), so this can undercount your real vault progress if you repeat dungeons.",
     raidUlatekNormalNote: "Ula'tek (last boss) drops 20 Champion + 10 Hero, instead of Normal difficulty's usual amount",
     raidUlatekHeroicNote: "Ula'tek (last boss) drops 20 Hero + 10 Myth, instead of Heroic difficulty's usual amount",
     loading: "Loading...",
@@ -4166,10 +4173,10 @@ function renderCharacterPage(){
      a small bar per vault threshold on the right that fills in as it's met -
      compact enough to fit under Raid Progression while still reading at a
      glance which slots are unlocked. */
-  const vaultMiniLine = (iconId, label, thresholds, count, descFn, bestLabel) => `
+  const vaultMiniLine = (iconId, label, thresholds, count, descFn, bestLabel, note) => `
     <div class="vault-mini-line">
       <img class="vault-mini-icon" src="${zamIconUrl(iconId,'medium')}" alt="">
-      <span class="vault-mini-label">${label}</span>
+      <span class="vault-mini-label">${label}${note ? `<span class="vault-mini-note-hint" title="${escapeHtml(note)}">ⓘ</span>` : ''}</span>
       <div class="vault-mini-bars">
         ${thresholds.map(th => `
           <span class="vault-mini-bar ${count>=th?'done':''}" title="${escapeHtml(descFn(th))}">${(count>=th && bestLabel) ? escapeHtml(bestLabel) : ''}</span>`).join('')}
@@ -4369,7 +4376,7 @@ function renderCharacterPage(){
                   <button class="vault-history-btn" id="vaultHistoryBtn">${t('vaultHistoryBtnLabel')}</button>
                 </div>
                 ${vaultMiniLine('inv_misc_treasurechest03b', t('raidsLabel'), [2,4,6], raidCountThisWeek, n => t('raidMilestone', n), raidBestLabel)}
-                ${vaultMiniLine('inv_relics_hourglass', t('mythicPlusShortLabel'), [2,4,8], dCount, n => t('mplusMilestone', n), mplusBestLabel)}
+                ${vaultMiniLine('inv_relics_hourglass', t('mythicPlusShortLabel'), [2,4,8], dCount, n => t('mplusMilestone', n), mplusBestLabel, t('mplusVaultCountNote'))}
                 ${vaultMiniLine('inv_misc_head_dragon_01', t('worldBossLabel'), [1,2,4], wbCount, n => t('worldBossMilestone', n), wbBestLabel)}
               </div>
             </div>
