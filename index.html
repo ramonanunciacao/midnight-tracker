@@ -681,28 +681,54 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .add-char-status.loading{ color:var(--gold-dim); }
 
 /* todo */
-.todo-panel, .mural-panel, .upgrades-panel, .classmeta-panel, .charcompare-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
-.charcompare-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; text-transform:uppercase; letter-spacing:.04em; }
-.charcompare-picker{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 22px; }
-.charcompare-pill{
-  display:flex; align-items:center; gap:8px; padding:6px 14px 6px 6px; border-radius:20px; border:1px solid var(--hairline);
-  background: var(--bg-panel-raised); color: var(--text-dim); cursor:pointer; font-size:13px; font-weight:600;
-  transition: border-color .15s, color .15s;
+.todo-panel, .mural-panel, .upgrades-panel, .classmeta-panel, .roster-panel{ background: var(--bg-panel); border:1px solid var(--hairline); border-radius:12px; padding:22px; }
+.roster-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; text-transform:uppercase; letter-spacing:.04em; }
+
+/* Full Roster: same card language as the Meta Check report card (gradient panel, class-color
+   top accent via the same --class-color var the character page itself already sets, gold
+   stat values) - every character shows up automatically, no picker, since the whole point is
+   "everyone at a glance" rather than a manual comparison. */
+.roster-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px; margin-top:18px; }
+.roster-card{
+  background: linear-gradient(180deg, var(--bg-panel-raised), var(--bg-panel)); border:1px solid var(--hairline);
+  border-top:3px solid var(--class-color, var(--gold)); border-radius:14px; padding:18px; box-shadow: 0 8px 24px rgba(0,0,0,.18);
 }
-.charcompare-pill:hover{ color: var(--text); }
-.charcompare-pill.active{ border-color: var(--pill-color, var(--purple)); color: var(--text); background: rgba(163,53,238,.12); }
-.charcompare-pill-avatar{ width:26px; height:26px; border-radius:50%; border:1px solid var(--hairline); object-fit:cover; }
-.charcompare-table-wrap{ overflow-x:auto; }
-.charcompare-table{ width:100%; border-collapse:collapse; min-width:420px; }
-.charcompare-table th, .charcompare-table td{ padding:12px 16px; border-bottom:1px solid var(--hairline); text-align:center; }
-.charcompare-table tr:last-child td{ border-bottom:none; }
-.charcompare-row-label{
-  text-align:left !important; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--text-dim);
-  white-space:nowrap;
+.roster-card-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.roster-card-avatar{ width:52px; height:52px; border-radius:11px; border:1px solid var(--hairline); object-fit:cover; flex-shrink:0; }
+.roster-card-name{ font-family:'Rajdhani',sans-serif; font-size:19px; font-weight:800; line-height:1.15; }
+.roster-card-meta{ font-size:12px; color: var(--text-dim); margin-top:2px; }
+.roster-card-diff-badge{
+  margin-left:auto; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em;
+  padding:3px 9px; border-radius:6px; border:1px solid var(--hairline); color:var(--text-dim); flex-shrink:0; white-space:nowrap;
 }
-.charcompare-table td:not(.charcompare-row-label){ font-family:'Rajdhani',sans-serif; font-size:17px; font-weight:700; color:var(--text); }
-.charcompare-th{ display:flex; flex-direction:column; align-items:center; gap:6px; font-size:13px; font-weight:700; }
-.charcompare-th-avatar{ width:40px; height:40px; border-radius:50%; border:1.5px solid var(--hairline); object-fit:cover; }
+.roster-card-diff-badge.tier-mythic{ color:var(--danger); border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.1); }
+.roster-card-diff-badge.tier-heroic{ color:var(--purple); border-color:rgba(163,53,238,.4); background:rgba(163,53,238,.1); }
+.roster-card-diff-badge.tier-normal{ color:var(--cyan); border-color:rgba(34,211,238,.4); background:rgba(34,211,238,.1); }
+.roster-card-diff-badge.tier-lfr{ color:var(--text-dim); }
+.roster-card-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.roster-stat{ background:var(--bg-panel); border:1px solid var(--hairline); border-radius:8px; padding:8px 6px; text-align:center; }
+.roster-stat-value{ font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:800; color:var(--gold); line-height:1.1; }
+.roster-stat-label{ font-size:9px; text-transform:uppercase; letter-spacing:.02em; color:var(--text-dim); font-weight:700; margin-top:3px; }
+.roster-card-expand-btn{
+  width:100%; margin-top:12px; background:none; border:1px solid var(--hairline); color:var(--text-dim);
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:8px; border-radius:8px;
+  cursor:pointer; transition: border-color .15s, color .15s;
+}
+.roster-card-expand-btn:hover{ border-color:var(--gold-dim); color:var(--gold); }
+.roster-card-detail{ display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--hairline); }
+.roster-card.expanded .roster-card-detail{ display:block; }
+.roster-card.expanded .roster-card-expand-btn{ border-color:var(--gold-dim); color:var(--gold); }
+.roster-detail-charts{ display:flex; flex-direction:column; gap:14px; }
+.roster-detail-chart-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px; }
+.roster-detail-chart-title{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--text-dim); }
+.roster-detail-chart-value{ font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:800; color:var(--text); }
+.roster-raid-list{ display:flex; flex-direction:column; gap:4px; margin-top:6px; }
+.roster-raid-row{ display:flex; align-items:center; gap:8px; font-size:12px; }
+.roster-raid-row.done{ color:var(--text); }
+.roster-raid-row.pending{ color:var(--text-dim); opacity:.7; }
+.roster-raid-mark{ width:14px; flex-shrink:0; text-align:center; }
+.roster-raid-diff{ margin-left:auto; font-size:10px; color:var(--gold-dim); font-weight:700; text-transform:uppercase; }
+@media(max-width:640px){ .roster-grid{ grid-template-columns:1fr; } }
 .classmeta-panel h2{ font-family:'Rajdhani',sans-serif; color:var(--gold); font-size:15px; text-transform:uppercase; letter-spacing:.04em; }
 .classmeta-head-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
 .classmeta-head-row h2{ margin-bottom:0; }
@@ -1589,8 +1615,8 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
       <button class="sidebar-link" data-tab="classmeta" title="Meta Check">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V13M11 20V6M18 20v-9"/><circle cx="18" cy="8" r="2.2"/></svg></span><span class="sidebar-label" data-i18n="navClassMeta">Meta Check</span>
       </button>
-      <button class="sidebar-link" data-tab="charcompare" title="Comparar Personagens">
-        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="18" rx="1.5"/><rect x="13" y="3" width="8" height="18" rx="1.5"/><path d="M7 8v6M17 8v10"/></svg></span><span class="sidebar-label" data-i18n="navCharCompare">Comparar</span>
+      <button class="sidebar-link" data-tab="roster" title="Full Roster">
+        <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.3"/><path d="M10.5 6h9.5"/><circle cx="6" cy="12" r="2.3"/><path d="M10.5 12h9.5"/><circle cx="6" cy="18" r="2.3"/><path d="M10.5 18h9.5"/></svg></span><span class="sidebar-label" data-i18n="navRoster">Full Roster</span>
       </button>
       <button class="sidebar-link" data-tab="mural" title="Mural">
         <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15.5l-5.5-5.5-9 9"/></svg></span><span class="sidebar-label" data-i18n="navMural">Mural</span>
@@ -1747,13 +1773,12 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
     </div>
   </section>
 
-  <section class="tab" id="tab-charcompare">
-    <div class="charcompare-panel">
+  <section class="tab" id="tab-roster">
+    <div class="roster-panel">
       <button class="back-to-dashboard-btn" data-back-to-dashboard data-i18n="backToDashboard">← Voltar ao Dashboard</button>
-      <h2 data-i18n="charCompareTitle">Comparar Personagens</h2>
-      <div class="upgrades-sub" data-i18n="charCompareSub">Escolha até 3 personagens do seu roster pra ver lado a lado.</div>
-      <div class="charcompare-picker" id="charComparePicker"></div>
-      <div id="charCompareTable"></div>
+      <h2 data-i18n="rosterTitle">Full Roster</h2>
+      <div class="upgrades-sub" data-i18n="rosterSub">Todos os seus personagens numa visão só — clique em qualquer um pra ver o relatório completo.</div>
+      <div id="rosterGrid"></div>
     </div>
   </section>
     </div>
@@ -2227,10 +2252,11 @@ const I18N = {
     todoCollapseToggle: "Minimizar/maximizar",
     wowheadNewsTitle: "Notícias Wowhead", wowheadNewsComingSoon: "Integração com feed de notícias em breve.",
     worldTopRunsTitle: "Top Runs do Mundo", worldTopRunsLoading: "Carregando as melhores runs do mundo...",
-    navCharCompare: "Comparar", charCompareTitle: "Comparar Personagens",
-    charCompareSub: "Escolha até 3 personagens do seu roster pra ver lado a lado.",
-    charComparePickPrompt: "Escolha pelo menos 2 personagens acima pra comparar.",
-    charCompareRowSpec: "Classe/Spec", charCompareRowBestKey: "Maior Key",
+    navRoster: "Full Roster", rosterTitle: "Full Roster",
+    rosterSub: "Todos os seus personagens numa visão só — clique em qualquer um pra ver o relatório completo.",
+    rosterNoCharsYet: "Adicione um personagem para ver seu roster aqui.",
+    rosterExpandBtn: "Ver relatório completo ▾", rosterCollapseBtn: "Fechar relatório ▴",
+    charCompareRowBestKey: "Maior Key",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
     classMetaSub: "Baseado nas runs mais altas de cada região do mundo (US/EU/KR/TW) desta season (raider.io) - veja o quão popular é uma spec no topo e a run mais alta já feita com ela. É uma foto do momento, não é ao vivo — os dados do topo do mundo mudam o tempo todo e essa página se atualiza sozinha em segundo plano a cada poucos minutos.",
     classMetaRankingTitle: "Ranking completo por representatividade",
@@ -2469,10 +2495,11 @@ const I18N = {
     todoCollapseToggle: "Minimize/maximize",
     wowheadNewsTitle: "Wowhead News", wowheadNewsComingSoon: "News feed integration coming soon.",
     worldTopRunsTitle: "World Top Runs", worldTopRunsLoading: "Loading the world's top runs...",
-    navCharCompare: "Compare", charCompareTitle: "Compare Characters",
-    charCompareSub: "Pick up to 3 characters from your roster to see side by side.",
-    charComparePickPrompt: "Pick at least 2 characters above to compare.",
-    charCompareRowSpec: "Class/Spec", charCompareRowBestKey: "Highest Key",
+    navRoster: "Full Roster", rosterTitle: "Full Roster",
+    rosterSub: "Every character you've added, at a glance — click any card for the full report.",
+    rosterNoCharsYet: "Add a character to see your roster here.",
+    rosterExpandBtn: "View full report ▾", rosterCollapseBtn: "Collapse report ▴",
+    charCompareRowBestKey: "Highest Key",
     navClassMeta: "Meta Check", classMetaTitle: "Meta Check",
     classMetaSub: "Based on the top runs from every real region (US/EU/KR/TW) this season (raider.io) - see how popular a spec is at the top and its own highest run. This is a snapshot, not live — the world's top runs change constantly, and this page refreshes itself in the background every few minutes.",
     classMetaRankingTitle: "Full ranking by representation",
@@ -5716,51 +5743,25 @@ function renderClassMetaTable(){
   });
 }
 
-/* ---------------- Character Comparator: 2-3 characters from the roster side by side, all
-   real numbers already computed elsewhere in the app (ilvl/score straight off the character,
-   best key from mplusBestRuns, vault slots via the exact same threshold logic the dashboard's
-   own Weekly Vault mini-lines use, BIS/raid progress via the same helpers those cards already
-   call) - nothing new is invented here, this just puts several characters' real numbers in
-   one place instead of switching the active character back and forth to compare them. ---------------- */
-let charCompareSelected = [];
-function openCharCompare(){
-  if(!charCompareSelected.length && state.dashboardActiveChar){
-    charCompareSelected = [state.dashboardActiveChar];
-  }
-  // Drop any selected id that no longer exists (character removed since last visit).
-  charCompareSelected = charCompareSelected.filter(id => state.characters.some(c => c.id === id));
-  renderCharComparePicker();
-  renderCharCompareTable();
-}
-function renderCharComparePicker(){
-  const wrap = document.getElementById('charComparePicker');
-  if(!wrap) return;
-  wrap.innerHTML = state.characters.map(c => `
-    <button class="charcompare-pill ${charCompareSelected.includes(c.id) ? 'active' : ''}" data-id="${c.id}" style="--pill-color:${CLASS_HEX[c.class] || '#fff'}">
-      <img class="charcompare-pill-avatar" src="${c.avatarUrl || classIconUrl(c.class)}" alt="">
-      <span>${escapeHtml(c.name)}</span>
-    </button>`).join('');
-  wrap.querySelectorAll('.charcompare-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.id;
-      const idx = charCompareSelected.indexOf(id);
-      if(idx !== -1){
-        charCompareSelected.splice(idx, 1);
-      } else {
-        charCompareSelected.push(id);
-        // Cap at 3 selections - drop the oldest pick rather than blocking the click, so
-        // swapping one character for another is a single tap instead of deselect-then-select.
-        if(charCompareSelected.length > 3) charCompareSelected.shift();
-      }
-      renderCharComparePicker();
-      renderCharCompareTable();
-    });
-  });
+/* ---------------- Full Roster: every character in the roster, always, as a card - no picker,
+   since the point is "everyone at a glance" (merged with what would've been a separate
+   comparator page, per feedback that the two ideas were really one page). Every stat reuses
+   a helper this app already trusts elsewhere (bisSlotProgress, raidBossKilled, the same
+   vault-threshold math the dashboard's own Weekly Vault mini-lines use) - nothing new
+   computed from scratch. Clicking a card expands a real per-character report inline: the
+   same ilvl/score evolution history the character's own Dashboard page charts, with its own
+   local time-range toggle (kept separate from state.dashChartRange - that one belongs to
+   whichever character is the active Dashboard character, not to every card here at once),
+   plus a real raid boss-by-boss breakdown. ---------------- */
+let rosterExpanded = new Set();
+let rosterChartRange = {};
+function openFullRoster(){
+  renderRosterGrid();
 }
 /* Same real vault-threshold logic as the dashboard's Weekly Vault mini-lines
    (raid [2,4,6] / mplus [2,4,8] / world [1,2,4] boss/key/dungeon counts) - just summed into
-   one "X/9 slots filled" number instead of three separate bar rows, since a side-by-side
-   comparison reads faster as one figure per stat. */
+   one "X/9 slots filled" number instead of three separate bar rows, since a roster overview
+   reads faster as one figure per stat. */
 function computeVaultSlots(c){
   const boundary = mostRecentResetBoundary(c.region || 'us').getTime();
   const raidCount = raidBossesDoneThisWeek(c, boundary);
@@ -5771,49 +5772,134 @@ function computeVaultSlots(c){
     + [1,2,4].filter(t => wbCount >= t).length;
   return { filled, total: 9 };
 }
-function charCompareBestKey(c){
+function rosterBestKey(c){
   const levels = (c.mplusBestRuns || []).map(r => r.mythic_level).filter(Boolean);
   return levels.length ? Math.max(...levels) : null;
 }
-function renderCharCompareTable(){
-  const wrap = document.getElementById('charCompareTable');
+/* Highest real raid difficulty this character has killed ANY boss at - same rank order the
+   character page's own raid tooltip already uses (Mythic beats Heroic beats Normal beats
+   LFR), just reduced to one badge instead of a full per-boss breakdown for the card itself. */
+function rosterHighestRaidDiff(c){
+  for(const d of RAID_DIFFICULTIES.slice().reverse()){
+    if(RAID_POOL.some(b => c.raidBosses[b] && c.raidBosses[b][d])) return d;
+  }
+  return null;
+}
+function renderRosterGrid(){
+  const wrap = document.getElementById('rosterGrid');
   if(!wrap) return;
-  const chars = charCompareSelected.map(id => state.characters.find(c => c.id === id)).filter(Boolean);
-  if(chars.length < 2){
-    wrap.innerHTML = `<div class="empty-note">${t('charComparePickPrompt')}</div>`;
+  if(!state.characters.length){
+    wrap.innerHTML = `<div class="empty-note">${t('rosterNoCharsYet')}</div>`;
     return;
   }
-  const rows = [
-    { label: t('charCompareRowSpec'), render: c => `<span style="color:${CLASS_HEX[c.class]||'#fff'}">${escapeHtml(c.spec||'—')} ${escapeHtml(c.class||'')}</span>` },
-    { label: t('gearIlvlLabel'), render: c => c.ilvl || '—' },
-    { label: t('mRatingLabel'), render: c => c.ioscore || '—' },
-    { label: t('charCompareRowBestKey'), render: c => { const lvl = charCompareBestKey(c); return lvl ? `+${lvl}` : '—'; } },
-    { label: t('weeklyRewardsTitle'), render: c => { const v = computeVaultSlots(c); return `${v.filled}/${v.total}`; } },
-    { label: t('bisProgressLabel'), render: c => { const p = bisSlotProgress(c); return `${p.matched}/${p.total}`; } },
-    { label: t('progressionTitle'), render: c => { const n = RAID_POOL.filter(b => raidBossKilled(c, b)).length; return `${n}/${RAID_POOL.length}`; } },
-  ];
-  wrap.innerHTML = `
-    <div class="charcompare-table-wrap">
-      <table class="charcompare-table">
-        <thead><tr>
-          <th></th>
-          ${chars.map(c => `
-            <th>
-              <div class="charcompare-th">
-                <img class="charcompare-th-avatar" src="${c.avatarUrl || classIconUrl(c.class)}" alt="">
-                <span style="color:${CLASS_HEX[c.class]||'#fff'}">${escapeHtml(c.name)}</span>
-              </div>
-            </th>`).join('')}
-        </tr></thead>
-        <tbody>
-          ${rows.map(r => `
-            <tr>
-              <td class="charcompare-row-label">${escapeHtml(r.label)}</td>
-              ${chars.map(c => `<td>${r.render(c)}</td>`).join('')}
-            </tr>`).join('')}
-        </tbody>
-      </table>
+  wrap.innerHTML = `<div class="roster-grid">${state.characters.map(rosterCardHtml).join('')}</div>`;
+  wrap.querySelectorAll('.roster-card-expand-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      if(rosterExpanded.has(id)) rosterExpanded.delete(id); else rosterExpanded.add(id);
+      renderRosterGrid();
+    });
+  });
+  wrap.querySelectorAll('.roster-detail-range-select').forEach(sel => {
+    sel.addEventListener('change', () => {
+      rosterChartRange[sel.dataset.id] = Number(sel.value);
+      renderRosterGrid();
+    });
+  });
+  // Charts are real SVG built after the row exists in the DOM (same two-step pattern the
+  // Dashboard's own evolution charts and Meta Check's history chart already use).
+  state.characters.forEach(c => { if(rosterExpanded.has(c.id)) renderRosterCardCharts(c); });
+}
+function rosterCardHtml(c){
+  const diff = rosterHighestRaidDiff(c);
+  const vault = computeVaultSlots(c);
+  const bis = bisSlotProgress(c);
+  const bestKey = rosterBestKey(c);
+  const raidCount = RAID_POOL.filter(b => raidBossKilled(c, b)).length;
+  const expanded = rosterExpanded.has(c.id);
+  return `
+    <div class="roster-card ${expanded ? 'expanded' : ''}" style="--class-color:${CLASS_HEX[c.class] || 'var(--gold)'}">
+      <div class="roster-card-head">
+        <img class="roster-card-avatar" src="${c.avatarUrl || classIconUrl(c.class)}" alt="">
+        <div>
+          <div class="roster-card-name" style="color:${CLASS_HEX[c.class]||'#fff'}">${escapeHtml(c.name)}</div>
+          <div class="roster-card-meta">${escapeHtml(c.spec||'')} ${escapeHtml(c.class||'')}${c.realmName ? ' · '+escapeHtml(c.realmName) : ''}</div>
+        </div>
+        ${diff ? `<span class="roster-card-diff-badge tier-${diff.toLowerCase()}">${escapeHtml(diff)}</span>` : ''}
+      </div>
+      <div class="roster-card-stats">
+        <div class="roster-stat"><div class="roster-stat-value">${c.ilvl || '—'}</div><div class="roster-stat-label">${t('gearIlvlLabel')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value">${c.ioscore || '—'}</div><div class="roster-stat-label">${t('mRatingLabel')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value">${bestKey ? '+'+bestKey : '—'}</div><div class="roster-stat-label">${t('charCompareRowBestKey')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value">${vault.filled}/${vault.total}</div><div class="roster-stat-label">${t('weeklyRewardsTitle')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value">${bis.matched}/${bis.total}</div><div class="roster-stat-label">${t('bisProgressLabel')}</div></div>
+        <div class="roster-stat"><div class="roster-stat-value">${raidCount}/${RAID_POOL.length}</div><div class="roster-stat-label">${t('progressionTitle')}</div></div>
+      </div>
+      <button class="roster-card-expand-btn" data-id="${c.id}">${expanded ? t('rosterCollapseBtn') : t('rosterExpandBtn')}</button>
+      ${expanded ? rosterCardDetailHtml(c) : ''}
     </div>`;
+}
+function rosterCardDetailHtml(c){
+  const range = rosterChartRange[c.id] || 30;
+  const rangeSelect = `
+    <select class="roster-detail-range-select" data-id="${c.id}">
+      <option value="7" ${range===7?'selected':''}>7D</option>
+      <option value="30" ${range===30?'selected':''}>30D</option>
+      <option value="90" ${range===90?'selected':''}>90D</option>
+    </select>`;
+  return `
+    <div class="roster-card-detail">
+      <div class="roster-detail-charts">
+        <div>
+          <div class="roster-detail-chart-head">
+            <span class="roster-detail-chart-title">${t('ilvlEvoTitle')}</span>
+            <span class="roster-detail-chart-value">${c.ilvl || '—'}</span>
+            ${rangeSelect}
+          </div>
+          <div id="rosterIlvlChart-${c.id}"></div>
+        </div>
+        <div>
+          <div class="roster-detail-chart-head">
+            <span class="roster-detail-chart-title">${t('mplusEvoTitle')}</span>
+            <span class="roster-detail-chart-value">${c.ioscore || '—'}</span>
+          </div>
+          <div id="rosterScoreChart-${c.id}"></div>
+        </div>
+      </div>
+      <div class="classmeta-detail-subtitle" style="margin-top:14px;">${t('bossKillStatusLabel')}</div>
+      <div class="roster-raid-list">
+        ${RAID_POOL.map(boss => {
+          const killedDiff = RAID_DIFFICULTIES.slice().reverse().find(d => c.raidBosses[boss] && c.raidBosses[boss][d]);
+          return `
+          <div class="roster-raid-row ${killedDiff ? 'done' : 'pending'}">
+            <span class="roster-raid-mark">${killedDiff ? '✓' : '○'}</span>
+            <span>${escapeHtml(boss)}</span>
+            ${killedDiff ? `<span class="roster-raid-diff">${escapeHtml(killedDiff)}</span>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+function rosterCardCharts(c, range){
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - range);
+  const sortedHistory = [...c.history].sort((a,b) => a.date.localeCompare(b.date))
+    .filter(h => new Date(h.date) >= SEASON_2_START && new Date(h.date) >= cutoff);
+  return {
+    ilvl: sortedHistory.map(h => ({ x: h.date, y: h.ilvl })),
+    score: sortedHistory.map(h => ({ x: h.date, y: h.ioscore }))
+  };
+}
+function renderRosterCardCharts(c){
+  const ilvlEl = document.getElementById(`rosterIlvlChart-${c.id}`);
+  const scoreEl = document.getElementById(`rosterScoreChart-${c.id}`);
+  if(!ilvlEl || !scoreEl) return;
+  const range = rosterChartRange[c.id] || 30;
+  const clsColor = CLASS_HEX[c.class] || '#f2b53d';
+  const series = rosterCardCharts(c, range);
+  ilvlEl.innerHTML = buildLineChartSVG([{ label: t('gearIlvlLabel'), color: clsColor, data: series.ilvl }], 320, 100, `rihist-${c.id}`);
+  scoreEl.innerHTML = buildLineChartSVG([{ label: t('mRatingLabel'), color: '#ef4444', data: series.score }], 320, 100, `rshist-${c.id}`);
+  bindChartHover(ilvlEl);
+  bindChartHover(scoreEl);
 }
 
 function applyMplusSeasonSummary(c, data){
@@ -8578,7 +8664,7 @@ document.querySelectorAll('.sidebar-link').forEach(btn => {
     if(btn.dataset.tab === 'upgrades'){ switchToTab('upgrades'); renderUpgradesTable(); resetQuiz(); return; }
     if(btn.dataset.tab === 'bonusrolls'){ switchToTab('bonusrolls'); renderBonusRolls(); return; }
     if(btn.dataset.tab === 'classmeta'){ switchToTab('classmeta'); openClassMeta(); return; }
-    if(btn.dataset.tab === 'charcompare'){ switchToTab('charcompare'); openCharCompare(); return; }
+    if(btn.dataset.tab === 'roster'){ switchToTab('roster'); openFullRoster(); return; }
     switchToTab(btn.dataset.tab);
   });
 });
