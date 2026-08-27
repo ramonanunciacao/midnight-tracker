@@ -279,17 +279,33 @@ export default {
           // Best run per individual dungeon (not just the single overall best) - lets the
           // frontend show "highest run by dungeon" for the selected spec, since a spec can be
           // strong in one dungeon and untested in another within this same sample.
+          // Grouped by dungeon display name rather than slug - the name is what every other
+          // field here (topRun.dungeon, etc.) already keys off unconditionally, so grouping by
+          // it keeps this in lockstep with topRun by construction instead of relying on a
+          // second field (slug) staying consistent with the first.
           const dungeonMap = new Map();
           allRuns.forEach(r => {
-            const prev = dungeonMap.get(r.dungeonSlug);
-            if(!prev || r.level > prev.level) dungeonMap.set(r.dungeonSlug, r);
+            const prev = dungeonMap.get(r.dungeon);
+            if(!prev || r.level > prev.level){
+              dungeonMap.set(r.dungeon, {
+                dungeon: r.dungeon, shortName: r.shortName, level: r.level, icon: r.icon,
+                url: `https://raider.io/mythic-plus-runs/${encodeURIComponent(season)}/${r.runId}-${r.level}-${r.dungeonSlug}`
+              });
+            }
           });
-          const byDungeon = [...dungeonMap.values()]
-            .sort((a, b) => b.level - a.level)
-            .map(r => ({
-              dungeon: r.dungeon, shortName: r.shortName, level: r.level, icon: r.icon,
-              url: `https://raider.io/mythic-plus-runs/${encodeURIComponent(season)}/${r.runId}-${r.level}-${r.dungeonSlug}`
-            }));
+          // Belt-and-suspenders guarantee: the single overall highest run for this spec must
+          // always show up in the per-dungeon breakdown, no exceptions - explicitly reconcile
+          // it in rather than only trusting it to fall out of the loop above.
+          if(entry.topRun){
+            const existing = dungeonMap.get(entry.topRun.dungeon);
+            if(!existing || entry.topRun.level > existing.level){
+              dungeonMap.set(entry.topRun.dungeon, {
+                dungeon: entry.topRun.dungeon, shortName: entry.topRun.shortName, level: entry.topRun.level,
+                icon: existing ? existing.icon : null, url: entry.topRun.url
+              });
+            }
+          }
+          const byDungeon = [...dungeonMap.values()].sort((a, b) => b.level - a.level);
           return { class: entry.class, spec: entry.spec, role: entry.role, count: entry.count, highestLevel: entry.highestLevel, topRun: entry.topRun, deathSampleRuns, byDungeon };
         });
         return new Response(JSON.stringify({ totalRuns, totalPlayers, specs }), { headers: corsHeaders });
