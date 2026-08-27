@@ -720,15 +720,13 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
   color: var(--text); text-transform:uppercase; letter-spacing:.03em; margin-bottom:10px;
 }
 .classmeta-insight-icon{ font-size:17px; }
-.classmeta-insight{ font-size:14.5px; color: var(--text-dim); line-height:1.7; }
-.classmeta-insight-text{ margin-bottom:8px; }
-.classmeta-insight-warning{
-  color: var(--danger); font-weight:700; font-size:13.5px; padding:10px 12px; background: rgba(239,68,68,.1);
-  border:1px solid rgba(239,68,68,.3); border-radius:8px; margin-top:8px;
+.classmeta-insight{ font-size:14.5px; line-height:1.6; }
+.classmeta-insight-text{
+  font-weight:700; padding:10px 13px; border-radius:8px; border:1px solid var(--hairline);
+  background: var(--bg-panel); color: var(--text-dim);
 }
-.cm-hl{ color: var(--gold); font-weight:800; }
-.cm-hl-warn{ color: var(--danger); font-weight:800; }
-.cm-hl-good{ color: var(--ok); font-weight:800; }
+.classmeta-insight.is-good .classmeta-insight-text{ color: var(--ok); background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.35); }
+.classmeta-insight.is-bad .classmeta-insight-text{ color: var(--danger); background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.35); }
 @media(max-width:640px){
   .classmeta-bar-row{ grid-template-columns:20px 74px 1fr 40px; gap:6px; }
   .classmeta-dungeon-grid{ grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
@@ -2168,10 +2166,8 @@ const I18N = {
     classMetaInsightLabel: "Insight de sobrevivência",
     classMetaInsightLoading: "Analisando mortes numa amostra de runs dessa spec em vários níveis de key...",
     classMetaInsightNoData: "Sem runs suficientes dessa spec na amostra pra gerar um insight de mortes.",
-    classMetaInsightText: (n, minLvl, maxLvl, totalDeaths) => `Amostra de <span class="cm-hl">${n}</span> runs dessa spec entre <span class="cm-hl">+${minLvl}</span> e <span class="cm-hl">+${maxLvl}</span>: <span class="cm-hl">${totalDeaths}</span> morte(s) registrada(s) ao todo nesse grupo de runs.`,
-    classMetaInsightSpecClean: (specName) => `Nenhuma delas foi de um jogador de <span class="cm-hl-good">${specName}</span> — bom sinal de sobrevivência nesse recorte de níveis.`,
-    classMetaInsightThreshold: (specName, specDeaths, thresholdLevel) => `<span class="cm-hl-warn">${specDeaths}</span> delas de jogadores de ${specName}, começando a partir da key <span class="cm-hl-warn">+${thresholdLevel}</span> — não houve mortes dessa spec registradas abaixo desse nível na amostra.`,
-    classMetaInsightWarning: "Essa spec teve uma parcela de mortes acima da média do grupo nessa amostra — pode valer a pena olhar problemas de sobrevivência ou timing, mas com uma amostra desse tamanho isso não é conclusivo.",
+    classMetaInsightShort: (n, minLvl, maxLvl, specDeaths, totalDeaths, specName) => `${n} runs analisadas (+${minLvl}–+${maxLvl}): ${specDeaths} de ${totalDeaths} mortes foram de ${specName}.`,
+    classMetaInsightClean: (n, minLvl, maxLvl) => `${n} runs analisadas (+${minLvl}–+${maxLvl}): nenhuma morte registrada.`,
     newsPlaceholder1: "Hotfixes recentes", newsPlaceholder2: "Novidades da Season 2", newsPlaceholder3: "Rotação de Mythic+ da semana",
     comingSoon: "em breve", weeklyRewardsTitle: "Weekly Vault", progressionTitle: "Raid Progression",
     viewAllLabel: "Ver Tudo", seasonBestDungeonsTitle: "Season Best",
@@ -2398,10 +2394,8 @@ const I18N = {
     classMetaInsightLabel: "Survival insight",
     classMetaInsightLoading: "Analyzing deaths across a sample of this spec's runs at multiple key levels...",
     classMetaInsightNoData: "Not enough runs from this spec in the sample to generate a death insight.",
-    classMetaInsightText: (n, minLvl, maxLvl, totalDeaths) => `Sample of <span class="cm-hl">${n}</span> runs from this spec between <span class="cm-hl">+${minLvl}</span> and <span class="cm-hl">+${maxLvl}</span>: <span class="cm-hl">${totalDeaths}</span> death(s) recorded in total across that group of runs.`,
-    classMetaInsightSpecClean: (specName) => `None of them were from a <span class="cm-hl-good">${specName}</span> player — a good survivability sign across this level range.`,
-    classMetaInsightThreshold: (specName, specDeaths, thresholdLevel) => `<span class="cm-hl-warn">${specDeaths}</span> of them from ${specName} players, starting from key <span class="cm-hl-warn">+${thresholdLevel}</span> — no deaths from this spec were recorded below that level in the sample.`,
-    classMetaInsightWarning: "This spec accounted for a disproportionate share of deaths in this sample — might be worth looking into survivability or timing issues, though with a sample this size it's not conclusive.",
+    classMetaInsightShort: (n, minLvl, maxLvl, specDeaths, totalDeaths, specName) => `${n} runs analyzed (+${minLvl}–+${maxLvl}): ${specDeaths} of ${totalDeaths} deaths were ${specName}.`,
+    classMetaInsightClean: (n, minLvl, maxLvl) => `${n} runs analyzed (+${minLvl}–+${maxLvl}): no deaths recorded.`,
     newsPlaceholder1: "Recent hotfixes", newsPlaceholder2: "Season 2 highlights", newsPlaceholder3: "This week's Mythic+ rotation",
     comingSoon: "coming soon", weeklyRewardsTitle: "Weekly Vault", progressionTitle: "Raid Progression",
     viewAllLabel: "View All", seasonBestDungeonsTitle: "Season Best",
@@ -5375,19 +5369,23 @@ async function analyzeClassMetaDeaths(entry){
       } catch(e){ return null; }
     }));
     const valid = results.filter(Boolean);
-    const specDeathLevels = valid.filter(r => r.specDeaths > 0).map(r => r.level);
     return {
       runsAnalyzed: valid.length,
       levels: valid.map(r => r.level),
       totalDeaths: valid.reduce((s, r) => s + r.total, 0),
-      specDeaths: valid.reduce((s, r) => s + r.specDeaths, 0),
-      thresholdLevel: specDeathLevels.length ? Math.min(...specDeathLevels) : null
+      specDeaths: valid.reduce((s, r) => s + r.specDeaths, 0)
     };
   })();
   classMetaDeathCache.set(key, promise);
   const resolved = await promise;
   classMetaDeathCache.set(key, resolved);
   return resolved;
+}
+/* "Good" vs "bad" is a fair-share check, not "any deaths = bad" - deaths happen normally at
+   high keys, so what actually signals a real survivability problem is this spec eating a
+   disproportionate slice of a 5-person roster's deaths (>1.5x its 1-in-5 fair share). */
+function classMetaInsightIsBad(analysis){
+  return analysis.totalDeaths > 0 && analysis.specDeaths > (analysis.totalDeaths / 5) * 1.5;
 }
 async function renderClassMetaInsight(entry){
   if(!entry.deathSampleRuns || !entry.deathSampleRuns.length) return;
@@ -5403,15 +5401,12 @@ async function renderClassMetaInsight(entry){
     return;
   }
   const minLvl = Math.min(...analysis.levels), maxLvl = Math.max(...analysis.levels);
-  let html = `<div class="classmeta-insight-text">${t('classMetaInsightText', analysis.runsAnalyzed, minLvl, maxLvl, analysis.totalDeaths)} `;
-  html += analysis.thresholdLevel == null
-    ? t('classMetaInsightSpecClean', target.spec)
-    : t('classMetaInsightThreshold', target.spec, analysis.specDeaths, analysis.thresholdLevel);
-  html += `</div>`;
-  if(analysis.totalDeaths > 0 && analysis.specDeaths > (analysis.totalDeaths / 5) * 1.5){
-    html += `<div class="classmeta-insight-warning">${t('classMetaInsightWarning')}</div>`;
-  }
-  el.innerHTML = html;
+  const isBad = classMetaInsightIsBad(analysis);
+  const text = analysis.totalDeaths === 0
+    ? t('classMetaInsightClean', analysis.runsAnalyzed, minLvl, maxLvl)
+    : t('classMetaInsightShort', analysis.runsAnalyzed, minLvl, maxLvl, analysis.specDeaths, analysis.totalDeaths, target.spec);
+  el.className = `classmeta-insight ${isBad ? 'is-bad' : 'is-good'}`;
+  el.innerHTML = `<div class="classmeta-insight-text">${text}</div>`;
 }
 function renderClassMetaTable(){
   const wrap = document.getElementById('classMetaTable');
