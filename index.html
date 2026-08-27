@@ -6691,6 +6691,11 @@ function renderMurlokSpecPills(cls, activeSpec){
       const clsSlug = MURLOK_CLASS_SLUG[cls];
       const spec = btn.dataset.spec;
       murlokSpecSlug = murlokSlugify(spec);
+      // A new spec means its hero-talent list starts over - carrying the previous spec's
+      // talents forward would mix two specs' hero trees together once loadMurlokBuild's
+      // merge (below) kicks in.
+      murlokHeroTalents = [];
+      murlokHeroSlug = '';
       wrap.querySelectorAll('.murlok-hero-pill').forEach(b => b.classList.toggle('active', b === btn));
       document.getElementById('murlokBuildSpecLabel').textContent = t('murlokBuildSpecLabel', spec, cls);
       loadMurlokBuild(clsSlug, murlokSpecSlug, '');
@@ -6717,8 +6722,16 @@ async function loadMurlokBuild(clsSlug, specSlug, heroSlug){
     if(token !== murlokLoadToken) return; // superseded by a newer selection - discard
     murlokResult = data;
     murlokHeroSlug = heroSlug;
+    // Merge by slug instead of replacing outright: Murlok's own CDN edge can serve a given
+    // page from a different cache node per request (documented earlier - cf-cache-status
+    // HIT regardless of query string, no lever on our side to force a bypass), so one fetch
+    // for this same spec can occasionally come back missing a hero talent another fetch for
+    // it picks up fine. Accumulating what we've seen for this spec means a stale response
+    // can never make an already-known hero talent disappear from the pills again.
     if(Array.isArray(data.heroTalents) && data.heroTalents.length){
-      murlokHeroTalents = data.heroTalents;
+      const bySlug = new Map(murlokHeroTalents.map(h => [h.slug, h]));
+      data.heroTalents.forEach(h => bySlug.set(h.slug, h));
+      murlokHeroTalents = [...bySlug.values()];
       renderMurlokHeroPills(clsSlug, specSlug);
     }
     murlokSelected = new Set();
