@@ -1453,7 +1453,7 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 
           <h3 class="upgrades-subtitle" data-i18n="bonusRollsLogSpendTitle">Registrar item recebido</h3>
           <div class="bonusrolls-spend-form">
-            <select id="bonusRollLocationSelect"></select>
+            <input type="hidden" id="bonusRollLocation" value="">
             <input type="hidden" id="bonusRollWhId" value="">
             <input type="hidden" id="bonusRollIconUrl" value="">
             <div style="position:relative; flex:1; min-width:160px;">
@@ -5418,6 +5418,7 @@ function renderBisBrowseItems(){
       const item = items[Number(row.dataset.idx)];
       if(bisBrowseMode === 'log'){
         document.getElementById('bonusRollItemInput').value = item.name;
+        document.getElementById('bonusRollLocation').value = item.loc || '';
         document.getElementById('bonusRollWhId').value = item.whId || '';
         document.getElementById('bonusRollIconUrl').value = item.icon || '';
         closeBisBrowseModal();
@@ -6869,19 +6870,6 @@ function renderQuizResult(){
    below reuses the same search/browse-by-location pattern as the main Gear BIS
    list; hit/miss on the log is derived automatically by matching the logged
    item against the wishlist, since bonus rolls are random and can't be chosen. ---------------- */
-function bonusRollLocationOptionsHtml(){
-  return `
-    <optgroup label="${t('bonusRollOptGroupRaid')}">
-      ${RAID_POOL.map(b => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join('')}
-    </optgroup>
-    <optgroup label="${t('bonusRollOptGroupMplus')}">
-      ${DUNGEON_POOL.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('')}
-    </optgroup>
-    <optgroup label="${t('bonusRollOptGroupOther')}">
-      <option value="${escapeHtml(t('bonusRollDelve'))}">${escapeHtml(t('bonusRollDelve'))}</option>
-      <option value="${escapeHtml(t('bonusRollPreyHunt'))}">${escapeHtml(t('bonusRollPreyHunt'))}</option>
-    </optgroup>`;
-}
 function bonusWishlistMatch(wish, name, whId){
   if(wish.whId && whId) return String(wish.whId) === String(whId);
   return wish.name.trim().toLowerCase() === (name||'').trim().toLowerCase();
@@ -7029,7 +7017,7 @@ function renderBonusLogItemSearchResults(query){
   panel.innerHTML = `
     <div class="bis-search-head"><span></span><span>${t('itemCol')}</span><span>${t('slotCol')}</span><span>${t('locationCol')}</span></div>
     ${matches.map(([name, slot, loc, whId, icon]) => `
-      <div class="bis-search-row" data-name="${name}" data-whid="${whId || ''}" data-icon="${icon || ''}">
+      <div class="bis-search-row" data-name="${name}" data-loc="${loc}" data-whid="${whId || ''}" data-icon="${icon || ''}">
         <span class="bsr-icon">${icon ? `<img class="bicon-img" src="${icon}" alt="">` : slotIcon(slot)}</span>
         <span class="bsr-name">${name}</span>
         <span class="bsr-slot">${slot.split(' (')[0]}</span>
@@ -7040,6 +7028,7 @@ function renderBonusLogItemSearchResults(query){
   panel.querySelectorAll('.bis-search-row').forEach(row => {
     row.addEventListener('click', () => {
       document.getElementById('bonusRollItemInput').value = row.dataset.name;
+      document.getElementById('bonusRollLocation').value = row.dataset.loc || '';
       document.getElementById('bonusRollWhId').value = row.dataset.whid || '';
       document.getElementById('bonusRollIconUrl').value = row.dataset.icon || '';
       panel.classList.remove('open'); panel.innerHTML = '';
@@ -7047,6 +7036,7 @@ function renderBonusLogItemSearchResults(query){
   });
 }
 document.getElementById('bonusRollItemInput').addEventListener('input', (e) => {
+  document.getElementById('bonusRollLocation').value = '';
   document.getElementById('bonusRollWhId').value = ''; document.getElementById('bonusRollIconUrl').value = '';
   renderBonusLogItemSearchResults(e.target.value);
 });
@@ -7062,7 +7052,7 @@ function renderBonusRollsHistory(c){
     <div class="bonusroll-log-row">
       <span class="bonusroll-log-result ${entry.result}" data-id="${entry.id}" title="${t('bonusRollToggleResultHint')}">${entry.result === 'hit' ? '✓' : '✕'}</span>
       <div class="bonusroll-log-info">
-        <span class="bonusroll-log-loc">${escapeHtml(entry.location)}</span>
+        ${entry.location ? `<span class="bonusroll-log-loc">${escapeHtml(entry.location)}</span>` : ''}
         ${entry.item ? `<span class="bonusroll-log-item">${escapeHtml(entry.item)}</span>` : ''}
       </div>
       <span class="bonusroll-log-date">${new Date(entry.ts).toLocaleDateString(currentLang==='pt'?'pt-BR':'en-US')}</span>
@@ -7134,7 +7124,6 @@ function renderBonusRolls(){
   if(!c) return;
   document.getElementById('bonusRollAvailableVal').textContent = c.bonusRolls.available;
   renderBonusRollsSummaryProgress(c);
-  document.getElementById('bonusRollLocationSelect').innerHTML = bonusRollLocationOptionsHtml();
   const logBtn = document.getElementById('bonusRollLogBtn');
   logBtn.disabled = c.bonusRolls.available <= 0;
   logBtn.title = c.bonusRolls.available <= 0 ? t('bonusRollsNoneAvailable') : '';
@@ -7159,7 +7148,7 @@ document.getElementById('bonusRollDecBtn').addEventListener('click', async () =>
 document.getElementById('bonusRollLogBtn').addEventListener('click', async () => {
   const c = state.characters.find(x => x.id === state.dashboardActiveChar);
   if(!c || c.bonusRolls.available <= 0) return;
-  const location = document.getElementById('bonusRollLocationSelect').value;
+  const location = document.getElementById('bonusRollLocation').value;
   const item = document.getElementById('bonusRollItemInput').value.trim();
   if(!item) return;
   const whId = document.getElementById('bonusRollWhId').value.trim();
@@ -7169,6 +7158,7 @@ document.getElementById('bonusRollLogBtn').addEventListener('click', async () =>
   c.bonusRolls.available -= 1;
   await saveChar(c);
   document.getElementById('bonusRollItemInput').value = '';
+  document.getElementById('bonusRollLocation').value = '';
   document.getElementById('bonusRollWhId').value = '';
   document.getElementById('bonusRollIconUrl').value = '';
   renderBonusRolls();
