@@ -1072,8 +1072,8 @@ a.news-title:hover{ text-decoration:underline; color: var(--gold); }
 .bonus-widget-stat-value{ font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:800; }
 .bonus-widget-stat-label{ font-size:10.5px; color:var(--text-dim); margin-top:1px; }
 .todo-add{ display:flex; gap:8px; margin-bottom:18px; }
-.todo-add input{ flex:1; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px; padding:10px 12px; font-size:14px; }
-.todo-add button{ background: var(--gold); border:none; color:#16141c; font-weight:700; padding:0 18px; border-radius:8px; cursor:pointer; }
+.todo-add input{ flex:1; min-width:0; background: var(--bg-panel-raised); border:1px solid var(--hairline); color:var(--text); border-radius:8px; padding:10px 12px; font-size:14px; }
+.todo-add button{ flex-shrink:0; white-space:nowrap; background: var(--gold); border:none; color:#16141c; font-weight:700; font-size:13px; padding:0 14px; border-radius:8px; cursor:pointer; }
 .todo-item{ display:grid; grid-template-columns: 16px 16px 1fr 20px; align-items:center; gap:10px; padding:10px 4px; border-bottom:1px solid var(--hairline); }
 .todo-item input[type=checkbox]{ accent-color: var(--gold); width:16px; height:16px; margin:0; justify-self:start; }
 .todo-item span{ font-size:14px; text-align:left; justify-self:start; width:100%; }
